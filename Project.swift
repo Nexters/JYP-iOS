@@ -39,13 +39,14 @@ class BaseProjectFactory: ProjectFactory {
         ]
 
     let dependencies: [TargetDependency] = [
-        .package(product: "Moya"),
-        .package(product: "RxMoya"),
-        .package(product: "SnapKit"),
-        .package(product: "RxSwift"),
-        .package(product: "RxCocoa"),
-        .package(product: "ReactorKit"),
-        .package(product: "Then"),
+        .external(name: "Moya"),
+        .external(name: "Alamofire"),
+        .external(name: "RxMoya"),
+        .external(name: "SnapKit"),
+        .external(name: "RxSwift"),
+        .external(name: "RxCocoa"),
+        .external(name: "ReactorKit"),
+        .external(name: "Then")
     ]
     
     let packages: [Package] = [

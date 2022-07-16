@@ -34,6 +34,7 @@ Temporary Items
 Derived/
 *.xcodeproj
 *.xcworkspace
+Tuist/Dependencies
 
 ## Build generated
 DerivedData/
