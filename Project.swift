@@ -28,6 +28,8 @@ protocol ProjectFactory {
 
 // MARK: - Base Project Factory
 
+
+
 class BaseProjectFactory: ProjectFactory {
     let projectName: String = "JYP-iOS"
     
@@ -46,7 +48,7 @@ class BaseProjectFactory: ProjectFactory {
         .external(name: "RxSwift"),
         .external(name: "RxCocoa"),
         .external(name: "ReactorKit"),
-        .external(name: "Then")
+        .external(name: "Then"),
     ]
     
     let packages: [Package] = [
@@ -55,8 +57,10 @@ class BaseProjectFactory: ProjectFactory {
         .remote(url: "https://github.com/ReactiveX/RxSwift.git", requirement: .upToNextMinor(from: "6.5.0")),
         .remote(url: "https://github.com/ReactorKit/ReactorKit.git", requirement: .upToNextMinor(from: "3.2.0")),
         .remote(url: "https://github.com/devxoul/Then.git", requirement: .upToNextMinor(from: "3.0.0")),
+        .remote(url: "https://github.com/realm/SwiftLint.git", requirement: .upToNextMinor(from: "0.44.0"))
     ]
-
+    
+    
     func generate() -> [Target] {
         [
             Target(
@@ -67,7 +71,7 @@ class BaseProjectFactory: ProjectFactory {
                 deploymentTarget: .iOS(targetVersion: "13.0", devices: [.iphone]),
                 infoPlist: .extendingDefault(with: infoPlist),
                 sources: ["\(projectName)/\(projectName)/Sources/**"],
-                resources: "\(projectName)/\(projectName)/Resources/**",
+                resources: "\(projectName)/\(projectName)/Resources/**", scripts: [.pre(path: "Scripts/SwiftLintRunScript.sh", arguments: [], name: "SwiftLint")],
 //                entitlements: "\(projectName)/\(projectName).entitlements",
                 dependencies: dependencies
             ),

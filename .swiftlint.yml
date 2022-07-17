@@ -1,0 +1,129 @@
+disabled_rules: # 사용하지 않는 룰
+    # 라인의 마지막에는 빈 여백이 있으면 안 됨
+    - trailing_whitespace
+
+    # 함수 매개변수들이 여러 개일 경우 세로로 같은 줄에 있어야 함
+    - vertical_parameter_alignment
+
+    # 함수 안은 복잡하면 안 됨 (warning: 10, error: 20)
+    - cyclomatic_complexity
+
+    # 라인 수를 제한함 (warning: 120, error 200)
+    - line_length
+
+    # 함수, 타입, 파일 길이 제한
+    - function_body_length
+    - type_body_length
+
+    # 변수의 이름은 소문자로 시작하며 너무 짧거나 길면 안 됨 (~2: error, ~3: warning, 40~: warning, 60~: error)
+    - identifier_name
+
+    # 중첩 구문 지양
+    - nesting
+
+analyzer_rules:
+    # 모든 선언은 한 번 이상 사용되어야 함
+    - unused_declaration
+
+    # 파일을 컴파일하려면 모든 모듈이 필요함
+    - unused_import
+
+opt_in_rules: # 명시적 룰 활성화
+    # Boolean 변수는 옵셔널을 사용하지 않도록 권장함
+    - discouraged_optional_boolean
+
+    # type name은 영숫자만 포함, 대문자로 시작해 3-40자 사이어야 함
+    - type_name
+
+    # AnyObject 대신 class 키워드를 사용함
+    - anyobject_protocol
+
+    # delegate protocol은 class-only로 참조해 weak로 참조되도록 권장
+    - class_delegate_protocol
+
+    # 닫는 괄호 ')'와 '}' 사이에는 공백이 없어야 함
+    - closing_brace
+
+    # 클로저 내용과 괄호 사이에 공백이 있어야 함
+    - closure_spacing
+
+    # collection elem은 vertically aligned 되어야 함
+    - collection_alignment
+
+    # colon 사용 시 앞 공백 필수, 뒷 공백이 있으면 안 됨
+    - colon
+
+    # comma 사용 시 앞 공백 필수, 뒷 공백이 있으면 안 됨
+    - comma
+
+    # ExpressibleByArrayLiteral를 직접 호출하면 안 됨
+    - compiler_protocol_init
+
+    # first(where:) != nil, firstIndex(where:) != nil 대신 contains 사용을 권장 (https://realm.github.io/SwiftLint/contains_over_first_not_nil.html)
+    - contains_over_first_not_nil
+
+    # filter.count 사용 시 isEmpty 대신 contains 사용 권장 (https://realm.github.io/SwiftLint/contains_over_filter_is_empty.html)
+    - contains_over_filter_is_empty
+
+    # filter.count가 0인지 비교할 때 contains 사용 권장 (https://realm.github.io/SwiftLint/contains_over_filter_count.html)
+    - contains_over_filter_count
+
+    # range(of:) == nil 체크 대신 contains 사용 권장 (https://realm.github.io/SwiftLint/contains_over_range_nil_comparison.html)
+    - contains_over_range_nil_comparison
+
+    # optional collection을 선언하기 보다 empty collection으로 선언 권장discouraged_optional_collection
+    - discouraged_optional_collection
+
+    # if, for, guard, switch, while, catch 사용 시 () 사용 권장하지 않음
+    - control_statement
+
+    # deployment target 보다 낮은 버전의 @available 사용 시 warning
+    - deployment_target
+
+    # 중복 import 방지
+    - duplicate_imports
+
+    # count가 0인지 체크할 때는 isEmpty 사용 권장
+    - empty_count
+
+    # collection, array count 체크 시 isEmpty 사용 권장
+    - empty_collection_literal
+
+    # string empty 체크 시 isEmpty 사용 권장
+    - empty_string
+
+    # 강제 언래핑 사용 금지
+    - force_try
+
+    # array, dict 사용 시 동일한 indent로 표현
+    - literal_expression_end_indentation
+
+    # let, var 선언 시 다른 statments와 한 줄 공백이 필요함
+    - let_var_whitespace
+
+    # 수직 공백 2줄 이상 사용 지양
+    - vertical_whitespace
+
+    # 여는 괄호 앞에서 한 줄 이상의 공백 사용 지양
+    - vertical_whitespace_opening_braces
+
+    # 닫는 괄호 앞에서 한 줄 이상의 공백 사용 지양
+    - vertical_whitespace_closing_braces
+        
+        # delegate는 약한 참조 사용 권장
+        - weak_delegate
+
+# options
+empty_count:
+    only_after_dot: true
+
+# path
+included:
+    - JYP-iOS
+excluded:
+    - Tuist
+    - Frameworks
+    - Project
+    - JYP-iOSTests
+
+reporter: "xcode"
