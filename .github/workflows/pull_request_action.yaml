@@ -1,0 +1,12 @@
+name: pull-request-sizer
+
+on: 
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  sizer:
+    runs-on: macos-latest
+    steps:
+      - name: Pull Request size labeler
+        uses: CodelyTV/pr-size-labeler@v1
