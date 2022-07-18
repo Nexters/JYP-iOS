@@ -60,8 +60,7 @@ class BaseViewController: UIViewController, BaseViewControllerProtocol {
     
     func setupBind() { }
     
-    func refreshTableView(tableView: UITableView, maxHieght: CGFloat? = nil) {
-        
+    func refreshTableView(tableView: UITableView, maxHieght: CGFloat? = nil) {        
         tableView.snp.updateConstraints {
             $0.height.equalTo(CGFloat.greatestFiniteMagnitude)
         }

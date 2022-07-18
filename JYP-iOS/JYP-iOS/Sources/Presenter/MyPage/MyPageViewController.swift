@@ -9,7 +9,6 @@
 import UIKit
 
 class MyPageViewController: BaseViewController {
-    
     let titleLabel = UILabel()
     
     override func setupProperty() {

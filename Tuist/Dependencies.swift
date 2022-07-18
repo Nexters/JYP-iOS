@@ -11,5 +11,5 @@ let spm = SwiftPackageManagerDependencies([
 let dependencies = Dependencies(
     carthage: nil,
     swiftPackageManager: spm,
-    platforms: [.iOS, .macOS]
+    platforms: [.iOS]
 )

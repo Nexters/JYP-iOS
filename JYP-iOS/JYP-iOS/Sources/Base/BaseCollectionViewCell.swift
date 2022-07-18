@@ -32,4 +32,3 @@ class BaseCollectionViewCell: UICollectionViewCell, BaseViewProtocol {
     
     func setupBind() { }
 }
-

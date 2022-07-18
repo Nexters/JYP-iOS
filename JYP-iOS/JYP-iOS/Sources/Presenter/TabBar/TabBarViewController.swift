@@ -26,7 +26,7 @@ class TabBarViewController: UITabBarController {
         myPageViewController.tabBarItem = myPageTabBarItem
         searchPlannerViewController.tabBarItem = searchPlannerTabBarItem
         
-        self.viewControllers = [searchPlannerViewController, myPlannerViewController ,myPageViewController]
+        self.viewControllers = [searchPlannerViewController, myPlannerViewController, myPageViewController]
         
         selectedIndex = 1
     }

@@ -10,7 +10,6 @@ import Foundation
 import UIKit
 
 class MyPlannerViewController: BaseViewController {
-    
     let titleLabel = UILabel()
     
     override func setupProperty() {
