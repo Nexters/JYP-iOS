@@ -1,4 +1,4 @@
-name: pull-request-sizer
+name: pr-size-labeler
 
 on: 
   pull_request:
@@ -6,7 +6,9 @@ on:
 
 jobs:
   sizer:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Pull Request size labeler
         uses: CodelyTV/pr-size-labeler@v1
+        with:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
