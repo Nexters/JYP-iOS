@@ -71,8 +71,8 @@ class BaseProjectFactory: ProjectFactory {
                 deploymentTarget: .iOS(targetVersion: "13.0", devices: [.iphone]),
                 infoPlist: .extendingDefault(with: infoPlist),
                 sources: ["\(projectName)/\(projectName)/Sources/**"],
-                resources: "\(projectName)/\(projectName)/Resources/**", scripts: [.pre(path: "Scripts/SwiftLintRunScript.sh", arguments: [], name: "SwiftLint")],
-//                entitlements: "\(projectName)/\(projectName).entitlements",
+                resources: "\(projectName)/\(projectName)/Resources/**",
+                scripts: [.pre(path: "Scripts/SwiftLintRunScript.sh", arguments: [], name: "SwiftLint")],
                 dependencies: dependencies
             ),
 
