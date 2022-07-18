@@ -119,7 +119,7 @@ empty_count:
 
 # path
 included:
-    - JYP-iOS
+    - JYP-iOS/JYP-iOS
 excluded:
     - Tuist
     - Frameworks

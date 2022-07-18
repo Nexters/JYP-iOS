@@ -17,10 +17,6 @@ class BaseCollectionViewCell: UICollectionViewCell, BaseViewProtocol {
         super.init(frame: frame)
         
         setupProperty()
-        
-        
-        //safasfassfasfkjnasnkjasn   fjknsa
-        
         setupHierarchy()
         setupLayout()
         setupBind()
