@@ -110,8 +110,8 @@ opt_in_rules: # 명시적 룰 활성화
     # 닫는 괄호 앞에서 한 줄 이상의 공백 사용 지양
     - vertical_whitespace_closing_braces
         
-        # delegate는 약한 참조 사용 권장
-        - weak_delegate
+    # delegate는 약한 참조 사용 권장
+    - weak_delegate
 
 # options
 empty_count:
@@ -124,6 +124,6 @@ excluded:
     - Tuist
     - Frameworks
     - Project
-    - JYP-iOSTests
-
+    - JYP-iOS/JYP-iOSTests
+    - JYP-iOS/JYP-iOSUITests
 reporter: "xcode"
