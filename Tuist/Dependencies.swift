@@ -6,7 +6,6 @@ let spm = SwiftPackageManagerDependencies([
     .remote(url: "https://github.com/ReactiveX/RxSwift.git", requirement: .upToNextMinor(from: "6.5.0")),
     .remote(url: "https://github.com/ReactorKit/ReactorKit.git", requirement: .upToNextMinor(from: "3.2.0")),
     .remote(url: "https://github.com/devxoul/Then.git", requirement: .upToNextMinor(from: "3.0.0")),
-    .remote(url: "https://github.com/realm/SwiftLint.git", requirement: .upToNextMinor(from: "0.44.0"))
 ])
 
 let dependencies = Dependencies(
