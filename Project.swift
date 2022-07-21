@@ -37,7 +37,9 @@ class BaseProjectFactory: ProjectFactory {
         "CFBundleShortVersionString": "1.0",
         "CFBundleVersion": "1",
         "UIMainStoryboardFile": "",
-        "UILaunchStoryboardName": "LaunchScreen"
+        "UILaunchStoryboardName": "LaunchScreen",
+        "LSApplicationQueriesSchemes": [ "kakaokompassauth", "kakaolink"],
+        "CFBundleURLTypes": ["CFBundleURLSchemes": ["여기에스키마넣기테스트!!"]]
         ]
 
     let dependencies: [TargetDependency] = [
