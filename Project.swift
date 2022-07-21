@@ -36,11 +36,21 @@ class BaseProjectFactory: ProjectFactory {
     let infoPlist: [String: InfoPlist.Value] = [
         "CFBundleShortVersionString": "1.0",
         "CFBundleVersion": "1",
-        "UIMainStoryboardFile": "",
         "UILaunchStoryboardName": "LaunchScreen",
         "LSApplicationQueriesSchemes": [ "kakaokompassauth", "kakaolink"],
-        "CFBundleURLTypes": ["CFBundleURLSchemes": ["여기에스키마넣기테스트!!"]]
+        "CFBundleURLTypes": ["CFBundleURLSchemes": ["여기에스키마넣기테스트!!"]],
+        "UIApplicationSceneManifest": [
+            "UIApplicationSupportsMultipleScenes": false,
+            "UISceneConfigurations": [
+                "UIWindowSceneSessionRoleApplication": [
+                    [
+                        "UISceneConfigurationName": "Default Configuration",
+                        "UISceneDelegateClassName": "$(PRODUCT_MODULE_NAME).SceneDelegate"
+                    ],
+                ]
+            ]
         ]
+    ]
 
     let dependencies: [TargetDependency] = [
         .external(name: "Moya"),
