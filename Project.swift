@@ -28,17 +28,18 @@ protocol ProjectFactory {
 
 // MARK: - Base Project Factory
 
-
-
 class BaseProjectFactory: ProjectFactory {
     let projectName: String = "JYP-iOS"
-    
+
     let infoPlist: [String: InfoPlist.Value] = [
         "CFBundleShortVersionString": "1.0",
         "CFBundleVersion": "1",
         "UIMainStoryboardFile": "",
-        "UILaunchStoryboardName": "LaunchScreen"
-        ]
+        "UILaunchStoryboardName": "LaunchScreen",
+        "NSAppTransportSecurity": ["NSAllowsArbitraryLoads": true],
+        "KAKAO_REST_KEY": "$(KAKAO_REST_KEY)",
+        "SERVER_HOST": "$(SERVER_HOST)"
+    ]
 
     let dependencies: [TargetDependency] = [
         .external(name: "Moya"),
@@ -50,7 +51,7 @@ class BaseProjectFactory: ProjectFactory {
         .external(name: "ReactorKit"),
         .external(name: "Then"),
     ]
-    
+
     let packages: [Package] = [
         .remote(url: "https://github.com/Moya/Moya.git", requirement: .upToNextMinor(from: "15.0.0")),
         .remote(url: "https://github.com/SnapKit/SnapKit.git", requirement: .upToNextMinor(from: "5.0.0")),
@@ -58,7 +59,14 @@ class BaseProjectFactory: ProjectFactory {
         .remote(url: "https://github.com/ReactorKit/ReactorKit.git", requirement: .upToNextMinor(from: "3.2.0")),
         .remote(url: "https://github.com/devxoul/Then.git", requirement: .upToNextMinor(from: "3.0.0")),
     ]
-    
+
+    func generateConfigurations() -> Settings {
+        Settings.settings(configurations: [
+            .debug(name: "Debug", xcconfig: .relativeToRoot("\(projectName)/\(projectName)/Sources/Config/Debug.xcconfig")),
+            .release(name: "Release", xcconfig: .relativeToRoot("\(projectName)/\(projectName)/Sources/Config/Release.xcconfig")),
+        ])
+    }
+
     func generate() -> [Target] {
         [
             Target(
@@ -95,5 +103,6 @@ let project: Project = .init(
     name: factory.projectName,
     organizationName: factory.projectName,
     packages: factory.packages,
+    settings: factory.generateConfigurations(),
     targets: factory.generate()
 )
