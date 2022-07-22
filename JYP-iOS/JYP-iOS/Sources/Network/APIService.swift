@@ -12,7 +12,7 @@ import RxMoya
 import RxSwift
 
 final class APIService {
-    private static let provider = MoyaProvider<MultiTarget>()
+    private static let provider = MoyaProvider<MultiTarget>(plugins: [NetworkLoggerPlugin()])
 
     private init() {}
 
