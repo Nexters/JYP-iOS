@@ -126,4 +126,7 @@ excluded:
     - Project
     - JYP-iOS/JYP-iOSTests
     - JYP-iOS/JYP-iOSUITests
+    - ./**/*API.swift
+    - ./**/AppDelegate.swift
+    - ./**/SceneDelegate.swift
 reporter: "xcode"
