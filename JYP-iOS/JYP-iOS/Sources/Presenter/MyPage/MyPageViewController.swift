@@ -7,11 +7,16 @@
 //
 
 import UIKit
+import RxSwift
 import AuthenticationServices
+import KakaoSDKCommon
+import KakaoSDKAuth
+import KakaoSDKUser
 
 class MyPageViewController: BaseViewController {
     let titleLabel = UILabel()
     let appleSignUpButton = ASAuthorizationAppleIDButton()
+    let kakaoSignUpButton = UIButton(type: .system)
     
     override func setupProperty() {
         super.setupProperty()
@@ -20,6 +25,8 @@ class MyPageViewController: BaseViewController {
         titleLabel.textColor = .black
         
         appleSignUpButton.addTarget(self, action: #selector(handlerAppleButton), for: .touchUpInside)
+        
+        kakaoSignUpButton.setTitle("카카오 로그인 버튼", for: .normal)
     }
     
     override func setupHierarchy() {
@@ -27,6 +34,7 @@ class MyPageViewController: BaseViewController {
         
         view.addSubview(titleLabel)
         view.addSubview(appleSignUpButton)
+        view.addSubview(kakaoSignUpButton)
     }
     
     override func setupLayout() {
@@ -35,18 +43,34 @@ class MyPageViewController: BaseViewController {
         titleLabel.snp.makeConstraints {
             $0.center.equalToSuperview()
         }
+        
         appleSignUpButton.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).inset(-10)
             $0.centerX.equalToSuperview()
         }
+        
+        kakaoSignUpButton.snp.makeConstraints {
+            $0.top.equalTo(appleSignUpButton.snp.bottom).inset(-10)
+            $0.centerX.equalToSuperview()
+        }
+    }
+    
+    override func setupBind() {
+        super.setupBind()
+        
+        kakaoSignUpButton.rx.tap
+            .bind { [weak self] in
+                self?.kakaoSignUp()
+            }
+            .disposed(by: disposeBag)
     }
     
     @objc
     private func handlerAppleButton() {
-        openAppleSignUpView()
+        appleSignUp()
     }
     
-    private func openAppleSignUpView() {
+    private func appleSignUp() {
         let appleIDProvider = ASAuthorizationAppleIDProvider()
         let request = appleIDProvider.createRequest()
         request.requestedScopes = [.fullName, .email]
@@ -55,6 +79,34 @@ class MyPageViewController: BaseViewController {
         authorizationController.delegate = self
         authorizationController.presentationContextProvider = self
         authorizationController.performRequests()
+    }
+    
+    private func kakaoSignUp() {
+        if UserApi.isKakaoTalkLoginAvailable() {
+            // 카카오톡으로 로그인
+            UserApi.shared.loginWithKakaoTalk {(oauthToken, error) in
+                if let error = error {
+                    print(error)
+                } else {
+                    print("loginWithKakaoTalk() success.")
+                    
+                    // do something
+                    _ = oauthToken
+                }
+            }
+        } else {
+            // 카카오 계정으로 로그인
+            UserApi.shared.loginWithKakaoAccount {(oauthToken, error) in
+                if let error = error {
+                    print(error)
+                } else {
+                    print("loginWithKakaoAccount() success.")
+                    
+                    // do something
+                    _ = oauthToken
+                }
+            }
+        }
     }
 }
 

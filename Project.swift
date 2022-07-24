@@ -99,7 +99,16 @@ class BaseProjectFactory: ProjectFactory {
             )
         ]
     }
+    
+    func generateConfigurations() -> Settings {
+        Settings.settings(configurations: [
+            .debug(name: "Debug", xcconfig: .relativeToRoot("\(projectName)/\(projectName)/Sources/Config/Debug.xcconfig")),
+            .release(name: "Release", xcconfig: .relativeToRoot("\(projectName)/\(projectName)/Sources/Config/Release.xcconfig")),
+        ])
+    }
 }
+
+
 
 // MARK: - Project
 
@@ -109,5 +118,6 @@ let project: Project = .init(
     name: factory.projectName,
     organizationName: factory.projectName,
     packages: factory.packages,
+    settings: factory.generateConfigurations(),
     targets: factory.generate()
 )
