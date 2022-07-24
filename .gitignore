@@ -65,3 +65,6 @@ Packages
 xcuserdata
 DerivedData/
 .package.resolved
+
+# XCconfig
+*.xcconfig

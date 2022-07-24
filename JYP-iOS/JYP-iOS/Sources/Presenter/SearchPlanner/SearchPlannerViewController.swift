@@ -32,4 +32,15 @@ class SearchPlannerViewController: BaseViewController {
             $0.center.equalToSuperview()
         }
     }
+
+    override func setupBind() {
+        let target = SearchAPI.placeSearch(keyword: "아르떼 뮤지엄")
+
+        APIService.request(target: target)
+            .map(KakaoSearchResponse.self)
+            .subscribe { response in
+                print(response)
+            }
+            .disposed(by: disposeBag)
+    }
 }
