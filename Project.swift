@@ -23,21 +23,20 @@ protocol ProjectFactory {
     var projectName: String { get }
     var dependencies: [TargetDependency] { get }
 
-    func generate() -> [Target]
+    func generateTarget() -> [Target]
+    func generateConfigurations() -> Settings
 }
 
 // MARK: - Base Project Factory
 
-
-
 class BaseProjectFactory: ProjectFactory {
     let projectName: String = "JYP-iOS"
-    
+
     let infoPlist: [String: InfoPlist.Value] = [
         "CFBundleShortVersionString": "1.0",
         "CFBundleVersion": "1",
         "UILaunchStoryboardName": "LaunchScreen",
-        "LSApplicationQueriesSchemes": [ "kakaokompassauth", "kakaolink"],
+        "LSApplicationQueriesSchemes": ["kakaokompassauth", "kakaolink"],
         "CFBundleURLTypes": ["CFBundleURLSchemes": ["여기에스키마넣기테스트!!"]],
         "UIApplicationSceneManifest": [
             "UIApplicationSupportsMultipleScenes": false,
@@ -61,19 +60,12 @@ class BaseProjectFactory: ProjectFactory {
         .external(name: "RxCocoa"),
         .external(name: "ReactorKit"),
         .external(name: "Then"),
-        .external(name: "KakaoSDK")
+        .external(name: "KakaoSDKCommon"),
+        .external(name: "KakaoSDKAuth"),
+        .external(name: "KakaoSDKUser")
     ]
-    
-    let packages: [Package] = [
-        .remote(url: "https://github.com/Moya/Moya.git", requirement: .upToNextMinor(from: "15.0.0")),
-        .remote(url: "https://github.com/SnapKit/SnapKit.git", requirement: .upToNextMinor(from: "5.0.0")),
-        .remote(url: "https://github.com/ReactiveX/RxSwift.git", requirement: .upToNextMinor(from: "6.5.0")),
-        .remote(url: "https://github.com/ReactorKit/ReactorKit.git", requirement: .upToNextMinor(from: "3.2.0")),
-        .remote(url: "https://github.com/devxoul/Then.git", requirement: .upToNextMinor(from: "3.0.0")),
-        .remote(url: "https://github.com/kakao/kakao-ios-sdk", requirement: .upToNextMinor(from: "2.11.0"))
-    ]
-    
-    func generate() -> [Target] {
+
+    func generateTarget() -> [Target] {
         [
             Target(
                 name: projectName,
@@ -84,6 +76,7 @@ class BaseProjectFactory: ProjectFactory {
                 infoPlist: .extendingDefault(with: infoPlist),
                 sources: ["\(projectName)/\(projectName)/Sources/**"],
                 resources: "\(projectName)/\(projectName)/Resources/**",
+                entitlements: "\(projectName)/\(projectName).entitlements",
                 scripts: [.pre(path: "Scripts/SwiftLintRunScript.sh", arguments: [], name: "SwiftLint")],
                 dependencies: dependencies
             ),
@@ -99,7 +92,7 @@ class BaseProjectFactory: ProjectFactory {
             )
         ]
     }
-    
+
     func generateConfigurations() -> Settings {
         Settings.settings(configurations: [
             .debug(name: "Debug", xcconfig: .relativeToRoot("\(projectName)/\(projectName)/Sources/Config/Debug.xcconfig")),
@@ -108,8 +101,6 @@ class BaseProjectFactory: ProjectFactory {
     }
 }
 
-
-
 // MARK: - Project
 
 let factory = BaseProjectFactory()
@@ -117,7 +108,6 @@ let factory = BaseProjectFactory()
 let project: Project = .init(
     name: factory.projectName,
     organizationName: factory.projectName,
-    packages: factory.packages,
     settings: factory.generateConfigurations(),
-    targets: factory.generate()
+    targets: factory.generateTarget()
 )
