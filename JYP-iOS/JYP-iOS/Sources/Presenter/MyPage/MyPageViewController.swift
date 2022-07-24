@@ -23,9 +23,7 @@ class MyPageViewController: BaseViewController {
         
         titleLabel.text = "마이 페이지 뷰컨"
         titleLabel.textColor = .black
-        
-        appleSignUpButton.addTarget(self, action: #selector(handlerAppleButton), for: .touchUpInside)
-        
+
         kakaoSignUpButton.setTitle("카카오 로그인 버튼", for: .normal)
     }
     
@@ -58,18 +56,19 @@ class MyPageViewController: BaseViewController {
     override func setupBind() {
         super.setupBind()
         
+        appleSignUpButton.rx.controlEvent(.touchUpInside)
+            .bind { [weak self] in
+                self?.appleSignUp()
+            }
+            .disposed(by: disposeBag)
+        
         kakaoSignUpButton.rx.tap
             .bind { [weak self] in
                 self?.kakaoSignUp()
             }
             .disposed(by: disposeBag)
     }
-    
-    @objc
-    private func handlerAppleButton() {
-        appleSignUp()
-    }
-    
+
     private func appleSignUp() {
         let appleIDProvider = ASAuthorizationAppleIDProvider()
         let request = appleIDProvider.createRequest()
