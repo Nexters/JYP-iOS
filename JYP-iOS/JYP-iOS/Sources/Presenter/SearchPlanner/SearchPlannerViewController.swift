@@ -37,7 +37,7 @@ class SearchPlannerViewController: BaseViewController {
         let target = SearchAPI.placeSearch(keyword: "아르떼 뮤지엄")
 
         APIService.request(target: target)
-            .map(KakaoResponse.self)
+            .map(KakaoSearchResponse.self)
             .subscribe { response in
                 print(response)
             }

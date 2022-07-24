@@ -8,9 +8,9 @@
 
 import Foundation
 
-// MARK: - KakaoResponse
+// MARK: - KakaoSearchResponse
 
-struct KakaoResponse: Codable {
+struct KakaoSearchResponse: Codable {
     let meta: Meta
     let documents: [Document]
 }
