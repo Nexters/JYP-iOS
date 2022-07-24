@@ -23,7 +23,8 @@ protocol ProjectFactory {
     var projectName: String { get }
     var dependencies: [TargetDependency] { get }
 
-    func generate() -> [Target]
+    func generateTarget() -> [Target]
+    func generateConfigurations() -> Settings
 }
 
 // MARK: - Base Project Factory
@@ -34,8 +35,20 @@ class BaseProjectFactory: ProjectFactory {
     let infoPlist: [String: InfoPlist.Value] = [
         "CFBundleShortVersionString": "1.0",
         "CFBundleVersion": "1",
-        "UIMainStoryboardFile": "",
         "UILaunchStoryboardName": "LaunchScreen",
+        "LSApplicationQueriesSchemes": ["kakaokompassauth", "kakaolink"],
+        "CFBundleURLTypes": ["CFBundleURLSchemes": ["여기에스키마넣기테스트!!"]],
+        "UIApplicationSceneManifest": [
+            "UIApplicationSupportsMultipleScenes": false,
+            "UISceneConfigurations": [
+                "UIWindowSceneSessionRoleApplication": [
+                    [
+                        "UISceneConfigurationName": "Default Configuration",
+                        "UISceneDelegateClassName": "$(PRODUCT_MODULE_NAME).SceneDelegate"
+                    ],
+                ]
+            ]
+        ]
         "NSAppTransportSecurity": ["NSAllowsArbitraryLoads": true],
         "KAKAO_REST_KEY": "$(KAKAO_REST_KEY)",
         "SERVER_HOST": "$(SERVER_HOST)"
@@ -50,6 +63,9 @@ class BaseProjectFactory: ProjectFactory {
         .external(name: "RxCocoa"),
         .external(name: "ReactorKit"),
         .external(name: "Then"),
+        .external(name: "KakaoSDKCommon"),
+        .external(name: "KakaoSDKAuth"),
+        .external(name: "KakaoSDKUser")
     ]
 
     let packages: [Package] = [
@@ -78,6 +94,7 @@ class BaseProjectFactory: ProjectFactory {
                 infoPlist: .extendingDefault(with: infoPlist),
                 sources: ["\(projectName)/\(projectName)/Sources/**"],
                 resources: "\(projectName)/\(projectName)/Resources/**",
+                entitlements: "\(projectName)/\(projectName).entitlements",
                 scripts: [.pre(path: "Scripts/SwiftLintRunScript.sh", arguments: [], name: "SwiftLint")],
                 dependencies: dependencies
             ),
@@ -92,6 +109,13 @@ class BaseProjectFactory: ProjectFactory {
                 dependencies: [.target(name: "JYP-iOS")]
             )
         ]
+    }
+
+    func generateConfigurations() -> Settings {
+        Settings.settings(configurations: [
+            .debug(name: "Debug", xcconfig: .relativeToRoot("\(projectName)/\(projectName)/Sources/Config/Debug.xcconfig")),
+            .release(name: "Release", xcconfig: .relativeToRoot("\(projectName)/\(projectName)/Sources/Config/Release.xcconfig")),
+        ])
     }
 }
 
