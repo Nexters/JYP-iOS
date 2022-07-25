@@ -48,9 +48,10 @@ class BaseProjectFactory: ProjectFactory {
                     ],
                 ]
             ]
-        ]
+        ],
         "NSAppTransportSecurity": ["NSAllowsArbitraryLoads": true],
         "KAKAO_REST_KEY": "$(KAKAO_REST_KEY)",
+        "KAKAO_APP_KEY": "$(KAKAO_APP_KEY)",
         "SERVER_HOST": "$(SERVER_HOST)"
     ]
 
@@ -61,19 +62,12 @@ class BaseProjectFactory: ProjectFactory {
         .external(name: "SnapKit"),
         .external(name: "RxSwift"),
         .external(name: "RxCocoa"),
+        .external(name: "RxGesture"),
         .external(name: "ReactorKit"),
         .external(name: "Then"),
         .external(name: "KakaoSDKCommon"),
         .external(name: "KakaoSDKAuth"),
         .external(name: "KakaoSDKUser")
-    ]
-
-    let packages: [Package] = [
-        .remote(url: "https://github.com/Moya/Moya.git", requirement: .upToNextMinor(from: "15.0.0")),
-        .remote(url: "https://github.com/SnapKit/SnapKit.git", requirement: .upToNextMinor(from: "5.0.0")),
-        .remote(url: "https://github.com/ReactiveX/RxSwift.git", requirement: .upToNextMinor(from: "6.5.0")),
-        .remote(url: "https://github.com/ReactorKit/ReactorKit.git", requirement: .upToNextMinor(from: "3.2.0")),
-        .remote(url: "https://github.com/devxoul/Then.git", requirement: .upToNextMinor(from: "3.0.0")),
     ]
 
     func generateConfigurations() -> Settings {
@@ -83,7 +77,7 @@ class BaseProjectFactory: ProjectFactory {
         ])
     }
 
-    func generate() -> [Target] {
+    func generateTarget() -> [Target] {
         [
             Target(
                 name: projectName,
@@ -110,13 +104,6 @@ class BaseProjectFactory: ProjectFactory {
             )
         ]
     }
-
-    func generateConfigurations() -> Settings {
-        Settings.settings(configurations: [
-            .debug(name: "Debug", xcconfig: .relativeToRoot("\(projectName)/\(projectName)/Sources/Config/Debug.xcconfig")),
-            .release(name: "Release", xcconfig: .relativeToRoot("\(projectName)/\(projectName)/Sources/Config/Release.xcconfig")),
-        ])
-    }
 }
 
 // MARK: - Project
@@ -126,7 +113,6 @@ let factory = BaseProjectFactory()
 let project: Project = .init(
     name: factory.projectName,
     organizationName: factory.projectName,
-    packages: factory.packages,
     settings: factory.generateConfigurations(),
-    targets: factory.generate()
+    targets: factory.generateTarget()
 )
