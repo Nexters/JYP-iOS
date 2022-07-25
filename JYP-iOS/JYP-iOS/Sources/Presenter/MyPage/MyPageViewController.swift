@@ -30,9 +30,7 @@ class MyPageViewController: BaseViewController {
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        view.addSubview(titleLabel)
-        view.addSubview(appleSignUpButton)
-        view.addSubview(kakaoSignUpButton)
+        view.addSubviews([titleLabel, appleSignUpButton, kakaoSignUpButton])
     }
     
     override func setupLayout() {
