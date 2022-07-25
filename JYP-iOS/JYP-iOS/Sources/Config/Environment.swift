@@ -15,4 +15,5 @@ struct Environment {
 
     static var kakaoAPI: String { "https://dapi.kakao.com" }
     static let kakaoRestKey = JYPIOSResources.bundle.infoDictionary?["KAKAO_REST_KEY"] ?? ""
+    static let kakaoAppKey = JYPIOSResources.bundle.infoDictionary?["KAKAO_APP_KEY"] ?? ""
 }

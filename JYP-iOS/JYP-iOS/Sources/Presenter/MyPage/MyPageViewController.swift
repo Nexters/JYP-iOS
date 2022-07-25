@@ -17,6 +17,7 @@ class MyPageViewController: BaseViewController {
     let titleLabel = UILabel()
     let appleSignUpButton = ASAuthorizationAppleIDButton()
     let kakaoSignUpButton = UIButton(type: .system)
+    let searchPlaceButton = UIButton(type: .system)
     
     override func setupProperty() {
         super.setupProperty()
@@ -25,12 +26,13 @@ class MyPageViewController: BaseViewController {
         titleLabel.textColor = .black
 
         kakaoSignUpButton.setTitle("카카오 로그인 버튼", for: .normal)
+        searchPlaceButton.setTitle("장소 검색 뷰컨 이동", for: .normal)
     }
     
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        view.addSubviews([titleLabel, appleSignUpButton, kakaoSignUpButton])
+        view.addSubviews([titleLabel, appleSignUpButton, kakaoSignUpButton, searchPlaceButton])
     }
     
     override func setupLayout() {
@@ -41,12 +43,17 @@ class MyPageViewController: BaseViewController {
         }
         
         appleSignUpButton.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).inset(-10)
+            $0.top.equalTo(titleLabel.snp.bottom).offset(10)
             $0.centerX.equalToSuperview()
         }
         
         kakaoSignUpButton.snp.makeConstraints {
-            $0.top.equalTo(appleSignUpButton.snp.bottom).inset(-10)
+            $0.top.equalTo(appleSignUpButton.snp.bottom).offset(10)
+            $0.centerX.equalToSuperview()
+        }
+        
+        searchPlaceButton.snp.makeConstraints {
+            $0.top.equalTo(kakaoSignUpButton.snp.bottom).offset(10)
             $0.centerX.equalToSuperview()
         }
     }
@@ -63,6 +70,12 @@ class MyPageViewController: BaseViewController {
         kakaoSignUpButton.rx.tap
             .bind { [weak self] in
                 self?.kakaoSignUp()
+            }
+            .disposed(by: disposeBag)
+        
+        searchPlaceButton.rx.tap
+            .bind { [weak self] in
+                self?.navigationController?.pushViewController(SearchPlaceViewController(), animated: true)
             }
             .disposed(by: disposeBag)
     }
