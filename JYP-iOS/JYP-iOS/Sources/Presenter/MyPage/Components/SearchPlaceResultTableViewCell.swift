@@ -10,9 +10,16 @@ import Foundation
 import UIKit
 
 class SearchPlaceResultTableViewCell: BaseTableViewCell {
+    static let id = "SearchPlaceResultTableViewCell"
     let titleLabel = UILabel()
     let subLabel = UILabel()
     let categoryLabel = UILabel()
+    
+    func update(title: String, sub: String, category: String) {
+        titleLabel.text = title
+        subLabel.text = sub
+        categoryLabel.text = category
+    }
     
     override func prepareForReuse() {
         super.prepareForReuse()

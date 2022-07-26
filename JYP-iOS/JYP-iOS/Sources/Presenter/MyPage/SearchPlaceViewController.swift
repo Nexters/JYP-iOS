@@ -15,8 +15,19 @@ class SearchPlaceViewController: BaseViewController {
     
     lazy var navigationBar = NavigationBar(contentView: navigationContentView)
     
+    private var documents: [Document] = []
+    
     override func setupProperty() {
         super.setupProperty()
+        
+        navigationController?.setNavigationBarHidden(true, animated: true)
+    }
+    
+    override func setupDelegate() {
+        super.setupDelegate()
+        
+        contentView.searchResultTableView.delegate = self
+        contentView.searchResultTableView.dataSource = self
     }
     
     override func setupHierarchy() {
@@ -36,5 +47,54 @@ class SearchPlaceViewController: BaseViewController {
             $0.top.equalTo(navigationBar.snp.bottom)
             $0.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide)
         }
+    }
+    
+    override func setupBind() {
+        super.setupBind()
+        
+        navigationContentView.searchTextField.rx.text.orEmpty
+            .bind { [weak self] text in
+                if text.isEmpty {
+                    self?.reloadSearchResultTableView(documents: [])
+                } else {
+                    self?.fetchDocuments(keyword: text)
+                }
+            }
+            .disposed(by: disposeBag)
+    }
+    
+    private func fetchDocuments(keyword: String) {
+        let target = SearchAPI.placeSearch(keyword: keyword)
+        
+        APIService.request(target: target)
+            .map(KakaoSearchResponse.self)
+            .subscribe { [weak self] response in
+                switch response {
+                case .success(let data):
+                    self?.reloadSearchResultTableView(documents: data.documents)
+                case .failure(_):
+                    break
+                }
+            }
+            .disposed(by: disposeBag)
+    }
+    
+    private func reloadSearchResultTableView(documents: [Document]) {
+        self.documents = documents
+        contentView.searchResultTableView.reloadData()
+    }
+}
+
+extension SearchPlaceViewController: UITableViewDelegate, UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return documents.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: SearchPlaceResultTableViewCell.id, for: indexPath) as? SearchPlaceResultTableViewCell else { return UITableViewCell() }
+        let data = documents[indexPath.item]
+        
+        cell.update(title: data.placeName, sub: data.roadAddressName, category: data.categoryGroupName)
+        return cell
     }
 }
