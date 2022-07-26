@@ -72,8 +72,8 @@ class SearchPlaceViewController: BaseViewController {
                 switch response {
                 case .success(let data):
                     self?.reloadSearchResultTableView(documents: data.documents)
-                case .failure(_):
-                    break
+                case .failure(let error):
+                    print("[D] \(error)")
                 }
             }
             .disposed(by: disposeBag)
@@ -96,5 +96,12 @@ extension SearchPlaceViewController: UITableViewDelegate, UITableViewDataSource 
         
         cell.update(title: data.placeName, sub: data.roadAddressName, category: data.categoryGroupName)
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let data = documents[indexPath.item]
+        
+        let searchPlaceDetailViewController = SearchPlaceDetailViewController(document: data)
+        navigationController?.pushViewController(searchPlaceDetailViewController, animated: true)
     }
 }

@@ -75,6 +75,7 @@ class MyPageViewController: BaseViewController {
         
         searchPlaceButton.rx.tap
             .bind { [weak self] in
+                self?.hidesBottomBarWhenPushed = true
                 self?.navigationController?.pushViewController(SearchPlaceViewController(), animated: true)
             }
             .disposed(by: disposeBag)
