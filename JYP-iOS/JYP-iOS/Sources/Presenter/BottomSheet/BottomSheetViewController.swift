@@ -53,6 +53,13 @@ class BottomSheetViewController: BaseViewController {
                 }
             })
             .disposed(by: disposeBag)
+
+        dimmedView.rx.tapGesture()
+            .when(.recognized)
+            .subscribe(onNext: { [weak self] _ in
+                self?.dismiss(animated: true)
+            })
+            .disposed(by: disposeBag)
     }
 
     final func addContentView(view: UIView) {
