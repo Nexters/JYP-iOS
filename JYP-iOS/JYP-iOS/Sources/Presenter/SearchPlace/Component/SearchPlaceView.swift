@@ -6,7 +6,6 @@
 //  Copyright © 2022 JYP-iOS. All rights reserved.
 //
 
-import Foundation
 import UIKit
 
 class SearchPlaceNavigationContentView: BaseView {
@@ -61,7 +60,7 @@ class SearchPlaceView: BaseView {
     override func setupProperty() {
         super.setupProperty()
         
-        searchResultTableView.register(SearchPlaceResultTableViewCell.self, forCellReuseIdentifier: SearchPlaceResultTableViewCell.id)
+        searchResultTableView.register(SearchPlaceResultTableViewCell.self, forCellReuseIdentifier: String(describing: SearchPlaceResultTableViewCell.self))
         
 //        guideLabel.text = "일행과 공유할 장소를\n검색해주세요!"
         guideLabel.numberOfLines = 0

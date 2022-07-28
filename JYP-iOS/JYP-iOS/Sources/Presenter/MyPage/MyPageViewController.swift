@@ -27,6 +27,8 @@ class MyPageViewController: BaseViewController {
 
         kakaoSignUpButton.setTitle("카카오 로그인 버튼", for: .normal)
         searchPlaceButton.setTitle("장소 검색 뷰컨 이동", for: .normal)
+        
+        performExistingAccountSetupFlows()
     }
     
     override func setupHierarchy() {
@@ -87,6 +89,18 @@ class MyPageViewController: BaseViewController {
         request.requestedScopes = [.fullName, .email]
         
         let authorizationController = ASAuthorizationController(authorizationRequests: [request])
+        authorizationController.delegate = self
+        authorizationController.presentationContextProvider = self
+        authorizationController.performRequests()
+    }
+    
+    func performExistingAccountSetupFlows() {
+        // Prepare requests for both Apple ID and password providers.
+        let requests = [ASAuthorizationAppleIDProvider().createRequest(),
+                        ASAuthorizationPasswordProvider().createRequest()]
+        
+        // Create an authorization controller with the given requests.
+        let authorizationController = ASAuthorizationController(authorizationRequests: requests)
         authorizationController.delegate = self
         authorizationController.presentationContextProvider = self
         authorizationController.performRequests()

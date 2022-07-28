@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import RxSwift
 
 class SearchPlaceViewController: BaseViewController {
     let navigationContentView = SearchPlaceNavigationContentView()
@@ -53,6 +54,8 @@ class SearchPlaceViewController: BaseViewController {
         super.setupBind()
         
         navigationContentView.searchTextField.rx.text.orEmpty
+            .distinctUntilChanged()
+            .debounce(.milliseconds(500), scheduler: MainScheduler.instance)
             .bind { [weak self] text in
                 if text.isEmpty {
                     self?.reloadSearchResultTableView(documents: [])
