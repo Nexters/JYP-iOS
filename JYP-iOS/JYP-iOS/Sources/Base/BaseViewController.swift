@@ -45,6 +45,7 @@ class BaseViewController: UIViewController, BaseViewControllerProtocol {
         view.backgroundColor = .white
         
         setupProperty()
+        setupDelegate()
         setupHierarchy()
         setupLayout()
         setupBind()
