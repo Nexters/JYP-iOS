@@ -13,20 +13,20 @@ class TabBarViewController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let myPlannerViewController = MyPlannerViewController()
-        let homeTabBarItem = UITabBarItem(title: "홈", image: UIImage(systemName: "house"), selectedImage: UIImage(systemName: "house"))
+        let myPlannerNavigationViewController = UINavigationController(rootViewController: MyPlannerViewController())
+        let myPlannerTabBarItem = UITabBarItem(title: "홈", image: UIImage(systemName: "house"), selectedImage: UIImage(systemName: "house"))
         
-        let myPageViewController = MyPageViewController()
+        let myPageNavigationViewController = UINavigationController(rootViewController: MyPageViewController())
         let myPageTabBarItem = UITabBarItem(title: "마이", image: UIImage(systemName: "person"), selectedImage: UIImage(systemName: "person"))
         
-        let searchPlannerViewController = SearchPlannerViewController()
+        let searchPlannerNavigationViewController = UINavigationController(rootViewController: SearchPlannerViewController())
         let searchPlannerTabBarItem = UITabBarItem(title: "탐색", image: UIImage(systemName: "magnifyingglass"), selectedImage: UIImage(systemName: "magnifyingglass"))
         
-        myPlannerViewController.tabBarItem = homeTabBarItem
-        myPageViewController.tabBarItem = myPageTabBarItem
-        searchPlannerViewController.tabBarItem = searchPlannerTabBarItem
+        myPlannerNavigationViewController.tabBarItem = myPlannerTabBarItem
+        myPageNavigationViewController.tabBarItem = myPageTabBarItem
+        searchPlannerNavigationViewController.tabBarItem = searchPlannerTabBarItem
         
-        self.viewControllers = [searchPlannerViewController, myPlannerViewController, myPageViewController]
+        self.viewControllers = [searchPlannerNavigationViewController, myPlannerNavigationViewController, myPageNavigationViewController]
         
         selectedIndex = 1
     }

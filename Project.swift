@@ -36,7 +36,7 @@ class BaseProjectFactory: ProjectFactory {
         "CFBundleShortVersionString": "1.0",
         "CFBundleVersion": "1",
         "UILaunchStoryboardName": "LaunchScreen",
-        "LSApplicationQueriesSchemes": ["kakaokompassauth", "kakaolink"],
+        "LSApplicationQueriesSchemes": ["kakaokompassauth", "kakaolink", "googlechromes", "comgooglemaps"],
         "CFBundleURLTypes": ["CFBundleURLSchemes": ["여기에스키마넣기테스트!!"]],
         "UIApplicationSceneManifest": [
             "UIApplicationSupportsMultipleScenes": false,
@@ -53,6 +53,7 @@ class BaseProjectFactory: ProjectFactory {
         "KAKAO_REST_KEY": "$(KAKAO_REST_KEY)",
         "KAKAO_APP_KEY": "$(KAKAO_APP_KEY)",
         "SERVER_HOST": "$(SERVER_HOST)",
+        "GOOGLE_API_KEY": "$(GOOGLE_API_KEY)",
         "UIAppFonts": [
             "Item 0": "Pretendard-Medium.otf",
             "Item 1": "Pretendard-Regular.otf",
@@ -73,15 +74,36 @@ class BaseProjectFactory: ProjectFactory {
         .external(name: "Then"),
         .external(name: "KakaoSDKCommon"),
         .external(name: "KakaoSDKAuth"),
-        .external(name: "KakaoSDKUser")
+        .external(name: "KakaoSDKUser"),
+        .external(name: "GoogleMaps")
     ]
-
+    
     func generateConfigurations() -> Settings {
         Settings.settings(configurations: [
             .debug(name: "Debug", xcconfig: .relativeToRoot("\(projectName)/\(projectName)/Sources/Config/Debug.xcconfig")),
             .release(name: "Release", xcconfig: .relativeToRoot("\(projectName)/\(projectName)/Sources/Config/Release.xcconfig")),
         ])
     }
+
+//    func generateProjectSettings() -> Settings {
+//        #if arch(x86_64)
+//        return Settings.settings(base: [
+//            "ONLY_ACTIVE_ARCH": "NO",
+//            "EXCLUDED_ARCHS": "arm64",
+//        ], configurations: [
+//            .debug(name: "Debug", xcconfig: .relativeToRoot("\(projectName)/\(projectName)/Sources/Config/Debug.xcconfig")),
+//            .release(name: "Release", xcconfig: .relativeToRoot("\(projectName)/\(projectName)/Sources/Config/Release.xcconfig")),
+//        ], defaultSettings: .recommended)
+//        #else
+//        return Settings.settings(base: [
+//            "ONLY_ACTIVE_ARCH": "NO",
+//            "EXCLUDED_ARCHS": "arm64",
+//        ], configurations: [
+//            .debug(name: "Debug", xcconfig: .relativeToRoot("\(projectName)/\(projectName)/Sources/Config/Debug.xcconfig")),
+//            .release(name: "Release", xcconfig: .relativeToRoot("\(projectName)/\(projectName)/Sources/Config/Release.xcconfig")),
+//        ], defaultSettings: .recommended)
+//        #endif
+//    }
 
     func generateTarget() -> [Target] {
         [
