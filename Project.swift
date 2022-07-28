@@ -52,7 +52,13 @@ class BaseProjectFactory: ProjectFactory {
         "NSAppTransportSecurity": ["NSAllowsArbitraryLoads": true],
         "KAKAO_REST_KEY": "$(KAKAO_REST_KEY)",
         "KAKAO_APP_KEY": "$(KAKAO_APP_KEY)",
-        "SERVER_HOST": "$(SERVER_HOST)"
+        "SERVER_HOST": "$(SERVER_HOST)",
+        "UIAppFonts": [
+            "Item 0": "Pretendard-Medium.otf",
+            "Item 1": "Pretendard-Regular.otf",
+            "Item 2": "Pretendard-SemiBold.otf",
+            "Item 3": "Pretendard-Bold.otf"
+        ]
     ]
 
     let dependencies: [TargetDependency] = [
