@@ -35,7 +35,7 @@ extension UIView {
     ///   - offset: 그림자 위치값
     ///   - opacity: color Opacity 값
     ///   - color: 그림자 color
-    func setShadow(radius: CGFloat, offset: CGSize, opacity: Float, color: UIColor = JYPIOSAsset.subBlack) {
+    func setShadow(radius: CGFloat, offset: CGSize, opacity: Float, color: UIColor = .black) {
         layer.shadowOpacity = opacity
         layer.shadowOffset = offset
         layer.shadowRadius = radius

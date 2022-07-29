@@ -33,6 +33,7 @@ class BottomSheetViewController: BaseViewController {
 
         sheetView = .init().then {
             $0.backgroundColor = .white
+            $0.cornerRound(radius: 24)
         }
 
         dimmedView = .init().then {
