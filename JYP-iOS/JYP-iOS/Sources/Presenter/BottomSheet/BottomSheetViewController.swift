@@ -16,6 +16,16 @@ class BottomSheetViewController: BaseViewController {
     var sheetView: UIView!
     var dimmedView: UIView!
 
+    // MARK: - Properties
+
+    private let MAX_ALPHA = 0.75
+
+    // MARK: - Life Cycle Methods
+
+    override func viewWillAppear(_: Bool) {
+        animatePresentView()
+    }
+
     // MARK: - Setup Methods
 
     override func setupProperty() {
@@ -26,7 +36,7 @@ class BottomSheetViewController: BaseViewController {
         }
 
         dimmedView = .init().then {
-            $0.backgroundColor = JYPIOSAsset.backgroundDim70.color
+            $0.backgroundColor = .clear
         }
     }
 
@@ -36,19 +46,24 @@ class BottomSheetViewController: BaseViewController {
 
     override func setupLayout() {
         dimmedView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.top.equalToSuperview().offset(-1000)
+            make.leading.trailing.bottom.equalToSuperview()
         }
     }
 
     override func setupBind() {
         sheetView.rx.panGesture()
             .subscribe(onNext: { [weak self] gesture in
-                let translation = gesture.translation(in: self?.view)
-                print("Pan gesture y offset: \(translation.y)")
+                guard let self = self else { return }
+                let translation = gesture.translation(in: self.view)
+                guard translation.y > 0 else { return }
+                let dismissPercent = self.MAX_ALPHA - (translation.y / self.sheetView.bounds.height)
+
+                self.dimmedView.backgroundColor = JYPIOSAsset.backgroundDim70.color.withAlphaComponent(dismissPercent)
 
                 switch gesture.state {
-                case .changed: self?.willTransition(to: translation.y)
-                case .ended: self?.endTransition(at: translation.y)
+                case .changed: self.willTransition(to: translation.y)
+                case .ended: self.endTransition(at: translation.y)
                 default: break
                 }
             })
@@ -57,7 +72,7 @@ class BottomSheetViewController: BaseViewController {
         dimmedView.rx.tapGesture()
             .when(.recognized)
             .subscribe(onNext: { [weak self] _ in
-                self?.dismiss(animated: true)
+                self?.animateDismissView()
             })
             .disposed(by: disposeBag)
     }
@@ -85,10 +100,24 @@ class BottomSheetViewController: BaseViewController {
 
     func endTransition(at transitionY: CGFloat) {
         if transitionY < sheetView.bounds.height / 3.0 {
+            dimmedView.backgroundColor = JYPIOSAsset.backgroundDim70.color
             sheetView.transform = .identity
         } else {
             dimmedView.backgroundColor = UIColor.clear
             dismiss(animated: true, completion: nil)
         }
+    }
+    
+    func animatePresentView() {
+        UIView.animate(withDuration: 0.4, delay: 0.0, options: [.curveEaseInOut]) {
+            self.dimmedView.backgroundColor = JYPIOSAsset.backgroundDim70.color
+        }
+    }
+
+    func animateDismissView() {
+        UIView.animate(withDuration: 0.4, delay: 0.0, options: [.curveEaseInOut]) {
+            self.dimmedView.alpha = 0
+            self.dismiss(animated: true)
+        }
     }
 }
