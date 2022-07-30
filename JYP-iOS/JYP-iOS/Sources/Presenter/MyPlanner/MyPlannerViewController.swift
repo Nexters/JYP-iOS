@@ -51,7 +51,6 @@ class MyPlannerViewController: BaseViewController {
         createPlannerButton.rx.tap
             .subscribe(onNext: { [weak self] in
                 let calendarBottomSheet = CalendarViewController()
-                calendarBottomSheet.modalPresentationStyle = .overCurrentContext
 
                 self?.tabBarController?.present(calendarBottomSheet, animated: true)
             })
