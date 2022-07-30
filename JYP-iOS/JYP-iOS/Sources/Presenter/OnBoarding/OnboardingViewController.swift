@@ -11,7 +11,7 @@ import UIKit
 class OnboardingViewController: NavigationBarViewController {
     // MARK: - UI Components
     
-    let testLabel = JYPButton(config: .init(inactive: .init(title: "다음으로", titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color), active: .init(title: nil, titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color)))
+    let testLabel = JYPButton(type: .done)
     
     // MARK: - Setup Methods
     
