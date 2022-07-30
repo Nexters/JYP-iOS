@@ -12,22 +12,28 @@ import UIKit
 class TabBarViewController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        tabBar.backgroundColor = .white
+        tabBar.isTranslucent = false
+        tabBar.layer.borderWidth = 1.0
+        tabBar.layer.borderColor = .init(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.1)
+
         let myPlannerNavigationViewController = UINavigationController(rootViewController: MyPlannerViewController())
-        let myPlannerTabBarItem = UITabBarItem(title: "홈", image: UIImage(systemName: "house"), selectedImage: UIImage(systemName: "house"))
-        
+        let myPlannerTabBarItem = UITabBarItem(title: nil, image: JYPIOSAsset.myJourneyInactive.image.withRenderingMode(.alwaysOriginal), selectedImage: JYPIOSAsset.myJourneyActive.image.withRenderingMode(.alwaysOriginal))
+        myPlannerTabBarItem.imageInsets = .init(top: 9, left: 0, bottom: -9, right: 0)
+
+        let anotherJourneyViewController = UINavigationController(rootViewController: SearchPlannerViewController())
+        let anotherJourneyTabBarItem = UITabBarItem(title: nil, image: JYPIOSAsset.anotherJourneyInactive.image.withRenderingMode(.alwaysOriginal), selectedImage: JYPIOSAsset.anotherJourneyActive.image.withRenderingMode(.alwaysOriginal))
+        anotherJourneyTabBarItem.imageInsets = .init(top: 9, left: 0, bottom: -9, right: 0)
+
         let myPageNavigationViewController = UINavigationController(rootViewController: MyPageViewController())
-        let myPageTabBarItem = UITabBarItem(title: "마이", image: UIImage(systemName: "person"), selectedImage: UIImage(systemName: "person"))
-        
-        let searchPlannerNavigationViewController = UINavigationController(rootViewController: SearchPlannerViewController())
-        let searchPlannerTabBarItem = UITabBarItem(title: "탐색", image: UIImage(systemName: "magnifyingglass"), selectedImage: UIImage(systemName: "magnifyingglass"))
-        
+        let myPageTabBarItem = UITabBarItem(title: nil, image: JYPIOSAsset.myPageInactive.image.withRenderingMode(.alwaysOriginal), selectedImage: JYPIOSAsset.myPageActive.image.withRenderingMode(.alwaysOriginal))
+        myPageTabBarItem.imageInsets = .init(top: 9, left: 0, bottom: -9, right: 0)
+
         myPlannerNavigationViewController.tabBarItem = myPlannerTabBarItem
         myPageNavigationViewController.tabBarItem = myPageTabBarItem
-        searchPlannerNavigationViewController.tabBarItem = searchPlannerTabBarItem
-        
-        self.viewControllers = [searchPlannerNavigationViewController, myPlannerNavigationViewController, myPageNavigationViewController]
-        
-        selectedIndex = 1
+        anotherJourneyViewController.tabBarItem = anotherJourneyTabBarItem
+
+        viewControllers = [myPlannerNavigationViewController, anotherJourneyViewController, myPageNavigationViewController]
+        selectedIndex = 0
     }
 }
