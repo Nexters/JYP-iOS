@@ -15,8 +15,6 @@ class SearchPlaceDetailViewController: BaseViewController {
     let navigationContentView = SearchPlaceDetailNavigationContentView()
     let contentView = SearchPlaceDetailView()
     
-    lazy var navigationBar = NavigationBar(contentView: navigationContentView)
-    
     required init?(coder: NSCoder) {
         fatalError("not supported")
     }
@@ -37,18 +35,18 @@ class SearchPlaceDetailViewController: BaseViewController {
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        view.addSubviews([navigationBar, contentView])
+        view.addSubviews([navigationContentView, contentView])
     }
     
     override func setupLayout() {
         super.setupLayout()
         
-        navigationBar.snp.makeConstraints {
+        navigationContentView.snp.makeConstraints {
             $0.top.leading.trailing.equalToSuperview()
         }
         
         contentView.snp.makeConstraints {
-            $0.top.equalTo(navigationBar.snp.bottom)
+            $0.top.equalTo(navigationContentView.snp.bottom)
             $0.leading.trailing.bottom.equalToSuperview()
         }
     }
