@@ -14,13 +14,24 @@ class NavigationBar: UIView {
     var subTitle = UILabel()
 }
 
-protocol BaseNavigationBarProtocol: AnyObject {
+protocol BaseNavigationBarViewControllerProtocol: AnyObject {
     var statusBar: UIView { get }
     var navigaionBar: NavigationBar { get }
     var contentView: UIView { get }
+    
+    func setupNavigationBar()
+    func setNavigationBarHidden(_ hidden: Bool)
+    func setNavigationBarBackButtonHidden(_ hidden: Bool)
+    func setNavigationBarBackButtonTitleColor(_ color: UIColor?)
+    func setNavigationBarTitleText(_ text: String?)
+    func setNavigationBarTitleFont(_ font: UIFont?)
+    func setNavigationBarTitleTextColor(_ color: UIColor?)
+    func setNavigationBarSubTitleText(_ text: String?)
+    func setNavigationBarSubTitleFont(_ font: UIFont?)
+    func setNavigationBarSubTitleTextColor(_ color: UIColor?)
 }
 
-class NavigationBarViewController: BaseViewController, BaseNavigationBarProtocol {
+class NavigationBarViewController: BaseViewController, BaseNavigationBarViewControllerProtocol {
     // MARK: - UI Components
     
     var statusBar = UIView()
