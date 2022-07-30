@@ -30,8 +30,8 @@ class TabBarViewController: UITabBarController {
         myPageTabBarItem.imageInsets = .init(top: 9, left: 0, bottom: -9, right: 0)
 
         myPlannerNavigationViewController.tabBarItem = myPlannerTabBarItem
-        myPageNavigationViewController.tabBarItem = myPageTabBarItem
         anotherJourneyViewController.tabBarItem = anotherJourneyTabBarItem
+        myPageNavigationViewController.tabBarItem = myPageTabBarItem
 
         viewControllers = [myPlannerNavigationViewController, anotherJourneyViewController, myPageNavigationViewController]
         selectedIndex = 0
