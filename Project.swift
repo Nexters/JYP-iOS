@@ -112,7 +112,7 @@ class BaseProjectFactory: ProjectFactory {
                 platform: .iOS,
                 product: .app,
                 bundleId: "com.jyp.\(projectName)",
-                deploymentTarget: .iOS(targetVersion: "13.0", devices: [.iphone]),
+                deploymentTarget: .iOS(targetVersion: "14.0", devices: [.iphone]),
                 infoPlist: .extendingDefault(with: infoPlist),
                 sources: ["\(projectName)/\(projectName)/Sources/**"],
                 resources: "\(projectName)/\(projectName)/Resources/**",
