@@ -11,8 +11,7 @@ import UIKit
 class OnboardingViewController: NavigationBarViewController {
     // MARK: - UI Components
     
-    let testLabel = UILabel()
-    
+    let testLabel = JYPButton(config: .init(inactive: .init(title: "다음으로", titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color), active: .init(title: nil, titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color)))
     
     // MARK: - Setup Methods
     
@@ -26,8 +25,6 @@ class OnboardingViewController: NavigationBarViewController {
     
     override func setupProperty() {
         super.setupProperty()
-        
-        testLabel.text = "dd"
     }
     
     override func setupHierarchy() {
@@ -40,8 +37,8 @@ class OnboardingViewController: NavigationBarViewController {
         super.setupLayout()
         
         testLabel.snp.makeConstraints {
-            $0.top.leading.equalToSuperview()
+            $0.top.leading.trailing.equalToSuperview()
+            $0.height.equalTo(50)
         }
     }
-    
 }
