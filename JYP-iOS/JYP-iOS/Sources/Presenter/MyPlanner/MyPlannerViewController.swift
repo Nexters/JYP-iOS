@@ -19,19 +19,18 @@ class MyPlannerViewController: BaseViewController {
 
     override func setupProperty() {
         super.setupProperty()
-        
+
         titleLabel.text = "마이 플래너 뷰컨"
         titleLabel.textColor = .black
-
-        createPlannerButton.setTitle("생성하기", for: .normal)
+        createPlannerButton.setTitle("플래너 생성", for: .normal)
     }
-    
+
     override func setupHierarchy() {
         super.setupHierarchy()
-
+        
         view.addSubviews([titleLabel, createPlannerButton])
     }
-    
+
     override func setupLayout() {
         super.setupLayout()
 
@@ -43,16 +42,19 @@ class MyPlannerViewController: BaseViewController {
             make.top.equalTo(titleLabel.snp.bottom).offset(10)
             make.centerX.equalToSuperview()
         }
+
+        createPlannerButton.snp.makeConstraints {
+            $0.top.equalTo(titleLabel.snp.bottom).offset(30)
+            $0.centerX.equalToSuperview()
+        }
     }
 
     override func setupBind() {
-        super.setupBind()
-
         createPlannerButton.rx.tap
             .subscribe(onNext: { [weak self] in
-                let calendarBottomSheet = CalendarViewController()
+                let createPlannerDateViewController = CreatePlannerDateViewController()
 
-                self?.tabBarController?.present(calendarBottomSheet, animated: true)
+                self?.navigationController?.pushViewController(createPlannerDateViewController, animated: true)
             })
             .disposed(by: disposeBag)
     }
