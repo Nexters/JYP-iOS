@@ -37,6 +37,11 @@ class BottomSheetViewController: BaseViewController {
     override func viewWillAppear(_: Bool) {
         animatePresentView()
     }
+    
+    override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
+        self.animateDismissView()
+        super.dismiss(animated: flag, completion: completion)
+    }
 
     // MARK: - Setup Methods
 
@@ -85,7 +90,7 @@ class BottomSheetViewController: BaseViewController {
         dimmedView.rx.tapGesture()
             .when(.recognized)
             .subscribe(onNext: { [weak self] _ in
-                self?.animateDismissView()
+                self?.dismiss(animated: true)
             })
             .disposed(by: disposeBag)
     }
@@ -116,7 +121,6 @@ class BottomSheetViewController: BaseViewController {
             dimmedView.backgroundColor = JYPIOSAsset.backgroundDim70.color
             sheetView.transform = .identity
         } else {
-            dimmedView.backgroundColor = UIColor.clear
             dismiss(animated: true, completion: nil)
         }
     }
@@ -130,7 +134,6 @@ class BottomSheetViewController: BaseViewController {
     func animateDismissView() {
         UIView.animate(withDuration: 0.4, delay: 0.0, options: [.curveEaseInOut]) {
             self.dimmedView.alpha = 0
-            self.dismiss(animated: true)
         }
     }
 }
