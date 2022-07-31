@@ -14,14 +14,14 @@ final class CreatePlannerDateReactor: Reactor {
         case endDateAction
     }
 
-    struct State {
-        var isFocusStartTextField: Bool
-        var isFocusEndTextField: Bool
-    }
-
     enum Mutation {
         case setStartTextFieldFocus(Bool)
         case setEndTextFieldFocus(Bool)
+    }
+
+    struct State {
+        var isFocusStartTextField: Bool
+        var isFocusEndTextField: Bool
     }
 
     var initialState: State
