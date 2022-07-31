@@ -6,9 +6,12 @@
 //  Copyright © 2022 JYP-iOS. All rights reserved.
 //
 
+import ReactorKit
 import UIKit
 
-class CreatePlannerDateViewController: BaseViewController {
+class CreatePlannerDateViewController: BaseViewController, View {
+    typealias Reactor = CreatePlannerDateReactor
+
     // MARK: - UI Components
 
     private var titleLabel: UILabel!
@@ -44,16 +47,18 @@ class CreatePlannerDateViewController: BaseViewController {
         }
 
         endDateLabel = .init().then {
-            $0.text = "여행 시작"
+            $0.text = "여행 종료"
             $0.font = .systemFont(ofSize: 12, weight: .regular)
         }
 
         startDateTextField = .init().then {
             $0.borderStyle = .line
+            $0.inputView = UIView()
         }
 
         endDateTextField = .init().then {
             $0.borderStyle = .line
+            $0.inputView = UIView()
         }
 
         submitButton = .init().then {
@@ -61,6 +66,8 @@ class CreatePlannerDateViewController: BaseViewController {
             $0.backgroundColor = .systemPink
             $0.titleLabel?.textColor = .white
         }
+
+        reactor = .init()
     }
 
     override func setupHierarchy() {
@@ -113,12 +120,32 @@ class CreatePlannerDateViewController: BaseViewController {
         }
     }
 
-    override func setupBind() {
-        submitButton.rx.tap
-            .subscribe(onNext: {
-                let calendarViewController = CalendarViewController()
+    func bind(reactor: CreatePlannerDateReactor) {
+        startDateTextField.rx.controlEvent(.editingDidBegin)
+            .map { _ in Reactor.Action.startDateAction }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
 
-                self.tabBarController?.present(calendarViewController, animated: true)
+        endDateTextField.rx.controlEvent(.editingDidBegin)
+            .map { _ in Reactor.Action.endDateAction }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        reactor.state.asObservable()
+            .filter(\.isFocusStartTextField)
+            .subscribe(onNext: { [weak self] _ in
+                let calendarViewController = CalendarViewController()
+                
+                self?.tabBarController?.present(calendarViewController, animated: true)
+            })
+            .disposed(by: disposeBag)
+
+        reactor.state.asObservable()
+            .filter(\.isFocusEndTextField)
+            .subscribe(onNext: { [weak self] _ in
+                let calendarViewController = CalendarViewController()
+                
+                self?.tabBarController?.present(calendarViewController, animated: true)
             })
             .disposed(by: disposeBag)
     }

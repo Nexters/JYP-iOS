@@ -27,7 +27,7 @@ class MyPlannerViewController: BaseViewController {
 
     override func setupHierarchy() {
         super.setupHierarchy()
-        
+
         view.addSubviews([titleLabel, createPlannerButton])
     }
 
@@ -36,11 +36,6 @@ class MyPlannerViewController: BaseViewController {
 
         titleLabel.snp.makeConstraints { make in
             make.center.equalToSuperview()
-        }
-
-        createPlannerButton.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(10)
-            make.centerX.equalToSuperview()
         }
 
         createPlannerButton.snp.makeConstraints {
