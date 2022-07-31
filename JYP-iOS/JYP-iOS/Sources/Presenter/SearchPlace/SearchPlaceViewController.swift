@@ -14,7 +14,7 @@ class SearchPlaceViewController: BaseViewController {
     let navigationContentView = SearchPlaceNavigationContentView()
     let contentView = SearchPlaceView()
     
-    lazy var navigationBar = NavigationBar(contentView: navigationContentView)
+//    lazy var navigationBar = NavigationBar(contentView: navigationContentView)
     
     private var documents: [Document] = []
     
@@ -34,20 +34,20 @@ class SearchPlaceViewController: BaseViewController {
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        view.addSubviews([navigationBar, contentView])
+//        view.addSubviews([navigationBar, contentView])
     }
     
     override func setupLayout() {
         super.setupLayout()
         
-        navigationBar.snp.makeConstraints {
-            $0.top.leading.trailing.equalToSuperview()
-        }
+//        navigationBar.snp.makeConstraints {
+//            $0.top.leading.trailing.equalToSuperview()
+//        }
         
-        contentView.snp.makeConstraints {
-            $0.top.equalTo(navigationBar.snp.bottom)
-            $0.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide)
-        }
+//        contentView.snp.makeConstraints {
+//            $0.top.equalTo(navigationBar.snp.bottom)
+//            $0.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide)
+//        }
     }
     
     override func setupBind() {
