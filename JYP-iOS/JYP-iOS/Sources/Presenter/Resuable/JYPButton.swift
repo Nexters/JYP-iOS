@@ -19,39 +19,62 @@ enum JYPButtonType {
     case yes
     case no
     
+    var title: String {
+        switch self {
+        case .next:
+            return "다음으로"
+        case .done:
+            return "완료하기"
+        case .start:
+            return "시작하기"
+        case .startPlan:
+            return "여행 계획 시작하기"
+        case .add:
+            return "추가하기"
+        case .smallAdd:
+            return "시작하기"
+        case .smallMake:
+            return "만들기"
+        case .yes:
+            return "좋아요"
+        case .no:
+            return "싫어요"
+        }
+    }
+    
     var inactiveConfig: JYPButtonConfig {
         switch self {
         case .next:
-            return .init(title: "다음으로", titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color)
+            return .init(titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color)
         case .done:
-            return .init(title: "완료하기", titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color)
+            return .init(titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color)
         case .start:
-            return .init(title: "시작하기", titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color)
+            return .init(titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color)
         case .startPlan:
-            return .init(title: "여행 계획 시작하기", titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color)
+            return .init(titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color)
         case .add:
-            return .init(title: "추가하기", titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color)
+            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color)
         case .smallAdd:
-            return .init(title: "시작하기", titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.subBlack.color)
+            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.subBlack.color)
         case .smallMake:
-            return .init(title: "만들기", titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color)
+            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color)
         case .yes:
-            return .init(title: "좋아요", titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color)
+            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color)
         case .no:
-            return .init(title: "싫어요", titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color)
+            return .init(titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color)
         }
     }
     
     var activeConfig: JYPButtonConfig? {
         switch self {
         case .next:
-            return .init(title: "다음으로", titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color)
+            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color)
         case .done:
-            return .init(title: "완료하기", titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color)
+            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color)
         case .start:
-            return .init(title: "시작하기", titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color)
+            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color)
         case .startPlan:
-            return .init(title: "여행 계획 시작하기", titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color)
+            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color)
         case .add:
             return nil
         case .smallAdd:
@@ -67,7 +90,6 @@ enum JYPButtonType {
 }
 
 struct JYPButtonConfig {
-    let title: String
     let titleColor: UIColor
     let backgroundColor: UIColor
 }
@@ -83,22 +105,16 @@ class JYPButton: UIButton {
         self.type = type
         
         super.init(frame: .zero)
-         
-        setTitle(type.inactiveConfig.title, for: .normal)
-        setTitleColor(type.inactiveConfig.titleColor, for: .normal)
+        
+        setTitle(type.title, for: .normal)
         backgroundColor = type.inactiveConfig.backgroundColor
-        layer.cornerRadius = 12
         titleLabel?.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 16)
-        if let activeConfig = type.activeConfig {
-            setTitle(activeConfig.title, for: .selected)
-            setTitleColor(activeConfig.titleColor, for: .selected)
-        }
     }
     
-    override var isSelected: Bool {
+    override var isEnabled: Bool {
         didSet {
-            backgroundColor = isSelected ? type.activeConfig?.backgroundColor : type.inactiveConfig.backgroundColor
-            titleLabel?.textColor = isSelected ? type.activeConfig?.titleColor : type.inactiveConfig.titleColor
+            backgroundColor = isEnabled ? type.activeConfig?.backgroundColor : type.inactiveConfig.backgroundColor
+            isEnabled ? setTitleColor(type.activeConfig?.titleColor, for: .normal) : setTitleColor(type.inactiveConfig.titleColor, for: .normal)
         }
     }
 }

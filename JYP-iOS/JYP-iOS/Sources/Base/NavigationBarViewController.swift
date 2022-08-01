@@ -16,7 +16,7 @@ class NavigationBar: UIView {
 
 protocol BaseNavigationBarViewControllerProtocol: AnyObject {
     var statusBar: UIView { get }
-    var navigaionBar: NavigationBar { get }
+    var navigationBar: NavigationBar { get }
     var contentView: UIView { get }
     
     func setupNavigationBar()
@@ -35,7 +35,7 @@ class NavigationBarViewController: BaseViewController, BaseNavigationBarViewCont
     // MARK: - UI Components
     
     var statusBar = UIView()
-    var navigaionBar = NavigationBar()
+    var navigationBar = NavigationBar()
     var contentView = UIView()
     
     // MARK: - Properties
@@ -63,15 +63,15 @@ class NavigationBarViewController: BaseViewController, BaseNavigationBarViewCont
         setNavigationBarTitleTextColor(titleTextColor)
         setNavigationBarSubTitleFont(subTitleFont)
         setNavigationBarSubTitleTextColor(subTitleTextColor)
-        navigaionBar.backButton.setImage(UIImage(systemName: "chevron.left"), for: .normal)
+        navigationBar.backButton.setImage(UIImage(systemName: "chevron.left"), for: .normal)
     }
     
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        view.addSubviews([statusBar, navigaionBar, contentView])
+        view.addSubviews([statusBar, navigationBar, contentView])
       
-        navigaionBar.addSubviews([navigaionBar.title, navigaionBar.backButton, navigaionBar.subTitle])
+        navigationBar.addSubviews([navigationBar.title, navigationBar.backButton, navigationBar.subTitle])
     }
     
     override func setupLayout() {
@@ -82,76 +82,84 @@ class NavigationBarViewController: BaseViewController, BaseNavigationBarViewCont
             $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.top)
         }
         
-        navigaionBar.snp.makeConstraints {
+        navigationBar.snp.makeConstraints {
             $0.top.equalTo(statusBar.snp.bottom)
             $0.leading.trailing.equalToSuperview()
             $0.height.equalTo(60)
         }
         
-        navigaionBar.backButton.snp.makeConstraints {
+        navigationBar.backButton.snp.makeConstraints {
             $0.leading.equalToSuperview().inset(20)
             $0.centerY.equalToSuperview()
             $0.width.height.equalTo(24)
         }
         
-        navigaionBar.title.snp.makeConstraints {
+        navigationBar.title.snp.makeConstraints {
             $0.leading.equalToSuperview().offset(55)
             $0.centerY.equalToSuperview()
         }
         
-        navigaionBar.subTitle.snp.makeConstraints {
-            $0.leading.equalTo(navigaionBar.title.snp.trailing).offset(12)
+        navigationBar.subTitle.snp.makeConstraints {
+            $0.leading.equalTo(navigationBar.title.snp.trailing).offset(12)
             $0.centerY.equalToSuperview()
         }
         
         contentView.snp.makeConstraints {
-            $0.top.equalTo(navigaionBar.snp.bottom)
+            $0.top.equalTo(navigationBar.snp.bottom)
             $0.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide)
         }
+    }
+    
+    override func setupBind() {
+        navigationBar.backButton.rx.tap
+            .bind { [weak self] _ in
+                self?.navigationController?.popViewController(animated: true)
+            }
+            .disposed(by: disposeBag)
     }
     
     func setupNavigationBar() { }
     
     func setNavigationBarHidden(_ hidden: Bool) {
         statusBar.isHidden = hidden
-        navigaionBar.isHidden = hidden
+        navigationBar.isHidden = hidden
     }
     
     func setNavigationBarBackButtonHidden(_ hidden: Bool) {
-        navigaionBar.backButton.isHidden = hidden
+        navigationBar.backButton.isHidden = hidden
         
         if hidden {
-            navigaionBar.title.snp.updateConstraints {
+            navigationBar.title.snp.updateConstraints {
                 $0.leading.equalToSuperview().inset(24)
             }
         }
     }
     
     func setNavigationBarBackButtonTitleColor(_ color: UIColor?) {
-        navigaionBar.backButton.setTitleColor(color, for: .normal)
+        navigationBar.backButton.setTitleColor(color, for: .normal)
     }
     
     func setNavigationBarTitleText(_ text: String?) {
-        navigaionBar.title.text = text
+        navigationBar.title.text = text
     }
     
     func setNavigationBarTitleFont(_ font: UIFont?) {
-        navigaionBar.title.font = font
+        navigationBar.title.font = font
     }
     
     func setNavigationBarTitleTextColor(_ color: UIColor?) {
-        navigaionBar.title.textColor = color
+        navigationBar.title.textColor = color
     }
     
     func setNavigationBarSubTitleText(_ text: String?) {
-        navigaionBar.subTitle.text = text
+        navigationBar.subTitle.text = text
     }
     
     func setNavigationBarSubTitleFont(_ font: UIFont?) {
-        navigaionBar.subTitle.font = font
+        navigationBar.subTitle.font = font
     }
     
     func setNavigationBarSubTitleTextColor(_ color: UIColor?) {
-        navigaionBar.subTitle.textColor = color
+        navigationBar.subTitle.textColor = color
     }
 }
