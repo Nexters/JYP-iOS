@@ -7,7 +7,9 @@
 //
 
 import Foundation
-import GoogleMaps
+#if arch(x86_64)
+    import GoogleMaps
+#endif
 
 class SearchPlaceDetailViewController: BaseViewController {
     let document: Document
@@ -59,6 +61,8 @@ class SearchPlaceDetailViewController: BaseViewController {
         contentView.addPlaceBox.titleLabel.text = document.placeName
         contentView.addPlaceBox.subLabel.text = document.roadAddressName
         contentView.addPlaceBox.categoryLabel.text = document.categoryGroupName
-        contentView.updateMapView(mapView: GMSMapView(frame: view.bounds, camera: .camera(withLatitude: Double(document.y) ?? 0.0, longitude: Double(document.x) ?? 0.0, zoom: 18)))
+        #if arch(x86_64)
+            contentView.updateMapView(mapView: GMSMapView(frame: view.bounds, camera: .camera(withLatitude: Double(document.y) ?? 0.0, longitude: Double(document.x) ?? 0.0, zoom: 18)))
+        #endif
     }
 }
