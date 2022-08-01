@@ -19,7 +19,7 @@ class OnboardingViewController: NavigationBarViewController {
         super.setupNavigationBar()
         setNavigationBarTitleText("네비게이션 바 테스트")
         statusBar.backgroundColor = .green
-        navigaionBar.backgroundColor = .blue
+        navigationBar.backgroundColor = .blue
         contentView.backgroundColor = .magenta
     }
     

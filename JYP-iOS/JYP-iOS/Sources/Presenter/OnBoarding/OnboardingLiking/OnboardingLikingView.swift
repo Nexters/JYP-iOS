@@ -43,7 +43,7 @@ class OnboardingLikingView: BaseView {
         }
         
         nextButton = .init(type: .next).then {
-            $0.isSelected = true
+            $0.isEnabled = true
         }
     }
     
