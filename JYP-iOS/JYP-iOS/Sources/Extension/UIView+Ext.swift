@@ -44,4 +44,13 @@ extension UIView {
         layer.shouldRasterize = true
         layer.rasterizationScale = UIScreen.main.scale
     }
+    
+    /// Border 적용 함수
+    /// - Parameters:
+    ///   - color: UIColor 색상
+    ///   - width: border 너비
+    func makeBorder(color: UIColor, width: CGFloat) {
+        layer.borderColor = color.cgColor
+        layer.borderWidth = width
+    }
 }
