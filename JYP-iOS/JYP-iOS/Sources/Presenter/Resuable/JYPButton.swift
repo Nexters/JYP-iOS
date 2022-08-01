@@ -97,7 +97,8 @@ class JYPButton: UIButton {
     
     override var isSelected: Bool {
         didSet {
-            backgroundColor = isSelected ? type.inactiveConfig.backgroundColor : type.activeConfig?.backgroundColor
+            backgroundColor = isSelected ? type.activeConfig?.backgroundColor : type.inactiveConfig.backgroundColor
+            titleLabel?.textColor = isSelected ? type.activeConfig?.titleColor : type.inactiveConfig.titleColor
         }
     }
 }

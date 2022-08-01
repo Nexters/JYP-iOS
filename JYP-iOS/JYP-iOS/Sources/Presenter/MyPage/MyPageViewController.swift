@@ -90,7 +90,9 @@ class MyPageViewController: BaseViewController {
         onboardingButton.rx.tap
             .bind { [weak self] in
                 self?.hidesBottomBarWhenPushed = true
-                self?.navigationController?.pushViewController(OnboardingViewController(), animated: true)
+                let onboardingLikingViewController = OnboardingLikingViewController()
+                onboardingLikingViewController.reactor = OnboardingLikingReactor()
+                self?.navigationController?.present(onboardingLikingViewController, animated: true, completion: nil)
             }
             .disposed(by: disposeBag)
     }
