@@ -9,7 +9,7 @@
 import UIKit
 import ReactorKit
 
-class OnboardingLikingViewController: BaseViewController, View {
+class OnboardingLikingViewController: NavigationBarViewController, View {
     typealias Reactor = OnboardingLikingReactor
     
     // MARK: - UI Components
@@ -18,6 +18,12 @@ class OnboardingLikingViewController: BaseViewController, View {
      
     // MARK: - Setup Methods
     
+    override func setupNavigationBar() {
+        super.setupNavigationBar()
+        
+        setNavigationBarHidden(true)
+    }
+    
     override func setupProperty() {
         super.setupProperty()
     }
@@ -25,14 +31,14 @@ class OnboardingLikingViewController: BaseViewController, View {
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        view.addSubview(selfView)
+        contentView.addSubview(selfView)
     }
     
     override func setupLayout() {
         super.setupLayout()
         
         selfView.snp.makeConstraints {
-            $0.top.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide)
+            $0.top.leading.trailing.bottom.equalToSuperview()
         }
     }
     
@@ -48,7 +54,7 @@ class OnboardingLikingViewController: BaseViewController, View {
     func presentOnboardingLikingViewController(at reactor: OnboardingPlaceReactor) {
         let onboardingPlaceViewController = OnboardingPlaceViewController()
         onboardingPlaceViewController.reactor = reactor
-        navigationController?.present(onboardingPlaceViewController, animated: true, completion: nil)
+        navigationController?.pushViewController(onboardingPlaceViewController, animated: true)
     }
 }
 

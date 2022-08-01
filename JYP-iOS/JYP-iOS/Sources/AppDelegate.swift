@@ -8,7 +8,9 @@
 import UIKit
 import KakaoSDKCommon
 import KakaoSDKAuth
-import GoogleMaps
+#if arch(x86_64)
+    import GoogleMaps
+#endif
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -16,7 +18,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         KakaoSDK.initSDK(appKey: Environment.kakaoAppKey)
-        GMSServices.provideAPIKey(Environment.googleAPIKey)
+        #if arch(x86_64)
+            GMSServices.provideAPIKey(Environment.googleAPIKey)
+        #endif
         return true
     }
     

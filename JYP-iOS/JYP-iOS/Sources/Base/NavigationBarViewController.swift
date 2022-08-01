@@ -49,7 +49,6 @@ class NavigationBarViewController: BaseViewController, BaseNavigationBarViewCont
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupNavigationBar()
     }
     
@@ -57,8 +56,9 @@ class NavigationBarViewController: BaseViewController, BaseNavigationBarViewCont
     
     override func setupProperty() {
         super.setupProperty()
-        
+
         navigationController?.setNavigationBarHidden(true, animated: false)
+        navigationController?.interactivePopGestureRecognizer?.delegate = nil
         setNavigationBarTitleFont(titleFont)
         setNavigationBarTitleTextColor(titleTextColor)
         setNavigationBarSubTitleFont(subTitleFont)

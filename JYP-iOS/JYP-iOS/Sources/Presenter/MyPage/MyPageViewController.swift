@@ -92,7 +92,7 @@ class MyPageViewController: BaseViewController {
                 self?.hidesBottomBarWhenPushed = true
                 let onboardingLikingViewController = OnboardingLikingViewController()
                 onboardingLikingViewController.reactor = OnboardingLikingReactor()
-                self?.navigationController?.present(onboardingLikingViewController, animated: true, completion: nil)
+                self?.navigationController?.pushViewController(onboardingLikingViewController, animated: true)
             }
             .disposed(by: disposeBag)
     }
