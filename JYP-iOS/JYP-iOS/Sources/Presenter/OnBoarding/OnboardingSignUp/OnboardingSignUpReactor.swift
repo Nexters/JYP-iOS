@@ -10,15 +10,21 @@ import ReactorKit
 
 class OnboardingSignUpReactor: Reactor {
     enum Action {
-        case didTapNextButton
+        case didTapKakaoLoginButton
+        case didTapAppleLoginButton
+        case didLogin
     }
     
     enum Mutation {
-        case setIsPresentOnboardingPlace(Bool)
+        case setIsOpenKakaoLogin(Bool)
+        case setIsOpenAppleLogin(Bool)
+        case setIsPresentOnboardingWhatIsTrip(Bool)
     }
     
     struct State {
-        var isPresentOnboardingPlace: Bool = false
+        var isOpenKakaoLogin: Bool = false
+        var isOpenAppleLogin: Bool = false
+        var isPresentOnboardingWhatIsTrip: Bool = false
     }
     
     let initialState: State
@@ -31,8 +37,12 @@ class OnboardingSignUpReactor: Reactor {
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        case .didTapNextButton:
-            return .just(.setIsPresentOnboardingPlace(true))
+        case .didTapKakaoLoginButton:
+            return .just(.setIsOpenKakaoLogin(true))
+        case .didTapAppleLoginButton:
+            return .just(.setIsOpenAppleLogin(true))
+        case .didLogin:
+            return .just(.setIsPresentOnboardingWhatIsTrip(true))
         }
     }
     
@@ -42,11 +52,20 @@ class OnboardingSignUpReactor: Reactor {
         var newState = state
         
         switch mutation {
-        case .setIsPresentOnboardingPlace(let bool):
-            newState.isPresentOnboardingPlace = bool
+        case .setIsOpenKakaoLogin(let bool):
+            newState.isOpenKakaoLogin = bool
+        case .setIsOpenAppleLogin(let bool):
+            newState.isOpenAppleLogin = bool
+        case .setIsPresentOnboardingWhatIsTrip(let bool):
+            newState.isPresentOnboardingWhatIsTrip = bool
         }
         
         return newState
     }
 }
 
+extension OnboardingSignUpReactor {
+    func getOnboardingWhatIsTripReactor() -> OnboardingWhatIsJourneyReactor {
+        return OnboardingWhatIsJourneyReactor(initialState: .init())
+    }
+}
