@@ -18,6 +18,7 @@ class MyPageViewController: BaseViewController {
     let appleSignUpButton = ASAuthorizationAppleIDButton()
     let kakaoSignUpButton = UIButton(type: .system)
     let searchPlaceButton = UIButton(type: .system)
+    let onboardingButton = UIButton(type: .system)
     
     override func setupProperty() {
         super.setupProperty()
@@ -27,14 +28,13 @@ class MyPageViewController: BaseViewController {
 
         kakaoSignUpButton.setTitle("카카오 로그인 버튼", for: .normal)
         searchPlaceButton.setTitle("장소 검색 뷰컨 이동", for: .normal)
-        
-        performExistingAccountSetupFlows()
+        onboardingButton.setTitle("온보딩 뷰컨 이동", for: .normal)
     }
     
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        view.addSubviews([titleLabel, appleSignUpButton, kakaoSignUpButton, searchPlaceButton])
+        view.addSubviews([titleLabel, appleSignUpButton, kakaoSignUpButton, searchPlaceButton, onboardingButton])
     }
     
     override func setupLayout() {
@@ -58,6 +58,11 @@ class MyPageViewController: BaseViewController {
             $0.top.equalTo(kakaoSignUpButton.snp.bottom).offset(10)
             $0.centerX.equalToSuperview()
         }
+        
+        onboardingButton.snp.makeConstraints {
+            $0.top.equalTo(searchPlaceButton.snp.bottom).offset(10)
+            $0.centerX.equalToSuperview()
+        }
     }
     
     override func setupBind() {
@@ -79,6 +84,15 @@ class MyPageViewController: BaseViewController {
             .bind { [weak self] in
                 self?.hidesBottomBarWhenPushed = true
                 self?.navigationController?.pushViewController(SearchPlaceViewController(), animated: true)
+            }
+            .disposed(by: disposeBag)
+        
+        onboardingButton.rx.tap
+            .bind { [weak self] in
+                self?.hidesBottomBarWhenPushed = true
+                let onboardingLikingViewController = OnboardingLikingViewController()
+                onboardingLikingViewController.reactor = OnboardingLikingReactor()
+                self?.navigationController?.pushViewController(onboardingLikingViewController, animated: true)
             }
             .disposed(by: disposeBag)
     }

@@ -7,15 +7,15 @@
 //
 
 import Foundation
-import GoogleMaps
+#if arch(x86_64)
+    import GoogleMaps
+#endif
 
 class SearchPlaceDetailViewController: BaseViewController {
     let document: Document
     
     let navigationContentView = SearchPlaceDetailNavigationContentView()
     let contentView = SearchPlaceDetailView()
-    
-    lazy var navigationBar = NavigationBar(contentView: navigationContentView)
     
     required init?(coder: NSCoder) {
         fatalError("not supported")
@@ -37,18 +37,18 @@ class SearchPlaceDetailViewController: BaseViewController {
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        view.addSubviews([navigationBar, contentView])
+        view.addSubviews([navigationContentView, contentView])
     }
     
     override func setupLayout() {
         super.setupLayout()
         
-        navigationBar.snp.makeConstraints {
+        navigationContentView.snp.makeConstraints {
             $0.top.leading.trailing.equalToSuperview()
         }
         
         contentView.snp.makeConstraints {
-            $0.top.equalTo(navigationBar.snp.bottom)
+            $0.top.equalTo(navigationContentView.snp.bottom)
             $0.leading.trailing.bottom.equalToSuperview()
         }
     }
@@ -61,6 +61,8 @@ class SearchPlaceDetailViewController: BaseViewController {
         contentView.addPlaceBox.titleLabel.text = document.placeName
         contentView.addPlaceBox.subLabel.text = document.roadAddressName
         contentView.addPlaceBox.categoryLabel.text = document.categoryGroupName
-        contentView.updateMapView(mapView: GMSMapView(frame: view.bounds, camera: .camera(withLatitude: Double(document.y) ?? 0.0, longitude: Double(document.x) ?? 0.0, zoom: 18)))
+        #if arch(x86_64)
+            contentView.updateMapView(mapView: GMSMapView(frame: view.bounds, camera: .camera(withLatitude: Double(document.y) ?? 0.0, longitude: Double(document.x) ?? 0.0, zoom: 18)))
+        #endif
     }
 }
