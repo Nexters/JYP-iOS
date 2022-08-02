@@ -14,29 +14,21 @@ class CalendarViewController: BottomSheetViewController, View {
 
     // MARK: - UI Components
 
-    private var datePicker: UIDatePicker!
+    private var datePicker = UIDatePicker()
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
+    // MARK: - Setup Methods
 
     override func setupProperty() {
         super.setupProperty()
 
-        datePicker = .init().then {
-            $0.preferredDatePickerStyle = .inline
-            $0.datePickerMode = .date
-            $0.locale = Locale(identifier: "ko-KR")
-            $0.timeZone = .autoupdatingCurrent
-        }
+        datePicker.preferredDatePickerStyle = .inline
+        datePicker.datePickerMode = .date
+        datePicker.locale = Locale(identifier: "ko-KR")
+        datePicker.timeZone = .autoupdatingCurrent
     }
 
     override func setupLayout() {
         super.setupLayout()
-
-        datePicker.snp.makeConstraints { make in
-            make.height.equalTo(300)
-        }
 
         addContentView(view: datePicker)
     }

@@ -24,7 +24,7 @@ final class CreatePlannerDateReactor: Reactor {
     struct State {
         var isFocusStartTextField: Bool = true
         var isFocusEndTextField: Bool = false
-        var startDate: Date? = nil
+        var startDate: Date = Date()
     }
 
     var initialState: State
@@ -68,6 +68,7 @@ extension CreatePlannerDateReactor {
             newState.isFocusStartTextField = !isFocus
             newState.isFocusEndTextField = isFocus
         case let .updateStartDate(date):
+            newState.isFocusStartTextField = false
             newState.startDate = date
         }
 
@@ -75,6 +76,6 @@ extension CreatePlannerDateReactor {
     }
 
     func makeCalendarReactor() -> CalendarReactor {
-        .init(service: service, selectedDate: currentState.startDate ?? Date())
+        .init(service: service, selectedDate: currentState.startDate)
     }
 }

@@ -14,60 +14,66 @@ class CreatePlannerDateViewController: BaseViewController, View {
 
     // MARK: - UI Components
 
-    private var titleLabel: UILabel!
-    private var subTitleLabel: UILabel!
+    private var titleLabel: UILabel = .init()
+    private var subTitleLabel: UILabel = .init()
 
-    private var startDateLabel: UILabel!
-    private var endDateLabel: UILabel!
+    private var startDateLabel: UILabel = .init()
+    private var endDateLabel: UILabel = .init()
 
-    private var startDateTextField: UITextField!
-    private var endDateTextField: UITextField!
+    private var startDateTextField: UITextField = .init()
+    private var endDateTextField: UITextField = .init()
 
-    private var submitButton: UIButton!
+    private var submitButton: UIButton = .init()
+
+    // MARK: - Properties
+
+    let dateFormatter = DateFormatter().then {
+        $0.dateFormat = "yy.MM.dd"
+        $0.locale = Locale(identifier: "ko_KR")
+    }
+
+    // MARK: - Initializer
+
+    init(reactor: CreatePlannerDateReactor) {
+        super.init(nibName: nil, bundle: nil)
+
+        self.reactor = reactor
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     // MARK: - Setup Methods
 
     override func setupProperty() {
         super.setupProperty()
 
-        titleLabel = .init().then {
-            $0.text = "언제 출발하시나요?"
-            $0.font = .systemFont(ofSize: 24, weight: .semibold)
-        }
+        titleLabel.text = "언제 출발하시나요?"
+        titleLabel.font = .systemFont(ofSize: 24, weight: .semibold)
 
-        subTitleLabel = .init().then {
-            $0.text = "시작 일을 알려주세요"
-            $0.font = .systemFont(ofSize: 16, weight: .regular)
-            $0.textColor = .gray
-        }
+        subTitleLabel.text = "시작 일을 알려주세요"
+        subTitleLabel.font = .systemFont(ofSize: 16, weight: .regular)
+        subTitleLabel.textColor = .gray
 
-        startDateLabel = .init().then {
-            $0.text = "여행 시작"
-            $0.font = .systemFont(ofSize: 12, weight: .regular)
-        }
+        startDateLabel.text = "여행 시작"
+        startDateLabel.font = .systemFont(ofSize: 12, weight: .regular)
 
-        endDateLabel = .init().then {
-            $0.text = "여행 종료"
-            $0.font = .systemFont(ofSize: 12, weight: .regular)
-        }
+        endDateLabel.text = "여행 종료"
+        endDateLabel.font = .systemFont(ofSize: 12, weight: .regular)
 
-        startDateTextField = .init().then {
-            $0.borderStyle = .line
-            $0.inputView = UIView()
-        }
+        startDateTextField.borderStyle = .line
+        startDateTextField.inputView = UIView()
+        startDateTextField.tintColor = .clear
 
-        endDateTextField = .init().then {
-            $0.borderStyle = .line
-            $0.inputView = UIView()
-        }
+        endDateTextField.borderStyle = .line
+        endDateTextField.inputView = UIView()
+        endDateTextField.tintColor = .clear
 
-        submitButton = .init().then {
-            $0.setTitle("선택하기", for: .normal)
-            $0.backgroundColor = .systemPink
-            $0.titleLabel?.textColor = .white
-        }
-
-        reactor = .init(service: CalendarService())
+        submitButton.setTitle("선택하기", for: .normal)
+        submitButton.backgroundColor = .systemPink
+        submitButton.titleLabel?.textColor = .white
     }
 
     override func setupHierarchy() {
@@ -142,10 +148,11 @@ class CreatePlannerDateViewController: BaseViewController, View {
             .disposed(by: disposeBag)
 
         reactor.state
-            .compactMap { $0.startDate }
+            .map(\.startDate)
             .distinctUntilChanged()
-            .map { $0.description }
-            .bind(to: startDateLabel.rx.text)
+            .map { [weak self] in self?.dateFormatter.string(from: $0)
+            }
+            .bind(to: startDateTextField.rx.text)
             .disposed(by: disposeBag)
 
         reactor.state.asObservable()

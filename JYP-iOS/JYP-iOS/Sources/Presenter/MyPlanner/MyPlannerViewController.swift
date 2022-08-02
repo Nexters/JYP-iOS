@@ -47,7 +47,9 @@ class MyPlannerViewController: BaseViewController {
     override func setupBind() {
         createPlannerButton.rx.tap
             .subscribe(onNext: { [weak self] in
-                let createPlannerDateViewController = CreatePlannerDateViewController()
+                let calendarService = CalendarService()
+                let createPlannerReactor = CreatePlannerDateReactor(service: calendarService)
+                let createPlannerDateViewController = CreatePlannerDateViewController(reactor: createPlannerReactor)
 
                 self?.navigationController?.pushViewController(createPlannerDateViewController, animated: true)
             })
