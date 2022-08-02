@@ -1,5 +1,5 @@
 //
-//  OnboardingWhatIsTripReactor.swift
+//  OnboardingHowToNewPlaceReactor.swift
 //  JYP-iOS
 //
 //  Created by 송영모 on 2022/08/02.
@@ -8,7 +8,7 @@
 
 import ReactorKit
 
-class OnboardingWhatIsJourneyReactor: Reactor {
+class OnboardingHowToNewPlaceReactor: Reactor {
     enum Action {
         case didTapCardViewA
         case didTapCardViewB
@@ -19,14 +19,14 @@ class OnboardingWhatIsJourneyReactor: Reactor {
         case setStateCardViewA(OnboardingCardViewState)
         case setStateCardViewB(OnboardingCardViewState)
         case setIsActiveNextButton(Bool)
-        case setIsPresentOnboardingHowToNewPlaceReactor(Bool)
+        case setIsPresentOnboardingWhenJourneyPlan(Bool)
     }
     
     struct State {
         var stateCardViewA: OnboardingCardViewState = .defualt
         var stateCardViewB: OnboardingCardViewState = .defualt
         var isActiveNextButton: Bool = false
-        var isPresentOnboardingHowToNewPlaceReactor: Bool = false
+        var isPresentOnboardingWhenJourneyPlan: Bool = false
     }
     
     let initialState: State
@@ -55,7 +55,7 @@ class OnboardingWhatIsJourneyReactor: Reactor {
             let isActiveNextButton = currentState.isActiveNextButton
             return Observable<Mutation>.create { emitter in
                 if isActiveNextButton {
-                    emitter.onNext(.setIsPresentOnboardingHowToNewPlaceReactor(true))
+                    emitter.onNext(.setIsPresentOnboardingWhenJourneyPlan(true))
                 }
                 return Disposables.create()
             }
@@ -70,8 +70,8 @@ class OnboardingWhatIsJourneyReactor: Reactor {
             newState.stateCardViewA = state
         case .setStateCardViewB(let state):
             newState.stateCardViewB = state
-        case .setIsPresentOnboardingHowToNewPlaceReactor(let bool):
-            newState.isPresentOnboardingHowToNewPlaceReactor = bool
+        case .setIsPresentOnboardingWhenJourneyPlan(let bool):
+            newState.isPresentOnboardingWhenJourneyPlan = bool
         case .setIsActiveNextButton(let bool):
             newState.isActiveNextButton = bool
         }
@@ -80,8 +80,8 @@ class OnboardingWhatIsJourneyReactor: Reactor {
     }
 }
 
-extension OnboardingWhatIsJourneyReactor {
-    func getOnboardingHowToNewPlaceReactor() -> OnboardingHowToNewPlaceReactor {
-        return OnboardingHowToNewPlaceReactor(initialState: .init())
+extension OnboardingHowToNewPlaceReactor {
+    func getOnboardingWhenJourneyPlanReactor() -> OnboardingWhenJourneyPlanReactor {
+        return OnboardingWhenJourneyPlanReactor(initialState: .init())
     }
 }

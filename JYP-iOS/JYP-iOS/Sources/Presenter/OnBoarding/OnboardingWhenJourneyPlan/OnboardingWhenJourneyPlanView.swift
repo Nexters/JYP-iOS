@@ -1,5 +1,5 @@
 //
-//  OnboardingWhatIsTripView.swift
+//  OnboardingWhenJourneyPlanView.swift
 //  JYP-iOS
 //
 //  Created by 송영모 on 2022/08/02.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class OnboardingWhatIsJourneyView: BaseView {
+class OnboardingWhenJourneyPlanView: BaseView {
     var questionIcon: UIImageView!
     var titleLabel: UILabel!
     var onboardingCardViewA: OnboardingCardView!
@@ -23,15 +23,15 @@ class OnboardingWhatIsJourneyView: BaseView {
         }
         
         titleLabel = .init().then {
-            $0.text = "본인이 생각하는 여행이란\n무엇인가요?"
+            $0.text = "여행 계획을 세울 때,\n 어떤 모습이신가요?"
             $0.textColor = JYPIOSAsset.textB90.color
             $0.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 24)
             $0.numberOfLines = 2
         }
         
-        onboardingCardViewA = .init(type: .whatIsJourneyA)
+        onboardingCardViewA = .init(type: .whenJourneyPlanA)
         
-        onboardingCardViewB = .init(type: .whatIsJourneyB)
+        onboardingCardViewB = .init(type: .whenJourneyPlanB)
         
         nextButton = .init(type: .next).then {
             $0.isEnabled = false

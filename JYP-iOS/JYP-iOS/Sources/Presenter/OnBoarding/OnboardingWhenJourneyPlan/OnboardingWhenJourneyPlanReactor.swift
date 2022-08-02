@@ -1,5 +1,5 @@
 //
-//  OnboardingWhatIsTripReactor.swift
+//  OnboardingWhenJourneyPlanReactor.swift
 //  JYP-iOS
 //
 //  Created by 송영모 on 2022/08/02.
@@ -8,7 +8,7 @@
 
 import ReactorKit
 
-class OnboardingWhatIsJourneyReactor: Reactor {
+class OnboardingWhenJourneyPlanReactor: Reactor {
     enum Action {
         case didTapCardViewA
         case didTapCardViewB
@@ -80,8 +80,8 @@ class OnboardingWhatIsJourneyReactor: Reactor {
     }
 }
 
-extension OnboardingWhatIsJourneyReactor {
-    func getOnboardingHowToNewPlaceReactor() -> OnboardingHowToNewPlaceReactor {
-        return OnboardingHowToNewPlaceReactor(initialState: .init())
-    }
+extension OnboardingWhenJourneyPlanReactor {
+//    func getOnboardingHowToNewPlaceReactor() -> OnboardingHowToNewPlaceReactor {
+//        return OnboardingHowToNewPlaceReactor(initialState: .init())
+//    }
 }
