@@ -22,9 +22,9 @@ final class CreatePlannerDateReactor: Reactor {
     }
 
     struct State {
-        var isFocusStartTextField: Bool = true
+        var isFocusStartTextField: Bool = false
         var isFocusEndTextField: Bool = false
-        var startDate: Date = Date()
+        var startDate = Date()
     }
 
     var initialState: State
@@ -32,7 +32,7 @@ final class CreatePlannerDateReactor: Reactor {
 
     init(service: CalendarServiceProtocol) {
         self.service = service
-        self.initialState = .init()
+        initialState = .init()
     }
 }
 

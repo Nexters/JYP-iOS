@@ -127,12 +127,17 @@ class CreatePlannerDateViewController: BaseViewController, View {
     }
 
     func bind(reactor: CreatePlannerDateReactor) {
-        startDateTextField.rx.controlEvent(.editingDidBegin)
+        rx.viewDidLoad
             .map { _ in Reactor.Action.startDateAction }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
-        endDateTextField.rx.controlEvent(.editingDidBegin)
+        startDateTextField.rx.tapGesture()
+            .map { _ in Reactor.Action.startDateAction }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        endDateTextField.rx.tapGesture()
             .map { _ in Reactor.Action.endDateAction }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
