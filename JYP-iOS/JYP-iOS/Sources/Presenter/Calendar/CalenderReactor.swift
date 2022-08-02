@@ -15,19 +15,18 @@ final class CalendarReactor: Reactor {
     }
 
     enum Mutation {
-        case setSelectedDate(Date)
         case dismiss
     }
 
     struct State {
-        var selectedDate: Date
+        var selectedDate: String
         var isDismissed: Bool = false
     }
 
     var initialState: State
     let service: CalendarServiceProtocol
 
-    init(service: CalendarServiceProtocol, selectedDate: Date) {
+    init(service: CalendarServiceProtocol, selectedDate: String) {
         initialState = State(selectedDate: selectedDate)
         self.service = service
     }
@@ -45,9 +44,6 @@ extension CalendarReactor {
         var newState = state
 
         switch mutation {
-        case let .setSelectedDate(date):
-            print(date)
-            newState.selectedDate = date
         case .dismiss:
             newState.isDismissed = true
         }

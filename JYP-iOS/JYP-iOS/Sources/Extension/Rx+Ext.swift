@@ -8,6 +8,7 @@
 
 import RxCocoa
 import RxSwift
+import UIKit
 
 public extension Reactive where Base: UIViewController {
     var viewDidLoad: ControlEvent<Void> {

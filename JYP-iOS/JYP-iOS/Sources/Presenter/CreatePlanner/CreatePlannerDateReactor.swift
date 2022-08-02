@@ -24,7 +24,7 @@ final class CreatePlannerDateReactor: Reactor {
     struct State {
         var isFocusStartTextField: Bool = false
         var isFocusEndTextField: Bool = false
-        var startDate = Date()
+        var startDate = ""
     }
 
     var initialState: State
@@ -69,7 +69,7 @@ extension CreatePlannerDateReactor {
             newState.isFocusEndTextField = isFocus
         case let .updateStartDate(date):
             newState.isFocusStartTextField = false
-            newState.startDate = date
+            newState.startDate = DateManager.dateToString(date: date)
         }
 
         return newState

@@ -25,13 +25,6 @@ class CreatePlannerDateViewController: BaseViewController, View {
 
     private var submitButton: UIButton = .init()
 
-    // MARK: - Properties
-
-    let dateFormatter = DateFormatter().then {
-        $0.dateFormat = "yy.MM.dd"
-        $0.locale = Locale(identifier: "ko_KR")
-    }
-
     // MARK: - Initializer
 
     init(reactor: CreatePlannerDateReactor) {
@@ -155,8 +148,6 @@ class CreatePlannerDateViewController: BaseViewController, View {
         reactor.state
             .map(\.startDate)
             .distinctUntilChanged()
-            .map { [weak self] in self?.dateFormatter.string(from: $0)
-            }
             .bind(to: startDateTextField.rx.text)
             .disposed(by: disposeBag)
 
