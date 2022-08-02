@@ -26,7 +26,7 @@ class OnboardingLikingView: BaseView {
         
         onboardingView = .init().then {
             $0.backgroundColor = JYPIOSAsset.backgroundWhite100.color
-            // TODO: 아래 왼쪽, 아래 오른쪽 cornerRadius = 40
+            $0.cornerRound(radius: 40, direct: [.layerMaxXMaxYCorner, .layerMinXMaxYCorner])
         }
         
         titleLabel = .init().then {

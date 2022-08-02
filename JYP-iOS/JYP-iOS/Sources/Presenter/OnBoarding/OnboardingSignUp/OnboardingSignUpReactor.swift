@@ -1,5 +1,5 @@
 //
-//  OnboardingPlaceReactor.swift
+//  OnboardingSignUpReactor.swift
 //  JYP-iOS
 //
 //  Created by 송영모 on 2022/08/02.
@@ -8,17 +8,17 @@
 
 import ReactorKit
 
-class OnboardingPlaceReactor: Reactor {
+class OnboardingSignUpReactor: Reactor {
     enum Action {
         case didTapNextButton
     }
     
     enum Mutation {
-        case setIsPresentOnboardingSignUp(Bool)
+        case setIsPresentOnboardingPlace(Bool)
     }
     
     struct State {
-        var isPresentOnboardingSignUp: Bool = false
+        var isPresentOnboardingPlace: Bool = false
     }
     
     let initialState: State
@@ -27,29 +27,26 @@ class OnboardingPlaceReactor: Reactor {
         self.initialState = initialState
     }
     
-    // MARK: - Setup Reactor
+    // MARK: - Setup Mutate
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .didTapNextButton:
-            return .just(.setIsPresentOnboardingSignUp(true))
+            return .just(.setIsPresentOnboardingPlace(true))
         }
     }
+    
+    // MARK: - Setup Reduce
     
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
         
         switch mutation {
-        case .setIsPresentOnboardingSignUp(let bool):
-            newState.isPresentOnboardingSignUp = bool
+        case .setIsPresentOnboardingPlace(let bool):
+            newState.isPresentOnboardingPlace = bool
         }
         
         return newState
     }
 }
 
-extension OnboardingPlaceReactor {
-    func getOnboardingSignUpReactor() -> OnboardingSignUpReactor {
-        return OnboardingSignUpReactor(initialState: .init())
-    }
-}
