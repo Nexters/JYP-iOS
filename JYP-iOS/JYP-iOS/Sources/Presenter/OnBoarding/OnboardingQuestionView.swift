@@ -126,5 +126,4 @@ class OnboardingQuestionView: BaseView {
             $0.height.equalTo(52)
         }
     }
-
 }
