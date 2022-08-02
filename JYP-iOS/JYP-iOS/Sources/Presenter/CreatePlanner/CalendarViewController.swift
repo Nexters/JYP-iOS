@@ -29,8 +29,6 @@ class CalendarViewController: BottomSheetViewController, View {
             $0.locale = Locale(identifier: "ko-KR")
             $0.timeZone = .autoupdatingCurrent
         }
-
-        reactor = .init()
     }
 
     override func setupLayout() {
@@ -56,9 +54,7 @@ class CalendarViewController: BottomSheetViewController, View {
             .distinctUntilChanged()
             .observe(on: MainScheduler.instance)
             .bind { [weak self] _ in
-                self?.dismiss(animated: true, completion: {
-                    /// 여기서 날짜 전달
-                })
+                self?.dismiss(animated: true)
             }
             .disposed(by: disposeBag)
     }

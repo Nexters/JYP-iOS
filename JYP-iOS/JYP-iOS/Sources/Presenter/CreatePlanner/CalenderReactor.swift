@@ -25,9 +25,11 @@ final class CalendarReactor: Reactor {
     }
 
     var initialState: State
+    let service: CalendarServiceProtocol
 
-    init() {
-        initialState = State(selectedDate: Date())
+    init(service: CalendarServiceProtocol, selectedDate: Date) {
+        initialState = State(selectedDate: selectedDate)
+        self.service = service
     }
 }
 
@@ -35,10 +37,7 @@ extension CalendarReactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case let .selectDateAction(date):
-            return Observable.concat(
-                Observable.just(Mutation.setSelectedDate(date)),
-                Observable.just(Mutation.dismiss)
-            )
+            return service.updateStartDate(to: date).map { _ in .dismiss }
         }
     }
 

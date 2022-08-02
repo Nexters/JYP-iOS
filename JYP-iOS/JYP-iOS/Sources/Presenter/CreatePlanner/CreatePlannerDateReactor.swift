@@ -6,6 +6,7 @@
 //  Copyright © 2022 JYP-iOS. All rights reserved.
 //
 
+import Foundation
 import ReactorKit
 
 final class CreatePlannerDateReactor: Reactor {
@@ -17,17 +18,21 @@ final class CreatePlannerDateReactor: Reactor {
     enum Mutation {
         case setStartTextFieldFocus(Bool)
         case setEndTextFieldFocus(Bool)
+        case updateStartDate(Date)
     }
 
     struct State {
-        var isFocusStartTextField: Bool
-        var isFocusEndTextField: Bool
+        var isFocusStartTextField: Bool = true
+        var isFocusEndTextField: Bool = false
+        var startDate: Date? = nil
     }
 
     var initialState: State
+    let service: CalendarServiceProtocol
 
-    init() {
-        initialState = State(isFocusStartTextField: true, isFocusEndTextField: false)
+    init(service: CalendarServiceProtocol) {
+        self.service = service
+        self.initialState = .init()
     }
 }
 
@@ -41,6 +46,17 @@ extension CreatePlannerDateReactor {
         }
     }
 
+    func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
+        let eventMutation = service.event.flatMap { event -> Observable<Mutation> in
+            switch event {
+            case let .updateStartDate(date):
+                return .just(.updateStartDate(date))
+            }
+        }
+
+        return Observable.merge(mutation, eventMutation)
+    }
+
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
 
@@ -51,8 +67,14 @@ extension CreatePlannerDateReactor {
         case let .setEndTextFieldFocus(isFocus):
             newState.isFocusStartTextField = !isFocus
             newState.isFocusEndTextField = isFocus
+        case let .updateStartDate(date):
+            newState.startDate = date
         }
 
         return newState
+    }
+
+    func makeCalendarReactor() -> CalendarReactor {
+        .init(service: service, selectedDate: currentState.startDate ?? Date())
     }
 }

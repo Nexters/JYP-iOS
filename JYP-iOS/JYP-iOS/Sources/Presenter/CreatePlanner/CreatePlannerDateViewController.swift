@@ -67,7 +67,7 @@ class CreatePlannerDateViewController: BaseViewController, View {
             $0.titleLabel?.textColor = .white
         }
 
-        reactor = .init()
+        reactor = .init(service: CalendarService())
     }
 
     override func setupHierarchy() {
@@ -135,16 +135,24 @@ class CreatePlannerDateViewController: BaseViewController, View {
             .filter(\.isFocusStartTextField)
             .subscribe(onNext: { [weak self] _ in
                 let calendarViewController = CalendarViewController()
-                
+                calendarViewController.reactor = reactor.makeCalendarReactor()
+
                 self?.tabBarController?.present(calendarViewController, animated: true)
             })
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .compactMap { $0.startDate }
+            .distinctUntilChanged()
+            .map { $0.description }
+            .bind(to: startDateLabel.rx.text)
             .disposed(by: disposeBag)
 
         reactor.state.asObservable()
             .filter(\.isFocusEndTextField)
             .subscribe(onNext: { [weak self] _ in
                 let calendarViewController = CalendarViewController()
-                
+
                 self?.tabBarController?.present(calendarViewController, animated: true)
             })
             .disposed(by: disposeBag)
