@@ -14,7 +14,7 @@ class OnboardingWhatIsJourneyViewController: NavigationBarViewController, View {
     
     // MARK: - UI Components
     
-    let selfView = OnboardingWhatIsJourneyView()
+    let selfView = OnboardingQuestionView(type: .whatIsJourney)
     
     // MARK: - Setup Methods
     

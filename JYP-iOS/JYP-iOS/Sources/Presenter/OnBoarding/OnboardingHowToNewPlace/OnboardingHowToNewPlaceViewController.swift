@@ -14,7 +14,7 @@ class OnboardingHowToNewPlaceViewController: NavigationBarViewController, View {
     
     // MARK: - UI Components
     
-    let selfView = OnboardingHowToNewPlaceView()
+    let selfView = OnboardingQuestionView(type: .howToNewPlace)
     
     // MARK: - Setup Methods
     

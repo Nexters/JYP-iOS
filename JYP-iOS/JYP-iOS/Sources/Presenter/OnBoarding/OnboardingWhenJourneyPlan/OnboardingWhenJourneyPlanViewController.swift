@@ -14,7 +14,7 @@ class OnboardingWhenJourneyPlanViewController: NavigationBarViewController, View
     
     // MARK: - UI Components
     
-    let selfView = OnboardingWhenJourneyPlanView()
+    let selfView = OnboardingQuestionView(type: .whenJourneyPlan)
     
     // MARK: - Setup Methods
     

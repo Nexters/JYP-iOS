@@ -1,5 +1,5 @@
 //
-//  OnboardingWhatIsTripView.swift
+//  OnboardingQuestionView.swift
 //  JYP-iOS
 //
 //  Created by 송영모 on 2022/08/02.
@@ -8,12 +8,62 @@
 
 import UIKit
 
-class OnboardingWhatIsJourneyView: BaseView {
+enum OnboardingQuestionViewType {
+    case whatIsJourney
+    case howToNewPlace
+    case whenJourneyPlan
+    
+    var titleText: String {
+        switch self {
+        case .whatIsJourney:
+            return "본인이 생각하는 여행이란\n무엇인가요?"
+        case .howToNewPlace:
+            return "여행 중, 새로운 장소를 발견하면\n어떤 선택을 하실 건가요?"
+        case .whenJourneyPlan:
+            return "여행 계획을 세울 때,\n어떤 모습이신가요?"
+        }
+    }
+    
+    var cardViewTypeA: OnboardingCardViewType {
+        switch self {
+        case .whatIsJourney:
+            return .whatIsJourneyA
+        case .howToNewPlace:
+            return .howToNewPlaceA
+        case .whenJourneyPlan:
+            return .whenJourneyPlanA
+        }
+    }
+    
+    var cardViewTypeB: OnboardingCardViewType {
+        switch self {
+        case .whatIsJourney:
+            return .whatIsJourneyB
+        case .howToNewPlace:
+            return .howToNewPlaceB
+        case .whenJourneyPlan:
+            return .whenJourneyPlanB
+        }
+    }
+}
+
+class OnboardingQuestionView: BaseView {
+    let type: OnboardingQuestionViewType
+    
     var questionIcon: UIImageView!
     var titleLabel: UILabel!
     var onboardingCardViewA: OnboardingCardView!
     var onboardingCardViewB: OnboardingCardView!
     var nextButton: JYPButton!
+    
+    required init?(coder: NSCoder) {
+        fatalError("not supported")
+    }
+    
+    init(type: OnboardingQuestionViewType) {
+        self.type = type
+        super.init(frame: .zero)
+    }
     
     override func setupProperty() {
         super.setupProperty()
@@ -23,19 +73,19 @@ class OnboardingWhatIsJourneyView: BaseView {
         }
         
         titleLabel = .init().then {
-            $0.text = "본인이 생각하는 여행이란\n무엇인가요?"
             $0.textColor = JYPIOSAsset.textB90.color
+            $0.text = type.titleText
             $0.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 24)
             $0.numberOfLines = 2
         }
         
-        onboardingCardViewA = .init(type: .whatIsJourneyA)
-        
-        onboardingCardViewB = .init(type: .whatIsJourneyB)
-        
         nextButton = .init(type: .next).then {
             $0.isEnabled = false
         }
+        
+        onboardingCardViewA = .init(type: type.cardViewTypeA)
+        
+        onboardingCardViewB = .init(type: type.cardViewTypeB)
     }
     
     override func setupHierarchy() {
@@ -76,4 +126,5 @@ class OnboardingWhatIsJourneyView: BaseView {
             $0.height.equalTo(52)
         }
     }
+
 }
