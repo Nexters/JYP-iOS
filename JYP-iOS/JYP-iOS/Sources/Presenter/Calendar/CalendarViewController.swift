@@ -16,6 +16,19 @@ class CalendarViewController: BottomSheetViewController, View {
 
     private var datePicker = UIDatePicker()
 
+    // MARK: - Initializer
+
+    init(reactor: CalendarReactor) {
+        super.init()
+
+        self.reactor = reactor
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     // MARK: - Setup Methods
 
     override func setupProperty() {

@@ -136,13 +136,8 @@ class CreatePlannerDateViewController: BaseViewController, View {
             .disposed(by: disposeBag)
 
         reactor.state.asObservable()
-            .filter(\.isFocusStartTextField)
-            .subscribe(onNext: { [weak self] _ in
-                let calendarViewController = CalendarViewController()
-                calendarViewController.reactor = reactor.makeCalendarReactor()
-
-                self?.tabBarController?.present(calendarViewController, animated: true)
-            })
+            .map(\.isFocusStartTextField)
+            .bind(to: startDateTextField.rx.isSelected)
             .disposed(by: disposeBag)
 
         reactor.state
@@ -152,9 +147,22 @@ class CreatePlannerDateViewController: BaseViewController, View {
             .disposed(by: disposeBag)
 
         reactor.state.asObservable()
-            .filter(\.isFocusEndTextField)
+            .map(\.isFocusEndTextField)
+            .bind(to: endDateTextField.rx.isSelected)
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .map(\.endDate)
+            .distinctUntilChanged()
+            .bind(to: endDateTextField.rx.text)
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .map(\.isPresent)
+            .distinctUntilChanged()
+            .filter { $0 }
             .subscribe(onNext: { [weak self] _ in
-                let calendarViewController = CalendarViewController()
+                let calendarViewController = CalendarViewController(reactor: reactor.makeCalendarReactor())
 
                 self?.tabBarController?.present(calendarViewController, animated: true)
             })
