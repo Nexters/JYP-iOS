@@ -109,6 +109,7 @@ class JYPButton: UIButton {
         setTitle(type.title, for: .normal)
         backgroundColor = type.inactiveConfig.backgroundColor
         titleLabel?.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 16)
+        cornerRound(radius: 12)
     }
     
     override var isEnabled: Bool {
