@@ -22,6 +22,11 @@ class DiscussionHomeViewController: NavigationBarViewController {
     
     override func setupNavigationBar() {
         super.setupNavigationBar()
+        
+        setNavigationBarBackgroundColor(JYPIOSAsset.backgroundDim70.color)
+        setNavigationBarTitleText("강릉 여행기")
+        setNavigationBarTitleTextColor(JYPIOSAsset.textWhite.color)
+        setNavigationBarTitleFont(JYPIOSFontFamily.Pretendard.semiBold.font(size: 20))
     }
     
     override func setupProperty() {
@@ -72,10 +77,6 @@ extension DiscussionHomeViewController: UICollectionViewDelegateFlowLayout, UICo
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return .init(top: 0, left: 24, bottom: 48, right: 24)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        return CGSize(width: collectionView.frame.width, height: 60)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
