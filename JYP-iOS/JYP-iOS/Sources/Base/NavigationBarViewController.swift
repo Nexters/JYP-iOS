@@ -60,6 +60,7 @@ class NavigationBarViewController: BaseViewController, BaseNavigationBarViewCont
 
         navigationController?.setNavigationBarHidden(true, animated: false)
         navigationController?.interactivePopGestureRecognizer?.delegate = nil
+        setNavigationBarBackgroundColor(.clear)
         setNavigationBarTitleFont(titleFont)
         setNavigationBarTitleTextColor(titleTextColor)
         setNavigationBarSubTitleFont(subTitleFont)

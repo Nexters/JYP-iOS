@@ -19,6 +19,7 @@ class MyPageViewController: BaseViewController {
     let kakaoSignUpButton = UIButton(type: .system)
     let searchPlaceButton = UIButton(type: .system)
     let onboardingButton = UIButton(type: .system)
+    let discussionButton = UIButton(type: .system)
     
     override func setupProperty() {
         super.setupProperty()
@@ -29,12 +30,13 @@ class MyPageViewController: BaseViewController {
         kakaoSignUpButton.setTitle("카카오 로그인 버튼", for: .normal)
         searchPlaceButton.setTitle("장소 검색 뷰컨 이동", for: .normal)
         onboardingButton.setTitle("온보딩 뷰컨 이동", for: .normal)
+        discussionButton.setTitle("토론장 뷰컨 이동", for: .normal)
     }
     
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        view.addSubviews([titleLabel, appleSignUpButton, kakaoSignUpButton, searchPlaceButton, onboardingButton])
+        view.addSubviews([titleLabel, appleSignUpButton, kakaoSignUpButton, searchPlaceButton, onboardingButton, discussionButton])
     }
     
     override func setupLayout() {
@@ -61,6 +63,11 @@ class MyPageViewController: BaseViewController {
         
         onboardingButton.snp.makeConstraints {
             $0.top.equalTo(searchPlaceButton.snp.bottom).offset(10)
+            $0.centerX.equalToSuperview()
+        }
+        
+        discussionButton.snp.makeConstraints {
+            $0.top.equalTo(onboardingButton.snp.bottom).offset(10)
             $0.centerX.equalToSuperview()
         }
     }
@@ -93,6 +100,14 @@ class MyPageViewController: BaseViewController {
                 let onboardingLikingViewController = OnboardingLikingViewController()
                 onboardingLikingViewController.reactor = OnboardingLikingReactor()
                 self?.navigationController?.pushViewController(onboardingLikingViewController, animated: true)
+            }
+            .disposed(by: disposeBag)
+        
+        discussionButton.rx.tap
+            .bind { [weak self] in
+                self?.hidesBottomBarWhenPushed = true
+                let discussionHomeVC = DiscussionHomeViewController()
+                self?.navigationController?.pushViewController(discussionHomeVC, animated: true)
             }
             .disposed(by: disposeBag)
     }
