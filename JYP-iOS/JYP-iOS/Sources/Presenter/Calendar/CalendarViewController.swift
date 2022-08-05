@@ -19,7 +19,7 @@ class CalendarViewController: BottomSheetViewController, View {
     // MARK: - Initializer
 
     init(reactor: CalendarReactor) {
-        super.init()
+        super.init(mode: .fixed)
 
         self.reactor = reactor
     }
