@@ -31,6 +31,8 @@ class JYPDateTextField: UITextField {
 
     override init(frame _: CGRect) {
         super.init(frame: .zero)
+
+        setupProperty()
     }
 
     @available(*, unavailable)
@@ -44,5 +46,11 @@ class JYPDateTextField: UITextField {
         super.layoutSubviews()
 
         cornerRound(radius: 8.0)
+    }
+
+    // MARK: - Setup
+
+    func setupProperty() {
+        textAlignment = .center
     }
 }
