@@ -74,6 +74,14 @@ class CreatePlannerDateViewController: NavigationBarViewController, View {
             .disposed(by: disposeBag)
 
         reactor.state
+            .map(\.isFocusStartTextField)
+            .distinctUntilChanged()
+            .filter { $0 == false }
+            .map { _ in Reactor.Action.endDateAction }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        reactor.state
             .map(\.startDate)
             .distinctUntilChanged()
             .bind(to: selfView.startDateTextField.rx.text)
