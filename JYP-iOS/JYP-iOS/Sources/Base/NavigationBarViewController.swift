@@ -20,6 +20,7 @@ protocol BaseNavigationBarViewControllerProtocol: AnyObject {
     var contentView: UIView { get }
     
     func setupNavigationBar()
+    func setNavigationBarBackgroundColor(_ color: UIColor?)
     func setNavigationBarHidden(_ hidden: Bool)
     func setNavigationBarBackButtonHidden(_ hidden: Bool)
     func setNavigationBarBackButtonTitleColor(_ color: UIColor?)
@@ -105,7 +106,7 @@ class NavigationBarViewController: BaseViewController, BaseNavigationBarViewCont
         }
         
         contentView.snp.makeConstraints {
-            $0.top.equalTo(navigationBar.snp.bottom)
+            $0.top.equalTo(statusBar.snp.bottom).offset(60)
             $0.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide)
         }
     }
@@ -120,9 +121,17 @@ class NavigationBarViewController: BaseViewController, BaseNavigationBarViewCont
     
     func setupNavigationBar() { }
     
+    func setNavigationBarBackgroundColor(_ color: UIColor?) {
+        statusBar.backgroundColor = color
+        navigationBar.backgroundColor = color
+    }
+    
     func setNavigationBarHidden(_ hidden: Bool) {
-        statusBar.isHidden = hidden
         navigationBar.isHidden = hidden
+        
+        contentView.snp.updateConstraints {
+            $0.top.equalTo(statusBar.snp.bottom)
+        }
     }
     
     func setNavigationBarBackButtonHidden(_ hidden: Bool) {

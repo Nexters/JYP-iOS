@@ -37,7 +37,7 @@ class BaseProjectFactory: ProjectFactory {
         "CFBundleVersion": "1",
         "UILaunchStoryboardName": "LaunchScreen",
         "LSApplicationQueriesSchemes": ["kakaokompassauth", "kakaolink", "googlechromes", "comgooglemaps"],
-        "CFBundleURLTypes": ["CFBundleURLSchemes": ["여기에스키마넣기테스트!!"]],
+        "CFBundleURLTypes": ["CFBundleURLSchemes": ["kakao$(KAKAO_APP_KEY)"]],
         "UIApplicationSceneManifest": [
             "UIApplicationSupportsMultipleScenes": false,
             "UISceneConfigurations": [

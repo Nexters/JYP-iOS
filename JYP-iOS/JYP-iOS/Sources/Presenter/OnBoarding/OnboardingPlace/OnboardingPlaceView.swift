@@ -25,7 +25,7 @@ class OnboardingPlaceView: BaseView {
         
         onboardingView = .init().then {
             $0.backgroundColor = JYPIOSAsset.backgroundWhite100.color
-            // TODO: 아래 왼쪽, 아래 오른쪽 cornerRadius = 40
+            $0.cornerRound(radius: 40, direct: [.layerMaxXMaxYCorner, .layerMinXMaxYCorner])
         }
         
         titleLabel = .init().then {
@@ -42,7 +42,7 @@ class OnboardingPlaceView: BaseView {
         }
         
         nextButton = .init(type: .next).then {
-            $0.isSelected = true
+            $0.isEnabled = true
         }
     }
     

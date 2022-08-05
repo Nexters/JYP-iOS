@@ -14,11 +14,11 @@ class OnboardingPlaceReactor: Reactor {
     }
     
     enum Mutation {
-        case setIsPresentOnboardingPlace(Bool)
+        case setIsPresentOnboardingSignUp(Bool)
     }
     
     struct State {
-        var isPresentOnboardingPlace: Bool = false
+        var isPresentOnboardingSignUp: Bool = false
     }
     
     let initialState: State
@@ -26,26 +26,30 @@ class OnboardingPlaceReactor: Reactor {
     init(initialState: State) {
         self.initialState = initialState
     }
-    
-    // MARK: - Setup Mutate
+
+    // MARK: - Setup Reactor
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .didTapNextButton:
-            return .just(.setIsPresentOnboardingPlace(true))
+            return .just(.setIsPresentOnboardingSignUp(true))
         }
     }
-    
-    // MARK: - Setup Reduce
     
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
         
         switch mutation {
-        case .setIsPresentOnboardingPlace(let bool):
-            newState.isPresentOnboardingPlace = bool
+        case .setIsPresentOnboardingSignUp(let bool):
+            newState.isPresentOnboardingSignUp = bool
         }
         
         return newState
+    }
+}
+
+extension OnboardingPlaceReactor {
+    func getOnboardingSignUpReactor() -> OnboardingSignUpReactor {
+        return OnboardingSignUpReactor(initialState: .init())
     }
 }
