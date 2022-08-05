@@ -26,7 +26,7 @@ class OnboardingPlaceReactor: Reactor {
     init(initialState: State) {
         self.initialState = initialState
     }
-    
+
     // MARK: - Setup Reactor
     
     func mutate(action: Action) -> Observable<Mutation> {
