@@ -36,7 +36,7 @@ extension CalendarReactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case let .selectDateAction(date):
-            return service.updateStartDate(to: date).map { _ in .dismiss }
+            return service.updateSelectedDate(to: date).map { _ in .dismiss }
         }
     }
 

@@ -54,17 +54,17 @@ class CreatePlannerDateViewController: NavigationBarViewController, View {
 
     func bind(reactor: CreatePlannerDateReactor) {
         rx.viewDidLoad
-            .map { _ in Reactor.Action.startDateAction }
+            .map { _ in Reactor.Action.didTapStartDateTextField }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
         selfView.startDateTextField.rx.tapGesture()
-            .map { _ in Reactor.Action.startDateAction }
+            .map { _ in Reactor.Action.didTapStartDateTextField }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
         selfView.endDateTextField.rx.tapGesture()
-            .map { _ in Reactor.Action.endDateAction }
+            .map { _ in Reactor.Action.didTapEndDateTextField }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
@@ -77,19 +77,19 @@ class CreatePlannerDateViewController: NavigationBarViewController, View {
             .map(\.isFocusStartTextField)
             .distinctUntilChanged()
             .filter { $0 == false }
-            .map { _ in Reactor.Action.endDateAction }
+            .map { _ in Reactor.Action.didTapEndDateTextField }
             .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        reactor.state.asObservable()
+            .map(\.isFocusEndTextField)
+            .bind(to: selfView.endDateTextField.rx.isSelected)
             .disposed(by: disposeBag)
 
         reactor.state
             .map(\.startDate)
             .distinctUntilChanged()
             .bind(to: selfView.startDateTextField.rx.text)
-            .disposed(by: disposeBag)
-
-        reactor.state.asObservable()
-            .map(\.isFocusEndTextField)
-            .bind(to: selfView.endDateTextField.rx.isSelected)
             .disposed(by: disposeBag)
 
         reactor.state

@@ -11,8 +11,8 @@ import ReactorKit
 
 final class CreatePlannerDateReactor: Reactor {
     enum Action {
-        case startDateAction
-        case endDateAction
+        case didTapStartDateTextField
+        case didTapEndDateTextField
     }
 
     enum Mutation {
@@ -43,15 +43,17 @@ final class CreatePlannerDateReactor: Reactor {
 extension CreatePlannerDateReactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        case .startDateAction:
+        case .didTapStartDateTextField:
             return Observable.concat(
                 Observable.just(Mutation.presentCalendar(true)),
                 Observable.just(Mutation.setStartTextFieldFocus(true)),
+                Observable.just(Mutation.setEndTextFieldFocus(false)),
                 Observable.just(Mutation.presentCalendar(false))
             )
-        case .endDateAction:
+        case .didTapEndDateTextField:
             return Observable.concat(
                 Observable.just(Mutation.presentCalendar(true)),
+                Observable.just(Mutation.setStartTextFieldFocus(false)),
                 Observable.just(Mutation.setEndTextFieldFocus(true)),
                 Observable.just(Mutation.presentCalendar(false))
             )
@@ -61,7 +63,7 @@ extension CreatePlannerDateReactor {
     func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
         let eventMutation = service.event.flatMap { event -> Observable<Mutation> in
             switch event {
-            case let .updateStartDate(date):
+            case let .updateSelectedDate(date):
                 let isStartDate = self.currentState.isFocusStartTextField
                 return isStartDate ? .just(.updateStartDate(date)) : .just(.updateEndDate(date))
             }
@@ -76,9 +78,7 @@ extension CreatePlannerDateReactor {
         switch mutation {
         case let .setStartTextFieldFocus(isFocus):
             newState.isFocusStartTextField = isFocus
-            newState.isFocusEndTextField = !isFocus
         case let .setEndTextFieldFocus(isFocus):
-            newState.isFocusStartTextField = !isFocus
             newState.isFocusEndTextField = isFocus
         case let .updateStartDate(date):
             newState.isFocusStartTextField = false
