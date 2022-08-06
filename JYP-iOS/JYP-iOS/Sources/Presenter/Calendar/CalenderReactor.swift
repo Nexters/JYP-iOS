@@ -9,6 +9,11 @@
 import Foundation
 import ReactorKit
 
+enum CalendarSelectMode {
+    case start
+    case end
+}
+
 final class CalendarReactor: Reactor {
     enum Action {
         case selectDateAction(Date)
@@ -25,10 +30,12 @@ final class CalendarReactor: Reactor {
 
     var initialState: State
     let service: CalendarServiceProtocol
+    let mode: CalendarSelectMode
 
-    init(service: CalendarServiceProtocol, selectedDate: String) {
+    init(service: CalendarServiceProtocol, selectedDate: String, mode: CalendarSelectMode) {
         initialState = State(selectedDate: selectedDate)
         self.service = service
+        self.mode = mode
     }
 }
 
@@ -36,7 +43,12 @@ extension CalendarReactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case let .selectDateAction(date):
-            return service.updateSelectedDate(to: date).map { _ in .dismiss }
+            switch mode {
+            case .start:
+                return service.updateStartDate(to: date).map { _ in .dismiss }
+            case .end:
+                return service.updateEndDate(to: date).map { _ in .dismiss }
+            }
         }
     }
 

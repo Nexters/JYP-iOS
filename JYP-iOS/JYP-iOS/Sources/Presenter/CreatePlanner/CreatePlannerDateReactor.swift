@@ -63,9 +63,10 @@ extension CreatePlannerDateReactor {
     func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
         let eventMutation = service.event.flatMap { event -> Observable<Mutation> in
             switch event {
-            case let .updateSelectedDate(date):
-                let isStartDate = self.currentState.isFocusStartTextField
-                return isStartDate ? .just(.updateStartDate(date)) : .just(.updateEndDate(date))
+            case let .updateStartDate(date):
+                return .just(.updateStartDate(date))
+            case let .updateEndDate(date):
+                return .just(.updateEndDate(date))
             }
         }
 
@@ -95,8 +96,9 @@ extension CreatePlannerDateReactor {
     }
 
     func makeCalendarReactor() -> CalendarReactor {
+        let mode: CalendarSelectMode = currentState.isFocusStartTextField ? .start : .end
         let selectedDate = currentState.isFocusStartTextField ? currentState.startDate : currentState.endDate
 
-        return .init(service: service, selectedDate: selectedDate)
+        return .init(service: service, selectedDate: selectedDate, mode: mode)
     }
 }

@@ -10,20 +10,27 @@ import Foundation
 import RxSwift
 
 enum CalendarEvent {
-    case updateSelectedDate(Date)
+    case updateStartDate(Date)
+    case updateEndDate(Date)
 }
 
 protocol CalendarServiceProtocol {
     var event: PublishSubject<CalendarEvent> { get }
 
-    func updateSelectedDate(to date: Date) -> Observable<Date>
+    func updateStartDate(to date: Date) -> Observable<Date>
+    func updateEndDate(to date: Date) -> Observable<Date>
 }
 
 class CalendarService: CalendarServiceProtocol {
     let event = PublishSubject<CalendarEvent>()
 
-    func updateSelectedDate(to date: Date) -> Observable<Date> {
-        event.onNext(.updateSelectedDate(date))
+    func updateStartDate(to date: Date) -> Observable<Date> {
+        event.onNext(.updateStartDate(date))
+        return .just(date)
+    }
+
+    func updateEndDate(to date: Date) -> Observable<Date> {
+        event.onNext(.updateEndDate(date))
         return .just(date)
     }
 }
