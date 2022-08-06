@@ -53,6 +53,11 @@ class CalendarViewController: BottomSheetViewController, View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
+        reactor.state
+            .compactMap(\.startDate)
+            .bind(to: datePicker.rx.minimumDate)
+            .disposed(by: disposeBag)
+
         reactor.state.asObservable()
             .map(\.isDismissed)
             .filter { $0 }
@@ -64,9 +69,7 @@ class CalendarViewController: BottomSheetViewController, View {
             .disposed(by: disposeBag)
 
         reactor.state
-            .map {
-                DateManager.stringToDate(date: $0.selectedDate)
-            }
+            .map(\.selectedDate)
             .bind(to: datePicker.rx.date)
             .disposed(by: disposeBag)
     }

@@ -9,9 +9,14 @@
 import Foundation
 import ReactorKit
 
+struct CalendarDays {
+    var start: String?
+    var end: String?
+}
+
 enum CalendarSelectMode {
     case start
-    case end
+    case end(CalendarDays)
 }
 
 final class CalendarReactor: Reactor {
@@ -24,7 +29,9 @@ final class CalendarReactor: Reactor {
     }
 
     struct State {
-        var selectedDate: String
+        var selectedDate: Date
+        var startDate: Date?
+        var endDate: Date?
         var isDismissed: Bool = false
     }
 
@@ -32,10 +39,16 @@ final class CalendarReactor: Reactor {
     let service: CalendarServiceProtocol
     let mode: CalendarSelectMode
 
-    init(service: CalendarServiceProtocol, selectedDate: String, mode: CalendarSelectMode) {
-        initialState = State(selectedDate: selectedDate)
+    init(service: CalendarServiceProtocol, selectedDate: Date, mode: CalendarSelectMode) {
         self.service = service
         self.mode = mode
+
+        switch mode {
+        case .start:
+            initialState = State(selectedDate: selectedDate)
+        case let .end(calendarDays):
+            initialState = State(selectedDate: selectedDate, startDate: calendarDays.start, endDate: nil)
+        }
     }
 }
 

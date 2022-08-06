@@ -90,14 +90,20 @@ extension CreatePlannerDateReactor {
             newState.endDate = DateManager.dateToString(date: date)
         case let .presentCalendar(flag):
             newState.isPresent = flag
+        case let .setJourneyDays(days):
+            newState.journeyDays = days
         }
 
         return newState
     }
 
     func makeCalendarReactor() -> CalendarReactor {
-        let mode: CalendarSelectMode = currentState.isFocusStartTextField ? .start : .end
-        let selectedDate = currentState.isFocusStartTextField ? currentState.startDate : currentState.endDate
+        let startDate = DateManager.stringToDate(date: currentState.startDate)
+        let endDate = DateManager.stringToDate(date: currentState.endDate)
+
+        let days = CalendarDays(start: startDate, end: endDate)
+        let mode: CalendarSelectMode = currentState.isFocusStartTextField ? .start : .end(days)
+        let selectedDate = currentState.isFocusStartTextField ? startDate : endDate
 
         return .init(service: service, selectedDate: selectedDate, mode: mode)
     }
