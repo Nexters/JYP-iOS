@@ -64,6 +64,7 @@ class CreatePlannerDateView: BaseView {
         submitButton.setTitle("선택하기", for: .normal)
         submitButton.backgroundColor = .systemPink
         submitButton.titleLabel?.textColor = .white
+        submitButton.isHidden = true
     }
 
     override func setupHierarchy() {

@@ -97,6 +97,11 @@ class CreatePlannerDateViewController: NavigationBarViewController, View {
             .distinctUntilChanged()
             .bind(to: selfView.endDateTextField.rx.text)
             .disposed(by: disposeBag)
+        
+        reactor.state
+            .map(\.isHiddenSubmitButton)
+            .bind(to: selfView.submitButton.rx.isHidden)
+            .disposed(by: disposeBag)
 
         reactor.state
             .map(\.isPresent)

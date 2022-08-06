@@ -29,6 +29,7 @@ final class CreatePlannerDateReactor: Reactor {
         var isPresent: Bool = false
         var startDate = ""
         var endDate = ""
+        var isHiddenSubmitButton: Bool = true
     }
 
     var initialState: State
@@ -85,6 +86,7 @@ extension CreatePlannerDateReactor {
             newState.startDate = DateManager.dateToString(date: date)
         case let .updateEndDate(date):
             newState.isFocusEndTextField = false
+            newState.isHiddenSubmitButton = false
             newState.endDate = DateManager.dateToString(date: date)
         case let .presentCalendar(flag):
             newState.isPresent = flag
