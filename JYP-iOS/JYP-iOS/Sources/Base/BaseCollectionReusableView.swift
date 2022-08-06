@@ -1,14 +1,14 @@
 //
-//  BaseCollectionViewCell.swift
+//  BaseCollectionReusableView.swift
 //  JYP-iOS
 //
-//  Created by 송영모 on 2022/07/17.
+//  Created by 송영모 on 2022/08/04.
 //  Copyright © 2022 JYP-iOS. All rights reserved.
 //
 
 import UIKit
 
-class BaseCollectionViewCell: UICollectionViewCell, BaseViewProtocol {
+class BaseCollectionReusableView: UICollectionReusableView, BaseViewProtocol {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
