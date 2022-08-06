@@ -43,21 +43,20 @@ final class CreatePlannerDateReactor: Reactor {
 
 extension CreatePlannerDateReactor {
     func mutate(action: Action) -> Observable<Mutation> {
+        let openCalendar: Observable<Mutation> = .just(.presentCalendar(true))
+        let closeCalendar: Observable<Mutation> = .just(.presentCalendar(false))
+
         switch action {
         case .didTapStartDateTextField:
-            return Observable.concat(
-                Observable.just(Mutation.presentCalendar(true)),
-                Observable.just(Mutation.setStartTextFieldFocus(true)),
-                Observable.just(Mutation.setEndTextFieldFocus(false)),
-                Observable.just(Mutation.presentCalendar(false))
-            )
+            let setStartDateTextFieldFocus: Observable<Mutation> = .just(.setStartTextFieldFocus(true))
+            let setEndDateTextFieldFocus: Observable<Mutation> = .just(.setEndTextFieldFocus(false))
+
+            return .concat(openCalendar, setStartDateTextFieldFocus, setEndDateTextFieldFocus, closeCalendar)
         case .didTapEndDateTextField:
-            return Observable.concat(
-                Observable.just(Mutation.presentCalendar(true)),
-                Observable.just(Mutation.setStartTextFieldFocus(false)),
-                Observable.just(Mutation.setEndTextFieldFocus(true)),
-                Observable.just(Mutation.presentCalendar(false))
-            )
+            let setStartDateTextFieldFocus: Observable<Mutation> = .just(.setStartTextFieldFocus(false))
+            let setEndDateTextFieldFocus: Observable<Mutation> = .just(.setEndTextFieldFocus(true))
+
+            return .concat(openCalendar, setStartDateTextFieldFocus, setEndDateTextFieldFocus, closeCalendar)
         }
     }
 
