@@ -21,7 +21,7 @@ class DiscussionHomeView: BaseView {
     override func setupProperty() {
         super.setupProperty()
         
-        backgroundColor = JYPIOSAsset.backgroundDim70.color
+        backgroundColor = JYPIOSAsset.backgroundGrey300.color
         
         dateLabel.text = "7월 18일 - 7월 20일"
         dateLabel.font = JYPIOSFontFamily.Pretendard.medium.font(size: 16)

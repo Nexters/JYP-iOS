@@ -21,7 +21,7 @@ class DiscussionHomeViewController: NavigationBarViewController {
     override func setupNavigationBar() {
         super.setupNavigationBar()
         
-        setNavigationBarBackgroundColor(JYPIOSAsset.backgroundDim70.color)
+        setNavigationBarBackgroundColor(JYPIOSAsset.backgroundGrey300.color)
         setNavigationBarTitleText("강릉 여행기")
         setNavigationBarTitleTextColor(JYPIOSAsset.textWhite.color)
         setNavigationBarTitleFont(JYPIOSFontFamily.Pretendard.semiBold.font(size: 20))
@@ -50,6 +50,17 @@ class DiscussionHomeViewController: NavigationBarViewController {
         selfView.snp.makeConstraints {
             $0.top.leading.trailing.bottom.equalToSuperview()
         }
+    }
+    
+    override func setupBind() {
+        super.setupBind()
+        
+        selfView.inviteButton.rx.tap
+            .bind { [weak self] _ in
+                let discussionInviteVC = DiscusstionInviteViewController()
+                self?.navigationController?.pushViewController(discussionInviteVC, animated: true)
+            }
+            .disposed(by: disposeBag)
     }
 }
 
