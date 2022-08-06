@@ -62,5 +62,12 @@ class CalendarViewController: BottomSheetViewController, View {
                 self?.dismiss(animated: true)
             }
             .disposed(by: disposeBag)
+
+        reactor.state
+            .map {
+                DateManager.stringToDate(date: $0.selectedDate)
+            }
+            .bind(to: datePicker.rx.date)
+            .disposed(by: disposeBag)
     }
 }

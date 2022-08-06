@@ -51,12 +51,12 @@ extension CreatePlannerDateReactor {
             let setStartDateTextFieldFocus: Observable<Mutation> = .just(.setStartTextFieldFocus(true))
             let setEndDateTextFieldFocus: Observable<Mutation> = .just(.setEndTextFieldFocus(false))
 
-            return .concat(openCalendar, setStartDateTextFieldFocus, setEndDateTextFieldFocus, closeCalendar)
+            return .concat(setStartDateTextFieldFocus, setEndDateTextFieldFocus, openCalendar, closeCalendar)
         case .didTapEndDateTextField:
             let setStartDateTextFieldFocus: Observable<Mutation> = .just(.setStartTextFieldFocus(false))
             let setEndDateTextFieldFocus: Observable<Mutation> = .just(.setEndTextFieldFocus(true))
 
-            return .concat(openCalendar, setStartDateTextFieldFocus, setEndDateTextFieldFocus, closeCalendar)
+            return .concat(setStartDateTextFieldFocus, setEndDateTextFieldFocus, openCalendar, closeCalendar)
         }
     }
 
@@ -95,7 +95,7 @@ extension CreatePlannerDateReactor {
     }
 
     func makeCalendarReactor() -> CalendarReactor {
-        let selectedDate = currentState.isFocusEndTextField ? currentState.startDate : currentState.endDate
+        let selectedDate = currentState.isFocusStartTextField ? currentState.startDate : currentState.endDate
 
         return .init(service: service, selectedDate: selectedDate)
     }
