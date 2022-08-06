@@ -16,8 +16,6 @@ class DiscussionHomeViewController: NavigationBarViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        selfView.discussionCollectionView.reloadData()
     }
     
     override func setupNavigationBar() {
