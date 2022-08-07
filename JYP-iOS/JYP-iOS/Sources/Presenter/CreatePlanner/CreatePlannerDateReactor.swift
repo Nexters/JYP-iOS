@@ -20,6 +20,7 @@ final class CreatePlannerDateReactor: Reactor {
         case setEndTextFieldFocus(Bool)
         case updateStartDate(Date)
         case updateEndDate(Date)
+        case setJourneyDays(String)
         case presentCalendar(Bool)
     }
 
@@ -27,8 +28,10 @@ final class CreatePlannerDateReactor: Reactor {
         var isFocusStartTextField: Bool = false
         var isFocusEndTextField: Bool = false
         var isPresent: Bool = false
-        var startDate = ""
-        var endDate = ""
+        var startDate: String = ""
+        var endDate: String = ""
+        var journeyDays: String = ""
+        var isHiddenJourneyDaysButton: Bool = true
         var isHiddenSubmitButton: Bool = true
     }
 
@@ -66,7 +69,10 @@ extension CreatePlannerDateReactor {
             case let .updateStartDate(date):
                 return .just(.updateStartDate(date))
             case let .updateEndDate(date):
-                return .just(.updateEndDate(date))
+                return .concat(
+                    .just(.updateEndDate(date)),
+                    .just(.setJourneyDays(self.service.calcJourneyDays()))
+                )
             }
         }
 
@@ -92,6 +98,7 @@ extension CreatePlannerDateReactor {
             newState.isPresent = flag
         case let .setJourneyDays(days):
             newState.journeyDays = days
+            newState.isHiddenJourneyDaysButton = false
         }
 
         return newState

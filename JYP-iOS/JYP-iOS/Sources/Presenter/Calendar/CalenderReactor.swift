@@ -10,8 +10,8 @@ import Foundation
 import ReactorKit
 
 struct CalendarDays {
-    var start: String?
-    var end: String?
+    var start: Date?
+    var end: Date?
 }
 
 enum CalendarSelectMode {

@@ -21,6 +21,8 @@ class CreatePlannerDateView: BaseView {
     var endDateTextField: JYPDateTextField = .init()
     var dividerLabel: UILabel = .init()
 
+    var journeyDaysButton: UIButton = .init()
+
     var submitButton: JYPButton = .init(type: .done)
 
     init() {
@@ -61,6 +63,10 @@ class CreatePlannerDateView: BaseView {
         dividerLabel.textColor = JYPIOSAsset.textB90.color
         dividerLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 22)
 
+        journeyDaysButton.backgroundColor = JYPIOSAsset.tagWhiteBlue100.color
+        journeyDaysButton.setTitleColor(JYPIOSAsset.subBlue300.color, for: .normal)
+        journeyDaysButton.cornerRound(radius: 20)
+
         submitButton.setTitle("선택하기", for: .normal)
         submitButton.backgroundColor = .systemPink
         submitButton.titleLabel?.textColor = .white
@@ -70,7 +76,7 @@ class CreatePlannerDateView: BaseView {
     override func setupHierarchy() {
         super.setupHierarchy()
 
-        addSubviews([titleLabel, subTitleLabel, startDateLabel, endDateLabel, startDateTextField, dividerLabel, endDateTextField, submitButton])
+        addSubviews([titleLabel, subTitleLabel, startDateLabel, endDateLabel, startDateTextField, dividerLabel, endDateTextField, journeyDaysButton, submitButton])
     }
 
     override func setupLayout() {
@@ -113,6 +119,12 @@ class CreatePlannerDateView: BaseView {
             make.centerY.equalTo(startDateTextField.snp.centerY)
             make.width.equalTo(150)
             make.height.equalTo(46)
+        }
+
+        journeyDaysButton.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(106)
+            make.bottom.equalTo(submitButton.snp.top).offset(-18)
+            make.height.equalTo(44)
         }
 
         submitButton.snp.makeConstraints { make in
