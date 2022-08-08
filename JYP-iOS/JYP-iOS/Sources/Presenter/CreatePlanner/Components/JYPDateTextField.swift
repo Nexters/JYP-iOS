@@ -11,12 +11,18 @@ import UIKit
 class JYPDateTextField: UITextField {
     // MARK: - Properties
 
-    override var isEnabled: Bool {
+    override var isSelected: Bool {
         didSet {
-            if isEnabled {
+            if isSelected {
+                backgroundColor = .clear
                 textColor = JYPIOSAsset.textB90.color
+
+                makeBorder(color: JYPIOSAsset.subBlue300.color, width: 1.0)
             } else {
+                backgroundColor = JYPIOSAsset.backgroundWhite200.color
                 textColor = JYPIOSAsset.textB40.color
+
+                makeBorder(color: .clear, width: 0.0)
             }
         }
     }
@@ -25,6 +31,8 @@ class JYPDateTextField: UITextField {
 
     override init(frame _: CGRect) {
         super.init(frame: .zero)
+
+        setupProperty()
     }
 
     @available(*, unavailable)
@@ -42,7 +50,7 @@ class JYPDateTextField: UITextField {
 
     // MARK: - Setup
 
-    func setupUI() {
-        makeBorder(color: JYPIOSAsset.subBlue300.color, width: 1.0)
+    func setupProperty() {
+        textAlignment = .center
     }
 }

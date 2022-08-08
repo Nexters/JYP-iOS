@@ -11,8 +11,8 @@ import ReactorKit
 
 final class CreatePlannerDateReactor: Reactor {
     enum Action {
-        case startDateAction
-        case endDateAction
+        case didTapStartDateTextField
+        case didTapEndDateTextField
     }
 
     enum Mutation {
@@ -20,6 +20,7 @@ final class CreatePlannerDateReactor: Reactor {
         case setEndTextFieldFocus(Bool)
         case updateStartDate(Date)
         case updateEndDate(Date)
+        case setJourneyDays(String)
         case presentCalendar(Bool)
     }
 
@@ -27,8 +28,11 @@ final class CreatePlannerDateReactor: Reactor {
         var isFocusStartTextField: Bool = false
         var isFocusEndTextField: Bool = false
         var isPresent: Bool = false
-        var startDate = ""
-        var endDate = ""
+        var startDate: String = ""
+        var endDate: String = ""
+        var journeyDays: String = ""
+        var isHiddenJourneyDaysButton: Bool = true
+        var isHiddenSubmitButton: Bool = true
     }
 
     var initialState: State
@@ -42,19 +46,20 @@ final class CreatePlannerDateReactor: Reactor {
 
 extension CreatePlannerDateReactor {
     func mutate(action: Action) -> Observable<Mutation> {
+        let openCalendar: Observable<Mutation> = .just(.presentCalendar(true))
+        let closeCalendar: Observable<Mutation> = .just(.presentCalendar(false))
+
         switch action {
-        case .startDateAction:
-            return Observable.concat(
-                Observable.just(Mutation.presentCalendar(true)),
-                Observable.just(Mutation.setStartTextFieldFocus(true)),
-                Observable.just(Mutation.presentCalendar(false))
-            )
-        case .endDateAction:
-            return Observable.concat(
-                Observable.just(Mutation.presentCalendar(true)),
-                Observable.just(Mutation.setEndTextFieldFocus(true)),
-                Observable.just(Mutation.presentCalendar(false))
-            )
+        case .didTapStartDateTextField:
+            let setStartDateTextFieldFocus: Observable<Mutation> = .just(.setStartTextFieldFocus(true))
+            let setEndDateTextFieldFocus: Observable<Mutation> = .just(.setEndTextFieldFocus(false))
+
+            return .concat(setStartDateTextFieldFocus, setEndDateTextFieldFocus, openCalendar, closeCalendar)
+        case .didTapEndDateTextField:
+            let setStartDateTextFieldFocus: Observable<Mutation> = .just(.setStartTextFieldFocus(false))
+            let setEndDateTextFieldFocus: Observable<Mutation> = .just(.setEndTextFieldFocus(true))
+
+            return .concat(setStartDateTextFieldFocus, setEndDateTextFieldFocus, openCalendar, closeCalendar)
         }
     }
 
@@ -62,8 +67,12 @@ extension CreatePlannerDateReactor {
         let eventMutation = service.event.flatMap { event -> Observable<Mutation> in
             switch event {
             case let .updateStartDate(date):
-                let isStartDate = self.currentState.isFocusStartTextField
-                return isStartDate ? .just(.updateStartDate(date)) : .just(.updateEndDate(date))
+                return .just(.updateStartDate(date))
+            case let .updateEndDate(date):
+                return .concat(
+                    .just(.updateEndDate(date)),
+                    .just(.setJourneyDays(self.service.calcJourneyDays()))
+                )
             }
         }
 
@@ -76,26 +85,33 @@ extension CreatePlannerDateReactor {
         switch mutation {
         case let .setStartTextFieldFocus(isFocus):
             newState.isFocusStartTextField = isFocus
-            newState.isFocusEndTextField = !isFocus
         case let .setEndTextFieldFocus(isFocus):
-            newState.isFocusStartTextField = !isFocus
             newState.isFocusEndTextField = isFocus
         case let .updateStartDate(date):
             newState.isFocusStartTextField = false
             newState.startDate = DateManager.dateToString(date: date)
         case let .updateEndDate(date):
             newState.isFocusEndTextField = false
+            newState.isHiddenSubmitButton = false
             newState.endDate = DateManager.dateToString(date: date)
         case let .presentCalendar(flag):
             newState.isPresent = flag
+        case let .setJourneyDays(days):
+            newState.journeyDays = days
+            newState.isHiddenJourneyDaysButton = false
         }
 
         return newState
     }
 
     func makeCalendarReactor() -> CalendarReactor {
-        let selectedDate = currentState.isFocusEndTextField ? currentState.startDate : currentState.endDate
+        let startDate = DateManager.stringToDate(date: currentState.startDate)
+        let endDate = DateManager.stringToDate(date: currentState.endDate)
 
-        return .init(service: service, selectedDate: selectedDate)
+        let days = CalendarDays(start: startDate, end: endDate)
+        let mode: CalendarSelectMode = currentState.isFocusStartTextField ? .start : .end(days)
+        let selectedDate = currentState.isFocusStartTextField ? startDate : endDate
+
+        return .init(service: service, selectedDate: selectedDate, mode: mode)
     }
 }

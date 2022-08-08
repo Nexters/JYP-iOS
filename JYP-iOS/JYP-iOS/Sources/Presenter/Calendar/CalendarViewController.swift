@@ -19,7 +19,7 @@ class CalendarViewController: BottomSheetViewController, View {
     // MARK: - Initializer
 
     init(reactor: CalendarReactor) {
-        super.init()
+        super.init(mode: .fixed)
 
         self.reactor = reactor
     }
@@ -53,6 +53,11 @@ class CalendarViewController: BottomSheetViewController, View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
+        reactor.state
+            .compactMap(\.startDate)
+            .bind(to: datePicker.rx.minimumDate)
+            .disposed(by: disposeBag)
+
         reactor.state.asObservable()
             .map(\.isDismissed)
             .filter { $0 }
@@ -61,6 +66,11 @@ class CalendarViewController: BottomSheetViewController, View {
             .bind { [weak self] _ in
                 self?.dismiss(animated: true)
             }
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .map(\.selectedDate)
+            .bind(to: datePicker.rx.date)
             .disposed(by: disposeBag)
     }
 }
