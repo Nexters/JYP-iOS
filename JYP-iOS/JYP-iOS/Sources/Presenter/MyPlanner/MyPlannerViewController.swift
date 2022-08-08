@@ -14,6 +14,7 @@ class MyPlannerViewController: BaseViewController {
 
     let titleLabel = UILabel()
     let createPlannerButton = UIButton(type: .system)
+    let selectTagButton = UIButton(type: .system)
 
     // MARK: - Setup Methods
 
@@ -23,12 +24,13 @@ class MyPlannerViewController: BaseViewController {
         titleLabel.text = "마이 플래너 뷰컨"
         titleLabel.textColor = .black
         createPlannerButton.setTitle("플래너 생성", for: .normal)
+        selectTagButton.setTitle("플래너 태그 선택", for: .normal)
     }
 
     override func setupHierarchy() {
         super.setupHierarchy()
 
-        view.addSubviews([titleLabel, createPlannerButton])
+        view.addSubviews([titleLabel, createPlannerButton, selectTagButton])
     }
 
     override func setupLayout() {
@@ -42,6 +44,11 @@ class MyPlannerViewController: BaseViewController {
             $0.top.equalTo(titleLabel.snp.bottom).offset(30)
             $0.centerX.equalToSuperview()
         }
+
+        selectTagButton.snp.makeConstraints {
+            $0.top.equalTo(createPlannerButton.snp.bottom).offset(30)
+            $0.centerX.equalToSuperview()
+        }
     }
 
     override func setupBind() {
@@ -52,6 +59,14 @@ class MyPlannerViewController: BaseViewController {
                 let createPlannerDateViewController = CreatePlannerDateViewController(reactor: createPlannerReactor)
 
                 self?.navigationController?.pushViewController(createPlannerDateViewController, animated: true)
+            })
+            .disposed(by: disposeBag)
+
+        selectTagButton.rx.tap
+            .subscribe(onNext: { [weak self] in
+                let createPlannerTagViewController = CreatePlannerTagViewController()
+
+                self?.navigationController?.pushViewController(createPlannerTagViewController, animated: true)
             })
             .disposed(by: disposeBag)
     }
