@@ -64,7 +64,8 @@ class MyPlannerViewController: BaseViewController {
 
         selectTagButton.rx.tap
             .subscribe(onNext: { [weak self] in
-                let createPlannerTagViewController = CreatePlannerTagViewController()
+                let createPlannerTagReactor = CreatePlannerTagReactor()
+                let createPlannerTagViewController = CreatePlannerTagViewController(reactor: createPlannerTagReactor)
 
                 self?.navigationController?.pushViewController(createPlannerTagViewController, animated: true)
             })
