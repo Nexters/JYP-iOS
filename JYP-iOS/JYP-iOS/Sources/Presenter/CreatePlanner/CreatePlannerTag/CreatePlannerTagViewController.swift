@@ -19,12 +19,11 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
     private let titleLabel: UILabel = .init()
     private let subTitleLabel: UILabel = .init()
 
-    private let layout: UICollectionViewFlowLayout = .init()
     private lazy var collectionView: UICollectionView = .init(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
 
     // MARK: - Properties
 
-    lazy var dataSource = RxCollectionViewSectionedReloadDataSource<TagSectionModel> { _, collectionView, indexPath, item -> UICollectionViewCell in
+    private lazy var dataSource = CreateTagDataSource { _, collectionView, indexPath, item -> UICollectionViewCell in
         switch item {
         case let .tagCell(tag):
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: JourneyTagCollectionViewCell.self), for: indexPath) as? JourneyTagCollectionViewCell else { return .init() }
@@ -32,6 +31,12 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
 
             return cell
         }
+    } configureSupplementaryView: { dataSource, collectionView, _, indexPath -> UICollectionReusableView in
+        let model = dataSource[indexPath.section].model
+        print(model)
+        let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: PlannerTagCollectionReusableView.self), for: indexPath)
+
+        return header
     }
 
     // MARK: - Initializer
@@ -68,7 +73,7 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
         subTitleLabel.text = "일행과 공유할 태그를 최대 3개 선택해 주세요"
         subTitleLabel.textColor = JYPIOSAsset.textB40.color
 
-        collectionView.register(PlannerTagCollectionReusableView.self, forSupplementaryViewOfKind: String(describing: PlannerTagCollectionReusableView.self), withReuseIdentifier: String(describing: PlannerTagCollectionReusableView.self))
+        collectionView.register(PlannerTagCollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: PlannerTagCollectionReusableView.self))
         collectionView.register(JourneyTagCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: JourneyTagCollectionViewCell.self))
         collectionView.rx.setDelegate(self).disposed(by: disposeBag)
     }
@@ -115,5 +120,9 @@ extension CreatePlannerTagViewController: UICollectionViewDelegateFlowLayout {
         let tags = dataSource[indexPath.section].model.items[indexPath.row]
 
         return CGSize(width: tags.text.size(withAttributes: [NSAttributedString.Key.font: JYPIOSFontFamily.Pretendard.medium.font(size: 16)]).width + 43, height: 32)
+    }
+
+    func collectionView(_: UICollectionView, layout _: UICollectionViewLayout, referenceSizeForHeaderInSection _: Int) -> CGSize {
+        .init(width: UIScreen.main.bounds.width, height: 24)
     }
 }
