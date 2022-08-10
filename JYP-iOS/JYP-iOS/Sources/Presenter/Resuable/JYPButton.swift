@@ -14,6 +14,7 @@ enum JYPButtonType {
     case start
     case startPlan
     case add
+    case addPlace
     case smallAdd
     case smallMake
     case yes
@@ -33,6 +34,8 @@ enum JYPButtonType {
             return "여행 계획 시작하기"
         case .add:
             return "추가하기"
+        case .addPlace:
+            return "후보 장소 추가하기"
         case .smallAdd:
             return "시작하기"
         case .smallMake:
@@ -60,6 +63,8 @@ enum JYPButtonType {
             return .init(titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color)
         case .add:
             return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color)
+        case .addPlace:
+            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.subBlack.color)
         case .smallAdd:
             return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.subBlack.color)
         case .smallMake:
@@ -86,6 +91,8 @@ enum JYPButtonType {
         case .startPlan:
             return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color)
         case .add:
+            return nil
+        case .addPlace:
             return nil
         case .smallAdd:
             return nil

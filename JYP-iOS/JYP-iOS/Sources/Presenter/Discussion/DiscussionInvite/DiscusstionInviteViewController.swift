@@ -7,14 +7,12 @@
 //
 
 import Foundation
-@testable import JYP_iOS
 
 class DiscusstionInviteViewController: NavigationBarViewController {
     let selfView = DiscussionInviteView()
     
     override func setupNavigationBar() {
-        super.setupNavigationBar()
-        
+        super.setupNavigationBar() 
     }
     
     override func setupHierarchy() {

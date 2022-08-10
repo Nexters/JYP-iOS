@@ -6,7 +6,6 @@
 //  Copyright © 2022 JYP-iOS. All rights reserved.
 //
 
-import Foundation
 import UIKit
 
 class SearchPlaceResultTableViewCell: BaseTableViewCell {
