@@ -78,8 +78,11 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
         titleLabel.textColor = JYPIOSAsset.textB90.color
 
         subTitleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 16)
-        subTitleLabel.text = "일행과 공유할 태그를 최대 3개 선택해 주세요"
         subTitleLabel.textColor = JYPIOSAsset.textB40.color
+        let subTitle = "일행과 공유할 태그를 최대 3개 선택해 주세요"
+        let attributedString = NSMutableAttributedString(string: subTitle)
+        attributedString.addAttribute(.foregroundColor, value: JYPIOSAsset.textB80.color, range: (subTitle as NSString).range(of: "최대 3개"))
+        subTitleLabel.attributedText = attributedString
 
         layout.scrollDirection = .vertical
 
