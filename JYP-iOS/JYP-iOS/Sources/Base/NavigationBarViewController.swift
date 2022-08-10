@@ -108,7 +108,8 @@ class NavigationBarViewController: BaseViewController, BaseNavigationBarViewCont
         
         contentView.snp.makeConstraints {
             $0.top.equalTo(statusBar.snp.bottom).offset(60)
-            $0.leading.trailing.bottom.equalTo(view.safeAreaLayoutGuide)
+            $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
+            $0.bottom.equalToSuperview()
         }
     }
     
