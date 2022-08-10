@@ -49,6 +49,7 @@ class BaseProjectFactory: ProjectFactory {
                 ]
             ]
         ],
+        "App Transport Security Settings": ["Allow Arbitrary Loads": true],
         "NSAppTransportSecurity": ["NSAllowsArbitraryLoads": true],
         "KAKAO_REST_KEY": "$(KAKAO_REST_KEY)",
         "KAKAO_APP_KEY": "$(KAKAO_APP_KEY)",

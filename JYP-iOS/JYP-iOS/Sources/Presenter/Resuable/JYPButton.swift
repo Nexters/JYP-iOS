@@ -14,10 +14,13 @@ enum JYPButtonType {
     case start
     case startPlan
     case add
+    case addPlace
     case smallAdd
     case smallMake
     case yes
     case no
+    case kakaoInvite
+    case linkInvite
     
     var title: String {
         switch self {
@@ -31,6 +34,8 @@ enum JYPButtonType {
             return "여행 계획 시작하기"
         case .add:
             return "추가하기"
+        case .addPlace:
+            return "후보 장소 추가하기"
         case .smallAdd:
             return "시작하기"
         case .smallMake:
@@ -39,6 +44,10 @@ enum JYPButtonType {
             return "좋아요"
         case .no:
             return "싫어요"
+        case .kakaoInvite:
+            return "카카오톡 초대"
+        case .linkInvite:
+            return "초대링크 복사"
         }
     }
     
@@ -54,6 +63,8 @@ enum JYPButtonType {
             return .init(titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color)
         case .add:
             return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color)
+        case .addPlace:
+            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.subBlack.color)
         case .smallAdd:
             return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.subBlack.color)
         case .smallMake:
@@ -62,6 +73,10 @@ enum JYPButtonType {
             return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color)
         case .no:
             return .init(titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color)
+        case .kakaoInvite:
+            return .init(titleColor: JYPIOSAsset.textB80.color, backgroundColor: UIColor(hex: 0xFAE000))
+        case .linkInvite:
+            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color)
         }
     }
     
@@ -77,6 +92,8 @@ enum JYPButtonType {
             return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color)
         case .add:
             return nil
+        case .addPlace:
+            return nil
         case .smallAdd:
             return nil
         case .smallMake:
@@ -84,6 +101,10 @@ enum JYPButtonType {
         case .yes:
             return nil
         case .no:
+            return nil
+        case .kakaoInvite:
+            return nil
+        case .linkInvite:
             return nil
         }
     }

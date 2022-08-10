@@ -7,8 +7,11 @@
 //
 
 import UIKit
+import RxSwift
 
 class BaseCollectionViewCell: UICollectionViewCell, BaseViewProtocol {
+    var disposeBag = DisposeBag()
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import RxSwift
 
 class JourneyPlaceSectionHeader: BaseCollectionReusableView {
     let titleLabel = UILabel()
@@ -47,14 +48,20 @@ class JourneyPlaceSectionHeader: BaseCollectionReusableView {
 
 class JourneyPlaceEmptyCollectionViewCell: BaseCollectionViewCell {
     let circleImageView = UIImageView()
-    let addButton = JYPButton(type: .add)
+    let addPlaceButton = JYPButton(type: .addPlace)
     
     func update() {
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        disposeBag = DisposeBag()
+    }
+    
     override func setupProperty() {
         super.setupProperty()
-        
+        contentView.backgroundColor = JYPIOSAsset.backgroundWhite100.color
         contentView.setShadow(radius: 40, offset: CGSize(width: 4, height: 10), opacity: 0.06)
         
         circleImageView.cornerRound(radius: 52.5)
@@ -64,7 +71,7 @@ class JourneyPlaceEmptyCollectionViewCell: BaseCollectionViewCell {
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        contentView.addSubviews([circleImageView, addButton])
+        contentView.addSubviews([circleImageView, addPlaceButton])
     }
     
     override func setupLayout() {
@@ -75,7 +82,7 @@ class JourneyPlaceEmptyCollectionViewCell: BaseCollectionViewCell {
             $0.centerX.equalToSuperview()
         }
         
-        addButton.snp.makeConstraints {
+        addPlaceButton.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview().inset(20)
             $0.bottom.equalToSuperview().inset(20)
             $0.height.equalTo(48)
