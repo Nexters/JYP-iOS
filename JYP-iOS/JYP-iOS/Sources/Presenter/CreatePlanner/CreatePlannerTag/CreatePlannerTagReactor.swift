@@ -11,18 +11,45 @@ import ReactorKit
 import RxDataSources
 
 final class CreatePlannerTagReactor: Reactor {
-    enum Action {}
+    enum Action {
+        case selectTag(IndexPath)
+    }
 
-    enum Mutation {}
+    enum Mutation {
+        case toggleTagSelection(IndexPath, TagSectionModel.Item)
+    }
 
     struct State {
         var sections: [TagSectionModel]
+        var isSelected: Bool = false
     }
 
     let initialState: State
 
     init() {
         initialState = State(sections: CreatePlannerTagReactor.makeSections())
+    }
+
+    func mutate(action: Action) -> Observable<Mutation> {
+        switch action {
+        case let .selectTag(indexPath):
+            var tag = currentState.sections[indexPath.section].model.items[indexPath.row]
+            tag.isSelected = true
+
+            return .just(.toggleTagSelection(indexPath, TagItem.tagCell(tag)))
+        }
+    }
+
+    func reduce(state: State, mutation: Mutation) -> State {
+        var newState: State = state
+
+        switch mutation {
+        case let .toggleTagSelection(indexPath, tag):
+            let section = tag
+            newState.sections[indexPath.section].items[indexPath.row] = tag
+        }
+
+        return newState
     }
 }
 

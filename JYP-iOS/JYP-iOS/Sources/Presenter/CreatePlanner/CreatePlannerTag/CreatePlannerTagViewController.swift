@@ -29,10 +29,9 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
         switch item {
         case let .tagCell(tag):
             guard let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: String(describing: JourneyTagCollectionViewCell.self),
+                withReuseIdentifier: String(describing: JYPTagCollectionViewCell.self),
                 for: indexPath
-            ) as? JourneyTagCollectionViewCell else { return .init() }
-            cell.update(title: tag.text)
+            ) as? JYPTagCollectionViewCell else { return .init() }
 
             return cell
         }
@@ -88,7 +87,7 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
         layout.scrollDirection = .vertical
 
         collectionView.register(PlannerTagCollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: PlannerTagCollectionReusableView.self))
-        collectionView.register(JourneyTagCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: JourneyTagCollectionViewCell.self))
+        collectionView.register(JYPTagCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: JYPTagCollectionViewCell.self))
         collectionView.rx.setDelegate(self).disposed(by: disposeBag)
     }
 
@@ -127,7 +126,12 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
     // MARK: - Bind Method
 
     func bind(reactor: Reactor) {
-        reactor.state.map(\.sections).asObservable()
+        collectionView.rx.itemSelected
+            .map { indexPath in Reactor.Action.selectTag(indexPath) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        reactor.state.map(\.sections)
             .bind(to: collectionView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
     }
