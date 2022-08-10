@@ -17,7 +17,6 @@ class PlannerTagCollectionReusableView: BaseCollectionReusableView {
     override func setupProperty() {
         super.setupProperty()
 
-        titleLabel.text = "title"
         titleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 16)
         titleLabel.textColor = JYPIOSAsset.textB80.color
 

@@ -18,6 +18,7 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
 
     private let titleLabel: UILabel = .init()
     private let subTitleLabel: UILabel = .init()
+    private let startButton: JYPButton = .init(type: .startPlan)
 
     private let layout: UICollectionViewFlowLayout = .init()
     private lazy var collectionView: UICollectionView = .init(frame: .zero, collectionViewLayout: layout)
@@ -94,7 +95,7 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
     override func setupHierarchy() {
         super.setupHierarchy()
 
-        contentView.addSubviews([titleLabel, subTitleLabel, collectionView])
+        contentView.addSubviews([titleLabel, subTitleLabel, collectionView, startButton])
     }
 
     override func setupLayout() {
@@ -113,7 +114,13 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
         collectionView.snp.makeConstraints { make in
             make.top.equalTo(subTitleLabel.snp.bottom).offset(53)
             make.leading.trailing.equalToSuperview().inset(24)
-            make.bottom.equalToSuperview()
+            make.bottom.equalTo(startButton.snp.top)
+        }
+
+        startButton.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(24)
+            make.bottom.equalToSuperview().inset(34)
+            make.height.equalTo(52)
         }
     }
 
