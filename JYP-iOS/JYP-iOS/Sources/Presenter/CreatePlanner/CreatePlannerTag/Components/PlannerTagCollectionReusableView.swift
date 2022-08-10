@@ -35,12 +35,12 @@ class PlannerTagCollectionReusableView: BaseCollectionReusableView {
 
         titleLabel.snp.makeConstraints {
             $0.centerY.equalTo(addButton.snp.centerY)
-            $0.leading.equalToSuperview().inset(24)
+            $0.leading.equalToSuperview()
         }
 
         addButton.snp.makeConstraints {
-            $0.top.bottom.equalToSuperview()
-            $0.trailing.equalToSuperview().inset(24)
+            $0.bottom.equalToSuperview().inset(16)
+            $0.trailing.equalToSuperview()
             $0.size.equalTo(24)
         }
     }

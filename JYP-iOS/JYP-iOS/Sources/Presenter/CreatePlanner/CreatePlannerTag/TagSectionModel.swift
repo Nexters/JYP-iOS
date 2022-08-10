@@ -28,6 +28,21 @@ extension TagSection {
         }
     }
 
+    var title: String {
+        switch self {
+        case .soso: return "상관없어요 태그"
+        case .like: return "좋아요 태그"
+        case .dislike: return "싫어요 태그"
+        }
+    }
+
+    var isHiddenRightButton: Bool {
+        switch self {
+        case .soso: return true
+        case .like, .dislike: return false
+        }
+    }
+
     init(original: TagSection, tags: [Tag]) {
         switch original {
         case .soso:

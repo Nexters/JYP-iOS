@@ -19,22 +19,30 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
     private let titleLabel: UILabel = .init()
     private let subTitleLabel: UILabel = .init()
 
-    private lazy var collectionView: UICollectionView = .init(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+    private let layout: UICollectionViewFlowLayout = .init()
+    private lazy var collectionView: UICollectionView = .init(frame: .zero, collectionViewLayout: layout)
 
     // MARK: - Properties
 
     private lazy var dataSource = CreateTagDataSource { _, collectionView, indexPath, item -> UICollectionViewCell in
         switch item {
         case let .tagCell(tag):
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: JourneyTagCollectionViewCell.self), for: indexPath) as? JourneyTagCollectionViewCell else { return .init() }
+            guard let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: String(describing: JourneyTagCollectionViewCell.self),
+                for: indexPath
+            ) as? JourneyTagCollectionViewCell else { return .init() }
             cell.update(title: tag.text)
 
             return cell
         }
     } configureSupplementaryView: { dataSource, collectionView, _, indexPath -> UICollectionReusableView in
         let model = dataSource[indexPath.section].model
-        print(model)
-        let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: PlannerTagCollectionReusableView.self), for: indexPath)
+        guard let header = collectionView.dequeueReusableSupplementaryView(
+            ofKind: UICollectionView.elementKindSectionHeader,
+            withReuseIdentifier: String(describing: PlannerTagCollectionReusableView.self), for: indexPath
+        ) as? PlannerTagCollectionReusableView else { return UICollectionReusableView() }
+        header.titleLabel.text = model.title
+        header.addButton.isHidden = model.isHiddenRightButton
 
         return header
     }
@@ -72,6 +80,8 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
         subTitleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 16)
         subTitleLabel.text = "일행과 공유할 태그를 최대 3개 선택해 주세요"
         subTitleLabel.textColor = JYPIOSAsset.textB40.color
+
+        layout.scrollDirection = .vertical
 
         collectionView.register(PlannerTagCollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: PlannerTagCollectionReusableView.self))
         collectionView.register(JourneyTagCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: JourneyTagCollectionViewCell.self))
@@ -123,6 +133,10 @@ extension CreatePlannerTagViewController: UICollectionViewDelegateFlowLayout {
     }
 
     func collectionView(_: UICollectionView, layout _: UICollectionViewLayout, referenceSizeForHeaderInSection _: Int) -> CGSize {
-        .init(width: UIScreen.main.bounds.width, height: 24)
+        .init(width: UIScreen.main.bounds.width, height: 41)
+    }
+
+    func collectionView(_: UICollectionView, layout _: UICollectionViewLayout, insetForSectionAt _: Int) -> UIEdgeInsets {
+        .init(top: 0, left: 0, bottom: 46, right: 0)
     }
 }
