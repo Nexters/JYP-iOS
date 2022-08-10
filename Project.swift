@@ -71,6 +71,7 @@ class BaseProjectFactory: ProjectFactory {
         .external(name: "RxSwift"),
         .external(name: "RxCocoa"),
         .external(name: "RxGesture"),
+        .external(name: "RxDataSources"),
         .external(name: "ReactorKit"),
         .external(name: "Then"),
         .external(name: "KakaoSDKCommon"),
@@ -78,7 +79,7 @@ class BaseProjectFactory: ProjectFactory {
         .external(name: "KakaoSDKUser"),
         .external(name: "GoogleMaps")
     ]
-    
+
     func generateConfigurations() -> Settings {
         Settings.settings(configurations: [
             .debug(name: "Debug", xcconfig: .relativeToRoot("\(projectName)/\(projectName)/Sources/Config/Debug.xcconfig")),
