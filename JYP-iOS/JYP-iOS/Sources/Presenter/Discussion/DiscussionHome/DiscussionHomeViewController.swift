@@ -231,7 +231,7 @@ extension DiscussionHomeViewController: UICollectionViewDelegateFlowLayout, UICo
                 cell.addPlaceButton.rx.tap
                     .bind { [weak self] _ in
                         let discussionSearchPlaceVC = DiscussionSearchPlaceViewController()
-                        self?.navigationController?.pushViewController(discussionSearchPlaceVC, animated: true)  
+                        self?.navigationController?.pushViewController(discussionSearchPlaceVC, animated: true)
                     }
                     .disposed(by: cell.disposeBag)
                 
@@ -250,7 +250,7 @@ extension DiscussionHomeViewController: UICollectionViewDelegateFlowLayout, UICo
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         switch indexPath.section {
         case 0:
-            return
+            tabBarController?.present(DiscussionTagBottomSheetViewController(mode: .drag), animated: true, completion: nil)
         case 1:
             return
         default:
