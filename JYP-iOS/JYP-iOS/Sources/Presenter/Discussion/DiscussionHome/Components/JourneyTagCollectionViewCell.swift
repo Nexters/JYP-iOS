@@ -8,93 +8,48 @@
 
 import UIKit
 
-class JourneyTagSectionHeader: BaseCollectionReusableView {
-    let titleLabel = UILabel()
-    let subLabel = UILabel()
-    
-    override func setupProperty() {
-        super.setupProperty()
-        
-        titleLabel.text = "여행 태그"
-        titleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 16)
-        titleLabel.textColor = JYPIOSAsset.textB80.color
-        
-        subLabel.text = "여행 취향을 확인해보세요!"
-        subLabel.font = JYPIOSFontFamily.Pretendard.regular.font(size: 14)
-        subLabel.textColor = JYPIOSAsset.textB40.color
-    }
-    
-    override func setupHierarchy() {
-        super.setupHierarchy()
-        
-        addSubviews([titleLabel, subLabel])
-    }
-    
-    override func setupLayout() {
-        super.setupLayout()
-        
-        titleLabel.snp.makeConstraints {
-            $0.top.equalToSuperview()
-            $0.leading.equalToSuperview().inset(24)
-        }
-        
-        subLabel.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(6)
-            $0.leading.equalToSuperview().inset(24)
-        }
-    }
-}
-
 class JourneyTagCollectionViewCell: BaseCollectionViewCell {
-    let imageView = UIImageView()
-    let titleLabel = UILabel()
+    var jypTag: JYPTag?
     
-    func update(title: String) {
-        imageView.image = JYPIOSAsset.iconLikeUnselect.image
-        titleLabel.text = title
+    func update(type: JYPTagType) {
+        jypTag = JYPTag(type: type)
+        
+        if Bool.random() {
+            jypTag?.isSelected = false
+        } else {
+            jypTag?.isSelected = true
+        }
+        
+        if Bool.random() {
+            jypTag?.isInactive = false
+        } else {
+            jypTag?.isInactive = true
+        }    
+        setupHierarchy()
+        setupLayout()
     }
     
     override func prepareForReuse() {
         super.prepareForReuse()
         
-        imageView.image = nil
-        titleLabel.text = ""
-    }
-    
-    override func layoutSubviews() {
-        super.layoutSubviews()
-
-        contentView.cornerRound(radius: 15, direct: [.layerMinXMaxYCorner, .layerMinXMinYCorner])
-    }
-    
-    override func setupProperty() {
-        super.setupProperty()
-        
-        contentView.backgroundColor = JYPIOSAsset.tagWhiteBlue100.color
-
-        titleLabel.font = JYPIOSFontFamily.Pretendard.medium.font(size: 16)
-        titleLabel.textColor = JYPIOSAsset.subBlue300.color
+        jypTag?.removeFromSuperview()
     }
     
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        contentView.addSubviews([imageView, titleLabel])
+        guard let jypTag = jypTag else { return }
+
+        contentView.addSubview(jypTag)
     }
     
     override func setupLayout() {
         super.setupLayout()
         
-        imageView.snp.makeConstraints {
-            $0.leading.equalToSuperview().inset(4)
-            $0.centerY.equalToSuperview()
-            $0.width.height.equalTo(24)
-        }
+        guard let jypTag = jypTag else { return }
         
-        titleLabel.snp.makeConstraints {
-            $0.leading.equalTo(imageView.snp.trailing).offset(9)
-            $0.trailing.equalToSuperview()
-            $0.centerY.equalToSuperview()
+        jypTag.snp.makeConstraints {
+            $0.top.leading.trailing.bottom.equalToSuperview()
         }
     }
 }

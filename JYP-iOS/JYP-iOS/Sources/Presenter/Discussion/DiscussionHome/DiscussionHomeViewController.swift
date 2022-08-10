@@ -175,7 +175,7 @@ extension DiscussionHomeViewController: UICollectionViewDelegateFlowLayout, UICo
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         switch indexPath.section {
         case 0:
-            return CGSize(width: tags[indexPath.item].size(withAttributes: [NSAttributedString.Key.font: JYPIOSFontFamily.Pretendard.medium.font(size: 16)]).width + 43, height: 32)
+            return CGSize(width: tags[indexPath.item].size(withAttributes: [NSAttributedString.Key.font: JYPIOSFontFamily.Pretendard.medium.font(size: 16)]).width + 50, height: 32)
         case 1:
             if places.isEmpty {
                 return CGSize(width: collectionView.frame.width - 48, height: 327)
@@ -220,7 +220,8 @@ extension DiscussionHomeViewController: UICollectionViewDelegateFlowLayout, UICo
         case 0:
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: JourneyTagCollectionViewCell.self), for: indexPath) as? JourneyTagCollectionViewCell else { return UICollectionViewCell() }
 
-            cell.update(title: tags[indexPath.item])
+//            cell.update(title: tags[indexPath.item])
+            cell.update(type: .dontcare(tags[indexPath.item]))
             return cell
         case 1:
             if places.isEmpty {
@@ -230,8 +231,7 @@ extension DiscussionHomeViewController: UICollectionViewDelegateFlowLayout, UICo
                 cell.addPlaceButton.rx.tap
                     .bind { [weak self] _ in
                         let discussionSearchPlaceVC = DiscussionSearchPlaceViewController()
-                        self?.navigationController?.pushViewController(discussionSearchPlaceVC, animated: true)
-                        
+                        self?.navigationController?.pushViewController(discussionSearchPlaceVC, animated: true)  
                     }
                     .disposed(by: cell.disposeBag)
                 
