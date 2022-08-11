@@ -15,50 +15,39 @@ struct JYPTagConfig {
 }
 
 enum JYPTagType {
-    case dontcare(String)
-    case like(String)
-    case hate(String)
-    
-    var title: String {
-        switch self {
-        case .dontcare(let title):
-            return title
-        case .like(let title):
-            return title
-        case .hate(let title):
-            return title
-        }
-    }
+    case soso
+    case like
+    case dislike
     
     var inactiveConfig: JYPTagConfig {
         switch self {
-        case .dontcare:
+        case .soso:
             return JYPTagConfig(image: JYPIOSAsset.iconDontCareUnselect.image.grayscale(), textColor: JYPIOSAsset.tagGrey200.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color)
         case .like:
             return JYPTagConfig(image: JYPIOSAsset.iconLikeUnselect.image.grayscale(), textColor: JYPIOSAsset.tagGrey200.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color)
-        case .hate:
+        case .dislike:
             return JYPTagConfig(image: JYPIOSAsset.iconHateUnselect.image.grayscale(), textColor: JYPIOSAsset.tagGrey200.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color)
         }
     }
     
     var unselectedConfig: JYPTagConfig {
         switch self {
-        case .dontcare:
+        case .soso:
             return JYPTagConfig(image: JYPIOSAsset.iconDontCareUnselect.image, textColor: JYPIOSAsset.tagOrange300.color, backgroundColor: JYPIOSAsset.tagWhiteOrange100.color)
         case .like:
             return JYPTagConfig(image: JYPIOSAsset.iconLikeUnselect.image, textColor: JYPIOSAsset.subBlue300.color, backgroundColor: JYPIOSAsset.tagWhiteBlue100.color)
-        case .hate:
+        case .dislike:
             return JYPTagConfig(image: JYPIOSAsset.iconHateUnselect.image, textColor: JYPIOSAsset.tagRed300.color, backgroundColor: JYPIOSAsset.tagWhiteRed100.color)
         }
     }
     
     var selectedConfig: JYPTagConfig {
         switch self {
-        case .dontcare:
+        case .soso:
             return JYPTagConfig(image: JYPIOSAsset.iconDontCareSelect.image, textColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.tagOrange200.color)
         case .like:
             return JYPTagConfig(image: JYPIOSAsset.iconLikeSelect.image, textColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.tagBlue100.color)
-        case .hate:
+        case .dislike:
             return JYPTagConfig(image: JYPIOSAsset.iconHateSelect.image, textColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.tagRed200.color)
         }
     }
@@ -100,14 +89,14 @@ class JYPTag: BaseView {
         fatalError("not supported")
     }
     
-    init(type: JYPTagType) {
+    init(type: JYPTagType, title: String) {
         self.type = type
         self.isSelected = false
         self.isInactive = false
         
         super.init(frame: .zero)
         
-        titleLabel.text = type.title
+        titleLabel.text = title
     }
     
     override func setupProperty() {

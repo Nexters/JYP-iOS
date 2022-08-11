@@ -71,6 +71,7 @@ class BaseProjectFactory: ProjectFactory {
         .external(name: "RxSwift"),
         .external(name: "RxCocoa"),
         .external(name: "RxGesture"),
+        .external(name: "RxDataSources"),
         .external(name: "ReactorKit"),
         .external(name: "Then"),
         .external(name: "KakaoSDKCommon"),

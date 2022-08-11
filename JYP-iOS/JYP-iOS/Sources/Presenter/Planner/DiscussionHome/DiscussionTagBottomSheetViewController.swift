@@ -11,7 +11,7 @@ import UIKit
 class DiscussionTagBottomSheetViewController: BottomSheetViewController {
     let bottomSheetView = UIView()
     let titleLabel = UILabel()
-    let tag = JYPTag(type: .like("바다"))
+    let tag = JYPTag(type: .like, title: "바다")
     let imageStackView = UIStackView()
     
     override func viewDidLoad() {

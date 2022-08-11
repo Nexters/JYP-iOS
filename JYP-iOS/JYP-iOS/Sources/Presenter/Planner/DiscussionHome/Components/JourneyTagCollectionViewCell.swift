@@ -11,8 +11,8 @@ import UIKit
 class JourneyTagCollectionViewCell: BaseCollectionViewCell {
     var jypTag: JYPTag?
     
-    func update(type: JYPTagType) {
-        jypTag = JYPTag(type: type)
+    func update(type: JYPTagType, title: String) {
+        jypTag = JYPTag(type: type, title: title)
         
         if Bool.random() {
             jypTag?.isSelected = false

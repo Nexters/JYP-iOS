@@ -106,7 +106,7 @@ class MyPageViewController: BaseViewController {
         discussionButton.rx.tap
             .bind { [weak self] in
                 self?.hidesBottomBarWhenPushed = true
-                let discussionHomeVC = DiscussionHomeViewController()
+                let discussionHomeVC = PlannerHomeViewController()
                 self?.navigationController?.pushViewController(discussionHomeVC, animated: true)
             }
             .disposed(by: disposeBag)
