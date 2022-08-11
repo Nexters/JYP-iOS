@@ -17,6 +17,7 @@ disabled_rules: # 사용하지 않는 룰
 
     # 변수의 이름은 소문자로 시작하며 너무 짧거나 길면 안 됨 (~2: error, ~3: warning, 40~: warning, 60~: error)
     - identifier_name
+    - type_name
 
     # 중첩 구문 지양
     - nesting

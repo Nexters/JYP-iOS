@@ -8,20 +8,20 @@
 
 import RxDataSources
 
-typealias PlannerDiscussionSectionModel = SectionModel<PlannerDiscussionSection, PlannerDiscussionItem>
+typealias PlannerHomeDiscussionSectionModel = SectionModel<PlannerHomeDiscussionSection, PlannerHomeDiscussionItem>
 
-enum PlannerDiscussionSection {
-    case jypTagSection([PlannerDiscussionItem])
-    case candidatePlaceSection([PlannerDiscussionItem])
+enum PlannerHomeDiscussionSection {
+    case jypTagSection([PlannerHomeDiscussionItem])
+    case candidatePlaceSection([PlannerHomeDiscussionItem])
 }
 
-enum PlannerDiscussionItem {
+enum PlannerHomeDiscussionItem {
     case jypTagItem(JYPTagCollectionViewCellReactor)
     case candidatePlaceItem(CandidatePlaceCollectionViewCellReactor)
 }
 
-extension PlannerDiscussionSection: SectionModelType {
-    typealias Item = PlannerDiscussionItem
+extension PlannerHomeDiscussionSection: SectionModelType {
+    typealias Item = PlannerHomeDiscussionItem
     
     var items: [Item] {
         switch self {
@@ -32,7 +32,7 @@ extension PlannerDiscussionSection: SectionModelType {
         }
     }
     
-    init(original: PlannerDiscussionSection, items: [PlannerDiscussionItem]) {
+    init(original: PlannerHomeDiscussionSection, items: [PlannerHomeDiscussionItem]) {
         switch original {
         case .jypTagSection(let items):
             self = .jypTagSection(items)

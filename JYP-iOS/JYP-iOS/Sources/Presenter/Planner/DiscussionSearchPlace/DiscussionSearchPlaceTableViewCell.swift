@@ -48,7 +48,7 @@ class DiscussionSearchPlaceTableViewCell: BaseTableViewCell {
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        contentView.addSubviews([titleLabel, subLabel, categoryImageView ,categoryLabel])
+        contentView.addSubviews([titleLabel, subLabel, categoryImageView, categoryLabel])
     }
     
     override func setupLayout() {

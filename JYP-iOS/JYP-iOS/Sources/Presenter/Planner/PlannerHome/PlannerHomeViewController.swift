@@ -28,7 +28,7 @@ class PlannerHomeViewController: NavigationBarViewController, View {
         self.reactor = PlannerHomeReactor()
     }
     
-    private lazy var dataSource = RxCollectionViewSectionedReloadDataSource<PlannerDiscussionSectionModel> { _, collectionView, indexPath, item -> UICollectionViewCell in
+    private lazy var dataSource = RxCollectionViewSectionedReloadDataSource<PlannerHomeDiscussionSectionModel> { _, collectionView, indexPath, item -> UICollectionViewCell in
         switch item {
         case let .jypTagItem(reactor):
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: JYPTagCollectionViewCell.self), for: indexPath) as? JYPTagCollectionViewCell else { return .init() }

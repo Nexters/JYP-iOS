@@ -43,5 +43,4 @@ class PlannerHomeDiscussionJYPTagSectionHeader: BaseCollectionReusableView {
             $0.leading.equalToSuperview().inset(24)
         }
     }
-
 }
