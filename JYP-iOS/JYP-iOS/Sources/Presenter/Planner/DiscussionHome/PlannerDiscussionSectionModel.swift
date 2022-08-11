@@ -10,34 +10,34 @@ import RxDataSources
 
 typealias PlannerDiscussionSectionModel = SectionModel<PlannerDiscussionSection, PlannerDiscussionItem>
 
-enum PlannerDiscussionSection: Equatable {
-    case journeyTag([Tag])
-    case candidatePlace([CandidatePlace])
+enum PlannerDiscussionSection {
+    case jypTagSection([PlannerDiscussionItem])
+    case candidatePlaceSection([PlannerDiscussionItem])
 }
 
-enum PlannerDiscussionItem: Equatable {
-    case tagCell(Tag)
-    case candidatePlaceCell(CandidatePlace)
+enum PlannerDiscussionItem {
+    case jypTagItem(JYPTagCollectionViewCellReactor)
+    case candidatePlaceItem(CandidatePlaceCollectionViewCellReactor)
 }
 
 extension PlannerDiscussionSection: SectionModelType {
-    typealias Item = Any
-
-    var items: [Any] {
+    typealias Item = PlannerDiscussionItem
+    
+    var items: [Item] {
         switch self {
-        case .journeyTag(let array):
-            return array
-        case .candidatePlace(let array):
-            return array
+        case .jypTagSection(let items):
+            return items
+        case .candidatePlaceSection(let items):
+            return items
         }
     }
     
-    init(original: PlannerDiscussionSection, items: [Any]) {
+    init(original: PlannerDiscussionSection, items: [PlannerDiscussionItem]) {
         switch original {
-        case .journeyTag(let array):
-            self = .journeyTag(array)
-        case .candidatePlace(let array):
-            self = .candidatePlace(array)
+        case .jypTagSection(let items):
+            self = .jypTagSection(items)
+        case .candidatePlaceSection(let items):
+            self = .candidatePlaceSection(items)
         }
     }
 }

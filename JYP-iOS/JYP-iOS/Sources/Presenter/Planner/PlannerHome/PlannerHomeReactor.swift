@@ -30,9 +30,19 @@ extension PlannerHomeReactor {
         
         let candidatePlaces: [CandidatePlace] = [.init(id: "1", name: "아르떼 뮤지엄", address: "강원 강릉시 난설헌로 131", category: .culture, like: "1", lon: 0.124, lan: 0.124, url: "")]
         
-        let journeyTagSection = PlannerDiscussionSectionModel(model: .journeyTag(tags), items: tags.map(PlannerDiscussionSectionModel.Item.tagCell))
-        let candidatePlaceSection = PlannerDiscussionSectionModel(model: .candidatePlace(candidatePlaces), items: candidatePlaces.map(PlannerDiscussionSectionModel.Item.candidatePlaceCell))
+//        let journeyTagSection = PlannerDiscussionSectionModel(model: .journeyTag(tags), items: tags.map(PlannerDiscussionSectionModel.Item.tagCell))
+//        let candidatePlaceSection = PlannerDiscussionSectionModel(model: .candidatePlace(candidatePlaces), items: candidatePlaces.map(PlannerDiscussionSectionModel.Item.candidatePlaceCell))
         
-        return [journeyTagSection, candidatePlaceSection]
+        let jypTagItems = tags.map { (tag) -> PlannerDiscussionItem in
+            return .jypTagItem(.init(tag: tag))
+        }
+        let jypTagSection = PlannerDiscussionSectionModel(model: .jypTagSection(jypTagItems), items: jypTagItems)
+        
+        let candidatePlaceItems = candidatePlaces.map { (candidatePlace) -> PlannerDiscussionItem in
+            return .candidatePlaceItem(.init(candidatePlace: candidatePlace))
+        }
+        let candidatePlaceSection = PlannerDiscussionSectionModel(model: .candidatePlaceSection(candidatePlaceItems), items: candidatePlaceItems)
+        
+        return [jypTagSection, candidatePlaceSection]
     }
 }

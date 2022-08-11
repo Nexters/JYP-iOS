@@ -11,7 +11,7 @@ import UIKit
 class DiscussionTagBottomSheetViewController: BottomSheetViewController {
     let bottomSheetView = UIView()
     let titleLabel = UILabel()
-    let tag = JYPTag(type: .like, title: "바다")
+    let tag = JYPTag()
     let imageStackView = UIStackView()
     
     override func viewDidLoad() {
@@ -34,6 +34,7 @@ class DiscussionTagBottomSheetViewController: BottomSheetViewController {
         titleLabel.textColor = JYPIOSAsset.textB80.color
         
         tag.isSelected = false
+        tag.type = .like
         
         imageStackView.distribution = .equalSpacing
         imageStackView.spacing = 12

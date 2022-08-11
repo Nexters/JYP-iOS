@@ -54,18 +54,27 @@ enum JYPTagType {
 }
 
 class JYPTag: BaseView {
-    let type: JYPTagType
+    var type: JYPTagType? {
+        didSet {
+            if type != nil {
+                isSelected = false
+                isInactive = false
+            } else {
+                return
+            }
+        }
+    }
     
     var isSelected: Bool {
         didSet {
             if isSelected {
-                imageView.image = type.selectedConfig.image
-                titleLabel.textColor = type.selectedConfig.textColor
-                backgroundColor = type.selectedConfig.backgroundColor
+                imageView.image = type?.selectedConfig.image
+                titleLabel.textColor = type?.selectedConfig.textColor
+                backgroundColor = type?.selectedConfig.backgroundColor
             } else {
-                imageView.image = type.unselectedConfig.image
-                titleLabel.textColor = type.unselectedConfig.textColor
-                backgroundColor = type.unselectedConfig.backgroundColor
+                imageView.image = type?.unselectedConfig.image
+                titleLabel.textColor = type?.unselectedConfig.textColor
+                backgroundColor = type?.unselectedConfig.backgroundColor
             }
         }
     }
@@ -73,31 +82,27 @@ class JYPTag: BaseView {
     var isInactive: Bool {
         didSet {
             if isInactive {
-                imageView.image = type.inactiveConfig.image
-                titleLabel.textColor = type.inactiveConfig.textColor
-                backgroundColor = type.inactiveConfig.backgroundColor
+                imageView.image = type?.inactiveConfig.image
+                titleLabel.textColor = type?.inactiveConfig.textColor
+                backgroundColor = type?.inactiveConfig.backgroundColor
             } else {
                 isSelected = Bool(isSelected)
             }
         }
     }
     
-    let imageView = UIImageView()
-    let titleLabel = UILabel()
-    
     required init?(coder: NSCoder) {
         fatalError("not supported")
     }
     
-    init(type: JYPTagType, title: String) {
-        self.type = type
-        self.isSelected = false
-        self.isInactive = false
-        
+    init() {
+        isSelected = false
+        isInactive = false
         super.init(frame: .zero)
-        
-        titleLabel.text = title
     }
+    
+    let imageView = UIImageView()
+    let titleLabel = UILabel()
     
     override func setupProperty() {
         super.setupProperty()

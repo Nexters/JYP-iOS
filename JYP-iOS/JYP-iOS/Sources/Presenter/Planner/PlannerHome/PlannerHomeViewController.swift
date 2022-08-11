@@ -35,18 +35,30 @@ class PlannerHomeViewController: NavigationBarViewController, View {
     
     private lazy var dataSource = CreatePlannerDiscussionDataSource { _, collectionView, indexPath, item -> UICollectionViewCell in
         switch item {
-        case let .tagCell(tag):
+        case let .jypTagItem(reactor):
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: JYPTagCollectionViewCell.self), for: indexPath) as? JYPTagCollectionViewCell else { return .init() }
             
-            cell.update(type: tag.type)
+            cell.reactor = reactor
             return cell
-        case let .candidatePlaceCell(candidatePlace):
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: JourneyPlaceCollectionViewCell.self), for: indexPath) as? JourneyPlaceCollectionViewCell else { return .init() }
+        case let .candidatePlaceItem(reactor):
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: CandidatePlaceCollectionViewCell.self), for: indexPath) as? CandidatePlaceCollectionViewCell else { return .init() }
             
-            cell.update()
+            cell.reactor = reactor
             return cell
         }
     }
+//        case let .tagCell(tag):
+//            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: JYPTagCollectionViewCell.self), for: indexPath) as? JYPTagCollectionViewCell else { return .init() }
+//
+//            cell.update(type: tag.type)
+//            return cell
+//        case let .candidatePlaceCell(candidatePlace):
+//            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: JourneyPlaceCollectionViewCell.self), for: indexPath) as? JourneyPlaceCollectionViewCell else { return .init() }
+//
+//            cell.update()
+//            return cell
+//        }
+//    }
     
 //    CreateTagDataSource { _, collectionView, indexPath, item -> UICollectionViewCell in
 //            switch item {
@@ -112,12 +124,12 @@ class PlannerHomeViewController: NavigationBarViewController, View {
         
         discussionCollectionView.showsVerticalScrollIndicator = false
         discussionCollectionView.register(JYPTagCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: JYPTagCollectionViewCell.self))
-        discussionCollectionView.register(JourneyPlaceCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: JourneyPlaceCollectionViewCell.self))
-        discussionCollectionView.register(JourneyPlaceEmptyCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: JourneyPlaceEmptyCollectionViewCell.self))
-        discussionCollectionView.register(JourneyTagSectionHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: JourneyTagSectionHeader.self))
-        discussionCollectionView.register(JourneyPlaceSectionHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: JourneyPlaceSectionHeader.self))
-        discussionCollectionView.register(EmptyCollectionHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: EmptyCollectionHeaderView.self))
-        discussionCollectionView.register(EmptyCollectionFooterView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: String(describing: EmptyCollectionFooterView.self))
+        discussionCollectionView.register(CandidatePlaceCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: CandidatePlaceCollectionViewCell.self))
+//        discussionCollectionView.register(JourneyPlaceEmptyCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: JourneyPlaceEmptyCollectionViewCell.self))
+//        discussionCollectionView.register(JourneyTagSectionHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: JourneyTagSectionHeader.self))
+//        discussionCollectionView.register(JourneyPlaceSectionHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: JourneyPlaceSectionHeader.self))
+//        discussionCollectionView.register(EmptyCollectionHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: EmptyCollectionHeaderView.self))
+//        discussionCollectionView.register(EmptyCollectionFooterView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: String(describing: EmptyCollectionFooterView.self))
     }
     
     override func setupDelegate() {
@@ -200,7 +212,7 @@ class PlannerHomeViewController: NavigationBarViewController, View {
             .disposed(by: disposeBag)
     }
     
-    func bind(reactor: PlannerHomeReactor) {
+    func bind(reactor: Reactor) {
         reactor.state.map(\.sections).asObservable()
             .bind(to: discussionCollectionView.rx.items(dataSource: dataSource))
             .disposed(by: disposeBag)
@@ -240,21 +252,28 @@ extension PlannerHomeViewController: UICollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        switch indexPath.section {
-        case 0:
-            guard let tag = dataSource.sectionModels[indexPath.section].model.items[indexPath.row] as? Tag else { return .init() }
-            
-            return CGSize(width: tag.text.size(withAttributes: [NSAttributedString.Key.font: JYPIOSFontFamily.Pretendard.medium.font(size: 16)]).width + 50, height: 32)
-        case 1:
-            if places.isEmpty {
-                return CGSize(width: collectionView.frame.width - 48, height: 327)
-            } else {
-                return CGSize(width: collectionView.frame.width - 48, height: 165)
-            }
-
-        default:
-            return .zero
+        switch dataSource[indexPath.section].items[indexPath.row] {
+        case .jypTagItem(let reactor):
+            return CGSize(width: reactor.currentState.text.size(withAttributes: [NSAttributedString.Key.font: JYPIOSFontFamily.Pretendard.medium.font(size: 16)]).width + 50, height: 32)
+        case .candidatePlaceItem:
+            return CGSize(width: collectionView.frame.width - 48, height: 165)
         }
+//        switch indexPath.section {
+//        case 0:
+//            guard let item = dataSource[indexPath.section].items[indexPath.row] as? PlannerDiscussionItem else { return .init() }
+//            if let item(let ) = PlannerDiscussionItem.jypTagItem
+//
+//            return CGSize(width: "ddd".size(withAttributes: [NSAttributedString.Key.font: JYPIOSFontFamily.Pretendard.medium.font(size: 16)]).width + 50, height: 32)
+//        case 1:
+//            if places.isEmpty {
+//                return CGSize(width: collectionView.frame.width - 48, height: 327)
+//            } else {
+//                return CGSize(width: collectionView.frame.width - 48, height: 165)
+//            }
+//
+//        default:
+//            return .zero
+//        }
     }
     
 //    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
