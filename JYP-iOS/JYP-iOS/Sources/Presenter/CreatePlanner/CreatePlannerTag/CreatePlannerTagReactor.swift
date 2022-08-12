@@ -16,7 +16,7 @@ final class CreatePlannerTagReactor: Reactor {
     }
 
     enum Mutation {
-        case toggleTagSelection(IndexPath, JYPTagCollectionViewCellReactor)
+        case updateSectionItem(IndexPath, [TagItem])
     }
 
     struct State {
@@ -32,12 +32,16 @@ final class CreatePlannerTagReactor: Reactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case let .selectTag(indexPath):
-            let items = currentState.sections[indexPath.section].items[indexPath.row]
-            guard case let TagItem.tagCell(reactor) = items else { return .empty() }
-            var tag = reactor.currentState
-            tag.isSelected.toggle()
+            /// current Tag -> isSelecte toggle -> new Tag -> items 배열 replace
+            var items = currentState.sections[indexPath.section].items
+            let currentTag = items[indexPath.row]
 
-            return .just(.toggleTagSelection(indexPath, .init(tag: tag)))
+            guard case let TagItem.tagCell(reactor) = currentTag else { return .empty() }
+            var newTag = reactor.currentState
+            newTag.isSelected.toggle()
+
+            items.replaceSubrange(indexPath.row ... indexPath.row, with: [.tagCell(JYPTagCollectionViewCellReactor(tag: newTag))])
+            return .just(.updateSectionItem(indexPath, items))
         }
     }
 
@@ -45,11 +49,8 @@ final class CreatePlannerTagReactor: Reactor {
         var newState: State = state
 
         switch mutation {
-        case let .toggleTagSelection(indexPath, reactor):
-            let tag = TagItem.tagCell(reactor)
-            var items = currentState.sections[indexPath.section].items
-            items.replaceSubrange(indexPath.row ... indexPath.row, with: [tag])
-            newState.sections[indexPath.section].items = items
+        case let .updateSectionItem(indexPath, tags):
+            newState.sections[indexPath.section].items = tags
         }
 
         return newState
