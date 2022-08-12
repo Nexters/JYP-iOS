@@ -11,16 +11,23 @@ import ReactorKit
 import RxDataSources
 
 final class CreatePlannerTagReactor: Reactor {
+    static let MAX_SELECTION_COUNT = 3
+
     enum Action {
         case selectTag(IndexPath)
     }
 
     enum Mutation {
-        case updateSectionItem(IndexPath, [TagItem])
+        case insertIndexPath(IndexPath)
+        case removeIndexPath(IndexPath)
+        case updateSectionTagItem(IndexPath, [TagItem])
+        case activeStartButton
     }
 
     struct State {
         var sections: [TagSectionModel]
+        var selectedItems = Set<IndexPath>()
+        var isEnabledStartButton: Bool = false
     }
 
     let initialState: State
@@ -33,7 +40,25 @@ final class CreatePlannerTagReactor: Reactor {
         switch action {
         case let .selectTag(indexPath):
             let items = remakeSelectedTagItems(indexPath: indexPath)
-            return .just(.updateSectionItem(indexPath, items))
+
+            let updateTagItem: Observable<Mutation> = .just(.updateSectionTagItem(indexPath, items))
+            let enableStartButton: Observable<Mutation> = .just(.activeStartButton)
+
+            if currentState.selectedItems.contains(indexPath) {
+                return .concat(
+                    .just(.removeIndexPath(indexPath)),
+                    updateTagItem,
+                    enableStartButton
+                )
+            } else {
+                guard currentState.selectedItems.count < Self.MAX_SELECTION_COUNT else { return .empty() }
+
+                return .concat(
+                    .just(.insertIndexPath(indexPath)),
+                    updateTagItem,
+                    enableStartButton
+                )
+            }
         }
     }
 
@@ -41,8 +66,14 @@ final class CreatePlannerTagReactor: Reactor {
         var newState: State = state
 
         switch mutation {
-        case let .updateSectionItem(indexPath, tags):
+        case let .updateSectionTagItem(indexPath, tags):
             newState.sections[indexPath.section].items = tags
+        case let .insertIndexPath(indexPath):
+            newState.selectedItems.insert(indexPath)
+        case let .removeIndexPath(indexPath):
+            newState.selectedItems.remove(indexPath)
+        case .activeStartButton:
+            newState.isEnabledStartButton = !currentState.selectedItems.isEmpty
         }
 
         return newState
@@ -80,7 +111,7 @@ extension CreatePlannerTagReactor {
         newTag.isSelected.toggle()
 
         items.replaceSubrange(indexPath.row ... indexPath.row, with: [.tagCell(JYPTagCollectionViewCellReactor(tag: newTag))])
-        
+
         return items
     }
 }

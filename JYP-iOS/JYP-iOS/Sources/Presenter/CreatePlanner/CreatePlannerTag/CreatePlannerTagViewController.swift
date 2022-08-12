@@ -132,8 +132,15 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
-        reactor.state.map(\.sections)
+        reactor.state
+            .map(\.sections)
             .bind(to: collectionView.rx.items(dataSource: dataSource))
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .map(\.isEnabledStartButton)
+            .distinctUntilChanged()
+            .bind(to: startButton.rx.isEnabled)
             .disposed(by: disposeBag)
     }
 }
