@@ -28,7 +28,19 @@ class JYPTagCollectionViewCell: BaseCollectionViewCell, View {
     }
     
     func bind(reactor: Reactor) {
-        jypTag.type = reactor.currentState.type
-        jypTag.titleLabel.text = reactor.currentState.text
+        reactor.state
+            .map(\.type)
+            .bind(to: jypTag.rx.type)
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .map(\.text)
+            .bind(to: jypTag.titleLabel.rx.text)
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .map(\.isSelected)
+            .bind(to: jypTag.rx.isSelected)
+            .disposed(by: disposeBag)
     }
 }
