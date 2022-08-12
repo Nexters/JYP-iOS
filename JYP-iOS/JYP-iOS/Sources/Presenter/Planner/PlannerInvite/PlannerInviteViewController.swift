@@ -1,6 +1,6 @@
 //
-//  DiscussionInviteView.swift
-//  JYP-iOSTests
+//  DiscusstionInviteViewController.swift
+//  JYP-iOS
 //
 //  Created by 송영모 on 2022/08/06.
 //  Copyright © 2022 JYP-iOS. All rights reserved.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class DiscussionInviteView: BaseView {
+class PlannerInviteViewController: NavigationBarViewController {
     let titleLabel = UILabel()
     let subLabel = UILabel()
     let buttonStackView = UIStackView()
@@ -37,7 +37,7 @@ class DiscussionInviteView: BaseView {
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        addSubviews([titleLabel, subLabel, buttonStackView])
+        contentView.addSubviews([titleLabel, subLabel, buttonStackView])
         
         buttonStackView.addArrangedSubview(kakaoInviteButton)
         buttonStackView.addArrangedSubview(linkInviteButton)

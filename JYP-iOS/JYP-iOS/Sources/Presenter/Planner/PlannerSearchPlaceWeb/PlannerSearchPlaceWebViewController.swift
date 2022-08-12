@@ -9,7 +9,7 @@
 import UIKit
 import WebKit
 
-class WebViewController: BaseViewController {
+class PlannerSearchPlaceWebViewController: BaseViewController {
     let url: String
     
     let webView = WKWebView()

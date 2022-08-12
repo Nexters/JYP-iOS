@@ -2,20 +2,14 @@
 //  Tag.swift
 //  JYP-iOS
 //
-//  Created by inae Lee on 2022/08/09.
+//  Created by 송영모 on 2022/08/11.
 //  Copyright © 2022 JYP-iOS. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 struct Tag: Hashable {
     let id: String
     let text: String
-    let type: TagType
-}
-
-enum TagType {
-    case soso
-    case like
-    case dislike
+    let type: JYPTagType
 }

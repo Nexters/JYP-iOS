@@ -9,7 +9,7 @@
 import UIKit
 import RxSwift
 
-class DiscussionSearchPlaceViewController: NavigationBarViewController {
+class PlannerSearchPlaceViewController: NavigationBarViewController {
     let backButton = UIButton(type: .system)
     let searchTextField = JYPSearchTextField(type: .place)
     let searchTableView = UITableView()
@@ -28,7 +28,7 @@ class DiscussionSearchPlaceViewController: NavigationBarViewController {
         backButton.setImage(JYPIOSAsset.iconBack.image, for: .normal)
         backButton.tintColor = JYPIOSAsset.textB90.color
         
-        searchTableView.register(DiscussionSearchPlaceTableViewCell.self, forCellReuseIdentifier: String(describing: DiscussionSearchPlaceTableViewCell.self))
+        searchTableView.register(PlannerSearchPlaceTableViewCell.self, forCellReuseIdentifier: String(describing: PlannerSearchPlaceTableViewCell.self))
     }
     
     override func setupDelegate() {
@@ -105,13 +105,13 @@ class DiscussionSearchPlaceViewController: NavigationBarViewController {
     }
 }
 
-extension DiscussionSearchPlaceViewController: UITableViewDelegate, UITableViewDataSource {
+extension PlannerSearchPlaceViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return documents.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: DiscussionSearchPlaceTableViewCell.self), for: indexPath) as? DiscussionSearchPlaceTableViewCell else { return UITableViewCell() }
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: String(describing: PlannerSearchPlaceTableViewCell.self), for: indexPath) as? PlannerSearchPlaceTableViewCell else { return UITableViewCell() }
         let data = documents[indexPath.item]
         
         cell.update(title: data.placeName, sub: data.roadAddressName, category: data.categoryGroupName)
@@ -119,7 +119,7 @@ extension DiscussionSearchPlaceViewController: UITableViewDelegate, UITableViewD
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let discussionPlaceMapVC = DiscussionPlaceMapViewController(document: documents[indexPath.item])
+        let discussionPlaceMapVC = PlannerSearchPlaceMapViewController(document: documents[indexPath.item])
         
         navigationController?.pushViewController(discussionPlaceMapVC, animated: true)
     }

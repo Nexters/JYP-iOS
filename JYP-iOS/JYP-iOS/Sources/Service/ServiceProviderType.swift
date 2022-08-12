@@ -8,12 +8,10 @@
 
 import Foundation
 
-protocol ServiceProviderType: class {
-    var APIService: APIService { get }
+protocol ServiceProviderType: AnyObject {
     var kakaoSearchService: KakaoSearchServiceType { get }
 }
 
 final class ServiceProvider: ServiceProviderType {
-    lazy var APIService: APIService = APIService
     lazy var kakaoSearchService: KakaoSearchServiceType = KakaoSearchService(provider: self)
 }

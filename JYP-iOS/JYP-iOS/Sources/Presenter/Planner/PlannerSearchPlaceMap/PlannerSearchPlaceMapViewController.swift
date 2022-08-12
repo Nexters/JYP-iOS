@@ -11,7 +11,7 @@ import UIKit
     import GoogleMaps
 #endif
 
-class DiscussionPlaceMapViewController: NavigationBarViewController {
+class PlannerSearchPlaceMapViewController: NavigationBarViewController {
     let document: Document
     
     let topView = UIView()
@@ -148,7 +148,7 @@ class DiscussionPlaceMapViewController: NavigationBarViewController {
         infoButton.rx.tap
             .withUnretained(self)
             .bind { this, _ in
-                let webVC = WebViewController(url: this.document.placeURL)
+                let webVC = PlannerSearchPlaceWebViewController(url: this.document.placeURL)
                 this.present(webVC, animated: true, completion: nil)
             }
             .disposed(by: disposeBag)

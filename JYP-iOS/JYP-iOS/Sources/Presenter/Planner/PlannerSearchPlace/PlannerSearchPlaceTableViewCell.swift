@@ -8,7 +8,7 @@
 
 import UIKit
 
-class DiscussionSearchPlaceTableViewCell: BaseTableViewCell {
+class PlannerSearchPlaceTableViewCell: BaseTableViewCell {
     let titleLabel = UILabel()
     let subLabel = UILabel()
     let categoryImageView = UIImageView()
@@ -48,7 +48,7 @@ class DiscussionSearchPlaceTableViewCell: BaseTableViewCell {
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        contentView.addSubviews([titleLabel, subLabel, categoryImageView ,categoryLabel])
+        contentView.addSubviews([titleLabel, subLabel, categoryImageView, categoryLabel])
     }
     
     override func setupLayout() {

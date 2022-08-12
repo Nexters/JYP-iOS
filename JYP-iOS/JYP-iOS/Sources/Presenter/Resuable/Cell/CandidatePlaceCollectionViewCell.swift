@@ -1,96 +1,17 @@
 //
-//  JourneyPlaceCollectionViewCell.swift
+//  CandidatePlaceCollectionViewCell.swift
 //  JYP-iOS
 //
-//  Created by 송영모 on 2022/08/04.
+//  Created by 송영모 on 2022/08/11.
 //  Copyright © 2022 JYP-iOS. All rights reserved.
 //
 
 import UIKit
-import RxSwift
+import ReactorKit
 
-class JourneyPlaceSectionHeader: BaseCollectionReusableView {
-    let titleLabel = UILabel()
-    let subLabel = UILabel()
+class CandidatePlaceCollectionViewCell: BaseCollectionViewCell, View {
+    typealias Reactor = CandidatePlaceCollectionViewCellReactor
     
-    override func setupProperty() {
-        super.setupProperty()
-        
-        titleLabel.text = "여행 후보 장소"
-        titleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 16)
-        titleLabel.textColor = JYPIOSAsset.textB80.color
-        
-        subLabel.text = "투표를 통해 여행 장소를 선정하세요!"
-        subLabel.font = JYPIOSFontFamily.Pretendard.regular.font(size: 14)
-        subLabel.textColor = JYPIOSAsset.textB40.color
-    }
-    
-    override func setupHierarchy() {
-        super.setupHierarchy()
-        
-        addSubviews([titleLabel, subLabel])
-    }
-    
-    override func setupLayout() {
-        super.setupLayout()
-        
-        titleLabel.snp.makeConstraints {
-            $0.top.equalToSuperview()
-            $0.leading.equalToSuperview().inset(24)
-        }
-        
-        subLabel.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(6)
-            $0.leading.equalToSuperview().inset(24)
-        }
-    }
-}
-
-class JourneyPlaceEmptyCollectionViewCell: BaseCollectionViewCell {
-    let circleImageView = UIImageView()
-    let addPlaceButton = JYPButton(type: .addPlace)
-    
-    func update() {
-    }
-    
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        
-        disposeBag = DisposeBag()
-    }
-    
-    override func setupProperty() {
-        super.setupProperty()
-        contentView.backgroundColor = JYPIOSAsset.backgroundWhite100.color
-        contentView.setShadow(radius: 40, offset: CGSize(width: 4, height: 10), opacity: 0.06)
-        
-        circleImageView.cornerRound(radius: 52.5)
-        circleImageView.backgroundColor = .systemGray6
-    }
-    
-    override func setupHierarchy() {
-        super.setupHierarchy()
-        
-        contentView.addSubviews([circleImageView, addPlaceButton])
-    }
-    
-    override func setupLayout() {
-        super.setupLayout()
-        
-        circleImageView.snp.makeConstraints {
-            $0.top.equalToSuperview().inset(27)
-            $0.centerX.equalToSuperview()
-        }
-        
-        addPlaceButton.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview().inset(20)
-            $0.bottom.equalToSuperview().inset(20)
-            $0.height.equalTo(48)
-        }
-    }
-}
-
-class JourneyPlaceCollectionViewCell: BaseCollectionViewCell {
     let categoryLabel = UILabel()
     let titleLabel = UILabel()
     let subLabel = UILabel()
@@ -177,5 +98,8 @@ class JourneyPlaceCollectionViewCell: BaseCollectionViewCell {
             $0.trailing.bottom.equalToSuperview().inset(20)
             $0.width.height.equalTo(62)
         }
+    }
+    
+    func bind(reactor: Reactor) {
     }
 }
