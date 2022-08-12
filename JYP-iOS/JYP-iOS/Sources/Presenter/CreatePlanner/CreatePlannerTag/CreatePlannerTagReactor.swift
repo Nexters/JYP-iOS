@@ -32,15 +32,7 @@ final class CreatePlannerTagReactor: Reactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case let .selectTag(indexPath):
-            /// current Tag -> isSelecte toggle -> new Tag -> items 배열 replace
-            var items = currentState.sections[indexPath.section].items
-            let currentTag = items[indexPath.row]
-
-            guard case let TagItem.tagCell(reactor) = currentTag else { return .empty() }
-            var newTag = reactor.currentState
-            newTag.isSelected.toggle()
-
-            items.replaceSubrange(indexPath.row ... indexPath.row, with: [.tagCell(JYPTagCollectionViewCellReactor(tag: newTag))])
+            let items = remakeSelectedTagItems(indexPath: indexPath)
             return .just(.updateSectionItem(indexPath, items))
         }
     }
@@ -71,5 +63,24 @@ extension CreatePlannerTagReactor {
         let dislikeSection = TagSectionModel(model: .dislike(dislikeItems), items: dislikeItems.map { .tagCell(.init(tag: $0)) })
 
         return [sosoSection, likeSection, dislikeSection]
+    }
+}
+
+extension CreatePlannerTagReactor {
+    /// 선택된 tag의 isSelected를 변경하고, items 배열의 원래 요소와 교체함
+    /// - Parameter indexPath: 선택된 tag의 indexPath
+    /// - Returns: 선택된 태그의 상태가 반영된 전체 Item 배열
+    private func remakeSelectedTagItems(indexPath: IndexPath) -> [TagItem] {
+        /// current Tag -> isSelecte toggle -> new Tag -> items 배열 replace
+        var items = currentState.sections[indexPath.section].items
+        let currentTag = items[indexPath.row]
+
+        guard case let TagItem.tagCell(reactor) = currentTag else { return .init() }
+        var newTag = reactor.currentState
+        newTag.isSelected.toggle()
+
+        items.replaceSubrange(indexPath.row ... indexPath.row, with: [.tagCell(JYPTagCollectionViewCellReactor(tag: newTag))])
+        
+        return items
     }
 }
