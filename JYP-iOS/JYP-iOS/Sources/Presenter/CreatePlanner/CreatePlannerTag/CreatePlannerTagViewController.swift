@@ -27,11 +27,12 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
 
     private lazy var dataSource = CreateTagDataSource { _, collectionView, indexPath, item -> UICollectionViewCell in
         switch item {
-        case let .tagCell(tag):
+        case let .tagCell(reactor):
             guard let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: String(describing: JYPTagCollectionViewCell.self),
                 for: indexPath
             ) as? JYPTagCollectionViewCell else { return .init() }
+            cell.reactor = reactor
 
             return cell
         }
@@ -128,6 +129,7 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
     func bind(reactor: Reactor) {
         collectionView.rx.itemSelected
             .map { indexPath in Reactor.Action.selectTag(indexPath) }
+            .debug()
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
@@ -141,9 +143,12 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
 
 extension CreatePlannerTagViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_: UICollectionView, layout _: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let tags = dataSource[indexPath.section].model.items[indexPath.row]
+        let section = dataSource[indexPath.section].items[indexPath.row]
 
-        return CGSize(width: tags.text.size(withAttributes: [NSAttributedString.Key.font: JYPIOSFontFamily.Pretendard.medium.font(size: 16)]).width + 43, height: 32)
+        switch section {
+        case let .tagCell(reactor):
+            return CGSize(width: reactor.currentState.text.size(withAttributes: [NSAttributedString.Key.font: JYPIOSFontFamily.Pretendard.medium.font(size: 16)]).width + 50, height: 32)
+        }
     }
 
     func collectionView(_: UICollectionView, layout _: UICollectionViewLayout, referenceSizeForHeaderInSection _: Int) -> CGSize {

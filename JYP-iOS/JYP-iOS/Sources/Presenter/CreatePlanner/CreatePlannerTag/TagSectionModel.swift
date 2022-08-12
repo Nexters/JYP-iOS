@@ -55,6 +55,6 @@ extension TagSection {
     }
 }
 
-enum TagItem: Equatable {
-    case tagCell(Tag)
+enum TagItem {
+    case tagCell(JYPTagCollectionViewCellReactor)
 }
