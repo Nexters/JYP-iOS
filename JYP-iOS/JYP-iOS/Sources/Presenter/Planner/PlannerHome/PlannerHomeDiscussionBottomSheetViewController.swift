@@ -8,7 +8,7 @@
 
 import UIKit
 
-class DiscussionTagBottomSheetViewController: BottomSheetViewController {
+class PlannerHomeDiscussionBottomSheetViewController: BottomSheetViewController {
     let bottomSheetView = UIView()
     let titleLabel = UILabel()
     let tag = JYPTag()

@@ -161,7 +161,7 @@ class PlannerHomeViewController: NavigationBarViewController, View {
         
         inviteButton.rx.tap
             .bind { [weak self] _ in
-                let discussionInviteVC = DiscusstionInviteViewController()
+                let discussionInviteVC = PlannerInviteViewController()
                 self?.navigationController?.pushViewController(discussionInviteVC, animated: true)
             }
             .disposed(by: disposeBag)

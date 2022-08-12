@@ -8,7 +8,7 @@
 
 import UIKit
 
-class DiscussionSearchPlaceTableViewCell: BaseTableViewCell {
+class PlannerSearchPlaceTableViewCell: BaseTableViewCell {
     let titleLabel = UILabel()
     let subLabel = UILabel()
     let categoryImageView = UIImageView()
