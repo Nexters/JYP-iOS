@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol ServiceProviderType: class {
+protocol ServiceProviderType: AnyObject {
     var kakaoSearchService: KakaoSearchServiceType { get }
 }
 

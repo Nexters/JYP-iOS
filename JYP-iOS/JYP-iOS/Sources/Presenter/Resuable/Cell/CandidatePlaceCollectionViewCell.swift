@@ -20,7 +20,6 @@ class CandidatePlaceCollectionViewCell: BaseCollectionViewCell, View {
     let likeButton = UIButton()
     
     func update() {
-        
     }
     
     override func layoutSubviews() {
@@ -102,6 +101,5 @@ class CandidatePlaceCollectionViewCell: BaseCollectionViewCell, View {
     }
     
     func bind(reactor: Reactor) {
-        
     }
 }

@@ -12,29 +12,7 @@ class JYPTagCollectionViewCell: BaseCollectionViewCell, View {
     typealias Reactor = JYPTagCollectionViewCellReactor
     
     var jypTag = JYPTag()
-    
-//    func update(type: JYPTagType) {
-//        jypTag = JYPTag(type: type, title: "안녕")
-//
-//        // FIXME: 테스트 용
-//        if Bool.random() {
-//            jypTag?.isSelected = false
-//        } else {
-//            jypTag?.isSelected = true
-//        }
-//
-//        if Bool.random() {
-//            jypTag?.isInactive = false
-//        } else {
-//            jypTag?.isInactive = true
-//        }
-//
-//        setupHierarchy()
-//        setupLayout()
-//    }
-//
-
-    
+      
     override func setupHierarchy() {
         super.setupHierarchy()
         
