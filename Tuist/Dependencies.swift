@@ -12,7 +12,6 @@ let spm = SwiftPackageManagerDependencies([
     .remote(url: "https://github.com/RxSwiftCommunity/RxDataSources.git", requirement: .upToNextMinor(from: "5.0.0"))
 ])
 
-
 let crt = CarthageDependencies([
     .binary(path: "https://dl.google.com/geosdk/GoogleMaps.json", requirement: .upToNext("6.0.0")),
 ])

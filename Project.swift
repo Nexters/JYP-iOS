@@ -79,7 +79,7 @@ class BaseProjectFactory: ProjectFactory {
         .external(name: "KakaoSDKUser"),
         .external(name: "GoogleMaps")
     ]
-    
+
     func generateConfigurations() -> Settings {
         Settings.settings(configurations: [
             .debug(name: "Debug", xcconfig: .relativeToRoot("\(projectName)/\(projectName)/Sources/Config/Debug.xcconfig")),
