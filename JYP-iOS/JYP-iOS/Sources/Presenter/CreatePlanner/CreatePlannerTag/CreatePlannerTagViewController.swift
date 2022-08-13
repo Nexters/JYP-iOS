@@ -45,6 +45,16 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
         header.titleLabel.text = model.title
         header.addButton.isHidden = model.isHiddenRightButton
 
+        header.rx.didTapAddButton
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: { [weak self] in
+                let addTagBottomSheetReactor = AddTagBottomSheetReactor(section: model.self)
+                let addTagBottomSheetViewController = AddTagBottomSheetViewController(reactor: addTagBottomSheetReactor)
+
+                self?.tabBarController?.present(addTagBottomSheetViewController, animated: true)
+            })
+            .disposed(by: header.disposeBag)
+
         return header
     }
 

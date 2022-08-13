@@ -11,6 +11,8 @@ import UIKit
 enum JYPSearchTextFieldType {
     case place
     case region
+    case tag
+    case planner
     
     var config: JYPSeachTextFieldConfig {
         switch self {
@@ -18,6 +20,26 @@ enum JYPSearchTextFieldType {
             return .init(placeholderText: "예) 서울 저니 식당", font: JYPIOSFontFamily.Pretendard.semiBold.font(size: 18), textColor: JYPIOSAsset.textB90.color, backgroundColor: JYPIOSAsset.backgroundWhite200.color)
         case .region:
             return .init(placeholderText: "도, 시를 입력해주세요.", font: JYPIOSFontFamily.Pretendard.semiBold.font(size: 24), textColor: JYPIOSAsset.textB90.color, backgroundColor: JYPIOSAsset.backgroundWhite200.color)
+        case .tag:
+            return .init(placeholderText: "입력해주세요", font: JYPIOSFontFamily.Pretendard.semiBold.font(size: 24), textColor: JYPIOSAsset.textB90.color, backgroundColor: JYPIOSAsset.backgroundWhite100.color)
+        case .planner:
+            return .init(placeholderText: "예) 제주도 여행기", font: JYPIOSFontFamily.Pretendard.semiBold.font(size: 24), textColor: JYPIOSAsset.textB90.color, backgroundColor: JYPIOSAsset.backgroundWhite100.color)
+        }
+    }
+    
+    var trailingIcon: UIImage {
+        switch self {
+        case .place, .region:
+            return JYPIOSAsset.iconSearch.image
+        case .tag, .planner:
+            return UIImage()
+        }
+    }
+    
+    var isHiddenBottomBorder: Bool {
+        switch self {
+        case .place, .region: return true
+        case .tag, .planner: return false
         }
     }
 }
@@ -33,6 +55,7 @@ class JYPSearchTextField: BaseView {
     let type: JYPSearchTextFieldType
     let textField = UITextField()
     let trailingButton = UIButton()
+    let bottomBorderLine = UIView()
     
     required init?(coder: NSCoder) {
         fatalError("not supported")
@@ -56,14 +79,17 @@ class JYPSearchTextField: BaseView {
         textField.font = type.config.font
         textField.textColor = type.config.textColor
         
-        trailingButton.setImage(JYPIOSAsset.iconSearch.image, for: .normal)
+        trailingButton.setImage(type.trailingIcon, for: .normal)
         trailingButton.setImage(JYPIOSAsset.iconTextDelete.image, for: .selected)
+        
+        bottomBorderLine.backgroundColor = .black.withAlphaComponent(0.1)
+        bottomBorderLine.isHidden = type.isHiddenBottomBorder
     }
     
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        addSubviews([textField, trailingButton])
+        addSubviews([textField, trailingButton, bottomBorderLine])
     }
     
     override func setupLayout() {
@@ -78,6 +104,12 @@ class JYPSearchTextField: BaseView {
             $0.trailing.equalToSuperview().inset(12)
             $0.centerY.equalToSuperview()
             $0.width.height.equalTo(20)
+        }
+        
+        bottomBorderLine.snp.makeConstraints { make in
+            make.bottom.equalTo(textField.snp.bottom)
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(1)
         }
     }
     
@@ -104,5 +136,20 @@ class JYPSearchTextField: BaseView {
                 }
             }
             .disposed(by: disposeBag)
+    }
+    
+    func setupToolBar() {
+        let toolbar = UIToolbar()
+        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let doneButton = UIBarButtonItem(title: "입력완료", style: .done, target: self, action: #selector(didTapDoneButton(_:)))
+        doneButton.tintColor = JYPIOSAsset.mainPink.color
+        toolbar.sizeToFit()
+        toolbar.setItems([flexSpace, doneButton], animated: true)
+        textField.inputAccessoryView = toolbar 
+    }
+    
+    @objc
+    func didTapDoneButton(_ sender: UIBarButtonItem) {
+        self.textField.resignFirstResponder()
     }
 }

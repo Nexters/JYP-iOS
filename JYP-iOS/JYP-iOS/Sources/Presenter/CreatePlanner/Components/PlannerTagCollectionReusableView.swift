@@ -6,6 +6,8 @@
 //  Copyright © 2022 JYP-iOS. All rights reserved.
 //
 
+import RxCocoa
+import RxSwift
 import UIKit
 
 class PlannerTagCollectionReusableView: BaseCollectionReusableView {
@@ -13,6 +15,8 @@ class PlannerTagCollectionReusableView: BaseCollectionReusableView {
 
     let titleLabel = UILabel()
     let addButton = UIButton()
+
+    let disposeBag = DisposeBag()
 
     override func setupProperty() {
         super.setupProperty()
@@ -42,5 +46,11 @@ class PlannerTagCollectionReusableView: BaseCollectionReusableView {
             $0.trailing.equalToSuperview()
             $0.size.equalTo(24)
         }
+    }
+}
+
+extension Reactive where Base: PlannerTagCollectionReusableView {
+    var didTapAddButton: ControlEvent<Void> {
+        base.addButton.rx.tap
     }
 }
