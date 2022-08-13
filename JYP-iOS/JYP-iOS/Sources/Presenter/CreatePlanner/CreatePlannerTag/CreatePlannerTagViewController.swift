@@ -45,6 +45,14 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
         header.titleLabel.text = model.title
         header.addButton.isHidden = model.isHiddenRightButton
 
+        header.rx.didTapAddButton
+            .observe(on: MainScheduler.instance)
+            .subscribe(onNext: {
+                print("BottomSheet Open")
+                print(model)
+            })
+            .disposed(by: header.disposeBag)
+
         return header
     }
 
