@@ -34,6 +34,7 @@ final class AddTagBottomSheetReactor: Reactor {
     enum Action {
         case inputTextField(String)
         case saveTag(String)
+        case dismiss
     }
 
     enum Mutation {
@@ -63,7 +64,9 @@ final class AddTagBottomSheetReactor: Reactor {
             return mutation
         case let .saveTag(tagName):
             print(tagName)
-            
+
+            return .just(.dismiss)
+        case .dismiss:
             return .just(.dismiss)
         }
     }

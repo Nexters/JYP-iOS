@@ -125,6 +125,11 @@ class AddTagBottomSheetViewController: BottomSheetViewController, View {
             })
             .disposed(by: disposeBag)
 
+        cancelButton.rx.tap
+            .map { _ in Reactor.Action.dismiss }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
         textField.textField.rx.text
             .orEmpty
             .distinctUntilChanged()
