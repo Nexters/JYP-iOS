@@ -26,12 +26,9 @@ class AddTagBottomSheetViewController: BottomSheetViewController, View {
 
     private let addButton: JYPButton = .init(type: .add)
 
-    private let section: TagSection
-
     // MARK: - Initializer
 
-    init(reactor: Reactor, section: TagSection) {
-        self.section = section
+    init(reactor: Reactor) {
         super.init(mode: .drag)
         self.reactor = reactor
     }
@@ -56,7 +53,6 @@ class AddTagBottomSheetViewController: BottomSheetViewController, View {
     override func setupProperty() {
         super.setupProperty()
 
-        titleLabel.text = "\(section.title) 생성"
         titleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 18)
         titleLabel.textColor = JYPIOSAsset.textB90.color
 
@@ -142,6 +138,11 @@ class AddTagBottomSheetViewController: BottomSheetViewController, View {
             .compactMap { _ in self.textField.textField.text }
             .map { Reactor.Action.saveTag($0) }
             .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .map { "\($0.section.title) 생성" }
+            .bind(to: titleLabel.rx.text)
             .disposed(by: disposeBag)
 
         reactor.state

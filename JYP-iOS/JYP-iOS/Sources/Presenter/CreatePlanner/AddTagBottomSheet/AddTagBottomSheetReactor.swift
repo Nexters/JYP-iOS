@@ -43,6 +43,7 @@ final class AddTagBottomSheetReactor: Reactor {
     }
 
     struct State {
+        var section: TagSection
         var valid: TagTextFieldInputState = .invalid
         var guideText: String = TagTextFieldInputState.valid.guideText
         var guideTextColor: UIColor = TagTextFieldInputState.valid.textColor
@@ -51,8 +52,8 @@ final class AddTagBottomSheetReactor: Reactor {
 
     let initialState: State
 
-    init() {
-        initialState = .init()
+    init(section: TagSection) {
+        initialState = .init(section: section)
     }
 
     func mutate(action: Action) -> Observable<Mutation> {

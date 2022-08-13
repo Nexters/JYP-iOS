@@ -48,8 +48,8 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
         header.rx.didTapAddButton
             .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] in
-                let addTagBottomSheetReactor = AddTagBottomSheetReactor()
-                let addTagBottomSheetViewController = AddTagBottomSheetViewController(reactor: addTagBottomSheetReactor, section: model.self)
+                let addTagBottomSheetReactor = AddTagBottomSheetReactor(section: model.self)
+                let addTagBottomSheetViewController = AddTagBottomSheetViewController(reactor: addTagBottomSheetReactor)
 
                 self?.tabBarController?.present(addTagBottomSheetViewController, animated: true)
             })
