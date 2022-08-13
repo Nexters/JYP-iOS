@@ -24,6 +24,14 @@ extension TagSection {
         case .dislike: return "싫어요 태그"
         }
     }
+    
+    var type: JYPTagType {
+        switch self {
+        case .soso: return .soso
+        case .like: return .like
+        case .dislike: return .dislike
+        }
+    }
 
     var isHiddenRightButton: Bool {
         switch self {
