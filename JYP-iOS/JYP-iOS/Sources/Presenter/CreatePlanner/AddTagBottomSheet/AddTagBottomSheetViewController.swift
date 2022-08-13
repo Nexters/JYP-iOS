@@ -145,5 +145,10 @@ class AddTagBottomSheetViewController: BottomSheetViewController, View {
             .map(\.guideTextColor)
             .bind(to: guideLabel.rx.textColor)
             .disposed(by: disposeBag)
+
+        reactor.state
+            .map { $0.valid == .invalid }
+            .bind(to: addButton.rx.isHidden)
+            .disposed(by: disposeBag)
     }
 }
