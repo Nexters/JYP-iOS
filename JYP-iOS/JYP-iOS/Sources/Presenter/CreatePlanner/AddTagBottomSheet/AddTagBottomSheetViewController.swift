@@ -6,9 +6,12 @@
 //  Copyright © 2022 JYP-iOS. All rights reserved.
 //
 
+import ReactorKit
 import UIKit
 
-class AddTagBottomSheetViewController: BottomSheetViewController {
+class AddTagBottomSheetViewController: BottomSheetViewController, View {
+    typealias Reactor = AddTagBottomSheetReactor
+
     // MARK: - Properties
 
     private let containerView: UIView = .init()
@@ -27,9 +30,10 @@ class AddTagBottomSheetViewController: BottomSheetViewController {
 
     // MARK: - Initializer
 
-    init(section: TagSection) {
+    init(reactor: Reactor, section: TagSection) {
         self.section = section
         super.init(mode: .drag)
+        self.reactor = reactor
     }
 
     @available(*, unavailable)
@@ -42,6 +46,14 @@ class AddTagBottomSheetViewController: BottomSheetViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
     }
+
+    override func touchesBegan(_: Set<UITouch>, with _: UIEvent?) {
+        guard reactor?.currentState.valid == .valid else { return }
+
+        view.endEditing(true)
+    }
+
+    // MARK: - Setup Methods
 
     override func setupProperty() {
         super.setupProperty()
@@ -64,6 +76,7 @@ class AddTagBottomSheetViewController: BottomSheetViewController {
         textField.textField.leftView = UIView()
 
         addButton.isEnabled = false
+        addButton.isHidden = true
     }
 
     override func setupHierarchy() {
@@ -105,5 +118,32 @@ class AddTagBottomSheetViewController: BottomSheetViewController {
             make.leading.trailing.bottom.equalToSuperview()
             make.height.equalTo(52)
         }
+    }
+
+    // MARK: - Bind
+
+    func bind(reactor: AddTagBottomSheetReactor) {
+        rx.viewDidLoad
+            .subscribe(onNext: { [weak self] in
+                self?.textField.textField.becomeFirstResponder()
+            })
+            .disposed(by: disposeBag)
+
+        textField.textField.rx.text
+            .orEmpty
+            .distinctUntilChanged()
+            .map { Reactor.Action.inputTextField($0) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .map(\.guideText)
+            .bind(to: guideLabel.rx.text)
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .map(\.guideTextColor)
+            .bind(to: guideLabel.rx.textColor)
+            .disposed(by: disposeBag)
     }
 }
