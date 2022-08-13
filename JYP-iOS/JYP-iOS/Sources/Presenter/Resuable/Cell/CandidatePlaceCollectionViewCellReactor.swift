@@ -11,9 +11,15 @@ import ReactorKit
 class CandidatePlaceCollectionViewCellReactor: Reactor {
     typealias Action = NoAction
     
-    let initialState: CandidatePlace
+    struct State {
+        var candidatePlace: CandidatePlace
+        var rank: Int
+        var isSelectedLikeButton: Bool = false
+    }
     
-    init(candidatePlace: CandidatePlace) {
-        initialState = candidatePlace
+    let initialState: State
+    
+    init(state: State) {
+        initialState = state
     }
 }

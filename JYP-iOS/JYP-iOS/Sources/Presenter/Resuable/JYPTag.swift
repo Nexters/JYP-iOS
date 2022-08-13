@@ -19,6 +19,17 @@ enum JYPTagType: Int {
     case like = 1
     case dislike = 2
     
+    var title: String {
+        switch self {
+        case .soso:
+            return "상관없어요"
+        case .like:
+            return "좋아요"
+        case .dislike:
+            return "싫어요"
+        }
+    }
+    
     var inactiveConfig: JYPTagConfig {
         switch self {
         case .soso:

@@ -9,6 +9,7 @@
 import UIKit
 import ReactorKit
 import RxDataSources
+import RxCocoa
 
 class PlannerHomeViewController: NavigationBarViewController, View {
     typealias Reactor = PlannerHomeReactor
@@ -25,20 +26,32 @@ class PlannerHomeViewController: NavigationBarViewController, View {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.reactor = PlannerHomeReactor()
+        self.reactor = PlannerHomeReactor(provider: ServiceProvider())
     }
     
-    private lazy var dataSource = RxCollectionViewSectionedReloadDataSource<PlannerHomeDiscussionSectionModel> { _, collectionView, indexPath, item -> UICollectionViewCell in
+    private lazy var dataSource = RxCollectionViewSectionedReloadDataSource<PlannerHomeDiscussionSectionModel> { [weak self] _, collectionView, indexPath, item -> UICollectionViewCell in
+        guard let reactor = self?.reactor else { return .init() }
+        
         switch item {
         case let .jypTagItem(reactor):
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: JYPTagCollectionViewCell.self), for: indexPath) as? JYPTagCollectionViewCell else { return .init() }
             
             cell.reactor = reactor
             return cell
-        case let .candidatePlaceItem(reactor):
+        case let .candidatePlaceItem(cellReactor):
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: CandidatePlaceCollectionViewCell.self), for: indexPath) as? CandidatePlaceCollectionViewCell else { return .init() }
+            cell.reactor = cellReactor
             
-            cell.reactor = reactor
+            cell.infoButton.rx.tap
+                .map { .didTapCandidatePlaceInfoButton(indexPath) }
+                .bind(to: reactor.action)
+                .disposed(by: cell.disposeBag)
+            
+            cell.likeButton.rx.tap
+                .map { .didTapCandidatePlaceLikeButton(indexPath) }
+                .bind(to: reactor.action)
+                .disposed(by: cell.disposeBag)
+            
             return cell
         }
     } configureSupplementaryView: { dataSource, collectionView, _, indexPath -> UICollectionReusableView in
@@ -168,8 +181,40 @@ class PlannerHomeViewController: NavigationBarViewController, View {
     }
     
     func bind(reactor: Reactor) {
+        // Action
+        rx.viewWillAppear
+            .map { _ in .refresh }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        discussionCollectionView.rx.itemSelected
+            .map { .didTapDiscussionCollecionViewCell($0) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        // State
         reactor.state.map(\.sections).asObservable()
             .bind(to: discussionCollectionView.rx.items(dataSource: dataSource))
+            .disposed(by: disposeBag)
+        
+        reactor.state.map(\.tagPresentJYPTagBottomSheet).asObservable()
+            .withUnretained(self)
+            .bind { this, tag in
+                guard let tag = tag else { return }
+                let jypTagBottomSheetVC = JYPTagBottomSheetViewController(reactor: .init(state: .init(tag: tag)))
+                
+                this.tabBarController?.present(jypTagBottomSheetVC, animated: true, completion: nil)
+            }
+            .disposed(by: disposeBag)
+        
+        reactor.state.map(\.candidatePlacePresentPlannerSearchPlaceWebViewController).asObservable()
+            .withUnretained(self)
+            .bind { this, candidatePlace in
+                guard let candidatePlace = candidatePlace else { return }
+                let webVC = WebViewController(reactor: WebReactor(state: .init(url: candidatePlace.url)))
+                
+                this.tabBarController?.present(webVC, animated: true, completion: nil)
+            }
             .disposed(by: disposeBag)
     }
 }
