@@ -13,6 +13,7 @@ class CandidatePlaceCollectionViewCellReactor: Reactor {
     
     struct State {
         var candidatePlace: CandidatePlace
+        var rank: Int
         var isSelectedLikeButton: Bool = false
     }
     

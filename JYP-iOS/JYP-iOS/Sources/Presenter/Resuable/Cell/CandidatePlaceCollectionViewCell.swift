@@ -19,9 +19,6 @@ class CandidatePlaceCollectionViewCell: BaseCollectionViewCell, View {
     let infoButton = UIButton()
     let likeButton = UIButton()
     
-    func update() {
-    }
-    
     override func layoutSubviews() {
         super.layoutSubviews()
         
@@ -34,15 +31,12 @@ class CandidatePlaceCollectionViewCell: BaseCollectionViewCell, View {
         contentView.backgroundColor = JYPIOSAsset.backgroundWhite100.color
         contentView.cornerRound(radius: 12)
         
-        categoryLabel.text = "박물관"
         categoryLabel.font = JYPIOSFontFamily.Pretendard.regular.font(size: 12)
         categoryLabel.textColor = JYPIOSAsset.tagGrey200.color
         
-        titleLabel.text = "아르떼 뮤지엄"
         titleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 20)
         titleLabel.textColor = JYPIOSAsset.textB80.color
         
-        subLabel.text = "강원 강릉시 난설헌로 131"
         subLabel.font = JYPIOSFontFamily.Pretendard.regular.font(size: 12)
         subLabel.textColor = JYPIOSAsset.tagGrey200.color
         
@@ -101,5 +95,20 @@ class CandidatePlaceCollectionViewCell: BaseCollectionViewCell, View {
     }
     
     func bind(reactor: Reactor) {
+        let state = reactor.currentState
+        
+        categoryLabel.text = state.candidatePlace.category.title
+        
+        titleLabel.text = state.candidatePlace.name
+        
+        switch state.rank {
+        case 0:
+            rankBadgeImageView.image = JYPIOSAsset.badge1.image
+        case 1:
+            rankBadgeImageView.image = JYPIOSAsset.badge2.image
+        case 2:
+            rankBadgeImageView.image = JYPIOSAsset.badge3.image
+        default: break
+        }
     }
 }

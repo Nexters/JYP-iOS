@@ -26,6 +26,39 @@ enum JYPCategoryType {
 }
 
 extension JYPCategoryType {
+    var title: String {
+        switch self {
+        case .maket:
+            return "마트"
+        case .convenienceStore:
+            return "편의점"
+        case .school:
+            return "학교"
+        case .transportation:
+            return "교통"
+        case .culture:
+            return "문화시설"
+        case .publicPlace:
+            return "공공기관"
+        case .touristPlace:
+            return "관광지"
+        case .lodging:
+            return "숙소"
+        case .restruant:
+            return "음식점"
+        case .cafe:
+            return "카페"
+        case .hospital:
+            return "병원"
+        case .pharmacy:
+            return "약국"
+        case .bank:
+            return "은행"
+        case .etc:
+            return "기타"
+        }
+    }
+    
     static func getJYPCategoryType(categoryGroupCode: String) -> JYPCategoryType {
         switch categoryGroupCode {
         case "MT1":
