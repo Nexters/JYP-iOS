@@ -16,7 +16,13 @@ class PlannerTagCollectionReusableView: BaseCollectionReusableView {
     let titleLabel = UILabel()
     let addButton = UIButton()
 
-    let disposeBag = DisposeBag()
+    var disposeBag = DisposeBag()
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+
+        disposeBag = DisposeBag()
+    }
 
     override func setupProperty() {
         super.setupProperty()

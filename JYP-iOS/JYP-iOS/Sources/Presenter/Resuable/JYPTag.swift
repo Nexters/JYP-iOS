@@ -14,10 +14,10 @@ struct JYPTagConfig {
     let backgroundColor: UIColor
 }
 
-enum JYPTagType {
-    case soso
-    case like
-    case dislike
+enum JYPTagType: Int {
+    case soso = 0
+    case like = 1
+    case dislike = 2
     
     var title: String {
         switch self {
