@@ -47,6 +47,11 @@ class PlannerHomeViewController: NavigationBarViewController, View {
                 .bind(to: reactor.action)
                 .disposed(by: cell.disposeBag)
             
+            cell.likeButton.rx.tap
+                .map { .didTapCandidatePlaceLikeButton(indexPath) }
+                .bind(to: reactor.action)
+                .disposed(by: cell.disposeBag)
+            
             return cell
         }
     } configureSupplementaryView: { dataSource, collectionView, _, indexPath -> UICollectionReusableView in

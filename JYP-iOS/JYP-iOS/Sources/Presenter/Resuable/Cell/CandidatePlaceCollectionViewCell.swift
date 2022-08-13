@@ -18,11 +18,20 @@ class CandidatePlaceCollectionViewCell: BaseCollectionViewCell, View {
     let rankBadgeImageView = UIImageView()
     let infoButton = UIButton()
     let likeButton = UIButton()
+    let likeImageView = UIImageView()
+    let likeLabel = UILabel()
     
     override func layoutSubviews() {
         super.layoutSubviews()
         
         contentView.setShadow(radius: 20, offset: CGSize(width: 4, height: 10), opacity: 0.05)
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        rankBadgeImageView.image = nil
+        likeImageView.image = nil
     }
     
     override func setupProperty() {
@@ -40,8 +49,6 @@ class CandidatePlaceCollectionViewCell: BaseCollectionViewCell, View {
         subLabel.font = JYPIOSFontFamily.Pretendard.regular.font(size: 12)
         subLabel.textColor = JYPIOSAsset.tagGrey200.color
         
-        rankBadgeImageView.image = JYPIOSAsset.badge1.image
-        
         infoButton.setTitle("정보 보기", for: .normal)
         infoButton.setTitleColor(JYPIOSAsset.textB80.color, for: .normal)
         infoButton.setImage(JYPIOSAsset.infoPlace.image, for: .normal)
@@ -52,12 +59,19 @@ class CandidatePlaceCollectionViewCell: BaseCollectionViewCell, View {
         infoButton.setShadow(radius: 12, offset: .init(width: 2, height: 2), opacity: 0.1)
         
         likeButton.cornerRound(radius: 31)
+        
+        likeImageView.isUserInteractionEnabled = false
+        likeImageView.contentMode = .scaleAspectFit
+        
+        likeLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 12)
+        likeLabel.isUserInteractionEnabled = false
     }
     
     override func setupHierarchy() {
         super.setupHierarchy()
         
         contentView.addSubviews([categoryLabel, titleLabel, subLabel, rankBadgeImageView, infoButton, likeButton])
+        likeButton.addSubviews([likeImageView, likeLabel])
     }
     
     override func setupLayout() {
@@ -92,14 +106,25 @@ class CandidatePlaceCollectionViewCell: BaseCollectionViewCell, View {
             $0.trailing.bottom.equalToSuperview().inset(20)
             $0.width.height.equalTo(62)
         }
+        
+        likeImageView.snp.makeConstraints {
+            $0.top.equalToSuperview().inset(15)
+            $0.centerX.equalToSuperview()
+            $0.height.equalTo(24)
+        }
+        
+        likeLabel.snp.makeConstraints {
+            $0.top.equalTo(likeImageView.snp.bottom).offset(1)
+            $0.centerX.equalToSuperview()
+        }
     }
     
     func bind(reactor: Reactor) {
         let state = reactor.currentState
         
         categoryLabel.text = state.candidatePlace.category.title
-        
         titleLabel.text = state.candidatePlace.name
+        subLabel.text = state.candidatePlace.address
         
         switch state.rank {
         case 0:
@@ -110,5 +135,29 @@ class CandidatePlaceCollectionViewCell: BaseCollectionViewCell, View {
             rankBadgeImageView.image = JYPIOSAsset.badge3.image
         default: break
         }
+        
+        if state.isSelectedLikeButton {
+            likeImageView.image = JYPIOSAsset.iconVoteActive.image
+        } else {
+            likeImageView.image = JYPIOSAsset.iconVoteInactive.image
+        }
+        
+        reactor.state.map(\.isSelectedLikeButton)
+            .withUnretained(self)
+            .bind { this, bool in
+                if bool {
+                    this.likeImageView.image = JYPIOSAsset.iconVoteActive.image
+                } else {
+                    this.likeImageView.image = JYPIOSAsset.iconVoteInactive.image
+                }
+            }
+            .disposed(by: disposeBag)
+        
+        reactor.state.map(\.candidatePlace)
+            .withUnretained(self)
+            .bind { this, candidatePlace in
+                this.likeLabel.text = "\(candidatePlace.like)"
+            }
+            .disposed(by: disposeBag)
     }
 }
