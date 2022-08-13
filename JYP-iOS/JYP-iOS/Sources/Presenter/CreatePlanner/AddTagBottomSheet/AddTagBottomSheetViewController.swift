@@ -132,6 +132,13 @@ class AddTagBottomSheetViewController: BottomSheetViewController, View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
+        addButton.rx.tap
+            .withUnretained(self)
+            .compactMap { _ in self.textField.textField.text }
+            .map { Reactor.Action.saveTag($0) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
         reactor.state
             .map(\.guideText)
             .bind(to: guideLabel.rx.text)
@@ -145,6 +152,15 @@ class AddTagBottomSheetViewController: BottomSheetViewController, View {
         reactor.state
             .map { $0.valid == .valid }
             .bind(to: addButton.rx.isEnabled)
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .map(\.dismiss)
+            .distinctUntilChanged()
+            .filter { $0 == true }
+            .subscribe(onNext: { [weak self] _ in
+                self?.dismiss(animated: true)
+            })
             .disposed(by: disposeBag)
     }
 }

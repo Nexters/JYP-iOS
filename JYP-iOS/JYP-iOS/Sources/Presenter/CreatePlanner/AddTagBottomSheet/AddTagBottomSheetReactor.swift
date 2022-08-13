@@ -33,16 +33,19 @@ final class AddTagBottomSheetReactor: Reactor {
 
     enum Action {
         case inputTextField(String)
+        case saveTag(String)
     }
 
     enum Mutation {
         case changeValidation(TagTextFieldInputState)
+        case dismiss
     }
 
     struct State {
         var valid: TagTextFieldInputState = .invalid
         var guideText: String = TagTextFieldInputState.valid.guideText
         var guideTextColor: UIColor = TagTextFieldInputState.valid.textColor
+        var dismiss: Bool = false
     }
 
     let initialState: State
@@ -58,6 +61,10 @@ final class AddTagBottomSheetReactor: Reactor {
 
             let mutation: Observable<Mutation> = isValid ? .just(.changeValidation(.valid)) : .just(.changeValidation(.invalid))
             return mutation
+        case let .saveTag(tagName):
+            print(tagName)
+            
+            return .just(.dismiss)
         }
     }
 
@@ -69,6 +76,8 @@ final class AddTagBottomSheetReactor: Reactor {
             newState.valid = state
             newState.guideText = state.guideText
             newState.guideTextColor = state.textColor
+        case .dismiss:
+            newState.dismiss = true
         }
 
         return newState
