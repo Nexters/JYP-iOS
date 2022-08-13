@@ -10,8 +10,10 @@ import Foundation
 
 protocol ServiceProviderType: AnyObject {
     var kakaoSearchService: KakaoSearchServiceType { get }
+    var journeyService: JourneyServiceType { get }
 }
 
 final class ServiceProvider: ServiceProviderType {
     lazy var kakaoSearchService: KakaoSearchServiceType = KakaoSearchService(provider: self)
+    lazy var journeyService: JourneyServiceType = JourneyService(provider: self)
 }
