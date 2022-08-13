@@ -19,17 +19,17 @@ enum OnboardingCardViewType {
     var config: OnboardingCardViewConfig {
         switch self {
         case .whatIsJourneyA:
-            return .init(titleText: "새롭고 많은 것들을\n경험하는 것이라고 생각해요", image: JYPIOSAsset.iconCulturePlace.image)
+            return .init(titleText: "새롭고 많은 것들을\n경험하는 것이라고 생각해요", image: JYPIOSAsset.iconCulturalInstitution.image)
         case .whatIsJourneyB:
-            return .init(titleText: "여유롭게 휴식하는 것이라고\n생각해요", image: JYPIOSAsset.iconCulturePlace.image)
+            return .init(titleText: "여유롭게 휴식하는 것이라고\n생각해요", image: JYPIOSAsset.iconCulturalInstitution.image)
         case .howToNewPlaceA:
-            return .init(titleText: "미리 세운 계획에\n영향이 간다면 방문하지 않아요", image: JYPIOSAsset.iconCulturePlace.image)
+            return .init(titleText: "미리 세운 계획에\n영향이 간다면 방문하지 않아요", image: JYPIOSAsset.iconCulturalInstitution.image)
         case .howToNewPlaceB:
-            return .init(titleText: "궁금증을 참지 못하고\n무조건 방문해요", image: JYPIOSAsset.iconCulturePlace.image)
+            return .init(titleText: "궁금증을 참지 못하고\n무조건 방문해요", image: JYPIOSAsset.iconCulturalInstitution.image)
         case .whenJourneyPlanA:
-            return .init(titleText: "시간 단위로 꼼꼼하게\n계획해요", image: JYPIOSAsset.iconCulturePlace.image)
+            return .init(titleText: "시간 단위로 꼼꼼하게\n계획해요", image: JYPIOSAsset.iconCulturalInstitution.image)
         case .whenJourneyPlanB:
-            return .init(titleText: "방문할 지역만 대략 생각하고,\n나의 직관을 믿어요", image: JYPIOSAsset.iconCulturePlace.image)
+            return .init(titleText: "방문할 지역만 대략 생각하고,\n나의 직관을 믿어요", image: JYPIOSAsset.iconCulturalInstitution.image)
         }
     }
 }

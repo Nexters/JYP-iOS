@@ -9,5 +9,9 @@
 import UIKit
 import ReactorKit
 
-class CreateCandidatePlaceCollectionViewCell: BaseCollectionViewCell {  
+class CreateCandidatePlaceCollectionViewCell: BaseCollectionViewCell, View {
+    typealias Reactor = CreateCandidatePlaceCollectionViewCellReactor
+    
+    func bind(reactor: CreateCandidatePlaceCollectionViewCellReactor) {     
+    }
 }

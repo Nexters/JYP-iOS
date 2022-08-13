@@ -38,7 +38,7 @@ class JYPTagBottomSheetViewController: BottomSheetViewController, View {
         super.setupProperty()
         
         for _ in 0...3 {
-            let imageBox = ImageBox(image: JYPIOSAsset.iconCulturePlace.image, title: "이소")
+            let imageBox = ImageBox(image: JYPIOSAsset.iconCulturalInstitution.image, title: "이소")
             
             imageStackView.addArrangedSubview(imageBox)
         }

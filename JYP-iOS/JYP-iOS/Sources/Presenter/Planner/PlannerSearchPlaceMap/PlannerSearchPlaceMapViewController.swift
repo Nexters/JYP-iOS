@@ -12,7 +12,7 @@ import UIKit
 #endif
 
 class PlannerSearchPlaceMapViewController: NavigationBarViewController {
-    let document: Document
+    let document: KakaoSearchPlace
     
     let topView = UIView()
     let backButton = UIButton(type: .system)
@@ -35,7 +35,7 @@ class PlannerSearchPlaceMapViewController: NavigationBarViewController {
         fatalError("not supported")
     }
     
-    init(document: Document) {
+    init(document: KakaoSearchPlace) {
         self.document = document
         
         super.init(nibName: nil, bundle: nil)

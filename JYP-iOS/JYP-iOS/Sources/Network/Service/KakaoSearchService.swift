@@ -22,21 +22,10 @@ class KakaoSearchService: BaseService, KakaoSearchServiceType {
     var event = PublishSubject<KakaoSearchEvent>()
     
     func searchPlace(keyword: String, page: Int) -> Observable<KakaoSearchResponse> {
-        return Observable<KakaoSearchResponse>.create { emitter in
-            let target = SearchAPI.placeSearch(keyword: keyword, page: page)
-            
-            APIService.request(target: target)
-                .map(KakaoSearchResponse.self)
-                .subscribe { response in
-                    switch response {
-                    case .success(let data):
-                        emitter.onNext(data)
-                    case .failure: break
-                    }
-                }
-                .dispose()
-            
-            return Disposables.create()
-        }
+        let target = SearchAPI.placeSearch(keyword: keyword, page: page)
+        
+        return APIService.request(target: target)
+            .map(KakaoSearchResponse.self)
+            .asObservable()
     }
 }

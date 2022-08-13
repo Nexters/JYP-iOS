@@ -98,9 +98,8 @@ extension PlannerHomeReactor {
                 let tag = reactor.currentState
 
                 return .just(.updateTagPresentJYPTagBottomSheet(tag))
-            case .candidatePlaceItem:
-                
-                return .empty()
+            case .createCandidatePlaceItem: return .empty()
+            case .candidatePlaceItem: return .empty()
             }
         case let .didTapCandidatePlaceInfoButton(indexPath):
             guard case let .candidatePlaceItem(reactor) = state.sections[indexPath.section].items[indexPath.row] else { break }
