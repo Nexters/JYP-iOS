@@ -198,6 +198,7 @@ class PlannerHomeViewController: NavigationBarViewController, View {
             .disposed(by: disposeBag)
         
         reactor.state.map(\.tagPresentJYPTagBottomSheet).asObservable()
+            .distinctUntilChanged()
             .withUnretained(self)
             .bind { this, tag in
                 guard let tag = tag else { return }
