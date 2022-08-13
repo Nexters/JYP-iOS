@@ -115,9 +115,9 @@ extension JYPCategoryType {
         case "AC5":
             return .etc
         case "PK6":
-            return .etc
+            return .parkingLot
         case "OL7":
-            return .etc
+            return .chargingZone
         case "SW8":
             return .etc
         case "BK9":
@@ -140,10 +140,6 @@ extension JYPCategoryType {
             return .hospital
         case "PM9":
             return .pharmacy
-        case "OL7":
-            return .chargingZone
-        case "PK6":
-            return .parkingLot
         default:
             return .etc
         }

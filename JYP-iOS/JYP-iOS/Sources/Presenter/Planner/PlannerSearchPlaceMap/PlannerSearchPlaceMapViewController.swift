@@ -7,18 +7,19 @@
 //
 
 import UIKit
+import ReactorKit
 #if arch(x86_64)
     import GoogleMaps
 #endif
 
-class PlannerSearchPlaceMapViewController: NavigationBarViewController {
-    let document: KakaoSearchPlace
+class PlannerSearchPlaceMapViewController: NavigationBarViewController, View {
+    typealias Reactor = PlannerSearchPlaceMapReactor
     
     let topView = UIView()
     let backButton = UIButton(type: .system)
     let searchTextField = JYPSearchTextField(type: .place)
     #if arch(x86_64)
-        lazy var mapView = GMSMapView(frame: view.bounds, camera: .camera(withLatitude: Double(document.y) ?? 0.0, longitude: Double(document.x) ?? 0.0, zoom: 18))
+    lazy var mapView = GMSMapView(frame: view.bounds, camera: .camera(withLatitude: Double(reactor?.state.y) ?? 0.0, longitude: Double(reactor?.state.x) ?? 0.0, zoom: 18))
     #else
         lazy var mapView = UIView().then {
             $0.backgroundColor = .systemRed
@@ -35,10 +36,10 @@ class PlannerSearchPlaceMapViewController: NavigationBarViewController {
         fatalError("not supported")
     }
     
-    init(document: KakaoSearchPlace) {
-        self.document = document
-        
+    init(reactor: Reactor) {
         super.init(nibName: nil, bundle: nil)
+        
+        self.reactor = reactor
     }
     
     override func setupNavigationBar() {
@@ -55,16 +56,12 @@ class PlannerSearchPlaceMapViewController: NavigationBarViewController {
         backButton.setImage(JYPIOSAsset.iconBack.image, for: .normal)
         backButton.tintColor = JYPIOSAsset.textB90.color
         
-        searchTextField.textField.text = document.placeName
-        
         bottomView.backgroundColor = .white
         bottomView.cornerRound(radius: 20, direct: [.layerMinXMinYCorner, .layerMaxXMinYCorner])
         
-        titleLabel.text = document.placeName
         titleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 24)
         titleLabel.textColor = JYPIOSAsset.textB90.color
         
-        subLabel.text = document.addressName
         subLabel.font = JYPIOSFontFamily.Pretendard.regular.font(size: 14)
         subLabel.textColor = JYPIOSAsset.textB40.color
         
@@ -142,14 +139,44 @@ class PlannerSearchPlaceMapViewController: NavigationBarViewController {
         }
     }
     
-    override func setupBind() {
-        super.setupBind()
+    func bind(reactor: PlannerSearchPlaceMapReactor) {
+        let state = reactor.currentState
         
+        searchTextField.textField.text = state.kakaoSearchPlace.placeName
+        titleLabel.text = state.kakaoSearchPlace.placeName
+        subLabel.text = state.kakaoSearchPlace.addressName
+        
+        // Action
         infoButton.rx.tap
+            .map { .didTapInfoButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        backButton.rx.tap
+            .map { .dismiss }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        // State
+        reactor.state.map(\.isPresentWebViewController).asObservable()
+            .distinctUntilChanged()
             .withUnretained(self)
-            .bind { this, _ in
-                let webVC = WebViewController(reactor: WebReactor(state: .init(url: this.document.placeURL)))
-                this.present(webVC, animated: true, completion: nil)
+            .bind { this, url in
+                if let url = url {
+                    let webViewController = WebViewController(reactor: WebReactor(state: .init(url: url)))
+                    
+                    this.tabBarController?.present(webViewController, animated: true, completion: nil)
+                }
+            }
+            .disposed(by: disposeBag)
+        
+        reactor.state.map(\.dismiss).asObservable()
+            .distinctUntilChanged()
+            .withUnretained(self)
+            .bind { this, bool in
+                if bool {
+                    this.navigationController?.popViewController(animated: true)
+                }
             }
             .disposed(by: disposeBag)
     }

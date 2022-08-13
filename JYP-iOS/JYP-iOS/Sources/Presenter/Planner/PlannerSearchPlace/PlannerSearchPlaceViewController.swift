@@ -34,7 +34,7 @@ class PlannerSearchPlaceViewController: NavigationBarViewController, View {
         fatalError("not supported")
     }
     
-    init(reactor: PlannerSearchPlaceReactor) {
+    init(reactor: Reactor) {
         super.init(nibName: nil, bundle: nil)
         
         self.reactor = reactor
@@ -93,9 +93,40 @@ class PlannerSearchPlaceViewController: NavigationBarViewController, View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
+        searchTableView.rx.itemSelected
+            .map { .tapKakaoSearchPlaceCell($0) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        backButton.rx.tap
+            .map { .dismiss }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
         // State
         reactor.state.map(\.sections).asObservable()
             .bind(to: searchTableView.rx.items(dataSource: dataSource))
+            .disposed(by: disposeBag)
+        
+        reactor.state.map(\.kakaoSearchPlacePresentPlannerSearchPlaceMapViewController).asObservable()
+            .withUnretained(self)
+            .bind { this, kakaoSearchPlace in
+                if let kakaoSearchPlace = kakaoSearchPlace {
+                    let plannerSearchPlaceMapViewController = PlannerSearchPlaceMapViewController(reactor: PlannerSearchPlaceMapReactor(state: .init(kakaoSearchPlace: kakaoSearchPlace)))
+                    
+                    this.navigationController?.pushViewController(plannerSearchPlaceMapViewController, animated: true)
+                }
+            }
+            .disposed(by: disposeBag)
+        
+        reactor.state.map(\.dismiss)
+            .distinctUntilChanged()
+            .withUnretained(self)
+            .bind { this, bool in
+                if bool {
+                    this.navigationController?.popViewController(animated: true)
+                }
+            }
             .disposed(by: disposeBag)
     }
 }

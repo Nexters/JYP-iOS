@@ -26,6 +26,12 @@ class BaseTableViewCell: UITableViewCell, BaseViewProtocol {
         setupBind()
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        disposeBag = DisposeBag()
+    }
+    
     func setupProperty() { }
     
     func setupHierarchy() { }
