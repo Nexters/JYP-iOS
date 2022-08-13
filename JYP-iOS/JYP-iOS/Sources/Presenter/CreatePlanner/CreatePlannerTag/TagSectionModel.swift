@@ -17,17 +17,6 @@ enum TagSection: Equatable {
 }
 
 extension TagSection {
-    var items: [Tag] {
-        switch self {
-        case let .soso(tags):
-            return tags
-        case let .like(tags):
-            return tags
-        case let .dislike(tags):
-            return tags
-        }
-    }
-
     var title: String {
         switch self {
         case .soso: return "상관없어요 태그"
@@ -55,6 +44,6 @@ extension TagSection {
     }
 }
 
-enum TagItem: Equatable {
-    case tagCell(Tag)
+enum TagItem {
+    case tagCell(JYPTagCollectionViewCellReactor)
 }

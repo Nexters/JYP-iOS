@@ -27,12 +27,12 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
 
     private lazy var dataSource = CreateTagDataSource { _, collectionView, indexPath, item -> UICollectionViewCell in
         switch item {
-        case let .tagCell(tag):
+        case let .tagCell(reactor):
             guard let cell = collectionView.dequeueReusableCell(
-                withReuseIdentifier: String(describing: JourneyTagCollectionViewCell.self),
+                withReuseIdentifier: String(describing: JYPTagCollectionViewCell.self),
                 for: indexPath
-            ) as? JourneyTagCollectionViewCell else { return .init() }
-            cell.update(title: tag.text)
+            ) as? JYPTagCollectionViewCell else { return .init() }
+            cell.reactor = reactor
 
             return cell
         }
@@ -88,7 +88,7 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
         layout.scrollDirection = .vertical
 
         collectionView.register(PlannerTagCollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: PlannerTagCollectionReusableView.self))
-        collectionView.register(JourneyTagCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: JourneyTagCollectionViewCell.self))
+        collectionView.register(JYPTagCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: JYPTagCollectionViewCell.self))
         collectionView.rx.setDelegate(self).disposed(by: disposeBag)
     }
 
@@ -127,8 +127,20 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
     // MARK: - Bind Method
 
     func bind(reactor: Reactor) {
-        reactor.state.map(\.sections).asObservable()
+        collectionView.rx.itemSelected
+            .map { indexPath in Reactor.Action.selectTag(indexPath) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .map(\.sections)
             .bind(to: collectionView.rx.items(dataSource: dataSource))
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .map(\.isEnabledStartButton)
+            .distinctUntilChanged()
+            .bind(to: startButton.rx.isEnabled)
             .disposed(by: disposeBag)
     }
 }
@@ -137,9 +149,12 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
 
 extension CreatePlannerTagViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_: UICollectionView, layout _: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let tags = dataSource[indexPath.section].model.items[indexPath.row]
+        let section = dataSource[indexPath.section].items[indexPath.row]
 
-        return CGSize(width: tags.text.size(withAttributes: [NSAttributedString.Key.font: JYPIOSFontFamily.Pretendard.medium.font(size: 16)]).width + 43, height: 32)
+        switch section {
+        case let .tagCell(reactor):
+            return CGSize(width: reactor.currentState.text.size(withAttributes: [NSAttributedString.Key.font: JYPIOSFontFamily.Pretendard.medium.font(size: 16)]).width + 50, height: 32)
+        }
     }
 
     func collectionView(_: UICollectionView, layout _: UICollectionViewLayout, referenceSizeForHeaderInSection _: Int) -> CGSize {

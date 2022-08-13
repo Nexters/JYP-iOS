@@ -12,4 +12,5 @@ struct Tag: Hashable {
     let id: String
     let text: String
     let type: JYPTagType
+    var isSelected: Bool = false
 }
