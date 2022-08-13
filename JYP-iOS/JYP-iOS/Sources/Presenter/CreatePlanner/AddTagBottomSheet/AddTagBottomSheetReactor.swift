@@ -51,8 +51,10 @@ final class AddTagBottomSheetReactor: Reactor {
     }
 
     let initialState: State
+    let provider: ServiceProviderType
 
-    init(section: TagSection) {
+    init(provider: ServiceProviderType, section: TagSection) {
+        self.provider = provider
         initialState = .init(section: section)
     }
 
@@ -64,9 +66,7 @@ final class AddTagBottomSheetReactor: Reactor {
             let mutation: Observable<Mutation> = isValid ? .just(.changeValidation(.valid)) : .just(.changeValidation(.invalid))
             return mutation
         case let .saveTag(tagName):
-            print(tagName)
-
-            return .just(.dismiss)
+            return provider.tagService.saveTag(name: tagName, section: currentState.section).map { _ in .dismiss }
         case .dismiss:
             return .just(.dismiss)
         }

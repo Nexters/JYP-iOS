@@ -144,8 +144,9 @@ class JYPSearchTextField: BaseView {
         let doneButton = UIBarButtonItem(title: "입력완료", style: .done, target: self, action: #selector(didTapDoneButton(_:)))
         doneButton.tintColor = JYPIOSAsset.mainPink.color
         toolbar.sizeToFit()
-        toolbar.setItems([flexSpace, doneButton], animated: true)
-        textField.inputAccessoryView = toolbar 
+        toolbar.setItems([flexSpace, doneButton], animated: false)
+        toolbar.updateConstraintsIfNeeded()
+        textField.inputAccessoryView = toolbar
     }
     
     @objc

@@ -20,6 +20,7 @@ final class CreatePlannerTagReactor: Reactor {
     enum Mutation {
         case insertIndexPath(IndexPath)
         case removeIndexPath(IndexPath)
+        case insertSectionTagItem(IndexPath, TagItem)
         case updateSectionTagItem(IndexPath, [TagItem])
         case activeStartButton
     }
@@ -31,8 +32,10 @@ final class CreatePlannerTagReactor: Reactor {
     }
 
     let initialState: State
+    let provider: ServiceProviderType
 
-    init() {
+    init(provider: ServiceProviderType) {
+        self.provider = provider
         initialState = State(sections: CreatePlannerTagReactor.makeSections())
     }
 
@@ -62,10 +65,29 @@ final class CreatePlannerTagReactor: Reactor {
         }
     }
 
+    func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
+        let tagEvent = provider.tagService.event.flatMap { event -> Observable<Mutation> in
+            switch event {
+            case let .save(tag):
+                let section = tag.type.rawValue
+                let item = self.currentState.sections[section].items.count
+                let indexPath = IndexPath(item: item, section: section)
+
+                let reactor = JYPTagCollectionViewCellReactor(tag: tag)
+                let tag = TagItem.tagCell(reactor)
+                return .just(.insertSectionTagItem(indexPath, tag))
+            }
+        }
+
+        return Observable.merge(mutation, tagEvent)
+    }
+
     func reduce(state: State, mutation: Mutation) -> State {
         var newState: State = state
 
         switch mutation {
+        case let .insertSectionTagItem(indexPath, tags):
+            newState.sections[indexPath.section].items.append(tags)
         case let .updateSectionTagItem(indexPath, tags):
             newState.sections[indexPath.section].items = tags
         case let .insertIndexPath(indexPath):
