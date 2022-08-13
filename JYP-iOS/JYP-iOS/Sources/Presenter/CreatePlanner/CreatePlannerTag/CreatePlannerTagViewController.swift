@@ -47,9 +47,11 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
 
         header.rx.didTapAddButton
             .observe(on: MainScheduler.instance)
-            .subscribe(onNext: {
+            .subscribe(onNext: { [weak self] in
                 print("BottomSheet Open")
-                print(model)
+                let addTagBottomSheetViewController = AddTagBottomSheetViewController(section: model.self)
+
+                self?.tabBarController?.present(addTagBottomSheetViewController, animated: true)
             })
             .disposed(by: header.disposeBag)
 
