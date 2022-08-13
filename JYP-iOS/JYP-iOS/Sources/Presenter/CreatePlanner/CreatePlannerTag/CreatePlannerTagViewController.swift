@@ -46,7 +46,7 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
         header.addButton.isHidden = model.isHiddenRightButton
 
         header.rx.didTapAddButton
-            .throttle(.seconds(1), scheduler: MainScheduler.instance)
+            .observe(on: MainScheduler.instance)
             .subscribe(onNext: { [weak self] in
                 guard let reactor = self?.reactor else { return }
                 let addTagBottomSheetReactor = AddTagBottomSheetReactor(provider: reactor.provider, section: model.self)
