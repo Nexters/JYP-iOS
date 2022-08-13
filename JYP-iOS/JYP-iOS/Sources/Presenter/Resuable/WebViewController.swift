@@ -8,9 +8,10 @@
 
 import UIKit
 import WebKit
+import ReactorKit
 
-class PlannerSearchPlaceWebViewController: BaseViewController {
-    let url: String
+class WebViewController: BaseViewController, View {
+    typealias Reactor = WebReactor
     
     let webView = WKWebView()
     
@@ -18,16 +19,16 @@ class PlannerSearchPlaceWebViewController: BaseViewController {
         fatalError("not supported")
     }
     
-    init(url: String) {
-        self.url = url
-        
+    init(reactor: Reactor) {
         super.init(nibName: nil, bundle: nil)
+        
+        self.reactor = reactor
     }
     
     override func setupProperty() {
         super.setupProperty()
         
-        webView.load(.init(url: (.init(string: url)!)))
+        webView.load(.init(url: (.init(string: "dd")!)))
     }
     
     override func setupHierarchy() {
@@ -41,6 +42,14 @@ class PlannerSearchPlaceWebViewController: BaseViewController {
         
         webView.snp.makeConstraints {
             $0.top.leading.trailing.bottom.equalToSuperview()
+        }
+    }
+    
+    func bind(reactor: WebReactor) {
+        let state = reactor.currentState
+        
+        if let webUrl = URL(string: state.url) {
+            webView.load(URLRequest(url: webUrl))
         }
     }
 }

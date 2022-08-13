@@ -148,7 +148,7 @@ class PlannerSearchPlaceMapViewController: NavigationBarViewController {
         infoButton.rx.tap
             .withUnretained(self)
             .bind { this, _ in
-                let webVC = PlannerSearchPlaceWebViewController(url: this.document.placeURL)
+                let webVC = WebViewController(reactor: WebReactor(state: .init(url: this.document.placeURL)))
                 this.present(webVC, animated: true, completion: nil)
             }
             .disposed(by: disposeBag)
