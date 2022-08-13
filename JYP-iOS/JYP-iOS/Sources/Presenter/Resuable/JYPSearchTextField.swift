@@ -140,10 +140,11 @@ class JYPSearchTextField: BaseView {
     
     func setupToolBar() {
         let toolbar = UIToolbar()
+        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         let doneButton = UIBarButtonItem(title: "입력완료", style: .done, target: self, action: #selector(didTapDoneButton(_:)))
         doneButton.tintColor = JYPIOSAsset.mainPink.color
         toolbar.sizeToFit()
-        toolbar.setItems([doneButton], animated: true)
+        toolbar.setItems([flexSpace, doneButton], animated: true)
         textField.inputAccessoryView = toolbar 
     }
     
