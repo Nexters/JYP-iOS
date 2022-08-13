@@ -48,8 +48,6 @@ class AddTagBottomSheetViewController: BottomSheetViewController, View {
     }
 
     override func touchesBegan(_: Set<UITouch>, with _: UIEvent?) {
-        guard reactor?.currentState.valid == .valid else { return }
-
         view.endEditing(true)
     }
 
@@ -74,9 +72,7 @@ class AddTagBottomSheetViewController: BottomSheetViewController, View {
         guideLabel.textColor = JYPIOSAsset.subBlack.color
 
         textField.textField.leftView = UIView()
-
-        addButton.isEnabled = false
-        addButton.isHidden = true
+        textField.setupToolBar()
     }
 
     override func setupHierarchy() {
@@ -147,8 +143,8 @@ class AddTagBottomSheetViewController: BottomSheetViewController, View {
             .disposed(by: disposeBag)
 
         reactor.state
-            .map { $0.valid == .invalid }
-            .bind(to: addButton.rx.isHidden)
+            .map { $0.valid == .valid }
+            .bind(to: addButton.rx.isEnabled)
             .disposed(by: disposeBag)
     }
 }

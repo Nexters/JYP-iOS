@@ -137,4 +137,18 @@ class JYPSearchTextField: BaseView {
             }
             .disposed(by: disposeBag)
     }
+    
+    func setupToolBar() {
+        let toolbar = UIToolbar()
+        let doneButton = UIBarButtonItem(title: "입력완료", style: .done, target: self, action: #selector(didTapDoneButton(_:)))
+        doneButton.tintColor = JYPIOSAsset.mainPink.color
+        toolbar.sizeToFit()
+        toolbar.setItems([doneButton], animated: true)
+        textField.inputAccessoryView = toolbar 
+    }
+    
+    @objc
+    func didTapDoneButton(_ sender: UIBarButtonItem) {
+        self.textField.resignFirstResponder()
+    }
 }

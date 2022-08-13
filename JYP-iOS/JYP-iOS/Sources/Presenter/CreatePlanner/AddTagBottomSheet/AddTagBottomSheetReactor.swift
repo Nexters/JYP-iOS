@@ -74,10 +74,3 @@ final class AddTagBottomSheetReactor: Reactor {
         return newState
     }
 }
-
-extension AddTagBottomSheetReactor {
-    func textLimit(text: String, newText: String) -> Bool {
-        let isAtLimit = text.count + newText.count <= Self.MAX_TAG_LENGTH
-        return isAtLimit
-    }
-}
