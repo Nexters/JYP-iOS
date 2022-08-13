@@ -25,7 +25,7 @@ class PlannerHomeViewController: NavigationBarViewController, View {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.reactor = PlannerHomeReactor()
+        self.reactor = PlannerHomeReactor(provider: ServiceProvider())
     }
     
     private lazy var dataSource = RxCollectionViewSectionedReloadDataSource<PlannerHomeDiscussionSectionModel> { _, collectionView, indexPath, item -> UICollectionViewCell in
@@ -168,8 +168,23 @@ class PlannerHomeViewController: NavigationBarViewController, View {
     }
     
     func bind(reactor: Reactor) {
+        // Action
+        discussionCollectionView.rx.itemSelected
+            .map { .didTapDiscussionCollecionViewCell($0) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        // State
         reactor.state.map(\.sections).asObservable()
             .bind(to: discussionCollectionView.rx.items(dataSource: dataSource))
+            .disposed(by: disposeBag)
+        
+        reactor.state.map(\.tagPresentJYPTagBottomSheet).asObservable()
+            .withUnretained(self)
+            .bind { this, tag in
+                guard let tag = tag else { return }
+                this.tabBarController?.present(JYPTagBottomSheetViewController(reactor: .init(state: .init(tag: tag))), animated: true, completion: nil)
+            }
             .disposed(by: disposeBag)
     }
 }

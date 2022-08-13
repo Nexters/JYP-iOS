@@ -7,12 +7,26 @@
 //
 
 import UIKit
+import ReactorKit
+import RxSwift
 
-class PlannerHomeDiscussionBottomSheetViewController: BottomSheetViewController {
+class JYPTagBottomSheetViewController: BottomSheetViewController, View {
+    typealias Reactor = JYPTagBottomSheetReactor
+    
     let bottomSheetView = UIView()
     let titleLabel = UILabel()
     let tag = JYPTag()
     let imageStackView = UIStackView()
+    
+    required init?(coder: NSCoder) {
+        fatalError("not supported")
+    }
+    
+    init(reactor: Reactor) {
+        super.init(mode: .drag)
+        
+        self.reactor = reactor
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,12 +43,10 @@ class PlannerHomeDiscussionBottomSheetViewController: BottomSheetViewController 
             imageStackView.addArrangedSubview(imageBox)
         }
         
-        titleLabel.text = "좋아요 태그"
         titleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 20)
         titleLabel.textColor = JYPIOSAsset.textB80.color
         
         tag.isSelected = false
-        tag.type = .like
         
         imageStackView.distribution = .equalSpacing
         imageStackView.spacing = 12
@@ -67,7 +79,11 @@ class PlannerHomeDiscussionBottomSheetViewController: BottomSheetViewController 
         }
     }
     
-    override func setupBind() {
-        super.setupBind()
+    func bind(reactor: JYPTagBottomSheetReactor) {
+        let state = reactor.currentState
+        
+        titleLabel.text = state.tag.type.title + " 태그"
+        tag.type = state.tag.type
+        tag.titleLabel.text = state.tag.text
     }
 }

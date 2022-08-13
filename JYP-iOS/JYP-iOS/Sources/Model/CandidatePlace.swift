@@ -13,7 +13,7 @@ struct CandidatePlace: Hashable {
     let name: String
     let address: String
     let category: JYPCategoryType
-    let like: String
+    var like: Int
 //    let like: [User]
     let lon, lan: Double
     let url: String
