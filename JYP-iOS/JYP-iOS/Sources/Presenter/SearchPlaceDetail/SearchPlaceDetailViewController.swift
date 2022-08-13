@@ -12,7 +12,7 @@ import Foundation
 #endif
 
 class SearchPlaceDetailViewController: BaseViewController {
-    let document: Document
+    let document: KakaoSearchPlace
     
     let navigationContentView = SearchPlaceDetailNavigationContentView()
     let contentView = SearchPlaceDetailView()
@@ -21,7 +21,7 @@ class SearchPlaceDetailViewController: BaseViewController {
         fatalError("not supported")
     }
     
-    init(document: Document) {
+    init(document: KakaoSearchPlace) {
         self.document = document
         
         super.init(nibName: nil, bundle: nil)
@@ -57,7 +57,7 @@ class SearchPlaceDetailViewController: BaseViewController {
         super.setupBind()
     }
     
-    private func updateContentView(document: Document) {
+    private func updateContentView(document: KakaoSearchPlace) {
         contentView.addPlaceBox.titleLabel.text = document.placeName
         contentView.addPlaceBox.subLabel.text = document.roadAddressName
         contentView.addPlaceBox.categoryLabel.text = document.categoryGroupName

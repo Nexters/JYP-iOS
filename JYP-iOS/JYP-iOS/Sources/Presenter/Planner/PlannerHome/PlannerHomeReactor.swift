@@ -25,7 +25,7 @@ class PlannerHomeReactor: Reactor {
         case updateIsShowDiscussion(Bool)
         case updateIsShowJourneyPlanner(Bool)
         case updateIsShowJYPTagSectionToggle
-        case updateTagPresentJYPTagBottomSheet(Tag)
+        case updateTagPresentJYPTagBottomSheet(Tag?)
         case updateIsPresentPlannerSearchPlaceViewController(Bool)
         case updateCandidatePlacePresentPlannerSearchPlaceWebViewController(CandidatePlace)
         case setSections([PlannerHomeDiscussionSectionModel])
@@ -91,14 +91,21 @@ extension PlannerHomeReactor {
         case .didTapJYPTagToggleButton:
             return .just(.updateIsShowJYPTagSectionToggle)
         case .didTapAddCandidatePlaceButton:
-            return .just(.updateIsPresentPlannerSearchPlaceViewController(true))
+            return .concat([
+                .just(.updateIsPresentPlannerSearchPlaceViewController(true)),
+                .just(.updateIsPresentPlannerSearchPlaceViewController(false))
+            ])
         case let .didTapDiscussionCollecionViewCell(indexPath):
             switch state.sections[indexPath.section].items[indexPath.row] {
             case let .jypTagItem(reactor):
                 let tag = reactor.currentState
-                
-                return .just(.updateTagPresentJYPTagBottomSheet(tag))
-            case .candidatePlaceItem: break
+
+                return .concat([
+                    .just(.updateTagPresentJYPTagBottomSheet(tag)),
+                    .just(.updateTagPresentJYPTagBottomSheet(nil))
+                ])
+            case .createCandidatePlaceItem: return .empty()
+            case .candidatePlaceItem: return .empty()
             }
         case let .didTapCandidatePlaceInfoButton(indexPath):
             guard case let .candidatePlaceItem(reactor) = state.sections[indexPath.section].items[indexPath.row] else { break }

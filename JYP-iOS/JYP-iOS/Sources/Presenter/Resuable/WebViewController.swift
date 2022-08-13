@@ -25,12 +25,6 @@ class WebViewController: BaseViewController, View {
         self.reactor = reactor
     }
     
-    override func setupProperty() {
-        super.setupProperty()
-        
-        webView.load(.init(url: (.init(string: "dd")!)))
-    }
-    
     override func setupHierarchy() {
         super.setupHierarchy()
         

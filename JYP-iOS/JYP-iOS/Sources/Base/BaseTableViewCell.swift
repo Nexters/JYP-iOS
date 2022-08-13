@@ -6,13 +6,14 @@
 //  Copyright © 2022 JYP-iOS. All rights reserved.
 //
 
-import Foundation
-
 import UIKit
+import RxSwift
 import SnapKit
 import Then
 
 class BaseTableViewCell: UITableViewCell, BaseViewProtocol {
+    var disposeBag = DisposeBag()
+    
     required init?(coder: NSCoder) {
             fatalError("init(coder:) has not been implemented")
     }
@@ -23,6 +24,12 @@ class BaseTableViewCell: UITableViewCell, BaseViewProtocol {
         setupHierarchy()
         setupLayout()
         setupBind()
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        disposeBag = DisposeBag()
     }
     
     func setupProperty() { }

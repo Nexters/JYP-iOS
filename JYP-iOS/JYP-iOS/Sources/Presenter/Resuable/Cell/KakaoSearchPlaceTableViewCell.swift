@@ -7,18 +7,21 @@
 //
 
 import UIKit
+import ReactorKit
 
-class PlannerSearchPlaceTableViewCell: BaseTableViewCell {
+class KakaoSearchPlaceTableViewCell: BaseTableViewCell, View {
+    typealias Reactor = KakaoSearchPlaceTableViewCellReactor
+    
     let titleLabel = UILabel()
     let subLabel = UILabel()
     let categoryImageView = UIImageView()
     let categoryLabel = UILabel()
     
-    func update(title: String, sub: String, category: String) {
-        titleLabel.text = title
-        subLabel.text = sub
-        categoryLabel.text = category
-    }
+//    func update(title: String, sub: String, category: String) {
+//        titleLabel.text = title
+//        subLabel.text = sub
+//        categoryLabel.text = category
+//    }
     
     override func prepareForReuse() {
         super.prepareForReuse()
@@ -26,6 +29,8 @@ class PlannerSearchPlaceTableViewCell: BaseTableViewCell {
         titleLabel.text = ""
         subLabel.text = ""
         categoryLabel.text = ""
+        
+        
     }
     
     override func setupProperty() {
@@ -37,9 +42,6 @@ class PlannerSearchPlaceTableViewCell: BaseTableViewCell {
         subLabel.font = JYPIOSFontFamily.Pretendard.regular.font(size: 12)
         subLabel.textColor = JYPIOSAsset.textB40.color
         
-        categoryImageView.image = JYPIOSAsset.iconCulturePlace.image
-        
-        categoryLabel.text = "카테고리"
         categoryLabel.font = JYPIOSFontFamily.Pretendard.regular.font(size: 12)
         categoryLabel.textColor = JYPIOSAsset.textB75.color
         categoryLabel.textAlignment = .right
@@ -75,5 +77,17 @@ class PlannerSearchPlaceTableViewCell: BaseTableViewCell {
             $0.top.equalTo(categoryImageView.snp.bottom).offset(1)
             $0.centerX.equalTo(categoryImageView)
         }
+    }
+    
+    func bind(reactor: Reactor) {
+        let state = reactor.currentState
+        
+        titleLabel.text = state.placeName
+        
+        subLabel.text = state.addressName
+        
+        categoryLabel.text = JYPCategoryType.getJYPCategoryType(categoryGroupCode: state.categoryGroupCode).title
+        
+        categoryImageView.image = JYPCategoryType.getJYPCategoryType(categoryGroupCode: state.categoryGroupCode).image
     }
 }

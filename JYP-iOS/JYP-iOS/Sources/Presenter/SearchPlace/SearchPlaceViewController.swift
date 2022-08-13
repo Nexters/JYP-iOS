@@ -16,7 +16,7 @@ class SearchPlaceViewController: BaseViewController {
     
 //    lazy var navigationBar = NavigationBar(contentView: navigationContentView)
     
-    private var documents: [Document] = []
+    private var documents: [KakaoSearchPlace] = []
     
     override func setupProperty() {
         super.setupProperty()
@@ -74,7 +74,7 @@ class SearchPlaceViewController: BaseViewController {
             .subscribe { [weak self] response in
                 switch response {
                 case .success(let data):
-                    self?.reloadSearchResultTableView(documents: data.documents)
+                    self?.reloadSearchResultTableView(documents: data.kakaoSearchPlaces)
                 case .failure(let error):
                     print("[D] \(error)")
                 }
@@ -82,7 +82,7 @@ class SearchPlaceViewController: BaseViewController {
             .disposed(by: disposeBag)
     }
     
-    private func reloadSearchResultTableView(documents: [Document]) {
+    private func reloadSearchResultTableView(documents: [KakaoSearchPlace]) {
         self.documents = documents
         contentView.searchResultTableView.reloadData()
     }

@@ -6,22 +6,24 @@
 //  Copyright © 2022 JYP-iOS. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 enum JYPCategoryType {
     case maket
     case convenienceStore
     case school
     case transportation
-    case culture
-    case publicPlace
-    case touristPlace
-    case lodging
+    case culturalInstitution
+    case publicInstitutions
+    case touristSpot
+    case lodgings
     case restruant
     case cafe
     case hospital
     case pharmacy
     case bank
+    case chargingZone
+    case parkingLot
     case etc
 }
 
@@ -36,13 +38,13 @@ extension JYPCategoryType {
             return "학교"
         case .transportation:
             return "교통"
-        case .culture:
+        case .culturalInstitution:
             return "문화시설"
-        case .publicPlace:
+        case .publicInstitutions:
             return "공공기관"
-        case .touristPlace:
+        case .touristSpot:
             return "관광지"
-        case .lodging:
+        case .lodgings:
             return "숙소"
         case .restruant:
             return "음식점"
@@ -54,8 +56,49 @@ extension JYPCategoryType {
             return "약국"
         case .bank:
             return "은행"
+        case .chargingZone:
+            return "충전소"
+        case .parkingLot:
+            return "주차장"
         case .etc:
             return "기타"
+        }
+    }
+    
+    var image: UIImage {
+        switch self {
+        case .maket:
+            return JYPIOSAsset.iconMarket.image
+        case .convenienceStore:
+            return JYPIOSAsset.iconConvenienceStore.image
+        case .school:
+            return JYPIOSAsset.iconSchool.image
+        case .transportation:
+            return JYPIOSAsset.iconTransportation.image
+        case .culturalInstitution:
+            return JYPIOSAsset.iconCulturalInstitution.image
+        case .publicInstitutions:
+            return JYPIOSAsset.iconPublicInstitutions.image
+        case .touristSpot:
+            return JYPIOSAsset.iconTouristSpot.image
+        case .lodgings:
+            return JYPIOSAsset.iconLodgings.image
+        case .restruant:
+            return JYPIOSAsset.iconRestaurant.image
+        case .cafe:
+            return JYPIOSAsset.iconCafe.image
+        case .hospital:
+            return JYPIOSAsset.iconHospital.image
+        case .pharmacy:
+            return JYPIOSAsset.iconPharmacy.image
+        case .bank:
+            return JYPIOSAsset.iconBank.image
+        case .etc:
+            return JYPIOSAsset.iconEtc.image
+        case .chargingZone:
+            return JYPIOSAsset.iconChargingZone.image
+        case .parkingLot:
+            return JYPIOSAsset.iconParkingLot.image
         }
     }
     
@@ -72,23 +115,23 @@ extension JYPCategoryType {
         case "AC5":
             return .etc
         case "PK6":
-            return .etc
+            return .parkingLot
         case "OL7":
-            return .etc
+            return .chargingZone
         case "SW8":
             return .etc
         case "BK9":
             return .bank
         case "CT1":
-            return .culture
+            return .culturalInstitution
         case "AG2":
             return .etc
         case "PO3":
-            return .publicPlace
+            return .publicInstitutions
         case "AT4":
-            return .touristPlace
+            return .touristSpot
         case "AD5":
-            return .lodging
+            return .lodgings
         case "FD6":
             return .restruant
         case "CE7":

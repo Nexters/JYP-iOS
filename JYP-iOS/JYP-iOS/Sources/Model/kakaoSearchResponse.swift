@@ -12,12 +12,17 @@ import Foundation
 
 struct KakaoSearchResponse: Codable {
     let meta: Meta
-    let documents: [Document]
+    let kakaoSearchPlaces: [KakaoSearchPlace]
+    
+    enum CodingKeys: String, CodingKey {
+        case meta
+        case kakaoSearchPlaces = "documents"
+    }
 }
 
 // MARK: - Document
 
-struct Document: Codable {
+struct KakaoSearchPlace: Codable {
     let id, placeName, categoryName, categoryGroupCode: String
     let categoryGroupName, phone, addressName, roadAddressName: String
     let x, y: String

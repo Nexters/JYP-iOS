@@ -38,6 +38,11 @@ class PlannerHomeViewController: NavigationBarViewController, View {
             
             cell.reactor = reactor
             return cell
+        case let .createCandidatePlaceItem(cellReactor):
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: CreateCandidatePlaceCollectionViewCell.self), for: indexPath) as? CreateCandidatePlaceCollectionViewCell else { return .init() }
+            
+            cell.reactor = cellReactor
+            return cell
         case let .candidatePlaceItem(cellReactor):
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: CandidatePlaceCollectionViewCell.self), for: indexPath) as? CandidatePlaceCollectionViewCell else { return .init() }
             cell.reactor = cellReactor
@@ -54,7 +59,9 @@ class PlannerHomeViewController: NavigationBarViewController, View {
             
             return cell
         }
-    } configureSupplementaryView: { dataSource, collectionView, _, indexPath -> UICollectionReusableView in
+    } configureSupplementaryView: { [weak self] dataSource, collectionView, _, indexPath -> UICollectionReusableView in
+        guard let reactor = self?.reactor else { return .init() }
+        
         switch dataSource[indexPath.section].model {
         case .jypTagSection:
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: PlannerHomeDiscussionJYPTagSectionHeader.self), for: indexPath) as? PlannerHomeDiscussionJYPTagSectionHeader else { return .init() }
@@ -62,6 +69,11 @@ class PlannerHomeViewController: NavigationBarViewController, View {
             return header
         case .candidatePlaceSection:
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: PlannerHomeDiscussionCandidatePlaceSectionHeader.self), for: indexPath) as? PlannerHomeDiscussionCandidatePlaceSectionHeader else { return .init() }
+            
+            header.trailingButton.rx.tap
+                .map { .didTapAddCandidatePlaceButton }
+                .bind(to: reactor.action)
+                .disposed(by: header.disposeBag)
             
             return header
         }
@@ -175,6 +187,7 @@ class PlannerHomeViewController: NavigationBarViewController, View {
         inviteButton.rx.tap
             .bind { [weak self] _ in
                 let discussionInviteVC = PlannerInviteViewController()
+                
                 self?.navigationController?.pushViewController(discussionInviteVC, animated: true)
             }
             .disposed(by: disposeBag)
@@ -198,6 +211,7 @@ class PlannerHomeViewController: NavigationBarViewController, View {
             .disposed(by: disposeBag)
         
         reactor.state.map(\.tagPresentJYPTagBottomSheet).asObservable()
+            .distinctUntilChanged()
             .withUnretained(self)
             .bind { this, tag in
                 guard let tag = tag else { return }
@@ -214,6 +228,19 @@ class PlannerHomeViewController: NavigationBarViewController, View {
                 let webVC = WebViewController(reactor: WebReactor(state: .init(url: candidatePlace.url)))
                 
                 this.tabBarController?.present(webVC, animated: true, completion: nil)
+            }
+            .disposed(by: disposeBag)
+        
+        reactor.state.map(\.isPresentPlannerSearchPlaceViewController)
+            .asObservable()
+            .distinctUntilChanged()
+            .withUnretained(self)
+            .bind { this, bool in
+                if bool {
+                    let plannerSearchPlaceVC = PlannerSearchPlaceViewController(reactor: PlannerSearchPlaceReactor(provider: ServiceProvider()))
+                    
+                    this.navigationController?.pushViewController(plannerSearchPlaceVC, animated: true)
+                }
             }
             .disposed(by: disposeBag)
     }
@@ -240,8 +267,10 @@ extension PlannerHomeViewController: UICollectionViewDelegateFlowLayout {
         switch dataSource[indexPath.section].items[indexPath.row] {
         case .jypTagItem(let reactor):
             return CGSize(width: reactor.currentState.text.size(withAttributes: [NSAttributedString.Key.font: JYPIOSFontFamily.Pretendard.medium.font(size: 16)]).width + 50, height: 32)
+        case .createCandidatePlaceItem:
+            return CGSize(width: collectionView.frame.width - 48, height: 224)
         case .candidatePlaceItem:
-            return CGSize(width: collectionView.frame.width - 48, height: 165)
+            return CGSize(width: collectionView.frame.width - 48, height: 165) 
         }
     }
 }

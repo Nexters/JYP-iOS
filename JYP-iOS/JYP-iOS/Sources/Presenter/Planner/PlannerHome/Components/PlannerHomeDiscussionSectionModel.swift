@@ -17,6 +17,7 @@ enum PlannerHomeDiscussionSection {
 
 enum PlannerHomeDiscussionItem {
     case jypTagItem(JYPTagCollectionViewCellReactor)
+    case createCandidatePlaceItem(CreateCandidatePlaceCollectionViewCellReactor)
     case candidatePlaceItem(CandidatePlaceCollectionViewCellReactor)
 }
 
