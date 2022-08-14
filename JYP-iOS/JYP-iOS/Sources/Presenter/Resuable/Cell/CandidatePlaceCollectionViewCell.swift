@@ -34,8 +34,6 @@ class CandidatePlaceCollectionViewCell: BaseCollectionViewCell, View {
         
         rankBadgeImageView.image = nil
         likeImageView.image = nil
-        
-        animationView.stop()
     }
     
     override func setupProperty() {
@@ -133,8 +131,6 @@ class CandidatePlaceCollectionViewCell: BaseCollectionViewCell, View {
     func bind(reactor: Reactor) {
         let state = reactor.currentState
         
-        print("\(state.candidatePlace.name) 바인딩 됨")
-        
         categoryLabel.text = state.candidatePlace.category.title
         titleLabel.text = state.candidatePlace.name
         subLabel.text = state.candidatePlace.address
@@ -156,8 +152,12 @@ class CandidatePlaceCollectionViewCell: BaseCollectionViewCell, View {
             likeImageView.image = JYPIOSAsset.iconVoteInactive.image
         }
         
-        if state.isSelectedLikeButton {
-            animationView.play()
+        if state.isReadyAnimate {
+            animationView.play(completion: { _ in
+                reactor.action.onNext(.animated)
+            })
+        } else if state.isSelectedLikeButton {
+            animationView.currentProgress = 1
         } else {
             animationView.stop()
         }
