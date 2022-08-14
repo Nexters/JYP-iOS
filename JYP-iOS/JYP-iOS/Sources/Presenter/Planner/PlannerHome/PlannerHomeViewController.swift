@@ -22,7 +22,7 @@ class PlannerHomeViewController: NavigationBarViewController, View {
     let discussionView = UIView()
     let planerView = UIView()
     let discussionCollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-    
+                                          
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -45,6 +45,7 @@ class PlannerHomeViewController: NavigationBarViewController, View {
             return cell
         case let .candidatePlaceItem(cellReactor):
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: CandidatePlaceCollectionViewCell.self), for: indexPath) as? CandidatePlaceCollectionViewCell else { return .init() }
+            
             cell.reactor = cellReactor
             
             cell.infoButton.rx.tap

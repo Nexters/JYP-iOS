@@ -74,6 +74,7 @@ class BaseProjectFactory: ProjectFactory {
         .external(name: "RxDataSources"),
         .external(name: "ReactorKit"),
         .external(name: "Then"),
+        .external(name: "Lottie"),
         .external(name: "KakaoSDKCommon"),
         .external(name: "KakaoSDKAuth"),
         .external(name: "KakaoSDKUser"),
