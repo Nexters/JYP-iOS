@@ -22,9 +22,11 @@ class EmptyJourneyCardCollectionViewCell: BaseCollectionViewCell, View {
         $0.text = "새로운 여행 이야기를\n만들어주세요!"
         $0.numberOfLines = 0
         $0.font = JYPIOSFontFamily.Pretendard.medium.font(size: 16)
-        $0.textColor = JYPIOSAsset.textB80.color
+        $0.textColor = JYPIOSAsset.textB75.color
         $0.textAlignment = .center
     }
+    
+    let makeButton: JYPButton = .init(type: .smallMake)
 
     // MARK: - Initializer
 
@@ -58,16 +60,22 @@ class EmptyJourneyCardCollectionViewCell: BaseCollectionViewCell, View {
     override func setupLayout() {
         super.setupLayout()
 
-        addSubviews([icon, guideLabel])
+        addSubviews([icon, guideLabel, makeButton])
 
         icon.snp.makeConstraints { make in
-            make.top.leading.trailing.equalToSuperview().inset(72)
-            make.size.equalTo(136)
+            make.top.equalToSuperview().inset(72)
+            make.centerX.equalToSuperview()
+            make.size.equalTo(bounds.width * (136.0 / 280.0))
         }
 
         guideLabel.snp.makeConstraints { make in
             make.top.equalTo(icon.snp.bottom).offset(16)
             make.centerX.equalToSuperview()
+        }
+        
+        makeButton.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview().inset(20)
+            make.height.equalTo(40)
         }
     }
 
