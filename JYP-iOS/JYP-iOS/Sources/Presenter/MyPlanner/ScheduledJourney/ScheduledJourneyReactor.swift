@@ -11,9 +11,18 @@ import ReactorKit
 final class ScheduledJourneyReactor: Reactor {
     enum Action {}
     enum Mutation {}
-    struct State {}
 
-    var initialState: State = .init()
+    struct State {
+        var sections: [ScheduledJourneySectionModel]
+    }
 
-    init() {}
+    var initialState: State
+
+    init() {
+        let section = ScheduledJourneySectionModel(model: (), items: [.empty])
+
+        let journey = ScheduledJourneySectionModel(model: (), items: [.journey(.init())])
+
+        initialState = .init(sections: [section, journey])
+    }
 }

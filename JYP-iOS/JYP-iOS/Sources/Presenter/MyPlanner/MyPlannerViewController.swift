@@ -65,9 +65,6 @@ class MyPlannerViewController: NavigationBarViewController, View {
         addButton.setImage(JYPIOSAsset.iconAdd.image, for: .normal)
 
         menuDivider.backgroundColor = .black.withAlphaComponent(0.1)
-
-        scheduledJourneyView.backgroundColor = JYPIOSAsset.mainPink.color
-        pastJourneyView.backgroundColor = JYPIOSAsset.subBlue300.color
     }
 
     override func setupHierarchy() {

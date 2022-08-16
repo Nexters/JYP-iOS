@@ -8,13 +8,9 @@
 
 import RxDataSources
 
-typealias ScheduledJourneySectionModel = SectionModel<ScheduledJourneySection, JourneyItem>
+typealias ScheduledJourneySectionModel = SectionModel<Void, JourneyCardItem>
 
-enum ScheduledJourneySection: Equatable {
-    case journey
-}
-
-enum JourneyItem {
+enum JourneyCardItem {
     case empty
-    case journey
+    case journey(JourneyCardCollectionViewCellReactor)
 }
