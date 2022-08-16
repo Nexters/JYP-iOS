@@ -6,10 +6,12 @@
 //  Copyright © 2022 JYP-iOS. All rights reserved.
 //
 
-import Foundation
+import ReactorKit
 import UIKit
 
-class MyPlannerViewController: NavigationBarViewController {
+class MyPlannerViewController: NavigationBarViewController, View {
+    typealias Reactor = MyPlannerReactor
+
     // MARK: - UI Components
 
     let headerView: UIView = .init()
@@ -17,6 +19,25 @@ class MyPlannerViewController: NavigationBarViewController {
 
     let scheduledJourneyButton: JYPBottomBorderButton = .init(title: "준비된 여행")
     let pastJourneyButton: JYPBottomBorderButton = .init(title: "지난 여행기")
+
+    let addButton: UIButton = .init()
+
+    let menuDivider: UIView = .init()
+
+    let scheduledJourneyView: UIView = .init()
+    let pastJourneyView: UIView = .init()
+
+    // MARK: - Initializer
+
+    init(reactor: Reactor) {
+        super.init(nibName: nil, bundle: nil)
+        self.reactor = reactor
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     // MARK: - Setup Methods
 
@@ -38,14 +59,24 @@ class MyPlannerViewController: NavigationBarViewController {
         titleLabel.numberOfLines = 0
         titleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 22)
         titleLabel.textColor = JYPIOSAsset.textB90.color
-        
+
         scheduledJourneyButton.isSelected = true
+
+        addButton.setImage(JYPIOSAsset.iconAdd.image, for: .normal)
+
+        menuDivider.backgroundColor = .black.withAlphaComponent(0.1)
+
+        scheduledJourneyView.backgroundColor = JYPIOSAsset.mainPink.color
+        pastJourneyView.backgroundColor = JYPIOSAsset.subBlue300.color
     }
 
     override func setupHierarchy() {
         super.setupHierarchy()
 
-        contentView.addSubviews([headerView, titleLabel, scheduledJourneyButton, pastJourneyButton])
+        contentView.addSubviews([
+            headerView, titleLabel, scheduledJourneyButton, pastJourneyButton, addButton, menuDivider,
+            scheduledJourneyView, pastJourneyView
+        ])
     }
 
     override func setupLayout() {
@@ -70,5 +101,65 @@ class MyPlannerViewController: NavigationBarViewController {
             make.centerY.equalTo(scheduledJourneyButton.snp.centerY)
             make.leading.equalTo(scheduledJourneyButton.snp.trailing).offset(28)
         }
+
+        addButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(20)
+            make.bottom.equalTo(menuDivider.snp.top).offset(-7)
+            make.size.equalTo(20)
+        }
+
+        menuDivider.snp.makeConstraints { make in
+            make.width.centerX.equalToSuperview()
+            make.centerY.equalTo(scheduledJourneyButton.bottomBorderView.snp.centerY)
+            make.height.equalTo(1)
+        }
+
+        scheduledJourneyView.snp.makeConstraints { make in
+            make.top.equalTo(menuDivider.snp.bottom)
+            make.leading.trailing.bottom.equalToSuperview()
+        }
+
+        pastJourneyView.snp.makeConstraints { make in
+            make.top.equalTo(menuDivider.snp.bottom)
+            make.leading.trailing.bottom.equalToSuperview()
+        }
+    }
+
+    // MARK: - Bind Method
+
+    func bind(reactor: MyPlannerReactor) {
+        scheduledJourneyButton.rx.tap
+            .map { .didTapScheduledJourneyMenu }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        pastJourneyButton.rx.tap
+            .map { .didTapPastJourneyMenu }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .map { !$0.isSelectedSchduledJourneyView }
+            .distinctUntilChanged()
+            .bind(to: scheduledJourneyView.rx.isHidden)
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .map { $0.isSelectedSchduledJourneyView }
+            .distinctUntilChanged()
+            .bind(to: scheduledJourneyButton.rx.isSelected)
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .map { !$0.isSelectedPastJourneyView }
+            .distinctUntilChanged()
+            .bind(to: pastJourneyView.rx.isHidden)
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .map { $0.isSelectedPastJourneyView }
+            .distinctUntilChanged()
+            .bind(to: pastJourneyButton.rx.isSelected)
+            .disposed(by: disposeBag)
     }
 }
