@@ -24,8 +24,8 @@ class MyPlannerViewController: NavigationBarViewController, View {
 
     let menuDivider: UIView = .init()
 
-    let scheduledJourneyView: UIView = .init()
-    let pastJourneyView: UIView = .init()
+    lazy var scheduledJourneyView: ScheduledJourneyView = .init(reactor: ScheduledJourneyReactor())
+    lazy var pastJourneyView: UIView = .init()
 
     // MARK: - Initializer
 
@@ -143,9 +143,9 @@ class MyPlannerViewController: NavigationBarViewController, View {
             .distinctUntilChanged()
             .bind(to: scheduledJourneyView.rx.isHidden)
             .disposed(by: disposeBag)
-        
+
         reactor.state
-            .map { $0.isSelectedSchduledJourneyView }
+            .map(\.isSelectedSchduledJourneyView)
             .distinctUntilChanged()
             .bind(to: scheduledJourneyButton.rx.isSelected)
             .disposed(by: disposeBag)
@@ -155,9 +155,9 @@ class MyPlannerViewController: NavigationBarViewController, View {
             .distinctUntilChanged()
             .bind(to: pastJourneyView.rx.isHidden)
             .disposed(by: disposeBag)
-        
+
         reactor.state
-            .map { $0.isSelectedPastJourneyView }
+            .map(\.isSelectedPastJourneyView)
             .distinctUntilChanged()
             .bind(to: pastJourneyButton.rx.isSelected)
             .disposed(by: disposeBag)
