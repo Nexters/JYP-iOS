@@ -24,7 +24,7 @@ class MyPlannerViewController: BaseViewController {
         titleLabel.text = "자유로운 탐험가,\n다정님의 시작된 여행"
         titleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 22)
         titleLabel.textColor = .black
-        titleLabel.lineSpacing(spacing: 12)
+        titleLabel.lineSpacing(lineHeight: 34.1)
         titleLabel.numberOfLines = 0
         createPlannerButton.setTitle("플래너 생성", for: .normal)
         selectTagButton.setTitle("플래너 태그 선택", for: .normal)
