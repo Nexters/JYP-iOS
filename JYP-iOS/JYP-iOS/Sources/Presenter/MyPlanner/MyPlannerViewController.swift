@@ -9,66 +9,66 @@
 import Foundation
 import UIKit
 
-class MyPlannerViewController: BaseViewController {
+class MyPlannerViewController: NavigationBarViewController {
     // MARK: - UI Components
 
-    let titleLabel = UILabel()
-    let createPlannerButton = UIButton(type: .system)
-    let selectTagButton = UIButton(type: .system)
+    let headerView: UIView = .init()
+    let titleLabel: UILabel = .init()
+
+    let scheduledJourneyButton: JYPBottomBorderButton = .init(title: "준비된 여행")
+    let pastJourneyButton: JYPBottomBorderButton = .init(title: "지난 여행기")
 
     // MARK: - Setup Methods
+
+    override func setupNavigationBar() {
+        super.setupNavigationBar()
+
+        setNavigationBarTitleText("나의 여행")
+        setNavigationBarTitleFont(JYPIOSFontFamily.Pretendard.medium.font(size: 16))
+        setNavigationBarBackgroundColor(JYPIOSAsset.backgroundWhite200.color)
+        setNavigationBarBackButtonHidden(true)
+    }
 
     override func setupProperty() {
         super.setupProperty()
 
-        titleLabel.text = "마이 플래너 뷰컨"
-        titleLabel.textColor = .black
-        createPlannerButton.setTitle("플래너 생성", for: .normal)
-        selectTagButton.setTitle("플래너 태그 선택", for: .normal)
+        headerView.backgroundColor = JYPIOSAsset.backgroundWhite200.color
+
+        titleLabel.text = "자유로운 탐험가,\n다정님의 시작된 여행"
+        titleLabel.numberOfLines = 0
+        titleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 22)
+        titleLabel.textColor = JYPIOSAsset.textB90.color
+        
+        scheduledJourneyButton.isSelected = true
     }
 
     override func setupHierarchy() {
         super.setupHierarchy()
 
-        view.addSubviews([titleLabel, createPlannerButton, selectTagButton])
+        contentView.addSubviews([headerView, titleLabel, scheduledJourneyButton, pastJourneyButton])
     }
 
     override func setupLayout() {
         super.setupLayout()
 
+        headerView.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(titleLabel.snp.bottom).offset(40)
+        }
+
         titleLabel.snp.makeConstraints { make in
-            make.center.equalToSuperview()
+            make.top.equalTo(navigationBar.snp.bottom)
+            make.leading.equalToSuperview().inset(24)
         }
 
-        createPlannerButton.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(30)
-            $0.centerX.equalToSuperview()
+        scheduledJourneyButton.snp.makeConstraints { make in
+            make.top.equalTo(headerView.snp.bottom).offset(20)
+            make.leading.equalToSuperview().inset(24)
         }
 
-        selectTagButton.snp.makeConstraints {
-            $0.top.equalTo(createPlannerButton.snp.bottom).offset(30)
-            $0.centerX.equalToSuperview()
+        pastJourneyButton.snp.makeConstraints { make in
+            make.centerY.equalTo(scheduledJourneyButton.snp.centerY)
+            make.leading.equalTo(scheduledJourneyButton.snp.trailing).offset(28)
         }
-    }
-
-    override func setupBind() {
-        createPlannerButton.rx.tap
-            .subscribe(onNext: { [weak self] in
-                let calendarService = CalendarService()
-                let createPlannerReactor = CreatePlannerDateReactor(service: calendarService)
-                let createPlannerDateViewController = CreatePlannerDateViewController(reactor: createPlannerReactor)
-
-                self?.navigationController?.pushViewController(createPlannerDateViewController, animated: true)
-            })
-            .disposed(by: disposeBag)
-
-        selectTagButton.rx.tap
-            .subscribe(onNext: { [weak self] in
-                let createPlannerTagReactor = CreatePlannerTagReactor(provider: ServiceProvider())
-                let createPlannerTagViewController = CreatePlannerTagViewController(reactor: createPlannerTagReactor)
-
-                self?.navigationController?.pushViewController(createPlannerTagViewController, animated: true)
-            })
-            .disposed(by: disposeBag)
     }
 }
