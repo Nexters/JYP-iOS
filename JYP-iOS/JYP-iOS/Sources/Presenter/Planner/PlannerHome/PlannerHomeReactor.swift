@@ -27,7 +27,7 @@ class PlannerHomeReactor: Reactor {
         case updateIsShowJYPTagSectionToggle
         case updateTagPresentJYPTagBottomSheet(Tag?)
         case updateIsPresentPlannerSearchPlaceViewController(Bool)
-        case updateCandidatePlacePresentPlannerSearchPlaceWebViewController(CandidatePlace)
+        case updateCandidatePlacePresentPlannerSearchPlaceWebViewController(CandidatePlace?)
         case setSections([PlannerHomeDiscussionSectionModel])
         case updateSectionItem(IndexPath, PlannerHomeDiscussionSectionModel.Item)
     }
@@ -111,13 +111,22 @@ extension PlannerHomeReactor {
             guard case let .candidatePlaceItem(reactor) = state.sections[indexPath.section].items[indexPath.row] else { break }
             let candidatePlace = reactor.currentState.candidatePlace
             
-            return .just(.updateCandidatePlacePresentPlannerSearchPlaceWebViewController(candidatePlace))
+            return .concat([
+                .just(.updateCandidatePlacePresentPlannerSearchPlaceWebViewController(candidatePlace)),
+                .just(.updateCandidatePlacePresentPlannerSearchPlaceWebViewController(nil))
+            ])
         case let .didTapCandidatePlaceLikeButton(indexPath):
             guard case let .candidatePlaceItem(reactor) = state.sections[indexPath.section].items[indexPath.row] else { break }
             var candidatePlaceItemState = reactor.currentState
             
-            candidatePlaceItemState.candidatePlace.like += candidatePlaceItemState.isSelectedLikeButton ? -1 : 1
             candidatePlaceItemState.isSelectedLikeButton.toggle()
+            
+            if candidatePlaceItemState.isSelectedLikeButton {
+                candidatePlaceItemState.candidatePlace.like += 1
+                candidatePlaceItemState.isReadyAnimate = true
+            } else {
+                candidatePlaceItemState.candidatePlace.like += -1
+            }
             
             return .just(.updateSectionItem(indexPath, .candidatePlaceItem(.init(state: candidatePlaceItemState))))
         }
