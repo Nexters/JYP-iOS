@@ -9,26 +9,26 @@
 import UIKit
 
 enum OnboardingCardViewType {
-    case whatIsJourneyA
-    case whatIsJourneyB
-    case howToNewPlaceA
-    case howToNewPlaceB
-    case whenJourneyPlanA
-    case whenJourneyPlanB
+    case journeyA
+    case journeyB
+    case placeA
+    case placeB
+    case planA
+    case planB
     
     var config: OnboardingCardViewConfig {
         switch self {
-        case .whatIsJourneyA:
+        case .journeyA:
             return .init(titleText: "새롭고 많은 것들을\n경험하는 것이라고 생각해요", image: JYPIOSAsset.iconCulturalInstitution.image)
-        case .whatIsJourneyB:
+        case .journeyB:
             return .init(titleText: "여유롭게 휴식하는 것이라고\n생각해요", image: JYPIOSAsset.iconCulturalInstitution.image)
-        case .howToNewPlaceA:
+        case .placeA:
             return .init(titleText: "미리 세운 계획에\n영향이 간다면 방문하지 않아요", image: JYPIOSAsset.iconCulturalInstitution.image)
-        case .howToNewPlaceB:
+        case .placeB:
             return .init(titleText: "궁금증을 참지 못하고\n무조건 방문해요", image: JYPIOSAsset.iconCulturalInstitution.image)
-        case .whenJourneyPlanA:
+        case .planA:
             return .init(titleText: "시간 단위로 꼼꼼하게\n계획해요", image: JYPIOSAsset.iconCulturalInstitution.image)
-        case .whenJourneyPlanB:
+        case .planB:
             return .init(titleText: "방문할 지역만 대략 생각하고,\n나의 직관을 믿어요", image: JYPIOSAsset.iconCulturalInstitution.image)
         }
     }
@@ -48,9 +48,9 @@ struct OnboardingCardViewConfig {
 class OnboardingCardView: BaseView {
     let type: OnboardingCardViewType
     
-    var titleLabel: UILabel!
-    var badgeImage: UIImageView!
-    var circleImage: UIImageView!
+    var titleLabel = UILabel()
+    var badgeImage = UIImageView()
+    var circleImage = UIImageView()
     
     var state: OnboardingCardViewState = .defualt {
         didSet {
@@ -88,25 +88,19 @@ class OnboardingCardView: BaseView {
         super.setupProperty()
         
         backgroundColor = JYPIOSAsset.backgroundWhite100.color
-        
+
         cornerRound(radius: 16)
-                
-        titleLabel = .init().then {
-            $0.text = type.config.titleText
-            $0.textColor = JYPIOSAsset.textB80.color
-            $0.font = JYPIOSFontFamily.Pretendard.medium.font(size: 16)
-            $0.numberOfLines = 2
-        }
+
+        titleLabel.text = type.config.titleText
+        titleLabel.textColor = JYPIOSAsset.textB80.color
+        titleLabel.font = JYPIOSFontFamily.Pretendard.medium.font(size: 16)
+        titleLabel.numberOfLines = 2
         
-        badgeImage = .init().then {
-            $0.image = JYPIOSAsset.iconCheck.image
-            $0.isHidden = true
-        }
-        
-        circleImage = .init().then {
-            $0.image = type.config.image
-            $0.cornerRound(radius: 45)
-        }
+        badgeImage.image = JYPIOSAsset.iconCheck.image
+        badgeImage.isHidden = true
+
+        circleImage.image = type.config.image
+        circleImage.cornerRound(radius: 45)
     }
     
     override func setupHierarchy() {

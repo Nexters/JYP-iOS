@@ -9,40 +9,40 @@
 import UIKit
 
 enum OnboardingQuestionViewType {
-    case whatIsJourney
-    case howToNewPlace
-    case whenJourneyPlan
+    case journey
+    case place
+    case plan
     
     var titleText: String {
         switch self {
-        case .whatIsJourney:
+        case .journey:
             return "본인이 생각하는 여행이란\n무엇인가요?"
-        case .howToNewPlace:
+        case .place:
             return "여행 중, 새로운 장소를 발견하면\n어떤 선택을 하실 건가요?"
-        case .whenJourneyPlan:
+        case .plan:
             return "여행 계획을 세울 때,\n어떤 모습이신가요?"
         }
     }
     
     var cardViewTypeA: OnboardingCardViewType {
         switch self {
-        case .whatIsJourney:
-            return .whatIsJourneyA
-        case .howToNewPlace:
-            return .howToNewPlaceA
-        case .whenJourneyPlan:
-            return .whenJourneyPlanA
+        case .journey:
+            return .journeyA
+        case .place:
+            return .placeA
+        case .plan:
+            return .planA
         }
     }
     
     var cardViewTypeB: OnboardingCardViewType {
         switch self {
-        case .whatIsJourney:
-            return .whatIsJourneyB
-        case .howToNewPlace:
-            return .howToNewPlaceB
-        case .whenJourneyPlan:
-            return .whenJourneyPlanB
+        case .journey:
+            return .journeyB
+        case .place:
+            return .placeB
+        case .plan:
+            return .planB
         }
     }
 }
@@ -50,11 +50,11 @@ enum OnboardingQuestionViewType {
 class OnboardingQuestionView: BaseView {
     let type: OnboardingQuestionViewType
     
-    var questionIcon: UIImageView!
-    var titleLabel: UILabel!
-    var onboardingCardViewA: OnboardingCardView!
-    var onboardingCardViewB: OnboardingCardView!
-    var nextButton: JYPButton!
+    let questionIcon = UIImageView()
+    let titleLabel = UILabel()
+    lazy var onboardingCardViewA = OnboardingCardView(type: type.cardViewTypeA)
+    lazy var onboardingCardViewB = OnboardingCardView(type: type.cardViewTypeB)
+    let nextButton = JYPButton(type: .next)
     
     required init?(coder: NSCoder) {
         fatalError("not supported")
@@ -68,24 +68,14 @@ class OnboardingQuestionView: BaseView {
     override func setupProperty() {
         super.setupProperty()
         
-        questionIcon = .init().then {
-            $0.image = JYPIOSAsset.iconQuestion.image
-        }
+        questionIcon.image = JYPIOSAsset.iconQuestion.image
+
+        titleLabel.textColor = JYPIOSAsset.textB90.color
+        titleLabel.text = type.titleText
+        titleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 24)
+        titleLabel.numberOfLines = 2
         
-        titleLabel = .init().then {
-            $0.textColor = JYPIOSAsset.textB90.color
-            $0.text = type.titleText
-            $0.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 24)
-            $0.numberOfLines = 2
-        }
-        
-        nextButton = .init(type: .next).then {
-            $0.isEnabled = false
-        }
-        
-        onboardingCardViewA = .init(type: type.cardViewTypeA)
-        
-        onboardingCardViewB = .init(type: type.cardViewTypeB)
+        nextButton.isEnabled = false
     }
     
     override func setupHierarchy() {

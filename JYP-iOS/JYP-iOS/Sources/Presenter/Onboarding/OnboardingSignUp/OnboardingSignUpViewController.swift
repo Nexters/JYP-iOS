@@ -195,8 +195,8 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
         authorizationController.performRequests()
     }
     
-    private func presentOnboardingWhatIsTripViewController(reactor: OnboardingWhatIsJourneyReactor) {
-        let onboardingWhatIsJourneyViewController = OnboardingWhatIsJourneyViewController()
+    private func presentOnboardingWhatIsTripViewController(reactor: OnboardingQuestionJourneyReactor) {
+        let onboardingWhatIsJourneyViewController = OnboardingQuestionJourneyViewController()
         onboardingWhatIsJourneyViewController.reactor = reactor
         navigationController?.pushViewController(onboardingWhatIsJourneyViewController, animated: true)
     }

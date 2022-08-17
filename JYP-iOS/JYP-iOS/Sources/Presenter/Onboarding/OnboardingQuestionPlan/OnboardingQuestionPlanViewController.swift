@@ -9,12 +9,12 @@
 import UIKit
 import ReactorKit
 
-class OnboardingWhenJourneyPlanViewController: NavigationBarViewController, View {
-    typealias Reactor = OnboardingWhenJourneyPlanReactor
+class OnboardingQuestionPlanViewController: NavigationBarViewController, View {
+    typealias Reactor = OnboardingQuestionPlanReactor
     
     // MARK: - UI Components
     
-    let selfView = OnboardingQuestionView(type: .whenJourneyPlan)
+    let selfView = OnboardingQuestionView(type: .plan)
     
     // MARK: - Setup Methods
     
@@ -42,13 +42,13 @@ class OnboardingWhenJourneyPlanViewController: NavigationBarViewController, View
         }
     }
     
-    func bind(reactor: OnboardingWhenJourneyPlanReactor) {
+    func bind(reactor: OnboardingQuestionPlanReactor) {
         bindActions(to: reactor)
         bindStates(from: reactor)
     }
     
-    func presentOnboardingHowToNewPlaceViewController(reactor: OnboardingHowToNewPlaceReactor) {
-        let onboardingHowToNewPlaceViewController = OnboardingHowToNewPlaceViewController()
+    func presentOnboardingHowToNewPlaceViewController(reactor: OnboardingQuestionPlaceReactor) {
+        let onboardingHowToNewPlaceViewController = OnboardingQuestionPlaceViewController()
         onboardingHowToNewPlaceViewController.reactor = reactor
         navigationController?.pushViewController(onboardingHowToNewPlaceViewController, animated: true)
     }
@@ -56,14 +56,14 @@ class OnboardingWhenJourneyPlanViewController: NavigationBarViewController, View
 
 // MARK: - Setup Binding Actions
 
-extension OnboardingWhenJourneyPlanViewController {
-    func bindActions(to reactor: OnboardingWhenJourneyPlanReactor) {
+extension OnboardingQuestionPlanViewController {
+    func bindActions(to reactor: OnboardingQuestionPlanReactor) {
         bindDidTapCardViewA(to: reactor)
         bindDidTapCardViewB(to: reactor)
         bindDidTapNextButton(to: reactor)
     }
     
-    func bindDidTapCardViewA(to reactor: OnboardingWhenJourneyPlanReactor) {
+    func bindDidTapCardViewA(to reactor: OnboardingQuestionPlanReactor) {
         selfView.onboardingCardViewA.rx.tapGesture()
             .filter { $0.state == .ended }
             .map { _ in .didTapCardViewA }
@@ -71,7 +71,7 @@ extension OnboardingWhenJourneyPlanViewController {
             .disposed(by: disposeBag)
     }
     
-    func bindDidTapCardViewB(to reactor: OnboardingWhenJourneyPlanReactor) {
+    func bindDidTapCardViewB(to reactor: OnboardingQuestionPlanReactor) {
         selfView.onboardingCardViewB.rx.tapGesture()
             .filter { $0.state == .ended }
             .map { _ in .didTapCardViewB }
@@ -79,7 +79,7 @@ extension OnboardingWhenJourneyPlanViewController {
             .disposed(by: disposeBag)
     }
     
-    func bindDidTapNextButton(to reactor: OnboardingWhenJourneyPlanReactor) {
+    func bindDidTapNextButton(to reactor: OnboardingQuestionPlanReactor) {
         selfView.nextButton.rx.tap
             .map { .didTapNextButton }
             .bind(to: reactor.action)
@@ -89,14 +89,14 @@ extension OnboardingWhenJourneyPlanViewController {
 
 // MARK: - Setup Binding States
 
-extension OnboardingWhenJourneyPlanViewController {
-    func bindStates(from reactor: OnboardingWhenJourneyPlanReactor) {
+extension OnboardingQuestionPlanViewController {
+    func bindStates(from reactor: OnboardingQuestionPlanReactor) {
         bindStateCardViewA(from: reactor)
         bindStateCardViewB(from: reactor)
         bindIsActiveNextButton(from: reactor)
     }
     
-    func bindStateCardViewA(from reactor: OnboardingWhenJourneyPlanReactor) {
+    func bindStateCardViewA(from reactor: OnboardingQuestionPlanReactor) {
         reactor.state
             .map { $0.stateCardViewA }
             .bind { [weak self] state in
@@ -105,7 +105,7 @@ extension OnboardingWhenJourneyPlanViewController {
             .disposed(by: disposeBag)
     }
     
-    func bindStateCardViewB(from reactor: OnboardingWhenJourneyPlanReactor) {
+    func bindStateCardViewB(from reactor: OnboardingQuestionPlanReactor) {
         reactor.state
             .map { $0.stateCardViewB }
             .bind { [weak self] state in
@@ -114,7 +114,7 @@ extension OnboardingWhenJourneyPlanViewController {
             .disposed(by: disposeBag)
     }
     
-    func bindIsActiveNextButton(from reactor: OnboardingWhenJourneyPlanReactor) {
+    func bindIsActiveNextButton(from reactor: OnboardingQuestionPlanReactor) {
         reactor.state
             .map { $0.isActiveNextButton }
             .bind { [weak self] bool in

@@ -65,7 +65,7 @@ class OnboardingSignUpReactor: Reactor {
 }
 
 extension OnboardingSignUpReactor {
-    func getOnboardingWhatIsTripReactor() -> OnboardingWhatIsJourneyReactor {
-        return OnboardingWhatIsJourneyReactor(initialState: .init())
+    func getOnboardingWhatIsTripReactor() -> OnboardingQuestionJourneyReactor {
+        return OnboardingQuestionJourneyReactor(initialState: .init())
     }
 }

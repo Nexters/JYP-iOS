@@ -8,7 +8,7 @@
 
 import ReactorKit
 
-class OnboardingWhatIsJourneyReactor: Reactor {
+class OnboardingQuestionJourneyReactor: Reactor {
     enum Action {
         case didTapCardViewA
         case didTapCardViewB
@@ -80,8 +80,8 @@ class OnboardingWhatIsJourneyReactor: Reactor {
     }
 }
 
-extension OnboardingWhatIsJourneyReactor {
-    func getOnboardingHowToNewPlaceReactor() -> OnboardingHowToNewPlaceReactor {
-        return OnboardingHowToNewPlaceReactor(initialState: .init())
+extension OnboardingQuestionJourneyReactor {
+    func getOnboardingHowToNewPlaceReactor() -> OnboardingQuestionPlaceReactor {
+        return OnboardingQuestionPlaceReactor(initialState: .init())
     }
 }
