@@ -8,6 +8,7 @@
 
 import UIKit
 import ReactorKit
+import Lottie
 
 class CandidatePlaceCollectionViewCell: BaseCollectionViewCell, View {
     typealias Reactor = CandidatePlaceCollectionViewCellReactor
@@ -20,6 +21,7 @@ class CandidatePlaceCollectionViewCell: BaseCollectionViewCell, View {
     let likeButton = UIButton()
     let likeImageView = UIImageView()
     let likeLabel = UILabel()
+    let animationView = AnimationView(name: "like_active_alone")
     
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -65,13 +67,16 @@ class CandidatePlaceCollectionViewCell: BaseCollectionViewCell, View {
         
         likeLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 12)
         likeLabel.isUserInteractionEnabled = false
+        
+        animationView.isUserInteractionEnabled = false
     }
     
     override func setupHierarchy() {
         super.setupHierarchy()
         
         contentView.addSubviews([categoryLabel, titleLabel, subLabel, rankBadgeImageView, infoButton, likeButton])
-        likeButton.addSubviews([likeImageView, likeLabel])
+        likeButton.addSubviews([likeImageView, animationView, likeLabel])
+        likeImageView.isHidden = true
     }
     
     override func setupLayout() {
@@ -117,6 +122,10 @@ class CandidatePlaceCollectionViewCell: BaseCollectionViewCell, View {
             $0.top.equalTo(likeImageView.snp.bottom).offset(1)
             $0.centerX.equalToSuperview()
         }
+
+        animationView.snp.makeConstraints {
+            $0.top.leading.trailing.bottom.equalToSuperview()
+        }
     }
     
     func bind(reactor: Reactor) {
@@ -125,6 +134,7 @@ class CandidatePlaceCollectionViewCell: BaseCollectionViewCell, View {
         categoryLabel.text = state.candidatePlace.category.title
         titleLabel.text = state.candidatePlace.name
         subLabel.text = state.candidatePlace.address
+        likeLabel.text = "\(state.candidatePlace.like)"
         
         switch state.rank {
         case 0:
@@ -142,22 +152,14 @@ class CandidatePlaceCollectionViewCell: BaseCollectionViewCell, View {
             likeImageView.image = JYPIOSAsset.iconVoteInactive.image
         }
         
-        reactor.state.map(\.isSelectedLikeButton)
-            .withUnretained(self)
-            .bind { this, bool in
-                if bool {
-                    this.likeImageView.image = JYPIOSAsset.iconVoteActive.image
-                } else {
-                    this.likeImageView.image = JYPIOSAsset.iconVoteInactive.image
-                }
-            }
-            .disposed(by: disposeBag)
-        
-        reactor.state.map(\.candidatePlace)
-            .withUnretained(self)
-            .bind { this, candidatePlace in
-                this.likeLabel.text = "\(candidatePlace.like)"
-            }
-            .disposed(by: disposeBag)
+        if state.isReadyAnimate {
+            animationView.play(completion: { _ in
+                reactor.action.onNext(.animated)
+            })
+        } else if state.isSelectedLikeButton {
+            animationView.currentProgress = 1
+        } else {
+            animationView.stop()
+        }
     }
 }
