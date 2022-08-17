@@ -58,6 +58,7 @@ class MyPlannerViewController: NavigationBarViewController, View {
         titleLabel.text = "자유로운 탐험가,\n다정님의 시작된 여행"
         titleLabel.numberOfLines = 0
         titleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 22)
+        titleLabel.lineSpacing(lineHeight: 34.1)
         titleLabel.textColor = JYPIOSAsset.textB90.color
 
         scheduledJourneyButton.isSelected = true
