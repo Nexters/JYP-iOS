@@ -29,6 +29,7 @@ final class ScheduledJourneyView: BaseView, View {
             return cell
         case let .journey(reactor):
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: JourneyCardCollectionViewCell.self), for: indexPath) as? JourneyCardCollectionViewCell else { return .init() }
+            cell.reactor = reactor
 
             return cell
         }

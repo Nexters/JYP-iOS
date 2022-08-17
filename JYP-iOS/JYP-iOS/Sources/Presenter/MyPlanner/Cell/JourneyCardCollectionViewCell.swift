@@ -98,5 +98,10 @@ class JourneyCardCollectionViewCell: BaseCollectionViewCell, View {
         }
     }
 
-    func bind(reactor _: JourneyCardCollectionViewCellReactor) {}
+    func bind(reactor: JourneyCardCollectionViewCellReactor) {
+        reactor.state
+            .map(\.journey.name)
+            .bind(to: titleLabel.rx.text)
+            .disposed(by: disposeBag)
+    }
 }
