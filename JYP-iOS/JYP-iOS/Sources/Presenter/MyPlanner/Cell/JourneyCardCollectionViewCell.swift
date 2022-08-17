@@ -19,6 +19,7 @@ class JourneyCardCollectionViewCell: BaseCollectionViewCell, View {
     let moreButton: UIButton = .init()
     let titleLabel: UILabel = .init()
     let daysLabel: UILabel = .init()
+    let memberStackView: JYPMemberStackView = .init(frame: .zero)
 
     // MARK: - Initializer
 
@@ -66,7 +67,7 @@ class JourneyCardCollectionViewCell: BaseCollectionViewCell, View {
     override func setupHierarchy() {
         super.setupHierarchy()
 
-        addSubviews([coverImage, daysTag, moreButton, titleLabel, daysLabel])
+        addSubviews([coverImage, daysTag, moreButton, titleLabel, daysLabel, memberStackView])
     }
 
     override func setupLayout() {
@@ -95,6 +96,10 @@ class JourneyCardCollectionViewCell: BaseCollectionViewCell, View {
         daysLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(4)
             make.leading.equalTo(titleLabel.snp.leading)
+        }
+        
+        memberStackView.snp.makeConstraints { make in
+            make.leading.bottom.equalToSuperview().inset(20)
         }
     }
 
