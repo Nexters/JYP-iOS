@@ -8,7 +8,7 @@
 
 import ReactorKit
 
-class OnboardingPlaceReactor: Reactor {
+class OnboardingTwoReactor: Reactor {
     enum Action {
         case didTapNextButton
     }
@@ -45,11 +45,5 @@ class OnboardingPlaceReactor: Reactor {
         }
         
         return newState
-    }
-}
-
-extension OnboardingPlaceReactor {
-    func getOnboardingSignUpReactor() -> OnboardingSignUpReactor {
-        return OnboardingSignUpReactor(initialState: .init())
     }
 }

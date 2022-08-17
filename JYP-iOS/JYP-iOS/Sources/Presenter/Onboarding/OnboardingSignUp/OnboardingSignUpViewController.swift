@@ -18,7 +18,22 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
     
     // MARK: - UI Components
     
-    let selfView = OnboardingSignUpView()
+    var onboardingView = UIView()
+    var titleLabel = UILabel()
+    var onboardingLabel = UILabel()
+    var loginLabel = UILabel()
+    var kakaoLoginButton = UIButton()
+    var appleLoginButton = ASAuthorizationAppleIDButton()
+    
+    required init?(coder: NSCoder) {
+        fatalError("not supported")
+    }
+    
+    init(reactor: OnboardingSignUpReactor) {
+        super.init(nibName: nil, bundle: nil)
+        
+        self.reactor = reactor
+    }
     
     // MARK: - Setup Methods
     
@@ -32,25 +47,109 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
     
     override func setupProperty() {
         super.setupProperty()
+        
+        view.backgroundColor = JYPIOSAsset.backgroundWhite100.color
+        
+        onboardingView.backgroundColor = JYPIOSAsset.mainPink.color
+        onboardingView.cornerRound(radius: 40, direct: [.layerMaxXMaxYCorner, .layerMinXMaxYCorner])
+        
+        titleLabel.text = "친구들과\n만들어나가는 여행"
+        titleLabel.textColor = JYPIOSAsset.textWhite.color
+        titleLabel.numberOfLines = 2
+        titleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 24)
+        
+        onboardingLabel.text = "저니 피키"
+        onboardingLabel.textColor = JYPIOSAsset.textWhite.color
+        onboardingLabel.numberOfLines = 2
+        onboardingLabel.font = JYPIOSFontFamily.Pretendard.bold.font(size: 24)
+
+        loginLabel.text = "SNS 계정으로 회원가입 및 로그인"
+        loginLabel.font = JYPIOSFontFamily.Pretendard.medium.font(size: 16)
+        loginLabel.textColor = JYPIOSAsset.textB75.color
+
+        kakaoLoginButton.setBackgroundImage(JYPIOSAsset.kakaoLogin.image, for: .normal)
+        
+        appleLoginButton.cornerRound(radius: 6)
     }
     
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        contentView.addSubview(selfView)
+        contentView.addSubviews([onboardingView, loginLabel, kakaoLoginButton, appleLoginButton])
+        onboardingView.addSubviews([titleLabel, onboardingLabel])
     }
     
     override func setupLayout() {
         super.setupLayout()
         
-        selfView.snp.makeConstraints {
-            $0.top.leading.trailing.bottom.equalToSuperview()
+        onboardingView.snp.makeConstraints {
+            $0.top.leading.trailing.equalToSuperview()
+        }
+        
+        titleLabel.snp.makeConstraints {
+            $0.top.equalToSuperview().inset(20)
+            $0.leading.equalToSuperview().inset(24)
+        }
+        
+        onboardingLabel.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.bottom.equalToSuperview().inset(35)
+        }
+        
+        loginLabel.snp.makeConstraints {
+            $0.top.equalTo(onboardingView.snp.bottom).offset(71)
+            $0.centerX.equalToSuperview()
+            $0.bottom.equalTo(kakaoLoginButton.snp.top).offset(-19)
+        }
+        
+        kakaoLoginButton.snp.makeConstraints {
+            $0.leading.trailing.equalToSuperview().inset(24)
+            $0.bottom.equalTo(appleLoginButton.snp.top).offset(-13)
+            $0.height.equalTo(50)
+        }
+        
+        appleLoginButton.snp.makeConstraints {
+            $0.leading.trailing.equalToSuperview().inset(24)
+            $0.bottom.equalToSuperview().inset(40)
+            $0.height.equalTo(50)
         }
     }
     
     func bind(reactor: OnboardingSignUpReactor) {
-        bindActions(to: reactor)
-        bindStates(from: reactor)
+        kakaoLoginButton.rx.tap
+            .map { .didTapKakaoLoginButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        appleLoginButton.rx.tapGesture()
+            .filter { $0.state == .ended }
+            .map { _ in .didTapAppleLoginButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .map { $0.isOpenKakaoLogin }
+            .distinctUntilChanged()
+            .filter { $0 }
+            .map { _ in }
+            .bind(onNext: openKakaoLogin)
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .map { $0.isOpenAppleLogin }
+            .distinctUntilChanged()
+            .filter { $0 }
+            .map { _ in }
+            .bind(onNext: openAppleLogin)
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .map { $0.isPresentOnboardingWhatIsTrip }
+            .distinctUntilChanged()
+            .filter { $0 }
+            .map { _ in reactor.getOnboardingWhatIsTripReactor() }
+            .bind(onNext: presentOnboardingWhatIsTripViewController)
+            .disposed(by: disposeBag)
     }
     
     private func openKakaoLogin() {
@@ -100,70 +199,6 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
         let onboardingWhatIsJourneyViewController = OnboardingWhatIsJourneyViewController()
         onboardingWhatIsJourneyViewController.reactor = reactor
         navigationController?.pushViewController(onboardingWhatIsJourneyViewController, animated: true)
-    }
-}
-
-// MARK: - Setup Binding Actions
-
-extension OnboardingSignUpViewController {
-    func bindActions(to reactor: OnboardingSignUpReactor) {
-        bindDidTapKakaoLoginButton(to: reactor)
-        bindDidTapAppleLoginButton(to: reactor)
-    }
-    
-    func bindDidTapKakaoLoginButton(to reactor: OnboardingSignUpReactor) {
-        selfView.kakaoLoginButton.rx.tap
-            .map { .didTapKakaoLoginButton }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
-    }
-    
-    func bindDidTapAppleLoginButton(to reactor: OnboardingSignUpReactor) {
-        selfView.appleLoginButton.rx.tapGesture()
-            .filter { $0.state == .ended }
-            .map { _ in .didTapAppleLoginButton }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
-    }
-}
-
-// MARK: - Setup Binding States
-
-extension OnboardingSignUpViewController {
-    func bindStates(from reactor: OnboardingSignUpReactor) {
-        bindIsOpenKakaoLogin(from: reactor)
-        bindIsOpenAppleLogin(from: reactor)
-        bindIsPresentOnboardingWhatIsTrip(from: reactor)
-    }
-    
-    func bindIsOpenKakaoLogin(from reactor: OnboardingSignUpReactor) {
-        reactor.state
-            .map { $0.isOpenKakaoLogin }
-            .distinctUntilChanged()
-            .filter { $0 }
-            .map { _ in }
-            .bind(onNext: openKakaoLogin)
-            .disposed(by: disposeBag)
-    }
-    
-    func bindIsOpenAppleLogin(from reactor: OnboardingSignUpReactor) {
-        reactor.state
-            .map { $0.isOpenAppleLogin }
-            .distinctUntilChanged()
-            .filter { $0 }
-            .map { _ in }
-            .bind(onNext: openAppleLogin)
-            .disposed(by: disposeBag)
-    }
-    
-    func bindIsPresentOnboardingWhatIsTrip(from reactor: OnboardingSignUpReactor) {
-        reactor.state
-            .map { $0.isPresentOnboardingWhatIsTrip }
-            .distinctUntilChanged()
-            .filter { $0 }
-            .map { _ in reactor.getOnboardingWhatIsTripReactor() }
-            .bind(onNext: presentOnboardingWhatIsTripViewController)
-            .disposed(by: disposeBag)
     }
 }
 

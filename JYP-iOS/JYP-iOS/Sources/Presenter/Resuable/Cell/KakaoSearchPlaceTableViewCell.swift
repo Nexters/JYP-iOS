@@ -29,8 +29,6 @@ class KakaoSearchPlaceTableViewCell: BaseTableViewCell, View {
         titleLabel.text = ""
         subLabel.text = ""
         categoryLabel.text = ""
-        
-        
     }
     
     override func setupProperty() {
