@@ -83,7 +83,7 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
         super.setupLayout()
         
         onboardingView.snp.makeConstraints {
-            $0.top.leading.trailing.equalToSuperview()
+            $0.top.leading.trailing.equalTo(view.safeAreaLayoutGuide)
         }
         
         titleLabel.snp.makeConstraints {
@@ -110,7 +110,7 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
         
         appleLoginButton.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview().inset(24)
-            $0.bottom.equalToSuperview().inset(40)
+            $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(40)
             $0.height.equalTo(50)
         }
     }
