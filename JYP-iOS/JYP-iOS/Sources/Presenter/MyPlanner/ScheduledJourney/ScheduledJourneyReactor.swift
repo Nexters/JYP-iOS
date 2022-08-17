@@ -19,10 +19,9 @@ final class ScheduledJourneyReactor: Reactor {
     var initialState: State
 
     init() {
-        let section = ScheduledJourneySectionModel(model: (), items: [.empty])
+//        let section = ScheduledJourneySectionModel(model: (), items: [.empty])
+        let journey = ScheduledJourneySectionModel(model: (), items: [.journey(.init()), .journey(.init()), .journey(.init())])
 
-        let journey = ScheduledJourneySectionModel(model: (), items: [.journey(.init())])
-
-        initialState = .init(sections: [section, journey])
+        initialState = .init(sections: [journey])
     }
 }
