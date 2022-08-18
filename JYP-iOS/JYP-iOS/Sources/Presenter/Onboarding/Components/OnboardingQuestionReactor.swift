@@ -31,8 +31,8 @@ class OnboardingQuestionReactor: Reactor {
     
     let initialState: State
     
-    init(initialState: State) {
-        self.initialState = initialState
+    init() {
+        self.initialState = State()
     }
     
     // MARK: - Setup Reactor
@@ -53,7 +53,10 @@ class OnboardingQuestionReactor: Reactor {
             ])
         case .didTapNextButton:
             if currentState.isActiveNextButton {
-                return .just(.updateIsPresentNextViewController(true))
+                return .concat([
+                    .just(.updateIsPresentNextViewController(true)),
+                    .just(.updateIsPresentNextViewController(false))
+                ])
             } else {
                 return .empty()
             }

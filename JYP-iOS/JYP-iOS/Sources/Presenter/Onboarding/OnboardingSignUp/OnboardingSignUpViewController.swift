@@ -143,7 +143,7 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
             .distinctUntilChanged()
             .filter { $0 }
             .bind { [weak self] _ in
-                let onboardingWhatIsJourneyViewController = OnboardingQuestionJourneyViewController(reactor: OnboardingQuestionReactor(initialState: .init()))
+                let onboardingWhatIsJourneyViewController = OnboardingQuestionJourneyViewController(reactor: OnboardingQuestionReactor())
                 self?.navigationController?.pushViewController(onboardingWhatIsJourneyViewController, animated: true)
             }
             .disposed(by: disposeBag)

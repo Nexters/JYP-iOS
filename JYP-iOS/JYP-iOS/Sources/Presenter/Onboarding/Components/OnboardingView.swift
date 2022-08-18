@@ -34,7 +34,7 @@ enum OnboardingViewType {
 class OnboardingView: BaseView {
     let type: OnboardingViewType
     
-    let serviceNameImageView = UIImageView()
+    let onboardingTextLogoImageView = UIImageView()
     let subLabel = UILabel()
     let onboardingImageView = UIImageView()
     let nextButton = JYPButton(type: .next)
@@ -52,7 +52,7 @@ class OnboardingView: BaseView {
     override func setupProperty() {
         super.setupProperty()
         
-        serviceNameImageView.image = JYPIOSAsset.onboardingTextLogoWhite.image
+        onboardingTextLogoImageView.image = JYPIOSAsset.onboardingTextLogoBlack.image
         
         subLabel.text = type.sub
         subLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 24)
@@ -68,31 +68,28 @@ class OnboardingView: BaseView {
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        addSubviews([serviceNameImageView, subLabel, onboardingImageView, nextButton])
+        addSubviews([onboardingTextLogoImageView, subLabel, onboardingImageView, nextButton])
     }
     
     override func setupLayout() {
         super.setupLayout()
         
-        serviceNameImageView.snp.makeConstraints {
+        onboardingTextLogoImageView.snp.makeConstraints {
             $0.top.equalToSuperview().inset(20)
             $0.leading.equalToSuperview().inset(24)
-            $0.width.equalTo(99)
-            $0.height.equalTo(24)
         }
         
         subLabel.snp.makeConstraints {
-            $0.top.equalTo(serviceNameImageView.snp.bottom).offset(48)
+            $0.top.equalTo(onboardingTextLogoImageView.snp.bottom).offset(48)
             $0.leading.equalToSuperview().inset(24)
         }
         
         onboardingImageView.snp.makeConstraints {
-            $0.top.equalTo(subLabel.snp.bottom).offset(35)
-            $0.leading.trailing.equalToSuperview().inset(24)
-            $0.height.equalTo(442)
+            $0.leading.trailing.equalToSuperview()
         }
         
         nextButton.snp.makeConstraints {
+            $0.top.equalTo(onboardingImageView.snp.bottom).offset(36)
             $0.leading.trailing.equalToSuperview().inset(24)
             $0.bottom.equalToSuperview()
             $0.height.equalTo(52)

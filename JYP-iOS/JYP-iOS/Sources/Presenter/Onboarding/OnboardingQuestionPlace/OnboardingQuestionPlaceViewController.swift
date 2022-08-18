@@ -28,16 +28,6 @@ class OnboardingQuestionPlaceViewController: NavigationBarViewController, View {
     
     // MARK: - Setup Methods
     
-    override func setupNavigationBar() {
-        super.setupNavigationBar()
-        
-        setNavigationBarHidden(true)
-    }
-    
-    override func setupProperty() {
-        super.setupProperty()
-    }
-    
     override func setupHierarchy() {
         super.setupHierarchy()
         
@@ -95,7 +85,7 @@ class OnboardingQuestionPlaceViewController: NavigationBarViewController, View {
             .map { $0.isPresentNextViewController }
             .filter { $0 }
             .bind { [weak self] _ in
-                let onboardingQuestionPlanViewController = OnboardingQuestionPlanViewController(reactor: OnboardingQuestionPlanReactor(initialState: .init()))
+                let onboardingQuestionPlanViewController = OnboardingQuestionPlanViewController(reactor: OnboardingQuestionReactor())
                 
                 self?.navigationController?.pushViewController(onboardingQuestionPlanViewController, animated: true)
             }

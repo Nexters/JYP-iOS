@@ -28,12 +28,6 @@ class OnboardingQuestionPlanViewController: NavigationBarViewController, View {
     
     // MARK: - Setup Methods
     
-    override func setupNavigationBar() {
-        super.setupNavigationBar()
-        
-        setNavigationBarHidden(true)
-    }
-    
     override func setupProperty() {
         super.setupProperty()
     }

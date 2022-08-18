@@ -88,7 +88,7 @@ class OnboardingQuestionView: BaseView {
         super.setupLayout()
         
         questionIcon.snp.makeConstraints {
-            $0.top.equalToSuperview().inset(64)
+            $0.top.equalToSuperview().inset(4)
             $0.leading.equalToSuperview().inset(24)
             $0.width.height.equalTo(30)
         }

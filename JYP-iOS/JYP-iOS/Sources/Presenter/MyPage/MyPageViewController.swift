@@ -97,8 +97,7 @@ class MyPageViewController: BaseViewController {
         onboardingButton.rx.tap
             .bind { [weak self] in
                 self?.hidesBottomBarWhenPushed = true
-                let onboardingLikingViewController = OnboardingOneViewController()
-                onboardingLikingViewController.reactor = OnboardingOneReactor()
+                let onboardingLikingViewController = OnboardingOneViewController(reactor: OnboardingReactor())
                 self?.navigationController?.pushViewController(onboardingLikingViewController, animated: true)
             }
             .disposed(by: disposeBag)

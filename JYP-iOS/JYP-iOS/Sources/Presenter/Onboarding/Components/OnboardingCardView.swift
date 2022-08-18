@@ -126,8 +126,8 @@ class OnboardingCardView: BaseView {
         }
         
         circleImage.snp.makeConstraints {
-            $0.bottom.trailing.equalToSuperview().inset(20)
-            $0.width.height.equalTo(90)
+            $0.bottom.trailing.equalToSuperview().inset(12)
+            $0.width.height.equalTo(100)
         }
     }
 }

@@ -31,11 +31,7 @@ class OnboardingQuestionJourneyViewController: NavigationBarViewController, View
     override func setupNavigationBar() {
         super.setupNavigationBar()
         
-        setNavigationBarHidden(true)
-    }
-    
-    override func setupProperty() {
-        super.setupProperty()
+        setNavigationBarBackButtonHidden(true)
     }
     
     override func setupHierarchy() {
@@ -95,7 +91,7 @@ class OnboardingQuestionJourneyViewController: NavigationBarViewController, View
             .map { $0.isPresentNextViewController }
             .filter { $0 }
             .bind { [weak self] _ in
-                let onboardingQuestionPlaceViewController = OnboardingQuestionPlaceViewController(reactor: OnboardingQuestionReactor(initialState: .init()))
+                let onboardingQuestionPlaceViewController = OnboardingQuestionPlaceViewController(reactor: OnboardingQuestionReactor())
                 self?.navigationController?.pushViewController(onboardingQuestionPlaceViewController, animated: true)
             }
             .disposed(by: disposeBag)

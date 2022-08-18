@@ -10,7 +10,7 @@ import UIKit
 import ReactorKit
 
 class OnboardingTwoViewController: NavigationBarViewController, View {
-    typealias Reactor = OnboardingTwoReactor
+    typealias Reactor = OnboardingReactor
     
     // MARK: - UI Components
     
@@ -22,8 +22,9 @@ class OnboardingTwoViewController: NavigationBarViewController, View {
         fatalError("not supported")
     }
     
-    init(reactor: OnboardingTwoReactor) {
+    init(reactor: OnboardingReactor) {
         super.init(nibName: nil, bundle: nil)
+        
         self.reactor = reactor
     }
     
@@ -53,7 +54,7 @@ class OnboardingTwoViewController: NavigationBarViewController, View {
     
     // MARK: Binding
     
-    func bind(reactor: OnboardingTwoReactor) {
+    func bind(reactor: OnboardingReactor) {
         // Action
         onboardingView.nextButton.rx.tap
             .map { .didTapNextButton }
@@ -62,8 +63,7 @@ class OnboardingTwoViewController: NavigationBarViewController, View {
         
         // State
         reactor.state
-            .map { $0.isPresentOnboardingSignUp }
-            .distinctUntilChanged()
+            .map { $0.isPresentNextViewController }
             .filter { $0 }
             .bind { [weak self] _ in
                 let onboardingSignUpViewController = OnboardingSignUpViewController(reactor: OnboardingSignUpReactor(initialState: .init()))
