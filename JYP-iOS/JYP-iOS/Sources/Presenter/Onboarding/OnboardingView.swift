@@ -52,7 +52,7 @@ class OnboardingView: BaseView {
     override func setupProperty() {
         super.setupProperty()
         
-        serviceNameImageView.image = JYPIOSAsset.serviceName.image
+        serviceNameImageView.image = JYPIOSAsset.onboardingTextLogoWhite.image
         
         subLabel.text = type.sub
         subLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 24)

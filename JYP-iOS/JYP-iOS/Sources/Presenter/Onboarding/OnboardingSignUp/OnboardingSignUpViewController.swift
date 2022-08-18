@@ -18,12 +18,12 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
     
     // MARK: - UI Components
     
-    var onboardingView = UIView()
-    var titleLabel = UILabel()
-    var onboardingLabel = UILabel()
-    var loginLabel = UILabel()
-    var kakaoLoginButton = UIButton()
-    var appleLoginButton = ASAuthorizationAppleIDButton()
+    let onboardingView = UIView()
+    let onboardingLogoImageView = UIImageView()
+    let onboardinglogoTextImageView = UIImageView()
+    let loginLabel = UILabel()
+    let kakaoLoginButton = UIButton()
+    let appleLoginButton = ASAuthorizationAppleIDButton()
     
     required init?(coder: NSCoder) {
         fatalError("not supported")
@@ -53,19 +53,13 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
         onboardingView.backgroundColor = JYPIOSAsset.mainPink.color
         onboardingView.cornerRound(radius: 40, direct: [.layerMaxXMaxYCorner, .layerMinXMaxYCorner])
         
-        titleLabel.text = "친구들과\n만들어나가는 여행"
-        titleLabel.textColor = JYPIOSAsset.textWhite.color
-        titleLabel.numberOfLines = 2
-        titleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 24)
+        onboardingLogoImageView.image = JYPIOSAsset.onboardingLogo.image
         
-        onboardingLabel.text = "저니 피키"
-        onboardingLabel.textColor = JYPIOSAsset.textWhite.color
-        onboardingLabel.numberOfLines = 2
-        onboardingLabel.font = JYPIOSFontFamily.Pretendard.bold.font(size: 24)
-
+        onboardinglogoTextImageView.image = JYPIOSAsset.onboardingTextLogoWhite.image
+        
         loginLabel.text = "SNS 계정으로 회원가입 및 로그인"
-        loginLabel.font = JYPIOSFontFamily.Pretendard.medium.font(size: 16)
-        loginLabel.textColor = JYPIOSAsset.textB75.color
+        loginLabel.font = JYPIOSFontFamily.Pretendard.regular.font(size: 14)
+        loginLabel.textColor = JYPIOSAsset.textB40.color
 
         kakaoLoginButton.setBackgroundImage(JYPIOSAsset.kakaoLogin.image, for: .normal)
         
@@ -76,7 +70,7 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
         super.setupHierarchy()
         
         contentView.addSubviews([onboardingView, loginLabel, kakaoLoginButton, appleLoginButton])
-        onboardingView.addSubviews([titleLabel, onboardingLabel])
+        onboardingView.addSubviews([onboardingLogoImageView, onboardinglogoTextImageView])
     }
     
     override func setupLayout() {
@@ -86,14 +80,15 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
             $0.top.leading.trailing.equalTo(view.safeAreaLayoutGuide)
         }
         
-        titleLabel.snp.makeConstraints {
-            $0.top.equalToSuperview().inset(20)
-            $0.leading.equalToSuperview().inset(24)
+        onboardingLogoImageView.snp.makeConstraints {
+            $0.top.equalToSuperview().inset(152)
+            $0.centerX.equalToSuperview()
+            $0.width.height.equalTo(87)
         }
         
-        onboardingLabel.snp.makeConstraints {
+        onboardinglogoTextImageView.snp.makeConstraints {
+            $0.top.equalTo(onboardingLogoImageView.snp.bottom).offset(8)
             $0.centerX.equalToSuperview()
-            $0.bottom.equalToSuperview().inset(35)
         }
         
         loginLabel.snp.makeConstraints {
@@ -147,11 +142,17 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
             .map { $0.isPresentOnboardingWhatIsTrip }
             .distinctUntilChanged()
             .filter { $0 }
-            .map { _ in reactor.getOnboardingWhatIsTripReactor() }
-            .bind(onNext: presentOnboardingWhatIsTripViewController)
+            .bind { [weak self] _ in
+                let onboardingWhatIsJourneyViewController = OnboardingQuestionJourneyViewController(reactor: OnboardingQuestionReactor(initialState: .init()))
+                self?.navigationController?.pushViewController(onboardingWhatIsJourneyViewController, animated: true)
+            }
             .disposed(by: disposeBag)
     }
-    
+}
+
+// MARK: Sign Up Methods
+
+extension OnboardingSignUpViewController: ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
     private func openKakaoLogin() {
         if UserApi.isKakaoTalkLoginAvailable() {
             // 카카오톡으로 로그인
@@ -195,14 +196,6 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
         authorizationController.performRequests()
     }
     
-    private func presentOnboardingWhatIsTripViewController(reactor: OnboardingQuestionJourneyReactor) {
-        let onboardingWhatIsJourneyViewController = OnboardingQuestionJourneyViewController()
-        onboardingWhatIsJourneyViewController.reactor = reactor
-        navigationController?.pushViewController(onboardingWhatIsJourneyViewController, animated: true)
-    }
-}
-
-extension OnboardingSignUpViewController: ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
     func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
         return self.view.window!
     }

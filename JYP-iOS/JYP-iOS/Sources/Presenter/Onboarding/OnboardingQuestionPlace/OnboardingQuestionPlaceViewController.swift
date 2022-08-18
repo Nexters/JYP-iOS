@@ -10,11 +10,21 @@ import UIKit
 import ReactorKit
 
 class OnboardingQuestionPlaceViewController: NavigationBarViewController, View {
-    typealias Reactor = OnboardingQuestionPlaceReactor
+    typealias Reactor = OnboardingQuestionReactor
     
     // MARK: - UI Components
     
-    let selfView = OnboardingQuestionView(type: .place)
+    let onboardingQuestionView = OnboardingQuestionView(type: .place)
+    
+    required init?(coder: NSCoder) {
+        fatalError("not supported")
+    }
+    
+    init(reactor: OnboardingQuestionReactor) {
+        super.init(nibName: nil, bundle: nil)
+        
+        self.reactor = reactor
+    }
     
     // MARK: - Setup Methods
     
@@ -31,112 +41,64 @@ class OnboardingQuestionPlaceViewController: NavigationBarViewController, View {
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        contentView.addSubview(selfView)
+        contentView.addSubview(onboardingQuestionView)
     }
     
     override func setupLayout() {
         super.setupLayout()
         
-        selfView.snp.makeConstraints {
-            $0.top.leading.trailing.bottom.equalToSuperview()
+        onboardingQuestionView.snp.makeConstraints {
+            $0.top.leading.trailing.bottom.equalTo(contentView.safeAreaLayoutGuide)
         }
     }
     
-    func bind(reactor: OnboardingQuestionPlaceReactor) {
-        bindActions(to: reactor)
-        bindStates(from: reactor)
-    }
-    
-    func presentOnboardingWhenJourneyPlanViewController(reactor: OnboardingQuestionPlanReactor) {
-        let onboardingWhenJourneyPlanViewController = OnboardingQuestionPlanViewController()
-        onboardingWhenJourneyPlanViewController.reactor = reactor
-        navigationController?.pushViewController(onboardingWhenJourneyPlanViewController, animated: true)
-    }
-}
-
-// MARK: - Setup Binding Actions
-
-extension OnboardingQuestionPlaceViewController {
-    func bindActions(to reactor: OnboardingQuestionPlaceReactor) {
-        bindDidTapCardViewA(to: reactor)
-        bindDidTapCardViewB(to: reactor)
-        bindDidTapNextButton(to: reactor)
-    }
-    
-    func bindDidTapCardViewA(to reactor: OnboardingQuestionPlaceReactor) {
-        selfView.onboardingCardViewA.rx.tapGesture()
+    func bind(reactor: OnboardingQuestionReactor) {
+        onboardingQuestionView.onboardingCardViewA.rx.tapGesture()
             .filter { $0.state == .ended }
             .map { _ in .didTapCardViewA }
-            .distinctUntilChanged()
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
-    }
-    
-    func bindDidTapCardViewB(to reactor: OnboardingQuestionPlaceReactor) {
-        selfView.onboardingCardViewB.rx.tapGesture()
+        
+        onboardingQuestionView.onboardingCardViewB.rx.tapGesture()
             .filter { $0.state == .ended }
             .map { _ in .didTapCardViewB }
-            .distinctUntilChanged()
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
-    }
-    
-    func bindDidTapNextButton(to reactor: OnboardingQuestionPlaceReactor) {
-        selfView.nextButton.rx.tap
+        
+        onboardingQuestionView.nextButton.rx.tap
             .map { .didTapNextButton }
-            .distinctUntilChanged()
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
-    }
-}
-
-// MARK: - Setup Binding States
-
-extension OnboardingQuestionPlaceViewController {
-    func bindStates(from reactor: OnboardingQuestionPlaceReactor) {
-        bindStateCardViewA(from: reactor)
-        bindStateCardViewB(from: reactor)
-        bindIsActiveNextButton(from: reactor)
-        bindIsPresentOnboardingWhenJourneyPlan(from: reactor)
-    }
-    
-    func bindStateCardViewA(from reactor: OnboardingQuestionPlaceReactor) {
+        
         reactor.state
             .map { $0.stateCardViewA }
-            .distinctUntilChanged()
             .bind { [weak self] state in
-                self?.selfView.onboardingCardViewA.state = state
+                self?.onboardingQuestionView.onboardingCardViewA.state = state
             }
             .disposed(by: disposeBag)
-    }
-    
-    func bindStateCardViewB(from reactor: OnboardingQuestionPlaceReactor) {
+        
         reactor.state
             .map { $0.stateCardViewB }
-            .distinctUntilChanged()
             .bind { [weak self] state in
-                self?.selfView.onboardingCardViewB.state = state
+                self?.onboardingQuestionView.onboardingCardViewB.state = state
             }
             .disposed(by: disposeBag)
-    }
-    
-    func bindIsActiveNextButton(from reactor: OnboardingQuestionPlaceReactor) {
+        
         reactor.state
             .map { $0.isActiveNextButton }
-            .distinctUntilChanged()
             .bind { [weak self] bool in
-                self?.selfView.nextButton.isEnabled = bool
+                self?.onboardingQuestionView.nextButton.isEnabled = bool
             }
             .disposed(by: disposeBag)
-    }
-    
-    func bindIsPresentOnboardingWhenJourneyPlan(from reactor: OnboardingQuestionPlaceReactor) {
+        
         reactor.state
-            .map { $0.isPresentOnboardingWhenJourneyPlan }
-            .distinctUntilChanged()
+            .map { $0.isPresentNextViewController }
             .filter { $0 }
-            .map { _ in reactor.getOnboardingWhenJourneyPlanReactor() }
-            .bind(onNext: presentOnboardingWhenJourneyPlanViewController)
+            .bind { [weak self] _ in
+                let onboardingQuestionPlanViewController = OnboardingQuestionPlanViewController(reactor: OnboardingQuestionPlanReactor(initialState: .init()))
+                
+                self?.navigationController?.pushViewController(onboardingQuestionPlanViewController, animated: true)
+            }
             .disposed(by: disposeBag)
     }
 }

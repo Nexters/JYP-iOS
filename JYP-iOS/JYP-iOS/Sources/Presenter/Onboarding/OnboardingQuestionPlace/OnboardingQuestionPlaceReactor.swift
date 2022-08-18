@@ -79,9 +79,3 @@ class OnboardingQuestionPlaceReactor: Reactor {
         return newState
     }
 }
-
-extension OnboardingQuestionPlaceReactor {
-    func getOnboardingWhenJourneyPlanReactor() -> OnboardingQuestionPlanReactor {
-        return OnboardingQuestionPlanReactor(initialState: .init())
-    }
-}
