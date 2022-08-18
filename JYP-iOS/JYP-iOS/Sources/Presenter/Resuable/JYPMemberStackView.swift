@@ -11,12 +11,23 @@ import UIKit
 class JYPMemberStackView: UIStackView {
     static let MAX_MEMBER = 3
 
+    // MARK: - Properties
+
+    var profiles: [JYPProfileImageView] = [
+        .init(frame: .zero),
+        .init(frame: .zero),
+        .init(frame: .zero),
+        .init(frame: .zero),
+        .init(frame: .zero)
+    ]
+
     // MARK: - Initializer
 
     override init(frame: CGRect) {
         super.init(frame: frame)
 
-        setup()
+        setupProperty()
+        setupLayout()
     }
 
     @available(*, unavailable)
@@ -24,34 +35,35 @@ class JYPMemberStackView: UIStackView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func setup() {
+    override func addArrangedSubview(_ view: UIView) {
+        super.addArrangedSubview(view)
+        sendSubviewToBack(view)
+    }
+
+    func setupProperty() {
         spacing = -18.0
         axis = .horizontal
         distribution = .fillProportionally
+    }
 
-        let profiles: [JYPProfileImageView] = [
-            .init(frame: .zero),
-            .init(frame: .zero),
-            .init(frame: .zero),
-            .init(frame: .zero),
-            .init(frame: .zero)
-        ]
+    func setupLayout() {
+        // TODO: - User Model 정의 후 변경
 
         profiles
             .prefix(Self.MAX_MEMBER)
             .forEach {
                 addArrangedSubview($0)
-                sendSubviewToBack($0)
             }
 
         if profiles.count > Self.MAX_MEMBER {
             let overMember = JYPOverProfileView(count: profiles.count)
 
             addArrangedSubview(overMember)
-            sendSubviewToBack(overMember)
         }
     }
 }
+
+// MARK: - JYPProfileImageView
 
 class JYPProfileImageView: UIImageView {
     override init(frame: CGRect) {
@@ -81,6 +93,8 @@ class JYPProfileImageView: UIImageView {
     }
 }
 
+// MARK: - JYPOverProfileView
+
 class JYPOverProfileView: UIView {
     let countLabel: UILabel = .init().then {
         $0.font = JYPIOSFontFamily.Pretendard.bold.font(size: 11)
@@ -89,7 +103,7 @@ class JYPOverProfileView: UIView {
 
     init(count: Int) {
         super.init(frame: .zero)
-        
+
         setupProperty(count: count)
         setupLayout()
     }
@@ -102,7 +116,7 @@ class JYPOverProfileView: UIView {
     func setupProperty(count: Int) {
         clipsToBounds = true
 
-        countLabel.text = "+\(count-JYPMemberStackView.MAX_MEMBER)"
+        countLabel.text = "+\(count - JYPMemberStackView.MAX_MEMBER)"
         backgroundColor = JYPIOSAsset.textB75.color
         cornerRound(radius: 12)
         makeBorder(color: .clear, width: 2.18)
@@ -115,7 +129,7 @@ class JYPOverProfileView: UIView {
             make.centerY.equalToSuperview()
             make.trailing.equalToSuperview().inset(9)
         }
-        
+
         snp.makeConstraints { make in
             make.size.equalTo(44)
         }
