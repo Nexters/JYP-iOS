@@ -104,4 +104,14 @@ class MyPageViewController: NavigationBarViewController {
             make.leading.trailing.equalToSuperview().inset(24)
         }
     }
+
+    override func setupBind() {
+        super.setupBind()
+
+        noticeButton.rx.tap
+            .subscribe(onNext: { [weak self] in
+                self?.navigationController?.pushViewController(TempViewController(), animated: true)
+            })
+            .disposed(by: disposeBag)
+    }
 }
