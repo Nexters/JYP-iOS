@@ -8,21 +8,21 @@
 
 import RxDataSources
 
-typealias PlannerHomeDiscussionSectionModel = SectionModel<PlannerHomeDiscussionSection, PlannerHomeDiscussionItem>
+typealias OldPlannerHomeDiscussionSectionModel = SectionModel<OldPlannerHomeDiscussionSection, OldPlannerHomeDiscussionItem>
 
-enum PlannerHomeDiscussionSection {
-    case jypTagSection([PlannerHomeDiscussionItem])
-    case candidatePlaceSection([PlannerHomeDiscussionItem])
+enum OldPlannerHomeDiscussionSection {
+    case jypTagSection([OldPlannerHomeDiscussionItem])
+    case candidatePlaceSection([OldPlannerHomeDiscussionItem])
 }
 
-enum PlannerHomeDiscussionItem {
+enum OldPlannerHomeDiscussionItem {
     case jypTagItem(JYPTagCollectionViewCellReactor)
-    case createCandidatePlaceItem(CreateCandidatePlaceCollectionViewCellReactor)
-    case candidatePlaceItem(CandidatePlaceCollectionViewCellReactor)
+    case createCandidatePlaceItem(CreatePikmiCollectionViewCellReactor)
+    case candidatePlaceItem(PikmiCollectionViewCellReactor)
 }
 
-extension PlannerHomeDiscussionSection: SectionModelType {
-    typealias Item = PlannerHomeDiscussionItem
+extension OldPlannerHomeDiscussionSection: SectionModelType {
+    typealias Item = OldPlannerHomeDiscussionItem
     
     var items: [Item] {
         switch self {
@@ -33,7 +33,7 @@ extension PlannerHomeDiscussionSection: SectionModelType {
         }
     }
     
-    init(original: PlannerHomeDiscussionSection, items: [PlannerHomeDiscussionItem]) {
+    init(original: OldPlannerHomeDiscussionSection, items: [OldPlannerHomeDiscussionItem]) {
         switch original {
         case .jypTagSection(let items):
             self = .jypTagSection(items)

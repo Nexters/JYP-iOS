@@ -8,23 +8,23 @@
 
 import UIKit
 
-enum JYPCategoryType {
-    case maket
-    case convenienceStore
-    case school
-    case transportation
-    case culturalInstitution
-    case publicInstitutions
-    case touristSpot
-    case lodgings
-    case restruant
-    case cafe
-    case hospital
-    case pharmacy
-    case bank
-    case chargingZone
-    case parkingLot
-    case etc
+enum JYPCategoryType: String, Codable {
+    case maket = "M"
+    case convenienceStore = "CS"
+    case school = "S"
+    case transportation = "T"
+    case culturalInstitution = "CI"
+    case publicInstitutions = "PI"
+    case touristSpot = "TS"
+    case lodgings = "L"
+    case restruant = "R"
+    case cafe = "C"
+    case hospital = "H"
+    case pharmacy = "P"
+    case bank = "B"
+    case chargingZone = "CZ"
+    case parkingLot = "PL"
+    case etc = "ETC"
 }
 
 extension JYPCategoryType {
