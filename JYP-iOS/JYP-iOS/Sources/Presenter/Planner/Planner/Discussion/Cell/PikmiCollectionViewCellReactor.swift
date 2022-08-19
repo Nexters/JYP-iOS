@@ -18,7 +18,7 @@ class PikmiCollectionViewCellReactor: Reactor {
     }
     
     struct State {
-        var candidatePlace: CandidatePlace
+        let pik: Pik
         var rank: Int
         var isSelectedLikeButton: Bool = false
         var isReadyAnimate: Bool = false

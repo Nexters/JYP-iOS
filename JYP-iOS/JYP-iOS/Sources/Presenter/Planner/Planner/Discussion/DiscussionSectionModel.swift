@@ -16,7 +16,7 @@ enum DiscussionSection {
 }
 
 enum DiscussionItem {
-    case tag(JYPTagCollectionViewCellReactor)
+    case tag(TagCollectionViewCellReactor)
     case createPikmi(CreatePikmiCollectionViewCellReactor)
     case pikmi(PikmiCollectionViewCellReactor)
 }

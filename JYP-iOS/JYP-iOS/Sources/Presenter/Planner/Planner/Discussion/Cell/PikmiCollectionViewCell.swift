@@ -131,10 +131,10 @@ class PikmiCollectionViewCell: BaseCollectionViewCell, View {
     func bind(reactor: Reactor) {
         let state = reactor.currentState
         
-        categoryLabel.text = state.candidatePlace.category.title
-        titleLabel.text = state.candidatePlace.name
-        subLabel.text = state.candidatePlace.address
-        likeLabel.text = "\(state.candidatePlace.like)"
+        categoryLabel.text = reactor.currentState.pik.category.title
+        titleLabel.text = reactor.currentState.pik.name
+        subLabel.text = reactor.currentState.pik.address
+        likeLabel.text = String(describing: reactor.currentState.pik.likeBy?.count)
         
         switch state.rank {
         case 0:

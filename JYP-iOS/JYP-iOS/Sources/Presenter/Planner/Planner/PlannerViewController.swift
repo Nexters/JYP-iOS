@@ -24,7 +24,7 @@ class PlannerViewController: NavigationBarViewController, View {
     
     let menuDivider: UIView = .init()
     
-    let discussionView: DiscussionView = .init()
+    lazy var discussionView: DiscussionView = .init(reactor: DiscussionReactor())
     let journeyPlanView: JourneyPlanView = .init()
     
     // MARK: - Initializer
@@ -135,6 +135,11 @@ class PlannerViewController: NavigationBarViewController, View {
     
     func bind(reactor: Reactor) {
         // Action
+        
+        rx.viewWillAppear
+            .map { _ in .refresh }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
         
         discussionButton.rx.tap
             .map { .showDiscussion }

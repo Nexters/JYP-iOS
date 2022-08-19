@@ -17,6 +17,7 @@ class PlannerReactor: Reactor {
     }
     
     enum Mutation {
+        case fetchJourney
         case showDiscussion
         case showJourneyPlan
     }
@@ -27,6 +28,7 @@ class PlannerReactor: Reactor {
         var isShowJourneyPlan: Bool = false
     }
     
+    let provider = ServiceProvider.shared
     var initialState: State
     
     init() {
@@ -36,7 +38,12 @@ class PlannerReactor: Reactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .refresh:
-            return .empty()
+            return provider.journeyService.fetchJorney(id: 0)
+                .withUnretained(self)
+                .map { this, journey in
+                    this.provider.plannerService.updateJourney(to: journey)
+                    return .fetchJourney
+                }
         case .showDiscussion:
             return .just(.showDiscussion)
         case .showJourneyPlan:
@@ -48,6 +55,8 @@ class PlannerReactor: Reactor {
         var newState = state
         
         switch mutation {
+        case .fetchJourney:
+            break
         case .showDiscussion:
             newState.isShowDiscussion = true
             newState.isShowJourneyPlan = false
