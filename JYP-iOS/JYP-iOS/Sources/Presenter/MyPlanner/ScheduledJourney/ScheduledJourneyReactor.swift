@@ -21,7 +21,7 @@ final class ScheduledJourneyReactor: Reactor {
     init() {
 //        let section = ScheduledJourneySectionModel(model: (), items: [.empty])
 
-        let journey = Journey(id: "1", member: [], name: "name", startDate: 0.0, endDate: 0.0, pikis: [], tags: [], candidatePlaces: [], themeUrl: "url")
+        let journey = Journey(id: "1", member: [], name: "name", startDate: 0.0, endDate: 0.0, journeyPlaces: [], tags: [], candidatePlaces: [], themeUrl: "url")
 
         let section = ScheduledJourneySectionModel(model: (), items: [.journey(.init(journey: journey)), .journey(.init(journey: journey)), .journey(.init(journey: journey))])
 
