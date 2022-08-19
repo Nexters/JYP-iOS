@@ -32,9 +32,6 @@ class EmptyJourneyCardCollectionViewCell: BaseCollectionViewCell, View {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-
-        setupProperty()
-        setupLayout()
     }
 
     @available(*, unavailable)

@@ -29,6 +29,7 @@ final class ScheduledJourneyView: BaseView, View {
             return cell
         case let .journey(reactor):
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: JourneyCardCollectionViewCell.self), for: indexPath) as? JourneyCardCollectionViewCell else { return .init() }
+            cell.reactor = reactor
 
             return cell
         }
@@ -51,7 +52,6 @@ final class ScheduledJourneyView: BaseView, View {
 
         layout.scrollDirection = .horizontal
 
-        collectionView.contentInset = .init(top: 0, left: 48, bottom: 0, right: 48)
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.register(JourneyCardCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: JourneyCardCollectionViewCell.self))
@@ -87,8 +87,19 @@ extension ScheduledJourneyView: UICollectionViewDelegateFlowLayout {
     func collectionView(_: UICollectionView, layout _: UICollectionViewLayout, sizeForItemAt _: IndexPath) -> CGSize {
         .init(width: bounds.width - 96, height: bounds.height - 48)
     }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+
+    func collectionView(_: UICollectionView, layout _: UICollectionViewLayout, minimumLineSpacingForSectionAt _: Int) -> CGFloat {
         16
+    }
+
+    func collectionView(_: UICollectionView, layout _: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        guard let item = dataSource[section].items.first else { return .zero }
+
+        switch item {
+        case .empty:
+            return .init(top: 0, left: 48, bottom: 0, right: 48)
+        case .journey:
+            return .init(top: 0, left: 24, bottom: 0, right: 24)
+        }
     }
 }

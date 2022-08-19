@@ -9,9 +9,17 @@
 import ReactorKit
 
 final class JourneyCardCollectionViewCellReactor: Reactor {
-    typealias Action = NoAction
+    enum Action {}
 
-    struct State {}
+    enum Mutation {}
 
-    let initialState: State = .init()
+    struct State {
+        var journey: Journey
+    }
+
+    let initialState: State
+
+    init(journey: Journey) {
+        initialState = .init(journey: journey)
+    }
 }
