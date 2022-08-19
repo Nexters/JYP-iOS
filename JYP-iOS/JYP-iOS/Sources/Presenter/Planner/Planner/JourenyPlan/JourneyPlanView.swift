@@ -82,7 +82,7 @@ extension JourneyPlanView: UICollectionViewDelegateFlowLayout {
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        return .init(top: 0, left: 24, bottom: 48, right: 24)
+        return .init(top: 0, left: 0, bottom: 12, right: 0)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
@@ -102,7 +102,7 @@ extension JourneyPlanView: UICollectionViewDelegateFlowLayout {
                 switch sectionModel.model {
                 case let .piki(items):
                     if items.isEmpty { break }
-                    height = CGFloat(items.count) * 80.0 + CGFloat((items.count - 1)) * 12.0
+                    height = CGFloat(items.count) * 80.0 + CGFloat((items.count - 1)) * 12.0 + 46
                 }
             })
             
