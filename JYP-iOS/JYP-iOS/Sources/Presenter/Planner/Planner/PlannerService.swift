@@ -51,6 +51,10 @@ class PlannerService: PlannerServiceProtocol {
     func makeSections(from journey: NewJourney) -> [JourneyPlanSectionModel] {
         guard let pikisList = journey.pikis else { return [] }
         
+        let dayTagItems = pikisList.enumerated().map { (index, _) -> JourneyPlanItem in
+            return JourneyPlanItem.dayTag(DayTagCollectionViewCellReactor(state: .init(day: index + 1)))
+        }
+        
         let journeyPlanItems = pikisList.map { (pikis) -> JourneyPlanItem in
             let pikiItems = pikis.map { (pik) -> PikiItem in
                 return PikiItem.piki(PikiCollectionViewCellReactor(state: pik))
@@ -60,9 +64,10 @@ class PlannerService: PlannerServiceProtocol {
             
             return JourneyPlanItem.journeyPlan(JourneyPlanCollectionViewCellReactor(state: [pikiSection]))
         }
-        
+
+        let dayTagSection = JourneyPlanSectionModel(model: JourneyPlanSection.dayTag(dayTagItems), items: dayTagItems)
         let journeyPlanSection = JourneyPlanSectionModel(model: JourneyPlanSection.journeyPlan(journeyPlanItems), items: journeyPlanItems)
         
-        return [journeyPlanSection]
+        return [dayTagSection, journeyPlanSection]
     }
 }

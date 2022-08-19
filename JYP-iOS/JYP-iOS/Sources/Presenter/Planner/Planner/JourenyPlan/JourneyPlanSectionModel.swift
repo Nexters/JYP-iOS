@@ -11,10 +11,12 @@ import RxDataSources
 typealias JourneyPlanSectionModel = SectionModel<JourneyPlanSection, JourneyPlanItem>
 
 enum JourneyPlanSection {
+    case dayTag([JourneyPlanItem])
     case journeyPlan([JourneyPlanItem])
 }
 
 enum JourneyPlanItem {
+    case dayTag(DayTagCollectionViewCellReactor)
     case journeyPlan(JourneyPlanCollectionViewCellReactor)
 }
 
@@ -23,13 +25,17 @@ extension JourneyPlanSection: SectionModelType {
     
     var items: [Item] {
         switch self {
-        case .journeyPlan(let items):
+        case let .dayTag(items):
+            return items
+        case let .journeyPlan(items):
             return items
         }
     }
     
     init(original: JourneyPlanSection, items: [JourneyPlanItem]) {
         switch original {
+        case .dayTag(let items):
+            self = .dayTag(items)
         case .journeyPlan(let items):
             self = .journeyPlan(items)
         }

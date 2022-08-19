@@ -104,8 +104,8 @@ class JourneyPlanCollectionViewCell: BaseCollectionViewCell, View {
         
         lineView.snp.makeConstraints {
             $0.top.equalTo(collectionView.snp.top)
-            $0.bottom.equalToSuperview().inset(12)
             $0.leading.equalToSuperview().inset(34)
+            $0.height.equalTo(0)
             $0.width.equalTo(1)
         }
     }
@@ -127,6 +127,12 @@ class JourneyPlanCollectionViewCell: BaseCollectionViewCell, View {
         
         lineView.isHidden = items.isEmpty
         headerView.isHidden = items.isEmpty
+        
+        let height = CGFloat(items.count) * 80.0 + CGFloat((items.count - 1)) * 12.0
+        
+        lineView.snp.updateConstraints {
+            $0.height.equalTo(abs(height))
+        }
     }
 }
 
