@@ -19,7 +19,7 @@ protocol PlannerServiceProtocol {
     func updateJourney(to journey: NewJourney)
     
     func makeSections(from journey: NewJourney) -> [DiscussionSectionModel]
-    func makeSections(from joruney: NewJourney) -> [JourneyPlanSectionModel]
+    func makeSections(from journey: NewJourney) -> [JourneyPlanSectionModel]
 }
 
 class PlannerService: PlannerServiceProtocol {
@@ -48,7 +48,21 @@ class PlannerService: PlannerServiceProtocol {
         return [tagSection, pikmiSection]
     }
     
-    func makeSections(from joruney: NewJourney) -> [JourneyPlanSectionModel] {
-        return []
+    func makeSections(from journey: NewJourney) -> [JourneyPlanSectionModel] {
+        guard let pikisList = journey.pikis else { return [] }
+        
+        let journeyPlanItems = pikisList.map { (pikis) -> JourneyPlanItem in
+            let pikiItems = pikis.map { (pik) -> PikiItem in
+                return PikiItem.piki(PikiCollectionViewCellReactor(state: pik))
+            }
+            
+            let pikiSection = PikiSectionModel(model: PikiSection.piki(pikiItems), items: pikiItems)
+            
+            return JourneyPlanItem.journeyPlan(JourneyPlanCollectionViewCellReactor(state: [pikiSection]))
+        }
+        
+        let journeyPlanSection = JourneyPlanSectionModel(model: JourneyPlanSection.journeyPlan(journeyPlanItems), items: journeyPlanItems)
+        
+        return [journeyPlanSection]
     }
 }

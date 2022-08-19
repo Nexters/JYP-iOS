@@ -9,8 +9,8 @@
 import UIKit
 import ReactorKit
 
-class JourneyPlaceCollectionViewCell: BaseCollectionViewCell, View {
-    typealias Reactor = JourneyPlaceCollectionViewCellReactor
+class PikiCollectionViewCell: BaseCollectionViewCell, View {
+    typealias Reactor = PikiCollectionViewCellReactor
     
     let titleLabel = UILabel()
     let subLabel = UILabel()

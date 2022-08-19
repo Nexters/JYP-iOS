@@ -14,14 +14,14 @@ class JourneyPlanCollectionViewCell: BaseCollectionViewCell, View {
     typealias Reactor = JourneyPlanCollectionViewCellReactor
     
     let leftView = UIView()
-    let collectionView = UICollectionView()
+    let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     
-    private lazy var dataSource = RxCollectionViewSectionedReloadDataSource<JourneyPlaceSectionModel> { [weak self] _, collectionView, indexPath, item -> UICollectionViewCell in
+    private lazy var dataSource = RxCollectionViewSectionedReloadDataSource<PikiSectionModel> { [weak self] _, collectionView, indexPath, item -> UICollectionViewCell in
         guard let reactor = self?.reactor else { return .init() }
         
         switch item {
-        case let .journeyPlace(reactor):
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: JourneyPlaceCollectionViewCell.self), for: indexPath) as? JourneyPlaceCollectionViewCell else { return .init() }
+        case let .piki(reactor):
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: PikiCollectionViewCell.self), for: indexPath) as? PikiCollectionViewCell else { return .init() }
             
             cell.reactor = reactor
             return cell
@@ -32,6 +32,10 @@ class JourneyPlanCollectionViewCell: BaseCollectionViewCell, View {
         super.setupProperty()
         
         leftView.backgroundColor = .blue
+        
+        collectionView.isScrollEnabled = false
+        
+        collectionView.register(PikiCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: PikiCollectionViewCell.self))
     }
     
     override func setupHierarchy() {
@@ -54,6 +58,35 @@ class JourneyPlanCollectionViewCell: BaseCollectionViewCell, View {
         }
     }
     
-    func bind(reactor: Reactor) {    
+    func bind(reactor: Reactor) {
+        collectionView.rx.setDelegate(self).disposed(by: disposeBag)
+        
+        reactor.state
+            .asObservable()
+            .bind(to: collectionView.rx.items(dataSource: dataSource))
+            .disposed(by: disposeBag)
+        
+        print(reactor.currentState[0].items.count)
+    }
+}
+
+extension JourneyPlanCollectionViewCell: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return .init(top: 0, left: 24, bottom: 12, right: 24)
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 8
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 8
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        switch dataSource[indexPath.section].items[indexPath.row] {
+        case .piki:
+            return CGSize(width: collectionView.bounds.width, height: 80)
+        }
     }
 }
