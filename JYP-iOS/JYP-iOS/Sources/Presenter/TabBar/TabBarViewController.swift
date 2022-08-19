@@ -22,7 +22,7 @@ class TabBarViewController: UITabBarController {
         let myPlannerTabBarItem = UITabBarItem(title: nil, image: JYPIOSAsset.myJourneyInactive.image.withRenderingMode(.alwaysOriginal), selectedImage: JYPIOSAsset.myJourneyActive.image.withRenderingMode(.alwaysOriginal))
         myPlannerTabBarItem.imageInsets = .init(top: 9, left: 0, bottom: -9, right: 0)
 
-        let anotherJourneyViewController = UINavigationController(rootViewController: SearchPlannerViewController())
+        let anotherJourneyViewController = UINavigationController(rootViewController: AnotherJourneyViewController())
         let anotherJourneyTabBarItem = UITabBarItem(title: nil, image: JYPIOSAsset.anotherJourneyInactive.image.withRenderingMode(.alwaysOriginal), selectedImage: JYPIOSAsset.anotherJourneyActive.image.withRenderingMode(.alwaysOriginal))
         anotherJourneyTabBarItem.imageInsets = .init(top: 9, left: 0, bottom: -9, right: 0)
 
