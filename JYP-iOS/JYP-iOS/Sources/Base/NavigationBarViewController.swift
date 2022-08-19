@@ -65,7 +65,8 @@ class NavigationBarViewController: BaseViewController, BaseNavigationBarViewCont
         setNavigationBarTitleTextColor(titleTextColor)
         setNavigationBarSubTitleFont(subTitleFont)
         setNavigationBarSubTitleTextColor(subTitleTextColor)
-        navigationBar.backButton.setImage(UIImage(systemName: "chevron.left"), for: .normal)
+        navigationBar.backButton.setImage(JYPIOSAsset.iconBack.image, for: .normal)
+        navigationBar.backButton.tintColor = JYPIOSAsset.subBlack.color
     }
     
     override func setupHierarchy() {
