@@ -25,7 +25,7 @@ class MyPlannerViewController: NavigationBarViewController, View {
     let menuDivider: UIView = .init()
 
     lazy var scheduledJourneyView: ScheduledJourneyView = .init(reactor: ScheduledJourneyReactor())
-    lazy var pastJourneyView: UIView = .init()
+    lazy var pastJourneyView: PastJourneyView = .init(reactor: PastJourneyReactor())
 
     // MARK: - Initializer
 
