@@ -11,6 +11,7 @@ import RxSwift
 
 enum PlannerEvent {
     case fetchJourney(NewJourney)
+    case present
 }
 
 protocol PlannerServiceProtocol {

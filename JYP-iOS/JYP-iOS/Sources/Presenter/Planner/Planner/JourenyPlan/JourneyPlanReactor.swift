@@ -33,6 +33,8 @@ class JourneyPlanReactor: Reactor {
             switch event {
             case let .fetchJourney(journey):
                 return Observable.just(Mutation.setSections(this.plannerService.makeSections(from: journey)))
+            default:
+                return .empty()
             }
         }
         
