@@ -43,8 +43,6 @@ class JourneyCardCollectionViewCell: BaseCollectionViewCell, View {
 
         cornerRound(radius: 16)
         clipsToBounds = true
-        coverImage.image = JYPIOSAsset.cardIllust2.image
-        backgroundColor = .init(hex: 0x88C4FF)
 
         daysTag.isEnabled = false
         daysTag.setTitle("D-20", for: .normal)
@@ -53,15 +51,11 @@ class JourneyCardCollectionViewCell: BaseCollectionViewCell, View {
         daysTag.backgroundColor = JYPIOSAsset.subBlack.color
         daysTag.setTitleColor(JYPIOSAsset.textWhite.color, for: .normal)
 
-        moreButton.setImage(JYPIOSAsset.iconMenu.image.withTintColor(.white, renderingMode: .alwaysOriginal), for: .normal)
-
         titleLabel.text = "강릉 여행기"
         titleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 22)
-        titleLabel.textColor = JYPIOSAsset.textWhite.color
 
         daysLabel.text = "7월 18일 - 7월 20일"
         daysLabel.font = JYPIOSFontFamily.Pretendard.regular.font(size: 14)
-        daysLabel.textColor = JYPIOSAsset.textWhite.color
     }
 
     override func setupHierarchy() {
@@ -97,7 +91,7 @@ class JourneyCardCollectionViewCell: BaseCollectionViewCell, View {
             make.top.equalTo(titleLabel.snp.bottom).offset(4)
             make.leading.equalTo(titleLabel.snp.leading)
         }
-        
+
         memberStackView.snp.makeConstraints { make in
             make.leading.bottom.equalToSuperview().inset(20)
         }
@@ -105,8 +99,56 @@ class JourneyCardCollectionViewCell: BaseCollectionViewCell, View {
 
     func bind(reactor: JourneyCardCollectionViewCellReactor) {
         reactor.state
+            .map(\.journey.themeUrl.image)
+            .bind(to: coverImage.rx.image)
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .map(\.journey.themeUrl.isActiveShadow)
+            .bind(to: rx.isActiveShadow)
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .map(\.journey.themeUrl.cardColor)
+            .bind(to: rx.backgroundColor)
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .map(\.journey.themeUrl.borderColor)
+            .bind(to: memberStackView.rx.borderColor)
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .map(\.journey.themeUrl.textColor)
+            .bind(to: titleLabel.rx.textColor)
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .map(\.journey.themeUrl.textColor)
+            .bind(to: daysLabel.rx.textColor)
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .map(\.journey.themeUrl.textColor)
+            .map { JYPIOSAsset.iconMenu.image.withTintColor($0, renderingMode: .alwaysOriginal) }
+            .bind(to: moreButton.rx.image(for: .normal))
+            .disposed(by: disposeBag)
+
+        reactor.state
             .map(\.journey.name)
             .bind(to: titleLabel.rx.text)
             .disposed(by: disposeBag)
+    }
+}
+
+extension Reactive where Base: JourneyCardCollectionViewCell {
+    var isActiveShadow: Binder<Bool> {
+        Binder(base) { view, isActive in
+            if isActive {
+                view.setShadow(radius: 40, offset: .init(width: 4, height: 10), opacity: 0.06)
+            } else {
+                view.layer.shadowColor = nil
+            }
+        }
     }
 }

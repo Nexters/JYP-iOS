@@ -19,12 +19,63 @@ final class ScheduledJourneyReactor: Reactor {
     var initialState: State
 
     init() {
-//        let section = ScheduledJourneySectionModel(model: (), items: [.empty])
-
-        let journey = Journey(id: "1", member: [], name: "name", startDate: 0.0, endDate: 0.0, pikis: [], tags: [], candidatePlaces: [], themeUrl: "url")
-
-        let section = ScheduledJourneySectionModel(model: (), items: [.journey(.init(journey: journey)), .journey(.init(journey: journey)), .journey(.init(journey: journey))])
+        let section = ScheduledJourneySectionModel(
+            model: (),
+            items: Self.makeMockJourneyItem()
+        )
 
         initialState = .init(sections: [section])
+    }
+}
+
+extension ScheduledJourneyReactor {
+    private static func makeMockJourneyItem() -> [JourneyCardItem] {
+        [
+            .journey(
+                .init(
+                    journey: .init(
+                        id: "1",
+                        member: [],
+                        name: "name",
+                        startDate: 0.0,
+                        endDate: 0.0,
+                        journeyPlaces: [],
+                        tags: [],
+                        candidatePlaces: [],
+                        themeUrl: .default
+                    )
+                )
+            ),
+            .journey(
+                .init(
+                    journey: .init(
+                        id: "1",
+                        member: [],
+                        name: "name",
+                        startDate: 0.0,
+                        endDate: 0.0,
+                        journeyPlaces: [],
+                        tags: [],
+                        candidatePlaces: [],
+                        themeUrl: .city
+                    )
+                )
+            ),
+            .journey(
+                .init(
+                    journey: .init(
+                        id: "1",
+                        member: [],
+                        name: "name",
+                        startDate: 0.0,
+                        endDate: 0.0,
+                        journeyPlaces: [],
+                        tags: [],
+                        candidatePlaces: [],
+                        themeUrl: .culture
+                    )
+                )
+            )
+        ]
     }
 }

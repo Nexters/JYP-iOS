@@ -18,7 +18,7 @@ struct Journey: Hashable {
     let journeyPlaces: [CandidatePlace]
     let tags: [Tag]
     let candidatePlaces: [CandidatePlace]
-    let themeUrl: String
+    let themeUrl: ThemeType
 }
 
 struct NewJourney: Hashable {

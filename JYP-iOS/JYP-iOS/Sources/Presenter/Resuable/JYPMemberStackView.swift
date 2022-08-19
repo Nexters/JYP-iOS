@@ -6,6 +6,7 @@
 //  Copyright © 2022 JYP-iOS. All rights reserved.
 //
 
+import RxSwift
 import UIKit
 
 class JYPMemberStackView: UIStackView {
@@ -132,6 +133,14 @@ class JYPOverProfileView: UIView {
 
         snp.makeConstraints { make in
             make.size.equalTo(44)
+        }
+    }
+}
+
+extension Reactive where Base: JYPMemberStackView {
+    var borderColor: Binder<UIColor> {
+        Binder(base) { view, color in
+            view.arrangedSubviews.forEach { $0.layer.borderColor = color.cgColor }
         }
     }
 }
