@@ -28,11 +28,10 @@ class PlannerSearchPlaceReactor: Reactor {
         var dismiss: Bool = false
     }
     
-    let provider: ServiceProviderType
+    let provider = ServiceProvider.shared
     var initialState: State
     
-    init(provider: ServiceProviderType) {
-        self.provider = provider
+    init() {
         initialState = State(sections: [])
     }
 }

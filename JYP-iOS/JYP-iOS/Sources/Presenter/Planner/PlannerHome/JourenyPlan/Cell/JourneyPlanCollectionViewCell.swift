@@ -54,7 +54,6 @@ class JourneyPlanCollectionViewCell: BaseCollectionViewCell, View {
         }
     }
     
-    func bind(reactor: Reactor) {
-        
+    func bind(reactor: Reactor) {    
     }
 }

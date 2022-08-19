@@ -8,7 +8,7 @@
 
 import ReactorKit
 
-class CreateCandidatePlaceCollectionViewCellReactor: Reactor {
+class CreatePikmiCollectionViewCellReactor: Reactor {
     typealias Action = NoAction
     
     struct State { }

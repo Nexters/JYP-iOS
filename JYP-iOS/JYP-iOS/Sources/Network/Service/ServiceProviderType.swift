@@ -15,7 +15,11 @@ protocol ServiceProviderType: AnyObject {
 }
 
 final class ServiceProvider: ServiceProviderType {
+    static let shared = ServiceProvider()
+    
     lazy var kakaoSearchService: KakaoSearchServiceType = KakaoSearchService(provider: self)
     lazy var tagService: TagServiceType = TagService(provider: self)
     lazy var journeyService: JourneyServiceType = JourneyService(provider: self)
+    
+    private init() { }
 }

@@ -8,9 +8,16 @@
 
 import UIKit
 
+// TODO: Joruney 오래된 버전
 struct Tag: Hashable {
     let id: String
     let text: String
     let type: JYPTagType
     var isSelected: Bool = false
+}
+
+struct NewTag: Hashable {
+    let topic: String
+    let orientation: JYPTagType
+    let users: [User]?
 }

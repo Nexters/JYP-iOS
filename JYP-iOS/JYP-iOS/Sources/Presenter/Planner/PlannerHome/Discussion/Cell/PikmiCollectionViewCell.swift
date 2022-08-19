@@ -10,8 +10,8 @@ import UIKit
 import ReactorKit
 import Lottie
 
-class CandidatePlaceCollectionViewCell: BaseCollectionViewCell, View {
-    typealias Reactor = CandidatePlaceCollectionViewCellReactor
+class PikmiCollectionViewCell: BaseCollectionViewCell, View {
+    typealias Reactor = PikmiCollectionViewCellReactor
     
     let categoryLabel = UILabel()
     let titleLabel = UILabel()

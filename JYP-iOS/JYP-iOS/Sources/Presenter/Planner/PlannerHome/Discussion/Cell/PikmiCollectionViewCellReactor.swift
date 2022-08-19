@@ -8,7 +8,7 @@
 
 import ReactorKit
 
-class CandidatePlaceCollectionViewCellReactor: Reactor {
+class PikmiCollectionViewCellReactor: Reactor {
     enum Action {
         case animated
     }
@@ -31,7 +31,7 @@ class CandidatePlaceCollectionViewCellReactor: Reactor {
     }
 }
 
-extension CandidatePlaceCollectionViewCellReactor {
+extension PikmiCollectionViewCellReactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .animated:
