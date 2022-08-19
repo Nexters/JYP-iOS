@@ -6,6 +6,7 @@
 //  Copyright © 2022 JYP-iOS. All rights reserved.
 //
 
+import RxSwift
 import UIKit
 
 class JYPMemberStackView: UIStackView {
@@ -13,21 +14,18 @@ class JYPMemberStackView: UIStackView {
 
     // MARK: - Properties
 
-    var profiles: [JYPProfileImageView] = [
-        .init(frame: .zero),
-        .init(frame: .zero),
-        .init(frame: .zero),
-        .init(frame: .zero),
-        .init(frame: .zero)
-    ]
+    var profiles: [Int] = [] {
+        didSet {
+            setupLayout()
+        }
+    }
 
     // MARK: - Initializer
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    init() {
+        super.init(frame: .zero)
 
         setupProperty()
-        setupLayout()
     }
 
     @available(*, unavailable)
@@ -48,11 +46,19 @@ class JYPMemberStackView: UIStackView {
 
     func setupLayout() {
         // TODO: - User Model 정의 후 변경
+        arrangedSubviews.forEach { $0.removeFromSuperview() }
 
         profiles
             .prefix(Self.MAX_MEMBER)
-            .forEach {
-                addArrangedSubview($0)
+            .forEach { _ in
+                let profile = JYPProfileImageView()
+                profile.image = [
+                    JYPIOSAsset.profile01.image,
+                    JYPIOSAsset.profile02.image,
+                    JYPIOSAsset.profile03.image
+                ].randomElement()
+
+                addArrangedSubview(profile)
             }
 
         if profiles.count > Self.MAX_MEMBER {
@@ -66,8 +72,8 @@ class JYPMemberStackView: UIStackView {
 // MARK: - JYPProfileImageView
 
 class JYPProfileImageView: UIImageView {
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    init() {
+        super.init(frame: .zero)
 
         setupProperty()
         setupLayout()
@@ -79,7 +85,6 @@ class JYPProfileImageView: UIImageView {
     }
 
     func setupProperty() {
-        image = JYPIOSAsset.cardIllust4.image
         clipsToBounds = true
 
         cornerRound(radius: 12)
@@ -132,6 +137,14 @@ class JYPOverProfileView: UIView {
 
         snp.makeConstraints { make in
             make.size.equalTo(44)
+        }
+    }
+}
+
+extension Reactive where Base: JYPMemberStackView {
+    var borderColor: Binder<UIColor> {
+        Binder(base) { view, color in
+            view.arrangedSubviews.forEach { $0.layer.borderColor = color.cgColor }
         }
     }
 }
