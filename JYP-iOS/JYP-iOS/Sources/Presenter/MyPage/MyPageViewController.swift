@@ -2,203 +2,82 @@
 //  MyPageViewController.swift
 //  JYP-iOS
 //
-//  Created by 송영모 on 2022/07/17.
+//  Created by inae Lee on 2022/08/20.
 //  Copyright © 2022 JYP-iOS. All rights reserved.
 //
 
 import UIKit
-import RxSwift
-import AuthenticationServices
-import KakaoSDKCommon
-import KakaoSDKAuth
-import KakaoSDKUser
 
-class MyPageViewController: BaseViewController {
-    let titleLabel = UILabel()
-    let appleSignUpButton = ASAuthorizationAppleIDButton()
-    let kakaoSignUpButton = UIButton(type: .system)
-    let searchPlaceButton = UIButton(type: .system)
-    let onboardingButton = UIButton(type: .system)
-    let discussionButton = UIButton(type: .system)
-    
+class MyPageViewController: NavigationBarViewController {
+    // MARK: - UI Components
+
+    let headerView: UIView = .init()
+    let profileImageView: UIImageView = .init()
+    let typeLabel: UILabel = .init()
+    let nicknameLabel: UILabel = .init()
+
+    // MARK: - Initializer
+
+    // MARK: - Setup Methods
+
+    override func setupNavigationBar() {
+        super.setupNavigationBar()
+
+        setNavigationBarTitleText("마이페이지")
+        setNavigationBarTitleTextColor(JYPIOSAsset.textB75.color)
+        setNavigationBarTitleFont(JYPIOSFontFamily.Pretendard.medium.font(size: 16))
+        setNavigationBarBackgroundColor(JYPIOSAsset.backgroundWhite100.color)
+        setNavigationBarBackButtonHidden(true)
+    }
+
     override func setupProperty() {
         super.setupProperty()
-        
-        titleLabel.text = "마이 페이지 뷰컨"
-        titleLabel.textColor = .black
 
-        kakaoSignUpButton.setTitle("카카오 로그인 버튼", for: .normal)
-        searchPlaceButton.setTitle("장소 검색 뷰컨 이동", for: .normal)
-        onboardingButton.setTitle("온보딩 뷰컨 이동", for: .normal)
-        discussionButton.setTitle("토론장 뷰컨 이동", for: .normal)
+        view.backgroundColor = JYPIOSAsset.backgroundWhite200.color
+
+        headerView.backgroundColor = JYPIOSAsset.backgroundWhite100.color
+
+        profileImageView.image = JYPIOSAsset.profile2.image
+
+        typeLabel.text = "자유로운 탐험가"
+        typeLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 22)
+        typeLabel.lineSpacing(lineHeight: 34.1)
+        typeLabel.textColor = JYPIOSAsset.textB90.color
+
+        nicknameLabel.text = "윤다다"
+        nicknameLabel.font = JYPIOSFontFamily.Pretendard.medium.font(size: 16)
+        nicknameLabel.lineSpacing(lineHeight: 24)
+        nicknameLabel.textColor = JYPIOSAsset.textB80.color
     }
-    
+
     override func setupHierarchy() {
         super.setupHierarchy()
-        
-        view.addSubviews([titleLabel, appleSignUpButton, kakaoSignUpButton, searchPlaceButton, onboardingButton, discussionButton])
+
+        contentView.addSubviews([headerView, profileImageView, typeLabel, nicknameLabel])
     }
-    
+
     override func setupLayout() {
         super.setupLayout()
-        
-        titleLabel.snp.makeConstraints {
-            $0.center.equalToSuperview()
-        }
-        
-        appleSignUpButton.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(10)
-            $0.centerX.equalToSuperview()
-        }
-        
-        kakaoSignUpButton.snp.makeConstraints {
-            $0.top.equalTo(appleSignUpButton.snp.bottom).offset(10)
-            $0.centerX.equalToSuperview()
-        }
-        
-        searchPlaceButton.snp.makeConstraints {
-            $0.top.equalTo(kakaoSignUpButton.snp.bottom).offset(10)
-            $0.centerX.equalToSuperview()
-        }
-        
-        onboardingButton.snp.makeConstraints {
-            $0.top.equalTo(searchPlaceButton.snp.bottom).offset(10)
-            $0.centerX.equalToSuperview()
-        }
-        
-        discussionButton.snp.makeConstraints {
-            $0.top.equalTo(onboardingButton.snp.bottom).offset(10)
-            $0.centerX.equalToSuperview()
-        }
-    }
-    
-    override func setupBind() {
-        super.setupBind()
-        
-        appleSignUpButton.rx.controlEvent(.touchUpInside)
-            .bind { [weak self] in
-                self?.appleSignUp()
-            }
-            .disposed(by: disposeBag)
-        
-        kakaoSignUpButton.rx.tap
-            .bind { [weak self] in
-                self?.kakaoSignUp()
-            }
-            .disposed(by: disposeBag)
-        
-        searchPlaceButton.rx.tap
-            .bind { [weak self] in
-                self?.hidesBottomBarWhenPushed = true
-                self?.navigationController?.pushViewController(SearchPlaceViewController(), animated: true)
-            }
-            .disposed(by: disposeBag)
-        
-        onboardingButton.rx.tap
-            .bind { [weak self] in
-                self?.hidesBottomBarWhenPushed = true
-                let onboardingLikingViewController = OnboardingOneViewController(reactor: OnboardingReactor())
-                self?.navigationController?.pushViewController(onboardingLikingViewController, animated: true)
-            }
-            .disposed(by: disposeBag)
-        
-        discussionButton.rx.tap
-            .bind { [weak self] in
-                self?.hidesBottomBarWhenPushed = true
-//                let discussionHomeVC = OldPlannerHomeViewController()
-                let plannerViewController = PlannerViewController(reactor: .init())
-                self?.navigationController?.pushViewController(plannerViewController, animated: true)
-//                self?.navigationController?.pushViewController(discussionHomeVC, animated: true)
-            }
-            .disposed(by: disposeBag)
-    }
 
-    private func appleSignUp() {
-        let appleIDProvider = ASAuthorizationAppleIDProvider()
-        let request = appleIDProvider.createRequest()
-        request.requestedScopes = [.fullName, .email]
-        
-        let authorizationController = ASAuthorizationController(authorizationRequests: [request])
-        authorizationController.delegate = self
-        authorizationController.presentationContextProvider = self
-        authorizationController.performRequests()
-    }
-    
-    func performExistingAccountSetupFlows() {
-        // Prepare requests for both Apple ID and password providers.
-        let requests = [ASAuthorizationAppleIDProvider().createRequest(),
-                        ASAuthorizationPasswordProvider().createRequest()]
-        
-        // Create an authorization controller with the given requests.
-        let authorizationController = ASAuthorizationController(authorizationRequests: requests)
-        authorizationController.delegate = self
-        authorizationController.presentationContextProvider = self
-        authorizationController.performRequests()
-    }
-    
-    private func kakaoSignUp() {
-        if UserApi.isKakaoTalkLoginAvailable() {
-            // 카카오톡으로 로그인
-            UserApi.shared.loginWithKakaoTalk {(oauthToken, error) in
-                if let error = error {
-                    print(error)
-                } else {
-                    print("loginWithKakaoTalk() success.")
-                    
-                    // do something
-                    _ = oauthToken
-                }
-            }
-        } else {
-            // 카카오 계정으로 로그인
-            UserApi.shared.loginWithKakaoAccount {(oauthToken, error) in
-                if let error = error {
-                    print(error)
-                } else {
-                    print("loginWithKakaoAccount() success.")
-                    
-                    // do something
-                    _ = oauthToken
-                }
-            }
+        headerView.snp.makeConstraints { make in
+            make.top.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(nicknameLabel.snp.bottom).offset(30)
         }
-    }
-}
 
-extension MyPageViewController: ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
-    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
-        return self.view.window!
-    }
-    
-    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
-        switch authorization.credential {
-        case let appleIDCredential as ASAuthorizationAppleIDCredential:
-            let userIdentifier = appleIDCredential.user
-            let fullName = appleIDCredential.fullName
-            let email = appleIDCredential.email
-            
-            if let authorizationCode = appleIDCredential.authorizationCode, let identityToken = appleIDCredential.identityToken, let authString = String(data: authorizationCode, encoding: .utf8), let tokenString = String(data: identityToken, encoding: .utf8) {
-                print("[D] authorizationCode: \(authorizationCode)")
-                print("[D] identityToken: \(identityToken)")
-                print("[D] authString: \(authString)")
-                print("[D] tokenString: \(tokenString)")
-            }
-            
-            print("[D] useridentifier: \(userIdentifier)")
-            print("[D] fullName: \(String(describing: fullName))")
-            print("[D] email: \(String(describing: email))")
-        case let passwordCredential as ASPasswordCredential:
-            let username = passwordCredential.user
-            let password = passwordCredential.password
-            
-            print("[D] username: \(username)")
-            print("[D] password: \(password)")
-        default:
-            break
+        profileImageView.snp.makeConstraints { make in
+            make.top.equalTo(navigationBar.snp.bottom).offset(6)
+            make.centerX.equalToSuperview()
+            make.size.equalTo(88)
         }
-    }
-    
-    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
-        print("[D] 애플 로그인 실패")
+
+        typeLabel.snp.makeConstraints { make in
+            make.top.equalTo(profileImageView.snp.bottom).offset(10)
+            make.centerX.equalToSuperview()
+        }
+
+        nicknameLabel.snp.makeConstraints { make in
+            make.top.equalTo(typeLabel.snp.bottom).offset(2)
+            make.centerX.equalToSuperview()
+        }
     }
 }
