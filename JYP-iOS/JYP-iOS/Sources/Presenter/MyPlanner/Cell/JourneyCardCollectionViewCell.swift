@@ -19,7 +19,7 @@ class JourneyCardCollectionViewCell: BaseCollectionViewCell, View {
     let moreButton: UIButton = .init()
     let titleLabel: UILabel = .init()
     let daysLabel: UILabel = .init()
-    let memberStackView: JYPMemberStackView = .init(frame: .zero)
+    var memberStackView: JYPMemberStackView = .init()
 
     // MARK: - Initializer
 
@@ -102,7 +102,12 @@ class JourneyCardCollectionViewCell: BaseCollectionViewCell, View {
             .map(\.journey.themeUrl.image)
             .bind(to: coverImage.rx.image)
             .disposed(by: disposeBag)
-        
+
+        reactor.state
+            .map(\.journey.member)
+            .bind(to: memberStackView.rx.profiles)
+            .disposed(by: disposeBag)
+
         reactor.state
             .map(\.journey.themeUrl.isActiveShadow)
             .bind(to: rx.isActiveShadow)

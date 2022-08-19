@@ -29,7 +29,7 @@ enum ThemeType: Int {
         switch self {
         case .default: return JYPIOSAsset.backgroundWhite100.color
         case .sea: return .init(hex: 0x88C4FF)
-        case .mountain: return .init(hex: 0xB71F44)
+        case .mountain: return .init(hex: 0xF15077)
         case .culture: return .init(hex: 0xFFA451)
         case .city: return JYPIOSAsset.subBlue200.color
         }
