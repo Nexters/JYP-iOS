@@ -45,6 +45,7 @@ class MyPlannerViewController: NavigationBarViewController, View {
         super.setupNavigationBar()
 
         setNavigationBarTitleText("나의 여행")
+        setNavigationBarTitleTextColor(JYPIOSAsset.textB75.color)
         setNavigationBarTitleFont(JYPIOSFontFamily.Pretendard.medium.font(size: 16))
         setNavigationBarBackgroundColor(JYPIOSAsset.backgroundWhite200.color)
         setNavigationBarBackButtonHidden(true)
