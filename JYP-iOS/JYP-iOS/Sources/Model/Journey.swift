@@ -15,7 +15,7 @@ struct Journey: Hashable {
     let name: String
     let startDate: Double
     let endDate: Double
-    let journeyPlaces: [CandidatePlace]
+    let pikis: [Int]
     let tags: [Tag]
     let candidatePlaces: [CandidatePlace]
     let themeUrl: ThemeType

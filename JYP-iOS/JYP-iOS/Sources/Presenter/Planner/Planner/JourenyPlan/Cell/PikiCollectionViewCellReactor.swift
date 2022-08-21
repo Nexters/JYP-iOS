@@ -8,12 +8,12 @@
 
 import ReactorKit
 
-class JourneyPlaceCollectionViewCellReactor: Reactor {
+class PikiCollectionViewCellReactor: Reactor {
     typealias Action = NoAction
     
-    var initialState: CandidatePlace
+    var initialState: Pik
     
-    init(state: CandidatePlace) {
+    init(state: Pik) {
         initialState = state
     }
 }

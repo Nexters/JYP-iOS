@@ -11,9 +11,9 @@ import ReactorKit
 class JourneyPlanCollectionViewCellReactor: Reactor {
     typealias Action = NoAction
     
-    let initialState: JourneyPlaceSectionModel
+    let initialState: [PikiSectionModel]
     
-    init(state: JourneyPlaceSectionModel) {
+    init(state: [PikiSectionModel]) {
         initialState = state
     }
 }
