@@ -52,23 +52,35 @@ class PlannerService: PlannerServiceProtocol {
     func makeSections(from journey: Journey) -> [JourneyPlanSectionModel] {
         guard let pikisList = journey.pikis else { return [] }
         
-        let dayTagItems = pikisList.enumerated().map { (index, _) -> JourneyPlanItem in
+        var journeyPlanSectionModels: [JourneyPlanSectionModel] = []
+        
+        let daySectionItems = pikisList.enumerated().map { (index, _) -> JourneyPlanItem in
             return JourneyPlanItem.dayTag(DayTagCollectionViewCellReactor(state: .init(day: index + 1)))
         }
         
-        let journeyPlanItems = pikisList.map { (pikis) -> JourneyPlanItem in
-            let pikiItems = pikis.map { (pik) -> PikiItem in
-                return PikiItem.piki(PikiCollectionViewCellReactor(state: pik))
+        let journeySectionModels = pikisList.enumerated().map { (index, pikis) -> JourneyPlanSectionModel in
+            var journeyPlanItems: [JourneyPlanItem] = []
+            
+            if pikis.isEmpty {
+                let sectionItem = JourneyPlanItem.emptyPiki(EmptyPikiCollectionViewCellReactor(state: .init(order: index, date: 0)))
+                
+                journeyPlanItems.append(sectionItem)
+            } else {
+                let sectionItems = pikis.map { (piki) -> JourneyPlanItem in
+                    return JourneyPlanItem.piki(PikiCollectionViewCellReactor(state: piki))
+                }
+                
+                journeyPlanItems.append(contentsOf: sectionItems)
             }
             
-            let pikiSection = PikiSectionModel(model: PikiSection.piki(pikiItems), items: pikiItems)
-            
-            return JourneyPlanItem.journeyPlan(JourneyPlanCollectionViewCellReactor(state: [pikiSection]))
+            return JourneyPlanSectionModel(model: JourneyPlanSection.journey(journeyPlanItems), items: journeyPlanItems)
         }
-
-        let dayTagSection = JourneyPlanSectionModel(model: JourneyPlanSection.dayTag(dayTagItems), items: dayTagItems)
-        let journeyPlanSection = JourneyPlanSectionModel(model: JourneyPlanSection.journeyPlan(journeyPlanItems), items: journeyPlanItems)
         
-        return [dayTagSection, journeyPlanSection]
+        let daySection = JourneyPlanSectionModel(model: JourneyPlanSection.day(daySectionItems), items: daySectionItems)
+        
+        journeyPlanSectionModels.append(daySection)
+        journeyPlanSectionModels.append(contentsOf: journeySectionModels)
+        
+        return journeyPlanSectionModels
     }
 }

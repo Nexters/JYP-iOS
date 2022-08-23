@@ -9,9 +9,20 @@
 import UIKit
 import ReactorKit
 
+class PikiCollectionViewCellReactor: Reactor {
+    typealias Action = NoAction
+    
+    var initialState: Pik
+    
+    init(state: Pik) {
+        initialState = state
+    }
+}
+
 class PikiCollectionViewCell: BaseCollectionViewCell, View {
     typealias Reactor = PikiCollectionViewCellReactor
     
+    let divider: UIView = .init()
     let circleView: UIView = .init()
     let circleLabel: UILabel = .init()
     let pikiView: UIView = .init()
@@ -24,6 +35,8 @@ class PikiCollectionViewCell: BaseCollectionViewCell, View {
         super.setupProperty()
         
         backgroundColor = .clear
+        
+        divider.backgroundColor = JYPIOSAsset.tagGrey200.color
         
         pikiView.backgroundColor = JYPIOSAsset.backgroundWhite100.color
         pikiView.cornerRound(radius: 12)
@@ -49,7 +62,7 @@ class PikiCollectionViewCell: BaseCollectionViewCell, View {
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        contentView.addSubviews([circleView, circleLabel, pikiView])
+        contentView.addSubviews([divider, circleView, circleLabel, pikiView])
         
         pikiView.addSubviews([titleLabel, subLabel, categoryImageView, categoryLabel])
     }
@@ -66,9 +79,16 @@ class PikiCollectionViewCell: BaseCollectionViewCell, View {
             $0.center.equalTo(circleView)
         }
         
+        divider.snp.makeConstraints {
+            $0.top.bottom.equalToSuperview()
+            $0.centerX.equalTo(circleView)
+            $0.width.equalTo(1)
+        }
+        
         pikiView.snp.makeConstraints {
-            $0.top.trailing.bottom.equalToSuperview()
+            $0.top.trailing.equalToSuperview()
             $0.leading.equalTo(circleView.snp.trailing).offset(8)
+            $0.bottom.equalToSuperview().inset(12)
         }
         
         titleLabel.snp.makeConstraints {
@@ -83,6 +103,7 @@ class PikiCollectionViewCell: BaseCollectionViewCell, View {
         categoryImageView.snp.makeConstraints {
             $0.top.equalToSuperview().inset(12)
             $0.trailing.equalToSuperview().inset(19)
+            $0.width.height.equalTo(35)
         }
         
         categoryLabel.snp.makeConstraints {

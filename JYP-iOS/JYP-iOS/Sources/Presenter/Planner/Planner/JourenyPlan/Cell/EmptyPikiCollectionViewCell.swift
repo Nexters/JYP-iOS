@@ -1,39 +1,45 @@
 //
-//  EmptyPikiView.swift
+//  EmptyPikiCollectionViewCell.swift
 //  JYP-iOS
 //
-//  Created by 송영모 on 2022/08/20.
+//  Created by 송영모 on 2022/08/23.
 //  Copyright © 2022 JYP-iOS. All rights reserved.
 //
 
 import UIKit
+import ReactorKit
 
-class EmptyPikiView: BaseView {
+class EmptyPikiCollectionViewCellReactor: Reactor {
+    enum Action { }
+    enum Mutation { }
+    
+    struct State {
+        let order: Int
+        let date: Double
+    }
+
+    var initialState: State
+    
+    init(state: State) {
+        initialState = state
+    }
+}
+
+class EmptyPikiCollectionViewCell: BaseCollectionViewCell, View {
+    typealias Reactor = EmptyPikiCollectionViewCellReactor
+    
     // MARK: - UI Components
     
     let titleLabel: UILabel = .init()
     let subLabel: UILabel = .init()
-    
-    // MARK: - Initializer
-    
-    @available(*, unavailable)
-    required init?(coder _: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    init(title: String, sub: String) {
-        super.init(frame: .zero)
-        
-        titleLabel.text = title
-        subLabel.text = sub
-    }
     
     // MARK: - Setup Methods
     
     override func setupProperty() {
         super.setupProperty()
         
-        makeBorder(color: JYPIOSAsset.tagWhiteGrey100.color, width: 1)
+        makeBorder(color: .black.withAlphaComponent(0.1), width: 1)
+
         cornerRound(radius: 12)
         
         titleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 16)
@@ -61,5 +67,10 @@ class EmptyPikiView: BaseView {
             $0.leading.equalTo(titleLabel.snp.trailing).offset(12)
             $0.centerY.equalToSuperview()
         }
+    }
+    
+    func bind(reactor: Reactor) {
+        titleLabel.text = "Day \(reactor.currentState.order + 1)"
+        subLabel.text = "Day \(reactor.currentState.date)"
     }
 }

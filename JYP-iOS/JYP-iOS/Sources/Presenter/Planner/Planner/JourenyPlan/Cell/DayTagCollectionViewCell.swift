@@ -9,6 +9,21 @@
 import UIKit
 import ReactorKit
 
+class DayTagCollectionViewCellReactor: Reactor {
+    enum Action {}
+    enum Mutation {}
+    
+    struct State {
+        let day: Int
+    }
+    
+    var initialState: State
+    
+    init(state: State) {
+        self.initialState = state
+    }
+}
+
 class DayTagColectionViewCell: BaseCollectionViewCell, View {
     typealias Reactor = DayTagCollectionViewCellReactor
     
