@@ -100,16 +100,16 @@ extension JourneyPlanView {
         let layout = UICollectionViewCompositionalLayout { [weak self] sectionIndex, _ in
             switch sections[sectionIndex].model {
             case let .day(journeyPlanItems):
-                return self?.makeDayTagSectionLayout(from: journeyPlanItems)
+                return self?.makeDaySectionLayout(from: journeyPlanItems)
             case let .journey(journeyPlanItems):
-                return self?.makeJourneyPlanSectionLayout(from: journeyPlanItems)
+                return self?.makeJourneySectionLayout(from: journeyPlanItems)
             }
         }
         
         return layout
     }
 
-    func makeDayTagSectionLayout(from sectionItems: [JourneyPlanItem]) -> NSCollectionLayoutSection {
+    func makeDaySectionLayout(from sectionItems: [JourneyPlanItem]) -> NSCollectionLayoutSection {
         var items: [NSCollectionLayoutItem] = []
         
         sectionItems.forEach({ sectionItem in
@@ -132,7 +132,7 @@ extension JourneyPlanView {
         return section
     }
     
-    func makeJourneyPlanSectionLayout(from sectionItems: [JourneyPlanItem]) -> NSCollectionLayoutSection {
+    func makeJourneySectionLayout(from sectionItems: [JourneyPlanItem]) -> NSCollectionLayoutSection {
         var items: [NSCollectionLayoutItem] = []
         
         sectionItems.forEach({ sectionItem in
