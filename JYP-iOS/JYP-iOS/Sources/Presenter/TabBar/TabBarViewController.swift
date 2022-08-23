@@ -29,12 +29,17 @@ class TabBarViewController: UITabBarController {
         let myPageNavigationViewController = UINavigationController(rootViewController: MyPageViewController())
         let myPageTabBarItem = UITabBarItem(title: nil, image: JYPIOSAsset.myPageInactive.image.withRenderingMode(.alwaysOriginal), selectedImage: JYPIOSAsset.myPageActive.image.withRenderingMode(.alwaysOriginal))
         myPageTabBarItem.imageInsets = .init(top: 9, left: 0, bottom: -9, right: 0)
+        
+        let plannerNavigationViewController = UINavigationController(rootViewController: PlannerViewController(reactor: PlannerReactor()))
+        let plannerTabBarItem = UITabBarItem(title: nil, image: JYPIOSAsset.myPageInactive.image.withRenderingMode(.alwaysOriginal), selectedImage: JYPIOSAsset.myPageInactive.image.withRenderingMode(.alwaysOriginal))
+        plannerTabBarItem.imageInsets = .init(top: 9, left: 0, bottom: -9, right: 0)
 
         myPlannerNavigationViewController.tabBarItem = myPlannerTabBarItem
         anotherJourneyViewController.tabBarItem = anotherJourneyTabBarItem
         myPageNavigationViewController.tabBarItem = myPageTabBarItem
+        plannerNavigationViewController.tabBarItem = plannerTabBarItem
 
-        viewControllers = [myPlannerNavigationViewController, anotherJourneyViewController, myPageNavigationViewController]
+        viewControllers = [myPlannerNavigationViewController, anotherJourneyViewController, myPageNavigationViewController, plannerNavigationViewController]
         selectedIndex = 0
     }
 }
