@@ -9,45 +9,45 @@
 import RxSwift
 
 enum JourneyEvent {
-    case create(NewJourney)
+    case create(Journey)
 }
 
 protocol JourneyServiceType {
     var event: PublishSubject<JourneyEvent> { get }
     
-    func fetchJornenies() -> Observable<[NewJourney]>
-    func fetchJorney(id: Int) -> Observable<NewJourney>
-    func create(name: String, startDate: Double, endDate: Double) -> Observable<NewJourney>
+    func fetchJornenies() -> Observable<[Journey]>
+    func fetchJorney(id: Int) -> Observable<Journey>
+    func create(name: String, startDate: Double, endDate: Double) -> Observable<Journey>
 }
 
 final class JourneyService: BaseService, JourneyServiceType {
     let event = PublishSubject<JourneyEvent>()
     
-    func fetchJornenies() -> Observable<[NewJourney]> {
+    func fetchJornenies() -> Observable<[Journey]> {
         return .just(
-            [NewJourney(id: "1",
+            [Journey(id: "1",
                         name: "",
                         startDate: 0,
                         endDate: 0,
-                        themePath: "",
+                     themePath: .city,
                         users: [],
                         tags: nil,
                         pikis: nil,
                         pikmis: nil),
-             NewJourney(id: "1",
+             Journey(id: "1",
                         name: "",
                         startDate: 0,
                         endDate: 0,
-                        themePath: "",
+                     themePath: .culture,
                         users: [],
                         tags: nil,
                         pikis: nil,
                         pikmis: nil),
-             NewJourney(id: "1",
+             Journey(id: "1",
                         name: "",
                         startDate: 0,
                         endDate: 0,
-                        themePath: "",
+                     themePath: .mountain,
                         users: [],
                         tags: nil,
                         pikis: nil,
@@ -56,20 +56,20 @@ final class JourneyService: BaseService, JourneyServiceType {
         )
     }
     
-    func fetchJorney(id: Int) -> Observable<NewJourney> {
+    func fetchJorney(id: Int) -> Observable<Journey> {
         return .just(
-            NewJourney(id: "1",
+            Journey(id: "1",
                        name: "테스트1",
                        startDate: 0.0,
                        endDate: 0.0,
-                       themePath: "",
+                    themePath: .city,
                        users: [User(id: "1",
                                     nickname: "닉네임1",
                                     profileImagePath: "",
                                     personality: ""),
                                User(id: "2", nickname: "닉네임2", profileImagePath: "", personality: ""),
                                User(id: "3", nickname: "닉네임3", profileImagePath: "", personality: "")],
-                       tags: [NewTag(topic: "태그1", orientation: .like, users: [])],
+                       tags: [Tag(topic: "태그1", orientation: .like, users: [])],
                        pikis: [[Pik(id: "1",
                                     name: "피키1",
                                     address: "피키1 주소",
@@ -109,12 +109,12 @@ final class JourneyService: BaseService, JourneyServiceType {
                                              User(id: "3", nickname: "닉네임3", profileImagePath: "", personality: "")], longitude: 0.0, latitude: 0.0, link: "")]))
     }
     
-    func create(name: String, startDate: Double, endDate: Double) -> Observable<NewJourney> {
-        return .just(NewJourney(id: "1",
+    func create(name: String, startDate: Double, endDate: Double) -> Observable<Journey> {
+        return .just(Journey(id: "1",
                                 name: "",
                                 startDate: 0,
                                 endDate: 0,
-                                themePath: "",
+                             themePath: .culture,
                                 users: [],
                                 tags: nil,
                                 pikis: nil,

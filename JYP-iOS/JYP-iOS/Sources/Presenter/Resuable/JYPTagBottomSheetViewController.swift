@@ -82,8 +82,8 @@ class JYPTagBottomSheetViewController: BottomSheetViewController, View {
     func bind(reactor: JYPTagBottomSheetReactor) {
         let state = reactor.currentState
         
-        titleLabel.text = state.tag.type.title + " 태그"
-        tag.type = state.tag.type
-        tag.titleLabel.text = state.tag.text
+        titleLabel.text = state.tag.orientation.title + " 태그"
+        tag.type = state.tag.orientation
+        tag.titleLabel.text = state.tag.topic
     }
 }

@@ -22,7 +22,7 @@ final class TagService: BaseService, TagServiceType {
     let event = PublishSubject<TagServiceEvent>()
 
     func saveTag(name: String, section: TagSection) -> Observable<Tag> {
-        let tag = Tag(id: "", text: name, type: section.type)
+        let tag = Tag(topic: name, orientation: section.type, users: [])
 
         event.onNext(.save(tag))
         return .just(tag)

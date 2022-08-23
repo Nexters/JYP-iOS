@@ -10,29 +10,29 @@ import Foundation
 import RxSwift
 
 enum PlannerEvent {
-    case fetchJourney(NewJourney)
+    case fetchJourney(Journey)
     case present
 }
 
 protocol PlannerServiceProtocol {
     var event: PublishSubject<PlannerEvent> { get }
 
-    func updateJourney(to journey: NewJourney)
+    func updateJourney(to journey: Journey)
     
-    func makeSections(from journey: NewJourney) -> [DiscussionSectionModel]
-    func makeSections(from journey: NewJourney) -> [JourneyPlanSectionModel]
+    func makeSections(from journey: Journey) -> [DiscussionSectionModel]
+    func makeSections(from journey: Journey) -> [JourneyPlanSectionModel]
 }
 
 class PlannerService: PlannerServiceProtocol {
     let event = PublishSubject<PlannerEvent>()
-    var journey: NewJourney?
+    var journey: Journey?
     
-    func updateJourney(to journey: NewJourney) {
+    func updateJourney(to journey: Journey) {
         self.journey = journey
         event.onNext(.fetchJourney(journey))
     }
     
-    func makeSections(from journey: NewJourney) -> [DiscussionSectionModel] {
+    func makeSections(from journey: Journey) -> [DiscussionSectionModel] {
         guard let tags = journey.tags else { return [] }
         guard let pikmis = journey.pikmis else { return [] }
     
@@ -49,7 +49,7 @@ class PlannerService: PlannerServiceProtocol {
         return [tagSection, pikmiSection]
     }
     
-    func makeSections(from journey: NewJourney) -> [JourneyPlanSectionModel] {
+    func makeSections(from journey: Journey) -> [JourneyPlanSectionModel] {
         guard let pikisList = journey.pikis else { return [] }
         
         let dayTagItems = pikisList.enumerated().map { (index, _) -> JourneyPlanItem in
