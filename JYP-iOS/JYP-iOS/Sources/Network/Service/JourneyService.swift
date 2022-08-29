@@ -101,7 +101,7 @@ final class JourneyService: BaseService, JourneyServiceType {
                                [],
                                [],
                                [],
-                               [],
+                               []
                               ],
                        pikmis: [Pik(id: "1",
                                     name: "픽미1",

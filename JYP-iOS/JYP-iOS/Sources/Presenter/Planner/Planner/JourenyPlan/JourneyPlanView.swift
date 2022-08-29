@@ -28,10 +28,16 @@ class JourneyPlanView: BaseView, View {
             
             cell.reactor = reactor
             return cell
-        case let .emptyPiki(reactor):
+        case let .emptyPiki(cellReactor):
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: EmptyPikiCollectionViewCell.self), for: indexPath) as? EmptyPikiCollectionViewCell else { return .init() }
             
-            cell.reactor = reactor
+            cell.reactor = cellReactor
+            cell.trailingButton
+                .rx
+                .tap
+                .map { .tapEmptyPikiPlusButton(indexPath) }
+                .bind(to: reactor.action)
+                .disposed(by: cell.disposeBag)
             return cell
         case let .piki(reactor):
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: PikiCollectionViewCell.self), for: indexPath) as? PikiCollectionViewCell else { return .init() }

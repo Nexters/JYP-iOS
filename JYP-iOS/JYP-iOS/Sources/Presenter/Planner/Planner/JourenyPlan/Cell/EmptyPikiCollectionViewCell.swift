@@ -15,7 +15,7 @@ class EmptyPikiCollectionViewCellReactor: Reactor {
     
     struct State {
         let order: Int
-        let date: Double
+        let date: Date
     }
 
     var initialState: State
@@ -32,6 +32,7 @@ class EmptyPikiCollectionViewCell: BaseCollectionViewCell, View {
     
     let titleLabel: UILabel = .init()
     let subLabel: UILabel = .init()
+    let trailingButton: UIButton = .init()
     
     // MARK: - Setup Methods
     
@@ -47,12 +48,14 @@ class EmptyPikiCollectionViewCell: BaseCollectionViewCell, View {
         
         subLabel.font = JYPIOSFontFamily.Pretendard.medium.font(size: 16)
         subLabel.textColor = JYPIOSAsset.textB40.color
+        
+        trailingButton.setImage(JYPIOSAsset.iconAdd.image, for: .normal)
     }
     
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        addSubviews([titleLabel, subLabel])
+        addSubviews([titleLabel, subLabel, trailingButton])
     }
     
     override func setupLayout() {
@@ -66,6 +69,12 @@ class EmptyPikiCollectionViewCell: BaseCollectionViewCell, View {
         subLabel.snp.makeConstraints {
             $0.leading.equalTo(titleLabel.snp.trailing).offset(12)
             $0.centerY.equalToSuperview()
+        }
+        
+        trailingButton.snp.makeConstraints {
+            $0.trailing.equalToSuperview().inset(20)
+            $0.centerY.equalToSuperview()
+            $0.width.height.equalTo(24)
         }
     }
     
