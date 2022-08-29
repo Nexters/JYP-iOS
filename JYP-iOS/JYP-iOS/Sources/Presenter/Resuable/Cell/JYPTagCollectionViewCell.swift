@@ -29,12 +29,12 @@ class JYPTagCollectionViewCell: BaseCollectionViewCell, View {
     
     func bind(reactor: Reactor) {
         reactor.state
-            .map(\.type)
+            .map(\.orientation)
             .bind(to: jypTag.rx.type)
             .disposed(by: disposeBag)
         
         reactor.state
-            .map(\.text)
+            .map(\.topic)
             .bind(to: jypTag.titleLabel.rx.text)
             .disposed(by: disposeBag)
         

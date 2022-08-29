@@ -8,27 +8,14 @@
 
 import Foundation
 
-// TODO: Joruney 오래된 버전
 struct Journey: Hashable {
     let id: String
-    let member: [Int]
     let name: String
     let startDate: Double
     let endDate: Double
-    let pikis: [Int]
-    let tags: [Tag]
-    let candidatePlaces: [CandidatePlace]
-    let themeUrl: ThemeType
-}
-
-struct NewJourney: Hashable {
-    let id: String
-    let name: String
-    let startDate: Double
-    let endDate: Double
-    let themePath: String
+    let themePath: ThemeType
     let users: [User]
-    let tags: [NewTag]?
+    let tags: [Tag]?
     let pikis: [[Pik]]?
     let pikmis: [Pik]?
 }

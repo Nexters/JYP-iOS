@@ -99,42 +99,42 @@ class JourneyCardCollectionViewCell: BaseCollectionViewCell, View {
 
     func bind(reactor: JourneyCardCollectionViewCellReactor) {
         reactor.state
-            .map(\.journey.themeUrl.image)
+            .map(\.journey.themePath.image)
             .bind(to: coverImage.rx.image)
             .disposed(by: disposeBag)
 
         reactor.state
-            .map(\.journey.member)
+            .map(\.journey.users)
             .bind(to: memberStackView.rx.profiles)
             .disposed(by: disposeBag)
 
         reactor.state
-            .map(\.journey.themeUrl.isActiveShadow)
+            .map(\.journey.themePath.isActiveShadow)
             .bind(to: rx.isActiveShadow)
             .disposed(by: disposeBag)
 
         reactor.state
-            .map(\.journey.themeUrl.cardColor)
+            .map(\.journey.themePath.cardColor)
             .bind(to: rx.backgroundColor)
             .disposed(by: disposeBag)
 
         reactor.state
-            .map(\.journey.themeUrl.borderColor)
+            .map(\.journey.themePath.borderColor)
             .bind(to: memberStackView.rx.borderColor)
             .disposed(by: disposeBag)
 
         reactor.state
-            .map(\.journey.themeUrl.textColor)
+            .map(\.journey.themePath.textColor)
             .bind(to: titleLabel.rx.textColor)
             .disposed(by: disposeBag)
 
         reactor.state
-            .map(\.journey.themeUrl.textColor)
+            .map(\.journey.themePath.textColor)
             .bind(to: daysLabel.rx.textColor)
             .disposed(by: disposeBag)
 
         reactor.state
-            .map(\.journey.themeUrl.textColor)
+            .map(\.journey.themePath.textColor)
             .map { JYPIOSAsset.iconMenu.image.withTintColor($0, renderingMode: .alwaysOriginal) }
             .bind(to: moreButton.rx.image(for: .normal))
             .disposed(by: disposeBag)

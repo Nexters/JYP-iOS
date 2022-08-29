@@ -14,7 +14,7 @@ class JYPMemberStackView: UIStackView {
 
     // MARK: - Properties
 
-    var profiles: [Int] = [] {
+    var profiles: [User] = [] {
         didSet {
             setupLayout()
         }

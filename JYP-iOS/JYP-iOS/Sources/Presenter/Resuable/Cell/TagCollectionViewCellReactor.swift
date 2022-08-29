@@ -11,9 +11,9 @@ import ReactorKit
 class TagCollectionViewCellReactor: Reactor {
     typealias Action = NoAction
 
-    let initialState: NewTag
+    let initialState: Tag
     
-    init(tag: NewTag) {
+    init(tag: Tag) {
         initialState = tag
     }
 }

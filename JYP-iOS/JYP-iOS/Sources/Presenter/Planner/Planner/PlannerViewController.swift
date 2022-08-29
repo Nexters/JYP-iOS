@@ -19,8 +19,8 @@ class PlannerViewController: NavigationBarViewController, View {
     
     let headerView: UIView = .init()
     
-    let discussionButton: UIButton = .init()
-    let journeyPlanButton: UIButton = .init()
+    let discussionButton: JYPBottomBorderButton = .init(title: "토론장")
+    let journeyPlanButton: JYPBottomBorderButton = .init(title: "여행 계획")
     
     let menuDivider: UIView = .init()
     
@@ -69,13 +69,7 @@ class PlannerViewController: NavigationBarViewController, View {
         headerView.backgroundColor = JYPIOSAsset.backgroundWhite100.color
         headerView.cornerRound(radius: 20, direct: [.layerMinXMinYCorner, .layerMaxXMinYCorner])
         
-        discussionButton.setTitle("토론장", for: .normal)
-        discussionButton.setTitleColor(JYPIOSAsset.textB80.color, for: .normal)
-        discussionButton.titleLabel?.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 18)
-        
-        journeyPlanButton.setTitle("여행 계획", for: .normal)
-        journeyPlanButton.setTitleColor(JYPIOSAsset.textB80.color, for: .normal)
-        journeyPlanButton.titleLabel?.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 18)
+        menuDivider.backgroundColor = .black.withAlphaComponent(0.1)
     }
     
     override func setupHierarchy() {
@@ -114,10 +108,10 @@ class PlannerViewController: NavigationBarViewController, View {
             $0.leading.equalTo(discussionButton.snp.trailing).offset(28)
         }
         
-        menuDivider.snp.makeConstraints {
-            $0.leading.trailing.equalToSuperview()
-            $0.centerY.equalTo(discussionButton.snp.bottom)
-            $0.height.equalTo(1)
+        menuDivider.snp.makeConstraints { make in
+            make.width.centerX.equalToSuperview()
+            make.centerY.equalTo(journeyPlanButton.bottomBorderView.snp.centerY)
+            make.height.equalTo(1)
         }
         
         discussionView.snp.makeConstraints {
@@ -157,6 +151,7 @@ class PlannerViewController: NavigationBarViewController, View {
             .map(\.isShowDiscussion)
             .withUnretained(self)
             .bind { this, bool in
+                this.discussionButton.isSelected = bool
                 this.discussionView.isHidden = !bool
             }
             .disposed(by: disposeBag)
@@ -165,6 +160,7 @@ class PlannerViewController: NavigationBarViewController, View {
             .map(\.isShowJourneyPlan)
             .withUnretained(self)
             .bind { this, bool in
+                this.journeyPlanButton.isSelected = bool
                 this.journeyPlanView.isHidden = !bool
             }
             .disposed(by: disposeBag)
