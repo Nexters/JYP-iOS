@@ -16,7 +16,8 @@ enum PlannerEvent {
 
 protocol PlannerServiceProtocol {
     var event: PublishSubject<PlannerEvent> { get }
-
+    var journey: Journey? { get }
+    
     func updateJourney(to journey: Journey)
     
     func makeSections(from journey: Journey) -> [DiscussionSectionModel]

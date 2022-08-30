@@ -163,10 +163,11 @@ class PlannerViewController: NavigationBarViewController, View {
         
         reactor.state
             .map(\.plannerRouteReactor)
-            .filter { $0 != nil }
             .withUnretained(self)
-            .bind { this, _ in
-                let plannerRouteViewController = PlannerRouteViewController()
+            .bind { this, reactor in
+                guard let reactor = reactor else { return }
+                
+                let plannerRouteViewController = PlannerRouteViewController(reactor: reactor)
                 
                 this.navigationController?.pushViewController(plannerRouteViewController, animated: true)
             }

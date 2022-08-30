@@ -70,6 +70,6 @@ extension JourneyPlanReactor {
     }
     
     private func makeReactor(from reactor: EmptyPikiCollectionViewCellReactor) -> PlannerRouteReactor {
-        return .init(state: .init(order: reactor.currentState.order, date: reactor.currentState.date))
+        return .init(state: .init(order: reactor.currentState.order, date: reactor.currentState.date, pikmis: provider.journey?.pikmis ?? []))
     }
 }
