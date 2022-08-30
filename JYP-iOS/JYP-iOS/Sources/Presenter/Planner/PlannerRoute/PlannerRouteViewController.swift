@@ -15,20 +15,26 @@ class PlannerRouteViewController: NavigationBarViewController, View {
     
     // MARK: - UI Components
     
-    let collectionView: UICollectionView = .init(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+    let emptyView: UIView = .init()
+    let routeCollectionView: UICollectionView = .init(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+    let pikmiRouteCollectionView: UICollectionView = .init(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     
     // MARK: - Properties
     
-    private lazy var dataSource = RxCollectionViewSectionedReloadDataSource<PlannerRouteSectionModel> { [weak self] _, collectionView, indexPath, item -> UICollectionViewCell in
+    private lazy var pikmiRouteDataSource = RxCollectionViewSectionedReloadDataSource<PikmiRouteSectionModel> { [weak self] _, collectionView, indexPath, item -> UICollectionViewCell in
         switch item {
-        case let .route(reactor):
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: RouteCollectionViewCell.self), for: indexPath) as? RouteCollectionViewCell else { return .init() }
+        case let .pikmiRoute(reactor):
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: PikmiRouteCollectionViewCell.self), for: indexPath) as? PikmiRouteCollectionViewCell else { return .init() }
             
             cell.reactor = reactor
             return cell
-            
-        case let .pikmiRoute(reactor):
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: PikmiRouteCollectionViewCell.self), for: indexPath) as? PikmiRouteCollectionViewCell else { return .init() }
+        }
+    }
+    
+    private lazy var routeDataSource = RxCollectionViewSectionedReloadDataSource<RouteSectionModel> { [weak self] _, collectionView, indexPath, item -> UICollectionViewCell in
+        switch item {
+        case let .route(reactor):
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: RouteCollectionViewCell.self), for: indexPath) as? RouteCollectionViewCell else { return .init() }
             
             cell.reactor = reactor
             return cell
@@ -60,21 +66,30 @@ class PlannerRouteViewController: NavigationBarViewController, View {
     override func setupProperty() {
         super.setupProperty()
         
-        collectionView.register(PikmiRouteCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: PikmiRouteCollectionViewCell.self))
-        collectionView.register(RouteCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: RouteCollectionViewCell.self))
+        routeCollectionView.backgroundColor = JYPIOSAsset.backgroundWhite200.color
+        
+        pikmiRouteCollectionView.backgroundColor = .clear
+        pikmiRouteCollectionView.register(PikmiRouteCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: PikmiRouteCollectionViewCell.self))
+        pikmiRouteCollectionView.register(RouteCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: RouteCollectionViewCell.self))
     }
     
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        contentView.addSubviews([collectionView])
+        contentView.addSubviews([routeCollectionView, pikmiRouteCollectionView])
     }
     
     override func setupLayout() {
         super.setupLayout()
         
-        collectionView.snp.makeConstraints {
-            $0.top.leading.trailing.bottom.equalToSuperview()
+        routeCollectionView.snp.makeConstraints {
+            $0.top.leading.trailing.equalToSuperview()
+            $0.height.equalTo(140)
+        }
+        
+        pikmiRouteCollectionView.snp.makeConstraints {
+            $0.top.equalTo(routeCollectionView.snp.bottom)
+            $0.leading.trailing.bottom.equalToSuperview()
         }
     }
     
@@ -85,8 +100,99 @@ class PlannerRouteViewController: NavigationBarViewController, View {
             .disposed(by: disposeBag)
         
         reactor.state
-            .map(\.sections)
-            .bind(to: collectionView.rx.items(dataSource: dataSource))
+            .map(\.routeSections)
+            .bind(to: routeCollectionView.rx.items(dataSource: routeDataSource))
             .disposed(by: disposeBag)
+        
+        reactor.state
+            .map(\.routeSections)
+            .withUnretained(self)
+            .bind { this, sections in
+                let layout = this.makeRouteLayout(sections: sections)
+                this.routeCollectionView.collectionViewLayout = layout
+            }
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .map(\.pikmiRouteSections)
+            .bind(to: pikmiRouteCollectionView.rx.items(dataSource: pikmiRouteDataSource))
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .map(\.pikmiRouteSections)
+            .withUnretained(self)
+            .bind { this, sections in
+                let layout = this.makePikmiRouteLayout(sections: sections)
+                this.pikmiRouteCollectionView.collectionViewLayout = layout
+            }
+            .disposed(by: disposeBag)
+    }
+}
+
+extension PlannerRouteViewController {
+    func makeRouteLayout(sections: [RouteSectionModel]) -> UICollectionViewCompositionalLayout {
+        let layout = UICollectionViewCompositionalLayout { [weak self] sectionIndex, _ in
+            switch sections[sectionIndex].model {
+            case let .route(items):
+                return self?.makeRouteSectionLayout(from: items)
+            }
+        }
+        return layout
+    }
+    
+    func makePikmiRouteLayout(sections: [PikmiRouteSectionModel]) -> UICollectionViewCompositionalLayout {
+        let layout = UICollectionViewCompositionalLayout { [weak self] sectionIndex, _ in
+            switch sections[sectionIndex].model {
+            case let .pikmiRoute(items):
+                return self?.makePikmiRouteSectionLayout(from: items)
+            }
+        }
+        return layout
+    }
+    
+    func makeRouteSectionLayout(from sectionItems: [RouteItem]) -> NSCollectionLayoutSection? {
+        if sectionItems.isEmpty {
+            return nil
+        }
+        
+        var items: [NSCollectionLayoutItem] = []
+        
+        sectionItems.forEach({ sectionItem in
+            switch sectionItem {
+            case .route:
+                let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .absolute(100), heightDimension: .estimated(200)))
+                
+                items.append(item)
+            }
+        })
+        
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(300)), subitems: items)
+        
+        let section = NSCollectionLayoutSection(group: group)
+        
+        return section
+    }
+    
+    func makePikmiRouteSectionLayout(from sectionItems: [PikmiRouteItem]) -> NSCollectionLayoutSection? {
+        if sectionItems.isEmpty {
+            return nil
+        }
+        
+        var items: [NSCollectionLayoutItem] = []
+        
+        sectionItems.forEach({ sectionItem in
+            switch sectionItem {
+            case .pikmiRoute:
+                let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(72)))
+                
+                items.append(item)
+            }
+        })
+        
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(700)), subitems: items)
+        
+        let section = NSCollectionLayoutSection(group: group)
+        
+        return section
     }
 }

@@ -14,8 +14,10 @@ class PlannerRouteReactor: Reactor {
         case refresh
     }
     enum Mutation {
-        case setSections([PlannerRouteSectionModel])
-        case updateSectionItem(IndexPath, PlannerRouteSectionModel.Item)
+        case setPikmiRouteSections([PikmiRouteSectionModel])
+        case setRouteSections([RouteSectionModel])
+        case updatePikmiRouteSectionItem(IndexPath, PikmiRouteSectionModel.Item)
+        case updateRouteSectionItem(IndexPath, RouteSectionModel.Item)
     }
     
     struct State {
@@ -23,7 +25,8 @@ class PlannerRouteReactor: Reactor {
         let date: Date
         let pikmis: [Pik]
         
-        var sections: [PlannerRouteSectionModel] = []
+        var routeSections: [RouteSectionModel] = []
+        var pikmiRouteSections: [PikmiRouteSectionModel] = []
     }
     
     let provider = ServiceProvider.shared
@@ -38,7 +41,10 @@ extension PlannerRouteReactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .refresh:
-            return .just(.setSections(makeSections(pikmis: currentState.pikmis)))
+            return .concat([
+                .just(.setRouteSections(makeSections())),
+                .just(.setPikmiRouteSections(makeSections(pikmis: currentState.pikmis)))
+            ])
         }
     }
     
@@ -46,25 +52,30 @@ extension PlannerRouteReactor {
         var newState = state
         
         switch mutation {
-        case let .setSections(sections):
-            newState.sections = sections
-        case let .updateSectionItem(indexPath, item):
-            newState.sections[indexPath.section].items[indexPath.row] = item
+        case let .setPikmiRouteSections(sections):
+            newState.pikmiRouteSections = sections
+        case let .setRouteSections(sections):
+            newState.routeSections = sections
+        case let .updatePikmiRouteSectionItem(indexPath, item):
+            newState.pikmiRouteSections[indexPath.section].items[indexPath.row] = item
+        case let .updateRouteSectionItem(indexPath, item):
+            newState.routeSections[indexPath.section].items[indexPath.row] = item
         }
         
         return newState
     }
     
-    private func makeSections(pikmis: [Pik]) -> [PlannerRouteSectionModel] {
-        print("[D] \(pikmis)")
-        let routeSection = PlannerRouteSectionModel(model: .route([]), items: [])
-        
-        let pikmiRouteItems = pikmis.enumerated().map({ (index, pik) -> PlannerRouteItem in
+    private func makeSections() -> [RouteSectionModel] {
+        return [RouteSectionModel.init(model: .route([]), items: [])]
+    }
+    
+    private func makeSections(pikmis: [Pik]) -> [PikmiRouteSectionModel] {
+        let pikmiRouteItems = pikmis.enumerated().map({ (index, pik) -> PikmiRouteItem in
             return .pikmiRoute(.init(state: .init(pik: pik, rank: index)))
         })
         
-        let pikmiRouteSection = PlannerRouteSectionModel(model: .pikmiRoute(pikmiRouteItems), items: pikmiRouteItems)
+        let pikmiRouteSection = PikmiRouteSectionModel(model: .pikmiRoute(pikmiRouteItems), items: pikmiRouteItems)
         
-        return [routeSection, pikmiRouteSection]
+        return [pikmiRouteSection]
     }
 }
