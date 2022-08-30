@@ -36,7 +36,7 @@ class PikiCollectionViewCell: BaseCollectionViewCell, View {
         
         backgroundColor = .clear
         
-        divider.backgroundColor = JYPIOSAsset.tagGrey200.color
+        divider.backgroundColor = UIColor(hex: 0xE8E8E8)
         
         pikiView.backgroundColor = JYPIOSAsset.backgroundWhite100.color
         pikiView.cornerRound(radius: 12)

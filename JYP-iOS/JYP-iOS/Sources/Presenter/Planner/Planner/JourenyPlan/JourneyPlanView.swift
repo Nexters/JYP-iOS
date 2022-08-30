@@ -45,8 +45,20 @@ class JourneyPlanView: BaseView, View {
             cell.reactor = reactor
             return cell
         }
+    } configureSupplementaryView: { dataSource, collectionView, _, indexPath -> UICollectionReusableView in
+        switch dataSource[indexPath.section].model {
+        case let .journey(items):
+            if items.count > 1 {
+                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: PikiCollectionReusableView.self), for: indexPath) as? PikiCollectionReusableView else { return .init() }
+                
+                return header
+            }
+            return .init()
+        case .day:
+            return .init()
+        }
     }
-    
+
     // MARK: - Initializer
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
@@ -68,6 +80,7 @@ class JourneyPlanView: BaseView, View {
         collectionView.register(DayTagColectionViewCell.self, forCellWithReuseIdentifier: String(describing: DayTagColectionViewCell.self))
         collectionView.register(EmptyPikiCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: EmptyPikiCollectionViewCell.self))
         collectionView.register(PikiCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: PikiCollectionViewCell.self))
+        collectionView.register(PikiCollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: PikiCollectionReusableView.self))
     }
     
     override func setupHierarchy() {
@@ -156,8 +169,15 @@ extension JourneyPlanView {
         })
           
         let group = NSCollectionLayoutGroup.vertical(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(300)), subitems: items)
+        
         let section = NSCollectionLayoutSection(group: group)
-        section.contentInsets = .init(top: 0, leading: 20, bottom: 12, trailing: 20)
+        section.contentInsets = .init(top: 10, leading: 20, bottom: 12, trailing: 20)
+        
+        if sectionItems.count > 1 {
+            let header = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(50)), elementKind: UICollectionView.elementKindSectionHeader, alignment: .top)
+            
+            section.boundarySupplementaryItems = [header]
+        }
         
         return section
     }

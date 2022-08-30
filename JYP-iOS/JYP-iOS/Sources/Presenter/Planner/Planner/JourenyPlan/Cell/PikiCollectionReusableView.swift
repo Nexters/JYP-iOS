@@ -1,32 +1,14 @@
 //
-//  EmptyPikiCollectionViewCell.swift
+//  PikiCollectionReusableView.swift
 //  JYP-iOS
 //
-//  Created by 송영모 on 2022/08/23.
+//  Created by 송영모 on 2022/08/30.
 //  Copyright © 2022 JYP-iOS. All rights reserved.
 //
 
 import UIKit
-import ReactorKit
 
-class EmptyPikiCollectionViewCellReactor: Reactor {
-    enum Action { }
-    enum Mutation { }
-    
-    struct State {
-        let order: Int
-        let date: Date
-    }
-
-    var initialState: State
-    
-    init(state: State) {
-        initialState = state
-    }
-}
-
-class EmptyPikiCollectionViewCell: BaseCollectionViewCell, View {
-    typealias Reactor = EmptyPikiCollectionViewCellReactor
+class PikiCollectionReusableView: BaseCollectionReusableView {
     
     // MARK: - UI Components
     
@@ -39,17 +21,15 @@ class EmptyPikiCollectionViewCell: BaseCollectionViewCell, View {
     override func setupProperty() {
         super.setupProperty()
         
-        makeBorder(color: .black.withAlphaComponent(0.1), width: 1)
-
-        cornerRound(radius: 12)
-        
         titleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 16)
         titleLabel.textColor = JYPIOSAsset.textB80.color
+        titleLabel.text = "Day 1"
         
         subLabel.font = JYPIOSFontFamily.Pretendard.medium.font(size: 16)
         subLabel.textColor = JYPIOSAsset.textB40.color
+        subLabel.text = "7월 18일"
         
-        trailingButton.setImage(JYPIOSAsset.iconAdd.image, for: .normal)
+        trailingButton.setImage(JYPIOSAsset.iconModify.image, for: .normal)
     }
     
     override func setupHierarchy() {
@@ -62,24 +42,19 @@ class EmptyPikiCollectionViewCell: BaseCollectionViewCell, View {
         super.setupLayout()
         
         titleLabel.snp.makeConstraints {
-            $0.leading.equalToSuperview().inset(20)
+            $0.leading.equalToSuperview().inset(4)
             $0.centerY.equalToSuperview()
         }
         
         subLabel.snp.makeConstraints {
-            $0.leading.equalTo(titleLabel.snp.trailing).offset(12)
+            $0.leading.equalTo(titleLabel.snp.trailing).offset(14)
             $0.centerY.equalToSuperview()
         }
         
         trailingButton.snp.makeConstraints {
-            $0.trailing.equalToSuperview().inset(20)
+            $0.trailing.equalToSuperview().inset(4)
             $0.centerY.equalToSuperview()
             $0.width.height.equalTo(24)
         }
-    }
-    
-    func bind(reactor: Reactor) {
-        titleLabel.text = "Day \(reactor.currentState.order + 1)"
-        subLabel.text = DateManager.dateToString(format: "M월 d일", date: reactor.currentState.date)
     }
 }

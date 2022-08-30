@@ -38,7 +38,6 @@ extension JourneyPlanReactor {
         switch action {
         case let .tapEmptyPikiPlusButton(indexPath):
             guard case let .emptyPiki(reactor) = state.sections[indexPath.section].items[indexPath.row] else { return .empty() }
-            print("[D] 엠티뷰 버튼 클릭")
             provider.event.onNext(.presentPlannerRoute(makeReactor(from: reactor)))
             return .empty()
         }
