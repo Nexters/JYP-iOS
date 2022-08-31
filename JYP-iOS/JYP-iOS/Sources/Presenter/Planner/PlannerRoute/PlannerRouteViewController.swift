@@ -185,13 +185,16 @@ extension PlannerRouteViewController {
             case .pikmiRoute:
                 let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(72)))
                 
+                item.edgeSpacing = .init(leading: .none, top: .none, trailing: .none, bottom: .fixed(12))
+                
                 items.append(item)
             }
         })
         
-        let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(700)), subitems: items)
+        let group = NSCollectionLayoutGroup.vertical(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1)), subitems: items)
         
         let section = NSCollectionLayoutSection(group: group)
+        section.contentInsets = .init(top: 0, leading: 24, bottom: 0, trailing: 24)
         
         return section
     }

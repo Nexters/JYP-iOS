@@ -24,6 +24,10 @@ class PikmiRouteCollectionViewCell: BaseCollectionViewCell, View {
     override func setupProperty() {
         super.setupProperty()
         
+        contentView.cornerRound(radius: 10)
+        contentView.backgroundColor = .white
+        contentView.setShadow(radius: 40, offset: .init(width: 4, height: 10), opacity: 0.06)
+        
         titleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 17)
         titleLabel.textColor = JYPIOSAsset.textB80.color
         
