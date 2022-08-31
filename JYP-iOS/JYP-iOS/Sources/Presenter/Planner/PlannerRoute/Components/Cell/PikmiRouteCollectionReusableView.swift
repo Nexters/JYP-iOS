@@ -44,6 +44,7 @@ class PikmiRouteCollectionReusableView: BaseCollectionReusableView {
         trailingButton.snp.makeConstraints {
             $0.trailing.equalToSuperview()
             $0.centerY.equalToSuperview()
+            $0.width.height.equalTo(24)
         }
     }
 }

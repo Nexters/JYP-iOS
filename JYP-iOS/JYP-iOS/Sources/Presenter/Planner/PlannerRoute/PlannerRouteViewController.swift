@@ -21,6 +21,16 @@ class PlannerRouteViewController: NavigationBarViewController, View {
     
     // MARK: - Properties
     
+    private lazy var routeDataSource = RxCollectionViewSectionedReloadDataSource<RouteSectionModel> { [weak self] _, collectionView, indexPath, item -> UICollectionViewCell in
+        switch item {
+        case let .route(reactor):
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: RouteCollectionViewCell.self), for: indexPath) as? RouteCollectionViewCell else { return .init() }
+            
+            cell.reactor = reactor
+            return cell
+        }
+    }
+    
     private lazy var pikmiRouteDataSource = RxCollectionViewSectionedReloadDataSource<PikmiRouteSectionModel> { [weak self] _, collectionView, indexPath, item -> UICollectionViewCell in
         switch item {
         case let .pikmiRoute(reactor):
@@ -29,15 +39,12 @@ class PlannerRouteViewController: NavigationBarViewController, View {
             cell.reactor = reactor
             return cell
         }
-    }
-    
-    private lazy var routeDataSource = RxCollectionViewSectionedReloadDataSource<RouteSectionModel> { [weak self] _, collectionView, indexPath, item -> UICollectionViewCell in
-        switch item {
-        case let .route(reactor):
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: RouteCollectionViewCell.self), for: indexPath) as? RouteCollectionViewCell else { return .init() }
+    } configureSupplementaryView: { dataSource, collectionView, _, indexPath in
+        switch dataSource[indexPath.section].model {
+        case .pikmiRoute:
+            guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: PikmiRouteCollectionReusableView.self), for: indexPath) as? PikmiRouteCollectionReusableView else { return .init() }
             
-            cell.reactor = reactor
-            return cell
+            return header
         }
     }
     
@@ -71,6 +78,7 @@ class PlannerRouteViewController: NavigationBarViewController, View {
         pikmiRouteCollectionView.backgroundColor = .clear
         pikmiRouteCollectionView.register(PikmiRouteCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: PikmiRouteCollectionViewCell.self))
         pikmiRouteCollectionView.register(RouteCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: RouteCollectionViewCell.self))
+        pikmiRouteCollectionView.register(PikmiRouteCollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: PikmiRouteCollectionReusableView.self))
     }
     
     override func setupHierarchy() {
@@ -193,8 +201,14 @@ extension PlannerRouteViewController {
         
         let group = NSCollectionLayoutGroup.vertical(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .fractionalHeight(1)), subitems: items)
         
+        let header = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .absolute(40)), elementKind: UICollectionView.elementKindSectionHeader, alignment: .top)
+        
+        header.contentInsets = .init(top: -28, leading: 0, bottom: 0, trailing: 0)
+        
         let section = NSCollectionLayoutSection(group: group)
+        
         section.contentInsets = .init(top: 0, leading: 24, bottom: 0, trailing: 24)
+        section.boundarySupplementaryItems = [header]
         
         return section
     }
