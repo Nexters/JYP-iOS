@@ -74,6 +74,7 @@ class PlannerRouteViewController: NavigationBarViewController, View {
         super.setupProperty()
         
         routeCollectionView.backgroundColor = JYPIOSAsset.backgroundWhite200.color
+        routeCollectionView.register(RouteCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: RouteCollectionViewCell.self))
         
         pikmiRouteCollectionView.backgroundColor = .clear
         pikmiRouteCollectionView.register(PikmiRouteCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: PikmiRouteCollectionViewCell.self))
@@ -107,9 +108,9 @@ class PlannerRouteViewController: NavigationBarViewController, View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
-        reactor.state
-            .map(\.routeSections)
-            .bind(to: routeCollectionView.rx.items(dataSource: routeDataSource))
+        pikmiRouteCollectionView.rx.itemSelected
+            .map { .tapPikmiRouteCell($0) }
+            .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
         reactor.state
@@ -119,6 +120,11 @@ class PlannerRouteViewController: NavigationBarViewController, View {
                 let layout = this.makeRouteLayout(sections: sections)
                 this.routeCollectionView.collectionViewLayout = layout
             }
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .map(\.routeSections)
+            .bind(to: routeCollectionView.rx.items(dataSource: routeDataSource))
             .disposed(by: disposeBag)
         
         reactor.state
@@ -168,15 +174,19 @@ extension PlannerRouteViewController {
         sectionItems.forEach({ sectionItem in
             switch sectionItem {
             case .route:
-                let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .absolute(100), heightDimension: .estimated(200)))
+                let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .absolute(136), heightDimension: .absolute(78)))
                 
+                item.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 16)
                 items.append(item)
             }
         })
         
-        let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(300)), subitems: items)
+        let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .estimated(300), heightDimension: .estimated(300)), subitems: items)
         
         let section = NSCollectionLayoutSection(group: group)
+        
+        section.orthogonalScrollingBehavior = .continuousGroupLeadingBoundary
+        section.contentInsets = .init(top: 31, leading: 24, bottom: 31, trailing: 24)
         
         return section
     }

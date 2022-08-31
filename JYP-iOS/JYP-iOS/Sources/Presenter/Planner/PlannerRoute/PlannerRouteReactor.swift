@@ -12,12 +12,14 @@ import ReactorKit
 class PlannerRouteReactor: Reactor {
     enum Action {
         case refresh
+        case tapPikmiRouteCell(IndexPath)
     }
     enum Mutation {
         case setPikmiRouteSections([PikmiRouteSectionModel])
         case setRouteSections([RouteSectionModel])
         case updatePikmiRouteSectionItem(IndexPath, PikmiRouteSectionModel.Item)
         case updateRouteSectionItem(IndexPath, RouteSectionModel.Item)
+        case appendRouteSectionItem(IndexPath, RouteSectionModel.Item)
     }
     
     struct State {
@@ -45,6 +47,11 @@ extension PlannerRouteReactor {
                 .just(.setRouteSections(makeSections())),
                 .just(.setPikmiRouteSections(makeSections(pikmis: currentState.pikmis)))
             ])
+        case let .tapPikmiRouteCell(indexPath):
+            guard case let .pikmiRoute(reactor) = currentState.pikmiRouteSections[indexPath.section].items[indexPath.row] else { return .empty() }
+            let item = RouteSectionModel.Item.route(.init(state: .init(pik: reactor.currentState.pik)))
+            
+            return .just(.appendRouteSectionItem(indexPath, item))
         }
     }
     
@@ -60,13 +67,15 @@ extension PlannerRouteReactor {
             newState.pikmiRouteSections[indexPath.section].items[indexPath.row] = item
         case let .updateRouteSectionItem(indexPath, item):
             newState.routeSections[indexPath.section].items[indexPath.row] = item
+        case let .appendRouteSectionItem(indexPath, item):
+            newState.routeSections[indexPath.section].items.append(item)
         }
         
         return newState
     }
     
     private func makeSections() -> [RouteSectionModel] {
-        return [RouteSectionModel.init(model: .route([]), items: [])]
+        return [RouteSectionModel.init(model: .route([RouteItem.route(.init(state: .init(pik: nil)))]), items: [])]
     }
     
     private func makeSections(pikmis: [Pik]) -> [PikmiRouteSectionModel] {

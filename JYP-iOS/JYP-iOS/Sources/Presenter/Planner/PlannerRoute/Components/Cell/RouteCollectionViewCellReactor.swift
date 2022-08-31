@@ -11,7 +11,9 @@ import ReactorKit
 class RouteCollectionViewCellReactor: Reactor {
     enum Action { }
     enum Mutation { }
-    struct State { }
+    struct State {
+        let pik: Pik?
+    }
     
     var initialState: State
     
