@@ -11,12 +11,13 @@ import RxSwift
 
 enum PlannerEvent {
     case fetchJourney(Journey)
-    case present
+    case presentPlannerRoute(PlannerRouteReactor)
 }
 
 protocol PlannerServiceProtocol {
     var event: PublishSubject<PlannerEvent> { get }
-
+    var journey: Journey? { get }
+    
     func updateJourney(to journey: Journey)
     
     func makeSections(from journey: Journey) -> [DiscussionSectionModel]
@@ -62,7 +63,7 @@ class PlannerService: PlannerServiceProtocol {
             var journeyPlanItems: [JourneyPlanItem] = []
             
             if pikis.isEmpty {
-                let sectionItem = JourneyPlanItem.emptyPiki(EmptyPikiCollectionViewCellReactor(state: .init(order: index, date: 0)))
+                let sectionItem = JourneyPlanItem.emptyPiki(EmptyPikiCollectionViewCellReactor(state: .init(order: index, date: Date())))
                 
                 journeyPlanItems.append(sectionItem)
             } else {

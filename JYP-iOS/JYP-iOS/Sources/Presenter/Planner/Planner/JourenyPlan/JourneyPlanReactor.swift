@@ -10,7 +10,9 @@ import UIKit
 import ReactorKit
 
 class JourneyPlanReactor: Reactor {
-    enum Action {}
+    enum Action {
+        case tapEmptyPikiPlusButton(IndexPath)
+    }
     
     enum Mutation {
         case setSections([JourneyPlanSectionModel])
@@ -21,18 +23,31 @@ class JourneyPlanReactor: Reactor {
         var sections: [JourneyPlanSectionModel]
     }
     
-    let plannerService = ServiceProvider.shared.plannerService
+    let provider = ServiceProvider.shared.plannerService
     var initialState: State
     
     init() {
         initialState = .init(sections: [])
     }
+}
+
+extension JourneyPlanReactor {
+    func mutate(action: Action) -> Observable<Mutation> {
+        let state = self.currentState
+        
+        switch action {
+        case let .tapEmptyPikiPlusButton(indexPath):
+            guard case let .emptyPiki(reactor) = state.sections[indexPath.section].items[indexPath.row] else { return .empty() }
+            provider.event.onNext(.presentPlannerRoute(makeReactor(from: reactor)))
+            return .empty()
+        }
+    }
     
     func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
-        let eventMutation = plannerService.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
+        let eventMutation = provider.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
             switch event {
             case let .fetchJourney(journey):
-                return Observable.just(Mutation.setSections(this.plannerService.makeSections(from: journey)))
+                return Observable.just(Mutation.setSections(this.provider.makeSections(from: journey)))
             default:
                 return .empty()
             }
@@ -52,5 +67,9 @@ class JourneyPlanReactor: Reactor {
         }
         
         return newState
-    }   
+    }
+    
+    private func makeReactor(from reactor: EmptyPikiCollectionViewCellReactor) -> PlannerRouteReactor {
+        return .init(state: .init(order: reactor.currentState.order, date: reactor.currentState.date, pikmis: provider.journey?.pikmis ?? []))
+    }
 }

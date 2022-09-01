@@ -16,14 +16,10 @@ class PlannerViewController: NavigationBarViewController, View {
     
     let dateLabel: UILabel = .init()
     let inviteButton: UIButton = .init()
-    
     let headerView: UIView = .init()
-    
     let discussionButton: JYPBottomBorderButton = .init(title: "토론장")
     let journeyPlanButton: JYPBottomBorderButton = .init(title: "여행 계획")
-    
     let menuDivider: UIView = .init()
-    
     lazy var discussionView: DiscussionView = .init(reactor: DiscussionReactor())
     lazy var journeyPlanView: JourneyPlanView = .init(reactor: JourneyPlanReactor())
     
@@ -162,6 +158,18 @@ class PlannerViewController: NavigationBarViewController, View {
             .bind { this, bool in
                 this.journeyPlanButton.isSelected = bool
                 this.journeyPlanView.isHidden = !bool
+            }
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .map(\.plannerRouteReactor)
+            .withUnretained(self)
+            .bind { this, reactor in
+                guard let reactor = reactor else { return }
+                
+                let plannerRouteViewController = PlannerRouteViewController(reactor: reactor)
+                
+                this.navigationController?.pushViewController(plannerRouteViewController, animated: true)
             }
             .disposed(by: disposeBag)
     }

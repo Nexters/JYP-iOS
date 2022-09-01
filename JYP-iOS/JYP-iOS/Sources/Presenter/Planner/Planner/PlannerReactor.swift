@@ -20,12 +20,14 @@ class PlannerReactor: Reactor {
         case fetchJourney
         case showDiscussion
         case showJourneyPlan
+        case updatePlannerRouteReactor(PlannerRouteReactor?)
     }
     
     struct State {
         var pik: Pik?
         var isShowDiscussion: Bool = true
         var isShowJourneyPlan: Bool = false
+        var plannerRouteReactor: PlannerRouteReactor?
     }
     
     let provider = ServiceProvider.shared
@@ -51,6 +53,21 @@ class PlannerReactor: Reactor {
         }
     }
     
+    func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
+        let eventMutation = provider.plannerService.event.flatMap { (event) -> Observable<Mutation> in
+            switch event {
+            case .fetchJourney: return .empty()
+            case let .presentPlannerRoute(reactor):
+                return .concat([
+                    .just(.updatePlannerRouteReactor(reactor)),
+                    .just(.updatePlannerRouteReactor(nil))
+                ])
+            }
+        }
+        
+        return Observable.merge(mutation, eventMutation)
+    }
+    
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
         
@@ -63,6 +80,8 @@ class PlannerReactor: Reactor {
         case .showJourneyPlan:
             newState.isShowDiscussion = false
             newState.isShowJourneyPlan = true
+        case let .updatePlannerRouteReactor(reactor):
+            newState.plannerRouteReactor = reactor
         }
         
         return newState
