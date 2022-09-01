@@ -23,7 +23,7 @@ class JourneyPlanReactor: Reactor {
         var sections: [JourneyPlanSectionModel]
     }
     
-    let provider = ServiceProvider.shared.plannerService
+    let provider = ServiceProvider.shared
     var initialState: State
     
     init() {
@@ -38,16 +38,16 @@ extension JourneyPlanReactor {
         switch action {
         case let .tapEmptyPikiPlusButton(indexPath):
             guard case let .emptyPiki(reactor) = state.sections[indexPath.section].items[indexPath.row] else { return .empty() }
-            provider.event.onNext(.presentPlannerRoute(makeReactor(from: reactor)))
+            provider.plannerService.event.onNext(.presentPlannerRoute(makeReactor(from: reactor)))
             return .empty()
         }
     }
     
     func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
-        let eventMutation = provider.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
+        let eventMutation = provider.plannerService.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
             switch event {
             case let .fetchJourney(journey):
-                return Observable.just(Mutation.setSections(this.provider.makeSections(from: journey)))
+                return Observable.just(Mutation.setSections(this.provider.plannerService.makeSections(from: journey)))
             default:
                 return .empty()
             }
@@ -70,6 +70,6 @@ extension JourneyPlanReactor {
     }
     
     private func makeReactor(from reactor: EmptyPikiCollectionViewCellReactor) -> PlannerRouteReactor {
-        return .init(state: .init(order: reactor.currentState.order, date: reactor.currentState.date, pikmis: provider.journey?.pikmis ?? []))
+        return .init(state: .init(order: reactor.currentState.order, date: reactor.currentState.date, pikmis: provider.plannerService.journey?.pikmis ?? []))
     }
 }
