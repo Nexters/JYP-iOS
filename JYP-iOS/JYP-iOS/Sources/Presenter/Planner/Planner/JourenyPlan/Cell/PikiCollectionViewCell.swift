@@ -12,9 +12,15 @@ import ReactorKit
 class PikiCollectionViewCellReactor: Reactor {
     typealias Action = NoAction
     
-    var initialState: Pik
+    struct State {
+        var order: Int
+        var date: Date
+        var pik: Pik
+    }
     
-    init(state: Pik) {
+    var initialState: State
+    
+    init(state: State) {
         initialState = state
     }
 }
@@ -114,9 +120,9 @@ class PikiCollectionViewCell: BaseCollectionViewCell, View {
     }
     
     func bind(reactor: Reactor) {
-        titleLabel.text = reactor.currentState.name
-        subLabel.text = reactor.currentState.address
-        categoryImageView.image = reactor.currentState.category.image
-        categoryLabel.text = reactor.currentState.category.title
+        titleLabel.text = reactor.currentState.pik.name
+        subLabel.text = reactor.currentState.pik.address
+        categoryImageView.image = reactor.currentState.pik.category.image
+        categoryLabel.text = reactor.currentState.pik.category.title
     }
 }

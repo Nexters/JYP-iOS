@@ -45,15 +45,20 @@ class JourneyPlanView: BaseView, View {
             cell.reactor = reactor
             return cell
         }
-    } configureSupplementaryView: { dataSource, collectionView, _, indexPath -> UICollectionReusableView in
+    } configureSupplementaryView: { [weak self] dataSource, collectionView, _, indexPath -> UICollectionReusableView in
+        guard let reactor = self?.reactor else { return .init() }
         switch dataSource[indexPath.section].model {
         case let .journey(items):
-            if items.count > 1 {
-                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: PikiCollectionReusableView.self), for: indexPath) as? PikiCollectionReusableView else { return .init() }
-                
-                return header
-            }
-            return .init()
+            guard case let .piki(cellReactor) = items.first else { return .init() }
+            guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: PikiCollectionReusableView.self), for: indexPath) as? PikiCollectionReusableView else { return .init() }
+
+            header.reactor = PikiCollectionReusableViewReactor(state: .init(order: cellReactor.currentState.order, date: cellReactor.currentState.date))
+            
+            header.trailingButton.rx.tap
+                .map { .tapPikiHeaderEditButton(indexPath) }
+                .bind(to: reactor.action)
+                .disposed(by: header.disposeBag)
+            return header
         case .day:
             return .init()
         }

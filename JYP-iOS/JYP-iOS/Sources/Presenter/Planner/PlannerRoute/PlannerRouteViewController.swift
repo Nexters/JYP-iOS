@@ -129,6 +129,22 @@ class PlannerRouteViewController: NavigationBarViewController, View {
             .disposed(by: disposeBag)
         
         reactor.state
+            .map(\.order)
+            .withUnretained(self)
+            .bind { this, order in
+                this.setNavigationBarTitleText("DAY \(order + 1)")
+            }
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .map(\.date)
+            .withUnretained(self)
+            .bind { this, date in
+                this.setNavigationBarSubTitleText(DateManager.dateToString(format: "M월 d일", date: date))
+            }
+            .disposed(by: disposeBag)
+        
+        reactor.state
             .map(\.routeSections)
             .withUnretained(self)
             .bind { this, sections in

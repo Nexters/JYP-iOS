@@ -24,4 +24,8 @@ struct DateManager {
 
         return Self.dataFormatter.date(from: date) ?? Date()
     }
+    
+    static func addDateComponent(byAdding: Calendar.Component, value: Int, to: Date) -> Date {
+        return Calendar.current.date(byAdding: byAdding, value: value, to: to) ?? to
+    }
 }

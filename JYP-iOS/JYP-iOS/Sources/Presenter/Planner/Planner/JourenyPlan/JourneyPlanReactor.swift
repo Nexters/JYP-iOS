@@ -11,6 +11,7 @@ import ReactorKit
 
 class JourneyPlanReactor: Reactor {
     enum Action {
+        case tapPikiHeaderEditButton(IndexPath)
         case tapEmptyPikiPlusButton(IndexPath)
     }
     
@@ -33,12 +34,16 @@ class JourneyPlanReactor: Reactor {
 
 extension JourneyPlanReactor {
     func mutate(action: Action) -> Observable<Mutation> {
-        let state = self.currentState
-        
         switch action {
+        case let .tapPikiHeaderEditButton(indexPath):
+            if let reactor = makeReactor(from: indexPath) {
+                provider.plannerService.event.onNext(.presentPlannerRoute(reactor))
+            }
+            return .empty()
         case let .tapEmptyPikiPlusButton(indexPath):
-            guard case let .emptyPiki(reactor) = state.sections[indexPath.section].items[indexPath.row] else { return .empty() }
-            provider.plannerService.event.onNext(.presentPlannerRoute(makeReactor(from: reactor)))
+            if let reactor = makeReactor(from: indexPath) {
+                provider.plannerService.event.onNext(.presentPlannerRoute(reactor))
+            }
             return .empty()
         }
     }
@@ -68,8 +73,16 @@ extension JourneyPlanReactor {
         
         return newState
     }
-    
-    private func makeReactor(from reactor: EmptyPikiCollectionViewCellReactor) -> PlannerRouteReactor {
-        return .init(state: .init(order: reactor.currentState.order, date: reactor.currentState.date, pikmis: provider.plannerService.journey?.pikmis ?? []))
+
+    private func makeReactor(from indexPath: IndexPath) -> PlannerRouteReactor? {
+        guard let journey = provider.plannerService.journey else { return nil }
+        
+        let order: Int = indexPath.section - 1
+        let date: Date = Date(timeIntervalSince1970: journey.startDate)
+        let addedDate: Date = DateManager.addDateComponent(byAdding: .day, value: order, to: date)
+        let pikis: [Pik] = journey.pikis?[indexPath.section] ?? []
+        let pikmis: [Pik] = journey.pikmis ?? []
+        
+        return .init(state: .init(order: order, date: addedDate, pikis: pikis, pikmis: pikmis))
     }
 }

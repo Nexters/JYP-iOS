@@ -27,6 +27,7 @@ class PlannerRouteReactor: Reactor {
     struct State {
         let order: Int
         let date: Date
+        let pikis: [Pik]
         let pikmis: [Pik]
         
         var routeSections: [RouteSectionModel] = []
@@ -46,7 +47,7 @@ extension PlannerRouteReactor {
         switch action {
         case .refresh:
             return .concat([
-                .just(.setRouteSections(makeSections())),
+                .just(.setRouteSections(makeSections(pikis: currentState.pikis))),
                 .just(.setPikmiRouteSections(makeSections(pikmis: currentState.pikmis)))
             ])
         case let .tapRouteCell(indexPath):
@@ -80,8 +81,16 @@ extension PlannerRouteReactor {
         return newState
     }
     
-    private func makeSections() -> [RouteSectionModel] {
-        return [RouteSectionModel.init(model: .route([RouteItem.route(.init(state: .init(pik: nil)))]), items: [])]
+    private func makeSections(pikis: [Pik]) -> [RouteSectionModel] {
+        if pikis.isEmpty {
+            return [RouteSectionModel.init(model: .route([RouteItem.route(.init(state: .init(pik: Pik(id: "", name: "", address: "", category: .etc, likeBy: nil, longitude: 0.0, latitude: 0.0, link: ""))))]), items: [])]
+        }
+        
+        let routeItems = pikis.map({ (pik) -> RouteItem in
+            return .route(.init(state: .init(pik: pik)))
+        })
+        
+        return [RouteSectionModel.init(model: .route(routeItems), items: routeItems)]
     }
     
     private func makeSections(pikmis: [Pik]) -> [PikmiRouteSectionModel] {
