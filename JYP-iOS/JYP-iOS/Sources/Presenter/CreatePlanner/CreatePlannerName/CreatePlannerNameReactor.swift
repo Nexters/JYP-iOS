@@ -9,6 +9,8 @@
 import ReactorKit
 
 final class CreatePlannerNameReactor: Reactor {
+    private static let MAX_NAME_LENGTH = 10
+
     // MARK: - Sub Types
 
     enum PlannerNameTextFieldInputState {
@@ -30,10 +32,11 @@ final class CreatePlannerNameReactor: Reactor {
 
     enum Mutation {
         case changeValidation(PlannerNameTextFieldInputState)
+        case presentCoverImageBottomSheet
     }
 
     struct State {
-        var valid: PlannerNameTextFieldInputState = .invalid
+        var validation: PlannerNameTextFieldInputState = .invalid
         var guideText: String = PlannerNameTextFieldInputState.valid.guideText
     }
 
@@ -45,8 +48,11 @@ final class CreatePlannerNameReactor: Reactor {
         switch action {
         case .didTapNextButton:
             return .empty()
-        case let .inputTextField(string):
-            return .empty()
+        case let .inputTextField(text):
+            let isValid = (text.count <= Self.MAX_NAME_LENGTH) && !text.isEmpty
+
+            let mutation: Observable<Mutation> = isValid ? .just(.changeValidation(.valid)) : .just(.changeValidation(.invalid))
+            return mutation
         }
     }
 
@@ -57,7 +63,10 @@ final class CreatePlannerNameReactor: Reactor {
 
         switch mutation {
         case let .changeValidation(validation):
-            newState.valid = validation
+            newState.validation = validation
+            newState.guideText = validation.guideText
+        case .presentCoverImageBottomSheet:
+            newState.guideText = " "
         }
 
         return newState

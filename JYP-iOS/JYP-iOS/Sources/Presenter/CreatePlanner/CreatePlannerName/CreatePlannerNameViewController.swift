@@ -18,6 +18,7 @@ class CreatePlannerNameViewController: NavigationBarViewController, View {
     private let subTitleLabel: UILabel = .init()
     private let textField: JYPSearchTextField = .init(type: .planner)
 
+    private let guideLabel: UILabel = .init()
     private let nextButton: JYPButton = .init(type: .next)
 
     // MARK: - Initializer
@@ -69,12 +70,16 @@ class CreatePlannerNameViewController: NavigationBarViewController, View {
 
         textField.textField.leftView = UIView()
         textField.setupToolBar()
+
+        guideLabel.font = JYPIOSFontFamily.Pretendard.regular.font(size: 12)
+        guideLabel.textColor = JYPIOSAsset.mainPink.color
+        guideLabel.lineSpacing(lineHeight: 18)
     }
 
     override func setupHierarchy() {
         super.setupHierarchy()
 
-        contentView.addSubviews([titleLabel, subTitleLabel, textField, nextButton])
+        contentView.addSubviews([titleLabel, subTitleLabel, textField, guideLabel, nextButton])
     }
 
     override func setupLayout() {
@@ -97,6 +102,11 @@ class CreatePlannerNameViewController: NavigationBarViewController, View {
             make.height.equalTo(40)
         }
 
+        guideLabel.snp.makeConstraints { make in
+            make.bottom.equalTo(nextButton.snp.top).offset(-20)
+            make.centerX.equalTo(nextButton.snp.centerX)
+        }
+
         nextButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(24)
             make.bottom.equalToSuperview().inset(34)
@@ -111,6 +121,23 @@ class CreatePlannerNameViewController: NavigationBarViewController, View {
             .subscribe(onNext: { [weak self] in
                 self?.textField.textField.becomeFirstResponder()
             })
+            .disposed(by: disposeBag)
+
+        textField.textField.rx.text
+            .orEmpty
+            .distinctUntilChanged()
+            .map { Reactor.Action.inputTextField($0) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .map(\.guideText)
+            .bind(to: guideLabel.rx.text)
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .map { $0.validation == .valid }
+            .bind(to: nextButton.rx.isEnabled)
             .disposed(by: disposeBag)
     }
 
