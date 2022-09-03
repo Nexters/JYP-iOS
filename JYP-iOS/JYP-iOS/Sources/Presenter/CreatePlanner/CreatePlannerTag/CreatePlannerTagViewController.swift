@@ -78,7 +78,7 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
 
         setNavigationBarBackgroundColor(JYPIOSAsset.backgroundWhite100.color)
         setNavigationBarTitleText("여행 취향 태그")
-        setNavigationBarTitleTextColor(JYPIOSAsset.textB80.color)
+        setNavigationBarTitleTextColor(JYPIOSAsset.textB75.color)
         setNavigationBarTitleFont(JYPIOSFontFamily.Pretendard.medium.font(size: 16))
     }
 

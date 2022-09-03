@@ -137,6 +137,11 @@ class MyPlannerViewController: NavigationBarViewController, View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
+        addButton.rx.tap
+            .map { .didTapAddPlannerButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
         reactor.state
             .map { !$0.isSelectedSchduledJourneyView }
             .distinctUntilChanged()
@@ -159,6 +164,16 @@ class MyPlannerViewController: NavigationBarViewController, View {
             .map(\.isSelectedPastJourneyView)
             .distinctUntilChanged()
             .bind(to: pastJourneyButton.rx.isSelected)
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .map(\.isPushCreatePlannerView)
+            .distinctUntilChanged()
+            .filter { $0 }
+            .subscribe(onNext: { [weak self] _ in
+                let createPlannerViewController = CreatePlannerNameViewController(reactor: .init())
+                self?.navigationController?.pushViewController(createPlannerViewController, animated: true)
+            })
             .disposed(by: disposeBag)
     }
 }
