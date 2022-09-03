@@ -24,6 +24,8 @@ class CreatePlannerNameViewController: NavigationBarViewController, View {
     private let guideLabel: UILabel = .init()
     private let nextButton: JYPButton = .init(type: .next)
 
+    private let nameTagButtons: [PlannerNameTagButton] = PlannerNameTag.allCases.map { .init(name: $0) }
+
     // MARK: - Initializer
 
     init(reactor: Reactor) {
@@ -88,11 +90,9 @@ class CreatePlannerNameViewController: NavigationBarViewController, View {
         contentView.addSubviews([titleLabel, subTitleLabel, textField, nameTagContainerView, guideLabel, nextButton])
         nameTagContainerView.addSubview(nameTagStackView)
 
-        PlannerNameTag
-            .allCases
+        nameTagButtons
             .forEach {
-                nameTagStackView
-                    .addArrangedSubview(PlannerNameTagButton(name: $0))
+                nameTagStackView.addArrangedSubview($0)
             }
     }
 
@@ -155,6 +155,13 @@ class CreatePlannerNameViewController: NavigationBarViewController, View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
+        nameTagButtons.forEach { button in
+            button.rx.tap
+                .map { Reactor.Action.didTapNameTag(button.name) }
+                .bind(to: reactor.action)
+                .disposed(by: disposeBag)
+        }
+
         reactor.state
             .map(\.guideText)
             .bind(to: guideLabel.rx.text)
@@ -163,6 +170,12 @@ class CreatePlannerNameViewController: NavigationBarViewController, View {
         reactor.state
             .map { $0.validation == .valid }
             .bind(to: nextButton.rx.isEnabled)
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .map(\.textFieldText)
+            .distinctUntilChanged()
+            .bind(to: textField.textField.rx.text)
             .disposed(by: disposeBag)
     }
 
