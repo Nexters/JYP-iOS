@@ -16,6 +16,8 @@ class CreatePlannerNameViewController: NavigationBarViewController, View {
 
     private let titleLabel: UILabel = .init()
     private let subTitleLabel: UILabel = .init()
+    private let textField: JYPSearchTextField = .init(type: .planner)
+
     private let nextButton: JYPButton = .init(type: .next)
 
     // MARK: - Initializer
@@ -24,15 +26,20 @@ class CreatePlannerNameViewController: NavigationBarViewController, View {
         super.init(nibName: nil, bundle: nil)
         self.reactor = reactor
     }
-    
-    required init?(coder: NSCoder) {
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     // MARK: - Life Cycle Methods
 
     override func viewDidLoad() {
         super.viewDidLoad()
+    }
+
+    override func touchesEnded(_: Set<UITouch>, with _: UIEvent?) {
+        view.endEditing(true)
     }
 
     // MARK: - Setup Methods
@@ -48,19 +55,33 @@ class CreatePlannerNameViewController: NavigationBarViewController, View {
 
     override func setupProperty() {
         super.setupProperty()
+
+        titleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 24)
+        titleLabel.text = "여행기 제목은 무엇인가요?"
+        titleLabel.textColor = JYPIOSAsset.textB90.color
+
+        subTitleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 16)
+        subTitleLabel.textColor = JYPIOSAsset.textB40.color
+        let subTitle = "최대 10글자까지 입력할 수 있어요"
+        let attributedString = NSMutableAttributedString(string: subTitle)
+        attributedString.addAttribute(.foregroundColor, value: JYPIOSAsset.textB80.color, range: (subTitle as NSString).range(of: "최대 10글자"))
+        subTitleLabel.attributedText = attributedString
+
+        textField.textField.leftView = UIView()
+        textField.setupToolBar()
     }
 
     override func setupHierarchy() {
         super.setupHierarchy()
 
-        contentView.addSubviews([titleLabel, subTitleLabel, nextButton])
+        contentView.addSubviews([titleLabel, subTitleLabel, textField, nextButton])
     }
 
     override func setupLayout() {
         super.setupLayout()
 
         titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(navigationBar.snp.bottom).inset(4)
+            make.top.equalTo(navigationBar.snp.bottom).offset(4)
             make.leading.equalToSuperview().inset(24)
         }
 
@@ -69,15 +90,34 @@ class CreatePlannerNameViewController: NavigationBarViewController, View {
             make.leading.equalTo(titleLabel.snp.leading)
         }
 
+        textField.snp.makeConstraints { make in
+            make.top.equalTo(subTitleLabel.snp.bottom).offset(56)
+            make.centerX.equalToSuperview()
+            make.width.equalToSuperview().inset(24)
+            make.height.equalTo(40)
+        }
+
         nextButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(24)
             make.bottom.equalToSuperview().inset(34)
             make.height.equalTo(52)
         }
     }
-    
+
     // MARK: - Bind
-    
-    func bind(reactor: CreatePlannerNameReactor) {
+
+    func bind(reactor: Reactor) {
+        rx.viewDidLoad
+            .subscribe(onNext: { [weak self] in
+                self?.textField.textField.becomeFirstResponder()
+            })
+            .disposed(by: disposeBag)
+    }
+
+    // MARK: - Objc Method
+
+    @objc
+    func didTapDoneButton(_ sender: UIBarButtonItem) {
+        textField.resignFirstResponder()
     }
 }

@@ -113,7 +113,7 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
         super.setupLayout()
 
         titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(navigationBar.snp.bottom).inset(4)
+            make.top.equalTo(navigationBar.snp.bottom).offset(4)
             make.leading.equalToSuperview().inset(24)
         }
 
