@@ -12,11 +12,13 @@ import ReactorKit
 class PlannerRouteReactor: Reactor {
     enum Action {
         case refresh
+        case tapRouteCell(IndexPath)
         case tapPikmiRouteCell(IndexPath)
     }
     enum Mutation {
-        case setPikmiRouteSections([PikmiRouteSectionModel])
         case setRouteSections([RouteSectionModel])
+        case deleteRouteSectionItem(IndexPath)
+        case setPikmiRouteSections([PikmiRouteSectionModel])
         case updatePikmiRouteSectionItem(IndexPath, PikmiRouteSectionModel.Item)
         case updateRouteSectionItem(IndexPath, RouteSectionModel.Item)
         case appendRouteSectionItem(IndexPath, RouteSectionModel.Item)
@@ -47,6 +49,8 @@ extension PlannerRouteReactor {
                 .just(.setRouteSections(makeSections())),
                 .just(.setPikmiRouteSections(makeSections(pikmis: currentState.pikmis)))
             ])
+        case let .tapRouteCell(indexPath):
+            return .just(.deleteRouteSectionItem(indexPath))
         case let .tapPikmiRouteCell(indexPath):
             guard case let .pikmiRoute(reactor) = currentState.pikmiRouteSections[indexPath.section].items[indexPath.row] else { return .empty() }
             let item = RouteSectionModel.Item.route(.init(state: .init(pik: reactor.currentState.pik)))
@@ -59,10 +63,12 @@ extension PlannerRouteReactor {
         var newState = state
         
         switch mutation {
-        case let .setPikmiRouteSections(sections):
-            newState.pikmiRouteSections = sections
         case let .setRouteSections(sections):
             newState.routeSections = sections
+        case let .deleteRouteSectionItem(indexPath):
+            newState.routeSections[indexPath.section].items.remove(at: indexPath.row)
+        case let .setPikmiRouteSections(sections):
+            newState.pikmiRouteSections = sections
         case let .updatePikmiRouteSectionItem(indexPath, item):
             newState.pikmiRouteSections[indexPath.section].items[indexPath.row] = item
         case let .updateRouteSectionItem(indexPath, item):

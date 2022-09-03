@@ -118,6 +118,11 @@ class PlannerRouteViewController: NavigationBarViewController, View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
+        routeCollectionView.rx.itemSelected
+            .map { .tapRouteCell($0) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
         pikmiRouteCollectionView.rx.itemSelected
             .map { .tapPikmiRouteCell($0) }
             .bind(to: reactor.action)
