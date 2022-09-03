@@ -18,6 +18,9 @@ class CreatePlannerNameViewController: NavigationBarViewController, View {
     private let subTitleLabel: UILabel = .init()
     private let textField: JYPSearchTextField = .init(type: .planner)
 
+    private let nameTagContainerView: UIScrollView = .init(frame: .zero)
+    private let nameTagStackView: UIStackView = .init(frame: .zero)
+
     private let guideLabel: UILabel = .init()
     private let nextButton: JYPButton = .init(type: .next)
 
@@ -71,6 +74,9 @@ class CreatePlannerNameViewController: NavigationBarViewController, View {
         textField.textField.leftView = UIView()
         textField.setupToolBar()
 
+        nameTagStackView.axis = .horizontal
+        nameTagStackView.spacing = 8.0
+
         guideLabel.font = JYPIOSFontFamily.Pretendard.regular.font(size: 12)
         guideLabel.textColor = JYPIOSAsset.mainPink.color
         guideLabel.lineSpacing(lineHeight: 18)
@@ -79,7 +85,15 @@ class CreatePlannerNameViewController: NavigationBarViewController, View {
     override func setupHierarchy() {
         super.setupHierarchy()
 
-        contentView.addSubviews([titleLabel, subTitleLabel, textField, guideLabel, nextButton])
+        contentView.addSubviews([titleLabel, subTitleLabel, textField, nameTagContainerView, guideLabel, nextButton])
+        nameTagContainerView.addSubview(nameTagStackView)
+
+        PlannerNameTag
+            .allCases
+            .forEach {
+                nameTagStackView
+                    .addArrangedSubview(PlannerNameTagButton(name: $0))
+            }
     }
 
     override func setupLayout() {
@@ -100,6 +114,17 @@ class CreatePlannerNameViewController: NavigationBarViewController, View {
             make.centerX.equalToSuperview()
             make.width.equalToSuperview().inset(24)
             make.height.equalTo(40)
+        }
+
+        nameTagContainerView.snp.makeConstraints { make in
+            make.top.equalTo(textField.snp.bottom).offset(16)
+            make.centerX.equalToSuperview()
+            make.width.equalToSuperview().inset(24)
+            make.height.equalTo(nameTagStackView.snp.height)
+        }
+
+        nameTagStackView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
 
         guideLabel.snp.makeConstraints { make in
@@ -144,7 +169,7 @@ class CreatePlannerNameViewController: NavigationBarViewController, View {
     // MARK: - Objc Method
 
     @objc
-    func didTapDoneButton(_ sender: UIBarButtonItem) {
+    func didTapDoneButton(_: UIBarButtonItem) {
         textField.resignFirstResponder()
     }
 }

@@ -28,16 +28,19 @@ final class CreatePlannerNameReactor: Reactor {
     enum Action {
         case inputTextField(String)
         case didTapNextButton
+        case didTapNameTag(PlannerNameTag)
     }
 
     enum Mutation {
         case changeValidation(PlannerNameTextFieldInputState)
         case presentCoverImageBottomSheet
+        case changeTextField(String)
     }
 
     struct State {
         var validation: PlannerNameTextFieldInputState = .invalid
         var guideText: String = PlannerNameTextFieldInputState.valid.guideText
+        var textFieldText: String = ""
     }
 
     var initialState: State = .init()
@@ -53,6 +56,8 @@ final class CreatePlannerNameReactor: Reactor {
 
             let mutation: Observable<Mutation> = isValid ? .just(.changeValidation(.valid)) : .just(.changeValidation(.invalid))
             return mutation
+        case let .didTapNameTag(tag):
+            return .just(.changeTextField(tag.rawValue))
         }
     }
 
@@ -65,8 +70,9 @@ final class CreatePlannerNameReactor: Reactor {
         case let .changeValidation(validation):
             newState.validation = validation
             newState.guideText = validation.guideText
-        case .presentCoverImageBottomSheet:
-            newState.guideText = " "
+        case let .changeTextField(text):
+            newState.textFieldText = text
+        case .presentCoverImageBottomSheet: break
         }
 
         return newState
