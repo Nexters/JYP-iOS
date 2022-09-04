@@ -162,6 +162,11 @@ class CreatePlannerNameViewController: NavigationBarViewController, View {
                 .disposed(by: disposeBag)
         }
 
+        nextButton.rx.tap
+            .map { Reactor.Action.didTapNextButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
         reactor.state
             .map(\.guideText)
             .bind(to: guideLabel.rx.text)
@@ -176,6 +181,17 @@ class CreatePlannerNameViewController: NavigationBarViewController, View {
             .map(\.textFieldText)
             .distinctUntilChanged()
             .bind(to: textField.textField.rx.text)
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .map(\.isPresentCoverBottomSheet)
+            .distinctUntilChanged()
+            .filter { $0 }
+            .subscribe(onNext: { [weak self] _ in
+                let bottomSheet = SelectPlannerCoverBottomSheetViewController(reactor: .init())
+
+                self?.tabBarController?.present(bottomSheet, animated: true)
+            })
             .disposed(by: disposeBag)
     }
 

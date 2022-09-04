@@ -33,7 +33,7 @@ final class CreatePlannerNameReactor: Reactor {
 
     enum Mutation {
         case changeValidation(PlannerNameTextFieldInputState)
-        case presentCoverImageBottomSheet
+        case presentCoverImageBottomSheet(Bool)
         case changeTextField(String)
     }
 
@@ -41,6 +41,7 @@ final class CreatePlannerNameReactor: Reactor {
         var validation: PlannerNameTextFieldInputState = .invalid
         var guideText: String = PlannerNameTextFieldInputState.valid.guideText
         var textFieldText: String = ""
+        var isPresentCoverBottomSheet: Bool = false
     }
 
     var initialState: State = .init()
@@ -50,7 +51,10 @@ final class CreatePlannerNameReactor: Reactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .didTapNextButton:
-            return .empty()
+            return .concat(
+                .just(.presentCoverImageBottomSheet(true)),
+                .just(.presentCoverImageBottomSheet(false))
+            )
         case let .inputTextField(text):
             let isValid = (text.count <= Self.MAX_NAME_LENGTH) && !text.isEmpty
 
@@ -72,7 +76,8 @@ final class CreatePlannerNameReactor: Reactor {
             newState.guideText = validation.guideText
         case let .changeTextField(text):
             newState.textFieldText = text
-        case .presentCoverImageBottomSheet: break
+        case let .presentCoverImageBottomSheet(flag):
+            newState.isPresentCoverBottomSheet = flag
         }
 
         return newState
