@@ -17,6 +17,12 @@ class SelectPlannerCoverCollectionViewCell: BaseCollectionViewCell, View {
     let coverImage: UIImageView = .init()
     let checkButton: UIButton = .init()
     let themeLabel: UILabel = .init()
+    
+    override var isSelected: Bool {
+        didSet {
+            checkButton.isSelected = isSelected
+        }
+    }
 
     // MARK: - Initializer
 
@@ -27,6 +33,16 @@ class SelectPlannerCoverCollectionViewCell: BaseCollectionViewCell, View {
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+
+        coverImage.image = nil
+        checkButton.isSelected = false
+        themeLabel.text = nil
+
+        layer.borderWidth = 0.0
     }
 
     // MARK: - Setup Methods
@@ -62,6 +78,7 @@ class SelectPlannerCoverCollectionViewCell: BaseCollectionViewCell, View {
 
         checkButton.snp.makeConstraints { make in
             make.top.trailing.equalToSuperview().inset(4)
+            make.size.equalTo(40)
         }
     }
 

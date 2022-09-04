@@ -125,10 +125,22 @@ class SelectPlannerCoverBottomSheetViewController: BottomSheetViewController, Vi
     func bind(reactor: Reactor) {
         collectionView.rx.setDelegate(self).disposed(by: disposeBag)
 
+        collectionView.rx.itemSelected
+            .map { Reactor.Action.selectTheme($0) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
         reactor.state
             .asObservable()
             .map(\.sections)
             .bind(to: collectionView.rx.items(dataSource: dataSource))
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .map(\.selectedIndexPath)
+            .subscribe(onNext: { [weak self] indexPath in
+                self?.collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .centeredHorizontally)
+            })
             .disposed(by: disposeBag)
     }
 }
