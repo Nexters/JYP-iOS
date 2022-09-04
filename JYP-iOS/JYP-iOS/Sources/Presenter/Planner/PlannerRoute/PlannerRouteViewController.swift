@@ -152,11 +152,7 @@ class PlannerRouteViewController: NavigationBarViewController, View {
                 this.routeCollectionView.collectionViewLayout = layout
                 
                 if let section = sections.first {
-                    if section.items.isEmpty {
-                        this.emptyLabel.isHidden = false
-                    } else {
-                        this.emptyLabel.isHidden = true
-                    }
+                    this.emptyLabel.isHidden = !section.items.isEmpty
                 }
             }
             .disposed(by: disposeBag)
