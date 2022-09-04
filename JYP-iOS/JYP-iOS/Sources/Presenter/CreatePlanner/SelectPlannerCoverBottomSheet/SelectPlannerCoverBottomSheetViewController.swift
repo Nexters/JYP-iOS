@@ -130,6 +130,11 @@ class SelectPlannerCoverBottomSheetViewController: BottomSheetViewController, Vi
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
+        submitButton.rx.tap
+            .map { Reactor.Action.didTapSubmitButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
         reactor.state
             .asObservable()
             .map(\.sections)
@@ -140,6 +145,23 @@ class SelectPlannerCoverBottomSheetViewController: BottomSheetViewController, Vi
             .map(\.selectedIndexPath)
             .subscribe(onNext: { [weak self] indexPath in
                 self?.collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .centeredHorizontally)
+            })
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .map(\.isPushCalendarView)
+            .distinctUntilChanged()
+            .filter { $0 }
+            .subscribe(onNext: { [weak self] _ in
+                guard let self = self else { return }
+                let calendarReactor = CreatePlannerDateReactor(service: CalendarService())
+                let createPlannerDateViewController = CreatePlannerDateViewController(reactor: calendarReactor)
+
+                guard let presentingViewContoller = self.presentingViewController as? UINavigationController else { return }
+                self.dismiss(animated: true, completion: {
+                    presentingViewContoller
+                        .pushViewController(createPlannerDateViewController, animated: true)
+                })
             })
             .disposed(by: disposeBag)
     }

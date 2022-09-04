@@ -190,7 +190,7 @@ class CreatePlannerNameViewController: NavigationBarViewController, View {
             .subscribe(onNext: { [weak self] _ in
                 let bottomSheet = SelectPlannerCoverBottomSheetViewController(reactor: .init())
 
-                self?.tabBarController?.present(bottomSheet, animated: true)
+                self?.navigationController?.present(bottomSheet, animated: true)
             })
             .disposed(by: disposeBag)
     }

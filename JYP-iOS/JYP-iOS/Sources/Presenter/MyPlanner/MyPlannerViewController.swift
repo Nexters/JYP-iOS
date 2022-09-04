@@ -172,7 +172,7 @@ class MyPlannerViewController: NavigationBarViewController, View {
             .filter { $0 }
             .subscribe(onNext: { [weak self] _ in
                 let createPlannerViewController = CreatePlannerNameViewController(reactor: .init())
-                self?.navigationController?.pushViewController(createPlannerViewController, animated: true)
+                self?.tabBarController?.navigationController?.pushViewController(createPlannerViewController, animated: true)
             })
             .disposed(by: disposeBag)
     }
