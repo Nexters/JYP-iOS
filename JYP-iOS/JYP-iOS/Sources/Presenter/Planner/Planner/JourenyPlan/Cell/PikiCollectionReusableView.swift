@@ -7,8 +7,10 @@
 //
 
 import UIKit
+import ReactorKit
 
-class PikiCollectionReusableView: BaseCollectionReusableView {
+class PikiCollectionReusableView: BaseCollectionReusableView, View {
+    typealias Reactor = PikiCollectionReusableViewReactor
     
     // MARK: - UI Components
     
@@ -23,11 +25,9 @@ class PikiCollectionReusableView: BaseCollectionReusableView {
         
         titleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 16)
         titleLabel.textColor = JYPIOSAsset.textB80.color
-        titleLabel.text = "Day 1"
         
         subLabel.font = JYPIOSFontFamily.Pretendard.medium.font(size: 16)
         subLabel.textColor = JYPIOSAsset.textB40.color
-        subLabel.text = "7월 18일"
         
         trailingButton.setImage(JYPIOSAsset.iconModify.image, for: .normal)
     }
@@ -56,5 +56,11 @@ class PikiCollectionReusableView: BaseCollectionReusableView {
             $0.centerY.equalToSuperview()
             $0.width.height.equalTo(24)
         }
+    }
+    
+    func bind(reactor: Reactor) {
+        titleLabel.text = "Day \(reactor.currentState.order + 1)"
+        
+        subLabel.text = DateManager.dateToString(format: "M월 d일", date: reactor.currentState.date)
     }
 }

@@ -1,18 +1,21 @@
 //
-//  RouteCollectionViewCellReactor.swift
+//  PikiCollectionReusableViewReactor.swift
 //  JYP-iOS
 //
-//  Created by 송영모 on 2022/08/30.
+//  Created by 송영모 on 2022/09/03.
 //  Copyright © 2022 JYP-iOS. All rights reserved.
 //
 
+import Foundation
 import ReactorKit
 
-class RouteCollectionViewCellReactor: Reactor {
+class PikiCollectionReusableViewReactor: Reactor {
     enum Action { }
     enum Mutation { }
+    
     struct State {
-        let pik: Pik
+        let order: Int
+        let date: Date
     }
     
     var initialState: State

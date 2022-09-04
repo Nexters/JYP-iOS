@@ -15,7 +15,7 @@ class PlannerRouteViewController: NavigationBarViewController, View {
     
     // MARK: - UI Components
     
-    let emptyView: UIView = .init()
+    let emptyLabel: UILabel = .init()
     let routeCollectionView: UICollectionView = .init(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     let pikmiRouteCollectionView: UICollectionView = .init(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     
@@ -73,6 +73,10 @@ class PlannerRouteViewController: NavigationBarViewController, View {
     override func setupProperty() {
         super.setupProperty()
         
+        emptyLabel.text = "방문할 장소를 선택해 주세요"
+        emptyLabel.textColor = JYPIOSAsset.textB40.color
+        emptyLabel.font = JYPIOSFontFamily.Pretendard.regular.font(size: 16)
+        
         routeCollectionView.backgroundColor = JYPIOSAsset.backgroundWhite200.color
         routeCollectionView.register(RouteCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: RouteCollectionViewCell.self))
         
@@ -86,6 +90,8 @@ class PlannerRouteViewController: NavigationBarViewController, View {
         super.setupHierarchy()
         
         contentView.addSubviews([routeCollectionView, pikmiRouteCollectionView])
+        
+        routeCollectionView.addSubviews([emptyLabel])
     }
     
     override func setupLayout() {
@@ -94,6 +100,10 @@ class PlannerRouteViewController: NavigationBarViewController, View {
         routeCollectionView.snp.makeConstraints {
             $0.top.leading.trailing.equalToSuperview()
             $0.height.equalTo(140)
+        }
+        
+        emptyLabel.snp.makeConstraints {
+            $0.center.equalToSuperview()
         }
         
         pikmiRouteCollectionView.snp.makeConstraints {
@@ -108,9 +118,30 @@ class PlannerRouteViewController: NavigationBarViewController, View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
+        routeCollectionView.rx.itemSelected
+            .map { .tapRouteCell($0) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
         pikmiRouteCollectionView.rx.itemSelected
             .map { .tapPikmiRouteCell($0) }
             .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .map(\.order)
+            .withUnretained(self)
+            .bind { this, order in
+                this.setNavigationBarTitleText("DAY \(order + 1)")
+            }
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .map(\.date)
+            .withUnretained(self)
+            .bind { this, date in
+                this.setNavigationBarSubTitleText(DateManager.dateToString(format: "M월 d일", date: date))
+            }
             .disposed(by: disposeBag)
         
         reactor.state
@@ -119,6 +150,10 @@ class PlannerRouteViewController: NavigationBarViewController, View {
             .bind { this, sections in
                 let layout = this.makeRouteLayout(sections: sections)
                 this.routeCollectionView.collectionViewLayout = layout
+                
+                if let section = sections.first {
+                    this.emptyLabel.isHidden = !section.items.isEmpty
+                }
             }
             .disposed(by: disposeBag)
         

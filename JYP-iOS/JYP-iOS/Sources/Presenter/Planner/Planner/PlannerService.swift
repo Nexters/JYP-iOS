@@ -63,12 +63,12 @@ class PlannerService: PlannerServiceProtocol {
             var journeyPlanItems: [JourneyPlanItem] = []
             
             if pikis.isEmpty {
-                let sectionItem = JourneyPlanItem.emptyPiki(EmptyPikiCollectionViewCellReactor(state: .init(order: index, date: Date())))
+                let sectionItem = JourneyPlanItem.emptyPiki(EmptyPikiCollectionViewCellReactor(state: .init(order: index, date: DateManager.addDateComponent(byAdding: .day, value: index, to: Date(timeIntervalSince1970: journey.startDate)))))
                 
                 journeyPlanItems.append(sectionItem)
             } else {
-                let sectionItems = pikis.map { (piki) -> JourneyPlanItem in
-                    return JourneyPlanItem.piki(PikiCollectionViewCellReactor(state: piki))
+                let sectionItems = pikis.map { (pik) -> JourneyPlanItem in
+                    return JourneyPlanItem.piki(PikiCollectionViewCellReactor(state: .init(order: index, date: DateManager.addDateComponent(byAdding: .day, value: index, to: Date(timeIntervalSince1970: journey.startDate)), pik: pik)))
                 }
                 
                 journeyPlanItems.append(contentsOf: sectionItems)

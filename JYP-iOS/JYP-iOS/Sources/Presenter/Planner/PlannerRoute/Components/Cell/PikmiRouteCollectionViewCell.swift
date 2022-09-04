@@ -19,6 +19,12 @@ class PikmiRouteCollectionViewCell: BaseCollectionViewCell, View {
     let rankBadgeImageView: UIImageView = .init()
     let categoryLabel: UILabel = .init()
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        rankBadgeImageView.image = nil
+    }
+    
     // MARK: - Setup Methods
     
     override func setupProperty() {
@@ -60,7 +66,7 @@ class PikmiRouteCollectionViewCell: BaseCollectionViewCell, View {
         rankBadgeImageView.snp.makeConstraints {
             $0.top.equalToSuperview()
             $0.trailing.equalToSuperview().inset(23)
-            $0.width.equalTo(26)
+//            $0.width.equalTo(26)
         }
     }
     

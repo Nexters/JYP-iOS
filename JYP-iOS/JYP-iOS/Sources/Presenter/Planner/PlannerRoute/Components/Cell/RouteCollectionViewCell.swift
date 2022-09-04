@@ -74,7 +74,7 @@ class RouteCollectionViewCell: BaseCollectionViewCell, View {
     // MARK: - Bind Method
     
     func bind(reactor: Reactor) {
-        subLabel.text = reactor.currentState.pik?.category.title
-        titleLabel.text = reactor.currentState.pik?.name
+        subLabel.text = reactor.currentState.pik.category.title
+        titleLabel.text = reactor.currentState.pik.name
     }
 }
