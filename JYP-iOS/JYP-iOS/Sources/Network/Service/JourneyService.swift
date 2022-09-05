@@ -60,8 +60,8 @@ final class JourneyService: BaseService, JourneyServiceType {
         return .just(
             Journey(id: "1",
                        name: "테스트1",
-                       startDate: 0.0,
-                       endDate: 0.0,
+                       startDate: 1662181200,
+                       endDate: 1662699600,
                     themePath: .city,
                        users: [User(id: "1",
                                     nickname: "닉네임1",
