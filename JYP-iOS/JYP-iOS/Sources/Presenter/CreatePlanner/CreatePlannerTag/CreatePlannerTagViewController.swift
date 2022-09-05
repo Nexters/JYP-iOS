@@ -78,7 +78,7 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
 
         setNavigationBarBackgroundColor(JYPIOSAsset.backgroundWhite100.color)
         setNavigationBarTitleText("여행 취향 태그")
-        setNavigationBarTitleTextColor(JYPIOSAsset.textB80.color)
+        setNavigationBarTitleTextColor(JYPIOSAsset.textB75.color)
         setNavigationBarTitleFont(JYPIOSFontFamily.Pretendard.medium.font(size: 16))
     }
 
@@ -113,7 +113,7 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
         super.setupLayout()
 
         titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(navigationBar.snp.bottom).inset(4)
+            make.top.equalTo(navigationBar.snp.bottom).offset(4)
             make.leading.equalToSuperview().inset(24)
         }
 

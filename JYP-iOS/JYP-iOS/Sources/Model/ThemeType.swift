@@ -8,7 +8,7 @@
 
 import UIKit
 
-enum ThemeType: Int {
+enum ThemeType: Int, CaseIterable {
     case `default` = 1
     case sea = 2
     case mountain = 3
@@ -56,6 +56,16 @@ enum ThemeType: Int {
         switch self {
         case .default: return true
         default: return false
+        }
+    }
+
+    var themeName: String {
+        switch self {
+        case .default: return "기본"
+        case .city: return "도시"
+        case .culture: return "문화 유적"
+        case .sea: return "바다"
+        case .mountain: return "산"
         }
     }
 }

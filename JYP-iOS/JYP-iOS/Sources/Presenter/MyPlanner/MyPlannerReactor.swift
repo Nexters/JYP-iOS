@@ -12,16 +12,19 @@ final class MyPlannerReactor: Reactor {
     enum Action {
         case didTapScheduledJourneyMenu
         case didTapPastJourneyMenu
+        case didTapAddPlannerButton
     }
 
     enum Mutation {
         case showScheduledJourney(Bool)
         case showPastJourney(Bool)
+        case pushCreatePlannerView(Bool)
     }
 
     struct State {
         var isSelectedSchduledJourneyView: Bool = true
         var isSelectedPastJourneyView: Bool = false
+        var isPushCreatePlannerView: Bool = false
     }
 
     let initialState = State()
@@ -40,6 +43,11 @@ final class MyPlannerReactor: Reactor {
                 .just(.showScheduledJourney(false)),
                 .just(.showPastJourney(true))
             )
+        case .didTapAddPlannerButton:
+            return .concat(
+                .just(.pushCreatePlannerView(true)),
+                .just(.pushCreatePlannerView(false))
+            )
         }
     }
 
@@ -51,6 +59,8 @@ final class MyPlannerReactor: Reactor {
             newState.isSelectedSchduledJourneyView = isSelected
         case let .showPastJourney(isSelected):
             newState.isSelectedPastJourneyView = isSelected
+        case let .pushCreatePlannerView(isPush):
+            newState.isPushCreatePlannerView = isPush
         }
 
         return newState

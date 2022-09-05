@@ -9,27 +9,29 @@
 import ReactorKit
 import UIKit
 
-enum TagTextFieldInputState {
-    case valid
-    case invalid
-
-    var guideText: String {
-        switch self {
-        case .valid: return "6글자 이하 가능"
-        case .invalid: return "6글자까지 입력 가능해요"
-        }
-    }
-
-    var textColor: UIColor {
-        switch self {
-        case .valid: return JYPIOSAsset.subBlack.color
-        case .invalid: return JYPIOSAsset.mainPink.color
-        }
-    }
-}
-
 final class AddTagBottomSheetReactor: Reactor {
     private static let MAX_TAG_LENGTH = 6
+
+    // MARK: - Sub Types
+
+    enum TagTextFieldInputState {
+        case valid
+        case invalid
+
+        var guideText: String {
+            switch self {
+            case .valid: return "6글자 이하 가능"
+            case .invalid: return "6글자까지 입력 가능해요"
+            }
+        }
+
+        var textColor: UIColor {
+            switch self {
+            case .valid: return JYPIOSAsset.subBlack.color
+            case .invalid: return JYPIOSAsset.mainPink.color
+            }
+        }
+    }
 
     enum Action {
         case inputTextField(String)
