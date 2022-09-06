@@ -10,7 +10,9 @@ import UIKit
 import ReactorKit
 
 class DiscussionReactor: Reactor {
-    enum Action { }
+    enum Action {
+        case selectCell(IndexPath)
+    }
     
     enum Mutation {
         case setSections([DiscussionSectionModel])
@@ -18,14 +20,25 @@ class DiscussionReactor: Reactor {
     }
     
     struct State {
-        var sections: [DiscussionSectionModel]
+        var sections: [DiscussionSectionModel] = []
+        var 
     }
     
     let plannerService = ServiceProvider.shared.plannerService
+    
     var initialState: State
     
     init() {
-        initialState = .init(sections: [])
+        initialState = State()
+    }
+}
+
+extension DiscussionReactor {
+    func mutate(action: Action) -> Observable<Mutation> {
+        switch action {
+        case let .selectCell(IndexPath):
+            
+        }
     }
     
     func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
@@ -52,5 +65,14 @@ class DiscussionReactor: Reactor {
         }
         
         return newState
+    }
+    
+    private func mutateSelectCell(_ indexPath: IndexPath) -> Observable<Mutation> {
+        guard let item = currentState.sections[indexPath.section].items[indexPath.row] else { return .empty() }
+        
+        switch item {
+        case let .tag(reactor):
+            
+        }
     }
 }
