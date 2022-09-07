@@ -11,13 +11,10 @@ import ReactorKit
 class TagBottomSheetReactor: Reactor {
     enum Action {}
     enum Mutation {}
-    struct State {
-        var tag: Tag
-    }
     
-    var initialState: State
+    var initialState: Tag
     
-    init(state: State) {
-        self.initialState = state
+    init(tag: Tag) {
+        self.initialState = tag
     }
 }

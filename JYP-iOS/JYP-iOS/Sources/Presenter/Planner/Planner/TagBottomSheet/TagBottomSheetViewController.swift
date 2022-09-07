@@ -38,7 +38,7 @@ class TagBottomSheetViewController: BottomSheetViewController, View {
     }
     
     func bind(reactor: Reactor) {
-        reactor.state.map(\.tag.users)
+        reactor.state.map(\.users)
         
     }
 }
