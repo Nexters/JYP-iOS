@@ -26,7 +26,7 @@ class PlannerReactor: Reactor {
     }
     
     struct State {
-        var pik: Pik?
+        var pik: Pik
         var isShowDiscussion: Bool = true
         var isShowJourneyPlan: Bool = false
         var plannerSearchPlaceReactor: PlannerSearchPlaceReactor?
@@ -38,8 +38,8 @@ class PlannerReactor: Reactor {
     
     var initialState: State
     
-    init() {
-        initialState = .init()
+    init(state: State) {
+        self.initialState = state
     }
     
     func mutate(action: Action) -> Observable<Mutation> {

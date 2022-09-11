@@ -105,10 +105,9 @@ class TempViewController: BaseViewController {
         discussionButton.rx.tap
             .bind { [weak self] in
                 self?.hidesBottomBarWhenPushed = true
-//                let discussionHomeVC = OldPlannerHomeViewController()
-                let plannerViewController = PlannerViewController(reactor: .init())
+                
+                let plannerViewController = PlannerViewController(reactor: .init(state: .init(pik: Pik(id: "", name: "", address: "", category: .bank, likeBy: nil, longitude: 0.0, latitude: 0.0, link: ""))))
                 self?.navigationController?.pushViewController(plannerViewController, animated: true)
-//                self?.navigationController?.pushViewController(discussionHomeVC, animated: true)
             }
             .disposed(by: disposeBag)
     }

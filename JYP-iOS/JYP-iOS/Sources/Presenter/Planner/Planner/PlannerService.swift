@@ -55,20 +55,34 @@ class PlannerService: PlannerServiceProtocol {
     }
     
     func makeSections(from journey: Journey) -> [DiscussionSectionModel] {
-        guard let tags = journey.tags else { return [] }
-        guard let pikmis = journey.pikmis else { return [] }
-    
-        let tagItems = tags.map { (tag) -> DiscussionItem in
-            return DiscussionItem.tag(TagCollectionViewCellReactor(tag: tag))
-        }
-        let pikmiItems = pikmis.enumerated().map { (index, pik) -> DiscussionItem in
-            return DiscussionItem.pikmi(PikmiCollectionViewCellReactor(state: .init(pik: pik, rank: index)))
+        var sections: [DiscussionSectionModel] = []
+        
+        if let tags = journey.tags {
+            let items = tags.map { (tag) -> DiscussionItem in
+                return DiscussionItem.tag(TagCollectionViewCellReactor(tag: tag))
+            }
+            let section = DiscussionSectionModel(model: DiscussionSection.tag(items), items: items)
+            
+            sections.append(section)
         }
         
-        let tagSection = DiscussionSectionModel(model: DiscussionSection.tag(tagItems), items: tagItems)
-        let pikmiSection = DiscussionSectionModel(model: DiscussionSection.pikmi(pikmiItems), items: pikmiItems)
-        
-        return [tagSection, pikmiSection]
+        if let pikmis = journey.pikmis {
+            if pikmis.isEmpty {
+                let item = DiscussionSectionModel.Item.createPikmi(.init())
+                let section = DiscussionSectionModel.init(model: .pikmi([item]), items: [item])
+                
+                sections.append(section)
+            } else {
+                let items = pikmis.enumerated().map { (index, pik) -> DiscussionItem in
+                    return DiscussionItem.pikmi(PikmiCollectionViewCellReactor(state: .init(pik: pik, rank: index)))
+                }
+                let section = DiscussionSectionModel(model: DiscussionSection.pikmi(items), items: items)
+                
+                sections.append(section)
+            }
+        }
+
+        return sections
     }
     
     func makeSections(from journey: Journey) -> [JourneyPlanSectionModel] {
