@@ -12,6 +12,18 @@ import ReactorKit
 class CreatePikmiCollectionViewCell: BaseCollectionViewCell, View {
     typealias Reactor = CreatePikmiCollectionViewCellReactor
     
-    func bind(reactor: CreatePikmiCollectionViewCellReactor) {     
+    // MARK: - UI Components
+    
+    let button: JYPButton = .init(type: .addPlace)
+    
+    // MARK: - Setup Methods
+    
+    override func setupProperty() {
+        super.setupProperty()
+        
+    }
+    
+    func bind(reactor: Reactor) {
+        
     }
 }

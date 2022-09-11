@@ -12,7 +12,7 @@ import ReactorKit
 class DiscussionReactor: Reactor {
     enum Action {
         case selectCell(IndexPath)
-        case tapCreatePikmiButton(IndexPath)
+        case tapCreatePikmiButton
         case tapPikmiInfoButton(IndexPath)
         case tapPikmiLikeButton(IndexPath)
     }
@@ -46,8 +46,8 @@ extension DiscussionReactor {
         switch action {
         case let .selectCell(indexPath):
             return mutateSelectCell(indexPath)
-        case let .tapCreatePikmiButton(indexPath):
-            return mutateTapCreatePikmiButton(indexPath)
+        case .tapCreatePikmiButton:
+            return mutateTapCreatePikmiButton()
         case let .tapPikmiInfoButton(indexPath):
             return mutateTapPikmiInfoButton(indexPath)
         case let .tapPikmiLikeButton(indexPath):
@@ -95,20 +95,18 @@ extension DiscussionReactor {
         return .concat([open, close])
     }
     
-    private func mutateTapCreatePikmiButton(_ indexPath: IndexPath) -> Observable<Mutation> {
-        guard case let .createPikmi(reactor) = currentState.sections[indexPath.section].items[indexPath.row] else { return .empty() }
-        let open: Observable<Mutation> = .just(.presentPlannerSearchPlace(makeReactor(from: reactor)))
-        let close: Observable<Mutation> = .just(.presentPlannerSearchPlace(nil))
+    private func mutateTapCreatePikmiButton() -> Observable<Mutation> {
+        plannerService.presentPlannerSearchPlace(from: makeReactor())
         
-        return .concat([open, close])
+        return .empty()
     }
     
     private func mutateTapPikmiInfoButton(_ indexPath: IndexPath) -> Observable<Mutation> {
         guard case let .pikmi(reactor) = currentState.sections[indexPath.section].items[indexPath.row] else { return .empty() }
-        let open: Observable<Mutation> = .just(.presentWeb(makeReactor(from: reactor)))
-        let close: Observable<Mutation> = .just(.presentWeb(nil))
         
-        return .concat([open, close])
+        plannerService.presentWeb(from: makeReactor(from: reactor))
+        
+        return .empty()
     }
     
     private func mutateTapPikmiLikeButton(_ indexPath: IndexPath) -> Observable<Mutation> {
@@ -119,7 +117,7 @@ extension DiscussionReactor {
         return .init(tag: reactor.currentState)
     }
     
-    private func makeReactor(from reactor: CreatePikmiCollectionViewCellReactor) -> PlannerSearchPlaceReactor {
+    private func makeReactor() -> PlannerSearchPlaceReactor {
         return .init()
     }
     

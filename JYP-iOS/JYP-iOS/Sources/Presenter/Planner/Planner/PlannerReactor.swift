@@ -20,17 +20,22 @@ class PlannerReactor: Reactor {
         case fetchJourney
         case showDiscussion
         case showJourneyPlan
+        case updatePlannerSearchPlaceReactor(PlannerSearchPlaceReactor?)
         case updatePlannerRouteReactor(PlannerRouteReactor?)
+        case updateWebReactor(WebReactor?)
     }
     
     struct State {
         var pik: Pik?
         var isShowDiscussion: Bool = true
         var isShowJourneyPlan: Bool = false
+        var plannerSearchPlaceReactor: PlannerSearchPlaceReactor?
         var plannerRouteReactor: PlannerRouteReactor?
+        var webReactor: WebReactor?
     }
     
     let provider = ServiceProvider.shared
+    
     var initialState: State
     
     init() {
@@ -57,11 +62,15 @@ class PlannerReactor: Reactor {
         let eventMutation = provider.plannerService.event.flatMap { (event) -> Observable<Mutation> in
             switch event {
             case .fetchJourney: return .empty()
+            case let .presentPlannerSearchPlace(reactor):
+                return .just(.updatePlannerSearchPlaceReactor(reactor))
             case let .presentPlannerRoute(reactor):
                 return .concat([
                     .just(.updatePlannerRouteReactor(reactor)),
                     .just(.updatePlannerRouteReactor(nil))
                 ])
+            case let .presentWeb(reactor):
+                return .just(.updateWebReactor(reactor))
             }
         }
         
@@ -80,8 +89,12 @@ class PlannerReactor: Reactor {
         case .showJourneyPlan:
             newState.isShowDiscussion = false
             newState.isShowJourneyPlan = true
+        case let .updatePlannerSearchPlaceReactor(reactor):
+            newState.plannerSearchPlaceReactor = reactor
         case let .updatePlannerRouteReactor(reactor):
             newState.plannerRouteReactor = reactor
+        case let .updateWebReactor(reactor):
+            newState.webReactor = reactor
         }
         
         return newState

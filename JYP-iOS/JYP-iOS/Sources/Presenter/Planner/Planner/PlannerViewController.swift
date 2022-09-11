@@ -162,14 +162,26 @@ class PlannerViewController: NavigationBarViewController, View {
             .disposed(by: disposeBag)
         
         reactor.state
-            .map(\.plannerRouteReactor)
+            .compactMap(\.plannerSearchPlaceReactor)
             .withUnretained(self)
             .bind { this, reactor in
-                guard let reactor = reactor else { return }
-                
-                let plannerRouteViewController = PlannerRouteViewController(reactor: reactor)
-                
-                this.navigationController?.pushViewController(plannerRouteViewController, animated: true)
+                this.navigationController?.pushViewController(PlannerSearchPlaceViewController(reactor: reactor), animated: true)
+            }
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .compactMap(\.plannerRouteReactor)
+            .withUnretained(self)
+            .bind { this, reactor in
+                this.navigationController?.pushViewController(PlannerRouteViewController(reactor: reactor), animated: true)
+            }
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .compactMap(\.webReactor)
+            .withUnretained(self)
+            .bind { this, reactor in
+                this.navigationController?.present(WebViewController(reactor: reactor), animated: true)
             }
             .disposed(by: disposeBag)
     }

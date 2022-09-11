@@ -11,7 +11,9 @@ import RxSwift
 
 enum PlannerEvent {
     case fetchJourney(Journey)
-    case presentPlannerRoute(PlannerRouteReactor)
+    case presentPlannerSearchPlace(PlannerSearchPlaceReactor?)
+    case presentWeb(WebReactor?)
+    case presentPlannerRoute(PlannerRouteReactor?)
 }
 
 protocol PlannerServiceProtocol {
@@ -19,6 +21,10 @@ protocol PlannerServiceProtocol {
     var journey: Journey? { get }
     
     func updateJourney(to journey: Journey)
+    
+    func presentPlannerSearchPlace(from reactor: PlannerSearchPlaceReactor)
+    func presentWeb(from reactor: WebReactor)
+    func presentPlannerRoute(from reactor: PlannerRouteReactor)
     
     func makeSections(from journey: Journey) -> [DiscussionSectionModel]
     func makeSections(from journey: Journey) -> [JourneyPlanSectionModel]
@@ -31,6 +37,21 @@ class PlannerService: PlannerServiceProtocol {
     func updateJourney(to journey: Journey) {
         self.journey = journey
         event.onNext(.fetchJourney(journey))
+    }
+    
+    func presentPlannerSearchPlace(from reactor: PlannerSearchPlaceReactor) {
+        event.onNext(.presentPlannerSearchPlace(reactor))
+        event.onNext(.presentPlannerSearchPlace(nil))
+    }
+    
+    func presentWeb(from reactor: WebReactor) {
+        event.onNext(.presentWeb(reactor))
+        event.onNext(.presentWeb(nil))
+    }
+    
+    func presentPlannerRoute(from reactor: PlannerRouteReactor) {
+        event.onNext(.presentPlannerRoute(reactor))
+        event.onNext(.presentPlannerRoute(nil))
     }
     
     func makeSections(from journey: Journey) -> [DiscussionSectionModel] {

@@ -33,12 +33,9 @@ class TagBottomSheetViewController: BottomSheetViewController, View {
     
     override func setupProperty() {
         super.setupProperty()
-        
-        
     }
     
     func bind(reactor: Reactor) {
         reactor.state.map(\.users)
-        
     }
 }
