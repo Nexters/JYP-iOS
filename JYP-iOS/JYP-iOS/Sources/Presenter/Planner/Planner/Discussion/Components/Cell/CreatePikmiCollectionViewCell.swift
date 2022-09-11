@@ -49,6 +49,5 @@ class CreatePikmiCollectionViewCell: BaseCollectionViewCell, View {
     }
     
     func bind(reactor: Reactor) {
-        
     }
 }

@@ -7,13 +7,33 @@
 //
 
 import UIKit
+import ReactorKit
 
-class PlannerInviteViewController: NavigationBarViewController {
-    let titleLabel = UILabel()
-    let subLabel = UILabel()
-    let buttonStackView = UIStackView()
-    let kakaoInviteButton = JYPButton(type: .kakaoInvite)
-    let linkInviteButton = JYPButton(type: .linkInvite)
+class PlannerInviteViewController: NavigationBarViewController, View {
+    typealias Reactor = PlannerInviteReactor
+    
+    // MARK: - UI Components
+    
+    let titleLabel: UILabel = .init()
+    let subLabel: UILabel = .init()
+    let buttonStackView: UIStackView = .init()
+    let kakaoInviteButton: JYPButton = .init(type: .kakaoInvite)
+    let linkInviteButton: JYPButton = .init(type: .linkInvite)
+    
+    // MARK: - Initializer
+    
+    init(reactor: Reactor) {
+        super.init(nibName: nil, bundle: nil)
+        
+        self.reactor = reactor
+    }
+    
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - Setup Methods
     
     override func setupProperty() {
         super.setupProperty()
@@ -61,5 +81,8 @@ class PlannerInviteViewController: NavigationBarViewController {
             $0.leading.trailing.equalToSuperview().inset(24)
             $0.height.equalTo(52)
         }
+    }
+    
+    func bind(reactor: Reactor) {  
     }
 }

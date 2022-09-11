@@ -131,6 +131,11 @@ class PlannerViewController: NavigationBarViewController, View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
+        inviteButton.rx.tap
+            .map { .invite }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
         discussionButton.rx.tap
             .map { .showDiscussion }
             .bind(to: reactor.action)
@@ -158,6 +163,17 @@ class PlannerViewController: NavigationBarViewController, View {
             .bind { this, bool in
                 this.journeyPlanButton.isSelected = bool
                 this.journeyPlanView.isHidden = !bool
+            }
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .compactMap(\.plannerInviteReactor)
+            .withUnretained(self)
+            .bind { this, reactor in
+                let plannerInviteViewController = PlannerInviteViewController(reactor: reactor)
+                
+                plannerInviteViewController.hidesBottomBarWhenPushed = true
+                this.navigationController?.pushViewController(plannerInviteViewController, animated: true)
             }
             .disposed(by: disposeBag)
         

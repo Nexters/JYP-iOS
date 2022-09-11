@@ -13,7 +13,6 @@ import Kingfisher
 // MARK: - JYPProfileStackView
 
 class JYPProfileStackView: UIStackView {
-
     // MARK: - UI Components
     
     let imageView: UIImageView = .init()
@@ -57,7 +56,6 @@ class JYPProfileStackView: UIStackView {
 // MARK: - JYPProfileView
 
 class JYPProfileView: BaseView {
-
     // MARK: - UI Components
     
     let imageView: UIImageView = .init()
