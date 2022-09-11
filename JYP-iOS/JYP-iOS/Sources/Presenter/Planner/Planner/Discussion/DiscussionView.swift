@@ -119,6 +119,11 @@ class DiscussionView: BaseView, View {
     func bind(reactor: Reactor) {
         collectionView.rx.setDelegate(self).disposed(by: disposeBag)
         
+        collectionView.rx.itemSelected
+            .map { .selectCell($0) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
         reactor.state
             .asObservable()
             .map(\.sections)

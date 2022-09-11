@@ -11,6 +11,7 @@ import RxSwift
 
 enum PlannerEvent {
     case fetchJourney(Journey)
+    case presentTagBottomSheet(TagBottomSheetReactor?)
     case presentPlannerSearchPlace(PlannerSearchPlaceReactor?)
     case presentWeb(WebReactor?)
     case presentPlannerRoute(PlannerRouteReactor?)
@@ -22,6 +23,7 @@ protocol PlannerServiceProtocol {
     
     func updateJourney(to journey: Journey)
     
+    func presentTagBottomSheet(from reactor: TagBottomSheetReactor)
     func presentPlannerSearchPlace(from reactor: PlannerSearchPlaceReactor)
     func presentWeb(from reactor: WebReactor)
     func presentPlannerRoute(from reactor: PlannerRouteReactor)
@@ -37,6 +39,11 @@ class PlannerService: PlannerServiceProtocol {
     func updateJourney(to journey: Journey) {
         self.journey = journey
         event.onNext(.fetchJourney(journey))
+    }
+    
+    func presentTagBottomSheet(from reactor: TagBottomSheetReactor) {
+        event.onNext(.presentTagBottomSheet(reactor))
+        event.onNext(.presentTagBottomSheet(nil))
     }
     
     func presentPlannerSearchPlace(from reactor: PlannerSearchPlaceReactor) {

@@ -162,6 +162,14 @@ class PlannerViewController: NavigationBarViewController, View {
             .disposed(by: disposeBag)
         
         reactor.state
+            .compactMap(\.tagBottomSheetReactor)
+            .withUnretained(self)
+            .bind { this, reactor in
+                this.tabBarController?.present(TagBottomSheetViewController(reactor: reactor), animated: true)
+            }
+            .disposed(by: disposeBag)
+        
+        reactor.state
             .compactMap(\.plannerSearchPlaceReactor)
             .withUnretained(self)
             .bind { this, reactor in

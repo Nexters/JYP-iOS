@@ -89,10 +89,9 @@ extension DiscussionReactor {
     
     private func mutateSelectCell(_ indexPath: IndexPath) -> Observable<Mutation> {
         guard case let .tag(reactor) = currentState.sections[indexPath.section].items[indexPath.row] else { return .empty() }
-        let open: Observable<Mutation> = .just(.presentTagBottomSheet(makeReactor(from: reactor)))
-        let close: Observable<Mutation> = .just(.presentTagBottomSheet(nil))
         
-        return .concat([open, close])
+        plannerService.presentTagBottomSheet(from: makeReactor(from: reactor))
+        return .empty()
     }
     
     private func mutateTapCreatePikmiButton() -> Observable<Mutation> {

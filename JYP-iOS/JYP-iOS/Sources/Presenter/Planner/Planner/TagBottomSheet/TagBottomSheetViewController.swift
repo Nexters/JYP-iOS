@@ -8,19 +8,19 @@
 
 import UIKit
 import ReactorKit
+import RxSwift
 
 class TagBottomSheetViewController: BottomSheetViewController, View {
     typealias Reactor = TagBottomSheetReactor
     
-    // MARK: - UI Components
-    
+    let bottomSheetView: UIView = .init()
     let titleLabel: UILabel = .init()
     let tag: JYPTag = .init()
-    
-    // MARK: - Initializer
+    let imageStackView: UIStackView = .init()
     
     init(reactor: Reactor) {
         super.init(mode: .drag)
+        
         self.reactor = reactor
     }
     
@@ -29,13 +29,60 @@ class TagBottomSheetViewController: BottomSheetViewController, View {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - Setup Methods
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        addContentView(view: bottomSheetView)
+    }
     
     override func setupProperty() {
         super.setupProperty()
+        
+        for _ in 0...3 {
+            let imageBox = ImageBox(image: JYPIOSAsset.iconCulturalInstitution.image, title: "이소")
+            
+            imageStackView.addArrangedSubview(imageBox)
+        }
+        
+        titleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 20)
+        titleLabel.textColor = JYPIOSAsset.textB80.color
+        
+        tag.isSelected = false
+        
+        imageStackView.distribution = .equalSpacing
+        imageStackView.spacing = 12
+        imageStackView.alignment = .leading
     }
     
-    func bind(reactor: Reactor) {
-        reactor.state.map(\.users)
+    override func setupHierarchy() {
+        super.setupHierarchy()
+        
+        bottomSheetView.addSubviews([titleLabel, tag, imageStackView])
+    }
+    
+    override func setupLayout() {
+        super.setupLayout()
+        
+        titleLabel.snp.makeConstraints {
+            $0.top.equalToSuperview().inset(4)
+            $0.leading.equalToSuperview()
+        }
+        
+        tag.snp.makeConstraints {
+            $0.top.equalTo(titleLabel.snp.bottom).offset(24)
+            $0.leading.equalToSuperview()
+        }
+        
+        imageStackView.snp.makeConstraints {
+            $0.top.equalTo(tag.snp.bottom).offset(12)
+            $0.leading.equalToSuperview()
+            $0.bottom.equalToSuperview().inset(23)
+        }
+    }
+    
+    func bind(reactor: Reactor) {        
+        titleLabel.text = reactor.currentState.orientation.title + " 태그"
+        tag.type = reactor.currentState.orientation
+        tag.titleLabel.text = reactor.currentState.topic
     }
 }

@@ -20,6 +20,7 @@ class PlannerReactor: Reactor {
         case fetchJourney
         case showDiscussion
         case showJourneyPlan
+        case updateTagBottomSheetReactor(TagBottomSheetReactor?)
         case updatePlannerSearchPlaceReactor(PlannerSearchPlaceReactor?)
         case updatePlannerRouteReactor(PlannerRouteReactor?)
         case updateWebReactor(WebReactor?)
@@ -29,6 +30,7 @@ class PlannerReactor: Reactor {
         var pik: Pik
         var isShowDiscussion: Bool = true
         var isShowJourneyPlan: Bool = false
+        var tagBottomSheetReactor: TagBottomSheetReactor?
         var plannerSearchPlaceReactor: PlannerSearchPlaceReactor?
         var plannerRouteReactor: PlannerRouteReactor?
         var webReactor: WebReactor?
@@ -62,6 +64,8 @@ class PlannerReactor: Reactor {
         let eventMutation = provider.plannerService.event.flatMap { (event) -> Observable<Mutation> in
             switch event {
             case .fetchJourney: return .empty()
+            case let .presentTagBottomSheet(reactor):
+                return .just(.updateTagBottomSheetReactor(reactor))
             case let .presentPlannerSearchPlace(reactor):
                 return .just(.updatePlannerSearchPlaceReactor(reactor))
             case let .presentPlannerRoute(reactor):
@@ -89,6 +93,8 @@ class PlannerReactor: Reactor {
         case .showJourneyPlan:
             newState.isShowDiscussion = false
             newState.isShowJourneyPlan = true
+        case let .updateTagBottomSheetReactor(reactor):
+            newState.tagBottomSheetReactor = reactor
         case let .updatePlannerSearchPlaceReactor(reactor):
             newState.plannerSearchPlaceReactor = reactor
         case let .updatePlannerRouteReactor(reactor):
