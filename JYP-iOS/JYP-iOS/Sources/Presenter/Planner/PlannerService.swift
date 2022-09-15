@@ -11,7 +11,10 @@ import RxSwift
 
 enum PlannerEvent {
     case fetchJourney(Journey)
-    case presentPlannerRoute(PlannerRouteReactor)
+    case presentTagBottomSheet(TagBottomSheetReactor?)
+    case presentPlannerSearchPlace(PlannerSearchPlaceReactor?)
+    case presentWeb(WebReactor?)
+    case presentPlannerRoute(PlannerRouteReactor?)
 }
 
 protocol PlannerServiceProtocol {
@@ -19,6 +22,11 @@ protocol PlannerServiceProtocol {
     var journey: Journey? { get }
     
     func updateJourney(to journey: Journey)
+    
+    func presentTagBottomSheet(from reactor: TagBottomSheetReactor)
+    func presentPlannerSearchPlace(from reactor: PlannerSearchPlaceReactor)
+    func presentWeb(from reactor: WebReactor)
+    func presentPlannerRoute(from reactor: PlannerRouteReactor)
     
     func makeSections(from journey: Journey) -> [DiscussionSectionModel]
     func makeSections(from journey: Journey) -> [JourneyPlanSectionModel]
@@ -33,21 +41,55 @@ class PlannerService: PlannerServiceProtocol {
         event.onNext(.fetchJourney(journey))
     }
     
-    func makeSections(from journey: Journey) -> [DiscussionSectionModel] {
-        guard let tags = journey.tags else { return [] }
-        guard let pikmis = journey.pikmis else { return [] }
+    func presentTagBottomSheet(from reactor: TagBottomSheetReactor) {
+        event.onNext(.presentTagBottomSheet(reactor))
+        event.onNext(.presentTagBottomSheet(nil))
+    }
     
-        let tagItems = tags.map { (tag) -> DiscussionItem in
-            return DiscussionItem.tag(TagCollectionViewCellReactor(tag: tag))
-        }
-        let pikmiItems = pikmis.enumerated().map { (index, pik) -> DiscussionItem in
-            return DiscussionItem.pikmi(PikmiCollectionViewCellReactor(state: .init(pik: pik, rank: index)))
+    func presentPlannerSearchPlace(from reactor: PlannerSearchPlaceReactor) {
+        event.onNext(.presentPlannerSearchPlace(reactor))
+        event.onNext(.presentPlannerSearchPlace(nil))
+    }
+    
+    func presentWeb(from reactor: WebReactor) {
+        event.onNext(.presentWeb(reactor))
+        event.onNext(.presentWeb(nil))
+    }
+    
+    func presentPlannerRoute(from reactor: PlannerRouteReactor) {
+        event.onNext(.presentPlannerRoute(reactor))
+        event.onNext(.presentPlannerRoute(nil))
+    }
+    
+    func makeSections(from journey: Journey) -> [DiscussionSectionModel] {
+        var sections: [DiscussionSectionModel] = []
+        
+        if let tags = journey.tags {
+            let items = tags.map { (tag) -> DiscussionItem in
+                return DiscussionItem.tag(TagCollectionViewCellReactor(tag: tag))
+            }
+            let section = DiscussionSectionModel(model: DiscussionSection.tag(items), items: items)
+            
+            sections.append(section)
         }
         
-        let tagSection = DiscussionSectionModel(model: DiscussionSection.tag(tagItems), items: tagItems)
-        let pikmiSection = DiscussionSectionModel(model: DiscussionSection.pikmi(pikmiItems), items: pikmiItems)
-        
-        return [tagSection, pikmiSection]
+        if let pikmis = journey.pikmis {
+            if pikmis.isEmpty {
+                let item = DiscussionSectionModel.Item.createPikmi(.init())
+                let section = DiscussionSectionModel.init(model: .pikmi([item]), items: [item])
+                
+                sections.append(section)
+            } else {
+                let items = pikmis.enumerated().map { (index, pik) -> DiscussionItem in
+                    return DiscussionItem.pikmi(PikmiCollectionViewCellReactor(state: .init(pik: pik, rank: index)))
+                }
+                let section = DiscussionSectionModel(model: DiscussionSection.pikmi(items), items: items)
+                
+                sections.append(section)
+            }
+        }
+
+        return sections
     }
     
     func makeSections(from journey: Journey) -> [JourneyPlanSectionModel] {

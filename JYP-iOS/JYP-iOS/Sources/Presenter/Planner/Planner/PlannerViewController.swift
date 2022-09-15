@@ -131,6 +131,11 @@ class PlannerViewController: NavigationBarViewController, View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
+        inviteButton.rx.tap
+            .map { .invite }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
         discussionButton.rx.tap
             .map { .showDiscussion }
             .bind(to: reactor.action)
@@ -162,14 +167,45 @@ class PlannerViewController: NavigationBarViewController, View {
             .disposed(by: disposeBag)
         
         reactor.state
-            .map(\.plannerRouteReactor)
+            .compactMap(\.plannerInviteReactor)
             .withUnretained(self)
             .bind { this, reactor in
-                guard let reactor = reactor else { return }
+                let plannerInviteViewController = PlannerInviteViewController(reactor: reactor)
                 
-                let plannerRouteViewController = PlannerRouteViewController(reactor: reactor)
-                
-                this.navigationController?.pushViewController(plannerRouteViewController, animated: true)
+                plannerInviteViewController.hidesBottomBarWhenPushed = true
+                this.navigationController?.pushViewController(plannerInviteViewController, animated: true)
+            }
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .compactMap(\.tagBottomSheetReactor)
+            .withUnretained(self)
+            .bind { this, reactor in
+                this.tabBarController?.present(TagBottomSheetViewController(reactor: reactor), animated: true)
+            }
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .compactMap(\.plannerSearchPlaceReactor)
+            .withUnretained(self)
+            .bind { this, reactor in
+                this.navigationController?.pushViewController(PlannerSearchPlaceViewController(reactor: reactor), animated: true)
+            }
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .compactMap(\.plannerRouteReactor)
+            .withUnretained(self)
+            .bind { this, reactor in
+                this.navigationController?.pushViewController(PlannerRouteViewController(reactor: reactor), animated: true)
+            }
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .compactMap(\.webReactor)
+            .withUnretained(self)
+            .bind { this, reactor in
+                this.navigationController?.present(WebViewController(reactor: reactor), animated: true)
             }
             .disposed(by: disposeBag)
     }

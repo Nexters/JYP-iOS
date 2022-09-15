@@ -23,7 +23,7 @@ class PlannerSearchPlaceReactor: Reactor {
     }
     
     struct State {
-        var sections: [PlannerSearchPlaceSectionModel]
+        var sections: [PlannerSearchPlaceSectionModel] = []
         var kakaoSearchPlacePresentPlannerSearchPlaceMapViewController: KakaoSearchPlace?
         var dismiss: Bool = false
     }
@@ -32,7 +32,7 @@ class PlannerSearchPlaceReactor: Reactor {
     var initialState: State
     
     init() {
-        initialState = State(sections: [])
+        initialState = State()
     }
 }
 

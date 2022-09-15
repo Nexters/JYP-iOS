@@ -27,18 +27,30 @@ class DiscussionView: BaseView, View {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: TagCollectionViewCell.self), for: indexPath) as? TagCollectionViewCell else { return .init() }
             
             cell.reactor = reactor
-            return cell
             
-        case let .createPikmi(reactor):
+            return cell
+        case let .createPikmi(cellReactor):
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: CreatePikmiCollectionViewCell.self), for: indexPath) as? CreatePikmiCollectionViewCell else { return .init() }
             
-            cell.reactor = reactor
+            cell.reactor = cellReactor
+            cell.button
+                .rx
+                .tap
+                .map { .tapCreatePikmiButton }
+                .bind(to: reactor.action)
+                .disposed(by: cell.disposeBag)
+            
             return cell
             
-        case let .pikmi(reactor):
+        case let .pikmi(cellReactor):
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: PikmiCollectionViewCell.self), for: indexPath) as? PikmiCollectionViewCell else { return .init() }
             
-            cell.reactor = reactor
+            cell.reactor = cellReactor
+            cell.infoButton.rx.tap
+                .map { .tapPikmiInfoButton(indexPath) }
+                .bind(to: reactor.action)
+                .disposed(by: cell.disposeBag)
+            
             return cell
         }
     } configureSupplementaryView: { [weak self] dataSource, collectionView, _, indexPath -> UICollectionReusableView in
@@ -52,10 +64,10 @@ class DiscussionView: BaseView, View {
         case .pikmi:
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: PlannerHomeDiscussionCandidatePlaceSectionHeader.self), for: indexPath) as? PlannerHomeDiscussionCandidatePlaceSectionHeader else { return .init() }
             
-//            header.trailingButton.rx.tap
-//                .map { .didTapAddCandidatePlaceButton }
-//                .bind(to: reactor.action)
-//                .disposed(by: header.disposeBag)
+            header.trailingButton.rx.tap
+                .map { .tapCreatePikmiButton }
+                .bind(to: reactor.action)
+                .disposed(by: header.disposeBag)
             
             return header
         }
@@ -106,6 +118,11 @@ class DiscussionView: BaseView, View {
     
     func bind(reactor: Reactor) {
         collectionView.rx.setDelegate(self).disposed(by: disposeBag)
+        
+        collectionView.rx.itemSelected
+            .map { .selectCell($0) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
         
         reactor.state
             .asObservable()

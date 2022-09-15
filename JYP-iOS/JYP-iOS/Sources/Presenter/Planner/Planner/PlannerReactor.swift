@@ -14,42 +14,49 @@ class PlannerReactor: Reactor {
         case refresh
         case showDiscussion
         case showJourneyPlan
+        case invite
     }
     
     enum Mutation {
         case fetchJourney
-        case showDiscussion
-        case showJourneyPlan
+        case updateIsShowDiscussion(Bool)
+        case updateIsShowJourneyPlan(Bool)
+        case updatePlannerInviteReactor(PlannerInviteReactor?)
+        case updateTagBottomSheetReactor(TagBottomSheetReactor?)
+        case updatePlannerSearchPlaceReactor(PlannerSearchPlaceReactor?)
         case updatePlannerRouteReactor(PlannerRouteReactor?)
+        case updateWebReactor(WebReactor?)
     }
     
     struct State {
-        var pik: Pik?
+        var pik: Pik
         var isShowDiscussion: Bool = true
         var isShowJourneyPlan: Bool = false
+        var plannerInviteReactor: PlannerInviteReactor?
+        var tagBottomSheetReactor: TagBottomSheetReactor?
+        var plannerSearchPlaceReactor: PlannerSearchPlaceReactor?
         var plannerRouteReactor: PlannerRouteReactor?
+        var webReactor: WebReactor?
     }
     
     let provider = ServiceProvider.shared
+    
     var initialState: State
     
-    init() {
-        initialState = .init()
+    init(state: State) {
+        self.initialState = state
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .refresh:
-            return provider.journeyService.fetchJorney(id: 0)
-                .withUnretained(self)
-                .map { this, journey in
-                    this.provider.plannerService.updateJourney(to: journey)
-                    return .fetchJourney
-                }
+            return mutateRefresh()
         case .showDiscussion:
-            return .just(.showDiscussion)
+            return mutateShowDiscussion()
         case .showJourneyPlan:
-            return .just(.showJourneyPlan)
+            return mutateShowJourneyPlan()
+        case .invite:
+            return mutateInvite()
         }
     }
     
@@ -57,11 +64,17 @@ class PlannerReactor: Reactor {
         let eventMutation = provider.plannerService.event.flatMap { (event) -> Observable<Mutation> in
             switch event {
             case .fetchJourney: return .empty()
+            case let .presentTagBottomSheet(reactor):
+                return .just(.updateTagBottomSheetReactor(reactor))
+            case let .presentPlannerSearchPlace(reactor):
+                return .just(.updatePlannerSearchPlaceReactor(reactor))
             case let .presentPlannerRoute(reactor):
                 return .concat([
                     .just(.updatePlannerRouteReactor(reactor)),
                     .just(.updatePlannerRouteReactor(nil))
                 ])
+            case let .presentWeb(reactor):
+                return .just(.updateWebReactor(reactor))
             }
         }
         
@@ -74,16 +87,56 @@ class PlannerReactor: Reactor {
         switch mutation {
         case .fetchJourney:
             break
-        case .showDiscussion:
-            newState.isShowDiscussion = true
-            newState.isShowJourneyPlan = false
-        case .showJourneyPlan:
-            newState.isShowDiscussion = false
-            newState.isShowJourneyPlan = true
+        case let .updateIsShowDiscussion(bool):
+            newState.isShowDiscussion = bool
+        case let .updateIsShowJourneyPlan(bool):
+            newState.isShowJourneyPlan = bool
+        case let .updatePlannerInviteReactor(reactor):
+            newState.plannerInviteReactor = reactor
+        case let .updateTagBottomSheetReactor(reactor):
+            newState.tagBottomSheetReactor = reactor
+        case let .updatePlannerSearchPlaceReactor(reactor):
+            newState.plannerSearchPlaceReactor = reactor
         case let .updatePlannerRouteReactor(reactor):
             newState.plannerRouteReactor = reactor
+        case let .updateWebReactor(reactor):
+            newState.webReactor = reactor
         }
         
         return newState
+    }
+    
+    private func mutateRefresh() -> Observable<Mutation> {
+        return provider.journeyService.fetchJorney(id: 0)
+            .withUnretained(self)
+            .map { this, journey in
+                this.provider.plannerService.updateJourney(to: journey)
+                return .fetchJourney
+            }
+    }
+    
+    private func mutateShowDiscussion() -> Observable<Mutation> {
+        return .concat([
+            .just(.updateIsShowDiscussion(true)),
+            .just(.updateIsShowJourneyPlan(false))
+        ])
+    }
+    
+    private func mutateShowJourneyPlan() -> Observable<Mutation> {
+        return .concat([
+            .just(.updateIsShowDiscussion(false)),
+            .just(.updateIsShowJourneyPlan(true))
+        ])
+    }
+    
+    private func mutateInvite() -> Observable<Mutation> {
+        return .concat([
+            .just(.updatePlannerInviteReactor(makeReactor())),
+            .just(.updatePlannerInviteReactor(nil))
+        ])
+    }
+    
+    private func makeReactor() -> PlannerInviteReactor {
+        return .init(state: .init())
     }
 }
