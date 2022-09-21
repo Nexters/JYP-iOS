@@ -9,9 +9,9 @@
 import Foundation
 
 struct SignupRequest: Codable {
-    let authVendor: AuthVendor
-    let authID, name, profileImagePath: String
-    let personalityID: PersonalityId
+    var authVendor: AuthVendor
+    var authID, name, profileImagePath: String
+    var personalityID: PersonalityId
 
     enum CodingKeys: String, CodingKey {
         case authVendor

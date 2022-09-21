@@ -9,6 +9,12 @@
 import ReactorKit
 
 class OnboardingQuestionReactor: Reactor {
+    enum Mode {
+        case joruney
+        case place
+        case plan
+    }
+    
     enum Action {
         case didTapCardViewA
         case didTapCardViewB
@@ -19,6 +25,7 @@ class OnboardingQuestionReactor: Reactor {
         case updateCardViewAState(OnboardingCardViewState)
         case updateCardViewBState(OnboardingCardViewState)
         case updateIsActiveNextButton(Bool)
+        case updateOnboardingQuestionReactor(OnboardingQuestionReactor?)
         case updateIsPresentNextViewController(Bool)
     }
     
@@ -26,12 +33,16 @@ class OnboardingQuestionReactor: Reactor {
         var stateCardViewA: OnboardingCardViewState = .defualt
         var stateCardViewB: OnboardingCardViewState = .defualt
         var isActiveNextButton: Bool = false
+        var onboardingQuestionReactor: OnboardingQuestionReactor?
         var isPresentNextViewController: Bool = false
     }
     
     let initialState: State
+    let mode: Mode
+    let service: OnboardingServiceProtocol = ServiceProvider.shared.onboaringService
     
-    init() {
+    init(mode: Mode) {
+        self.mode = mode
         self.initialState = State()
     }
     
@@ -40,26 +51,11 @@ class OnboardingQuestionReactor: Reactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .didTapCardViewA:
-            return .concat([
-                .just(.updateCardViewAState(.active)),
-                .just(.updateCardViewBState(.inactive)),
-                .just(.updateIsActiveNextButton(true))
-            ])
+            return mutateDidTapCardViewA()
         case .didTapCardViewB:
-            return .concat([
-                .just(.updateCardViewAState(.inactive)),
-                .just(.updateCardViewBState(.active)),
-                .just(.updateIsActiveNextButton(true))
-            ])
+            return mutateDidTapCardViewB()
         case .didTapNextButton:
-            if currentState.isActiveNextButton {
-                return .concat([
-                    .just(.updateIsPresentNextViewController(true)),
-                    .just(.updateIsPresentNextViewController(false))
-                ])
-            } else {
-                return .empty()
-            }
+            return mutateDidTapNextButton()
         }
     }
     
@@ -73,10 +69,39 @@ class OnboardingQuestionReactor: Reactor {
             newState.stateCardViewB = state
         case .updateIsActiveNextButton(let bool):
             newState.isActiveNextButton = bool
+        case let .updateOnboardingQuestionReactor(reactor):
+            newState.onboardingQuestionReactor = reactor
         case .updateIsPresentNextViewController(let bool):
             newState.isPresentNextViewController = bool
         }
         
         return newState
+    }
+    
+    private func mutateDidTapCardViewA() -> Observable<Mutation> {
+        return .concat([
+            .just(.updateCardViewAState(.active)),
+            .just(.updateCardViewBState(.inactive)),
+            .just(.updateIsActiveNextButton(true))
+        ])
+    }
+    
+    private func mutateDidTapCardViewB() -> Observable<Mutation> {
+        return .concat([
+            .just(.updateCardViewAState(.inactive)),
+            .just(.updateCardViewBState(.active)),
+            .just(.updateIsActiveNextButton(true))
+        ])
+    }
+    
+    private func mutateDidTapNextButton() -> Observable<Mutation> {
+        if currentState.isActiveNextButton {
+            return .concat([
+                .just(.updateIsPresentNextViewController(true)),
+                .just(.updateIsPresentNextViewController(false))
+            ])
+        } else {
+            return .empty()
+        }
     }
 }
