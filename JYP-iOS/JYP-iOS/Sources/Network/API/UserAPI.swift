@@ -11,8 +11,8 @@ import Moya
 
 enum UserAPI {
     case search(id: Int)
-    case update(id: Int, request: UserUpdate)
-    case signup(request: UserSignup)
+    case update(id: Int, request: UserUpdateRequest)
+    case signup(request: SignupRequest)
 }
 
 extension UserAPI: BaseAPI {

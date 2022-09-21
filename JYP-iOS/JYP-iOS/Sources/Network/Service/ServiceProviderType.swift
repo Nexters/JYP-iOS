@@ -12,17 +12,19 @@ protocol ServiceProviderType: AnyObject {
     var kakaoSearchService: KakaoSearchServiceType { get }
     var tagService: TagServiceType { get }
     var journeyService: JourneyServiceType { get }
+    
+    var onboaringService: OnboardingServiceProtocol { get }
+    var plannerService: PlannerServiceProtocol { get }
 }
 
 final class ServiceProvider: ServiceProviderType {
     static let shared = ServiceProvider()
     
-    // API Service
     lazy var kakaoSearchService: KakaoSearchServiceType = KakaoSearchService(provider: self)
     lazy var tagService: TagServiceType = TagService(provider: self)
     lazy var journeyService: JourneyServiceType = JourneyService(provider: self)
     
-    // Local Service
+    lazy var onboaringService: OnboardingServiceProtocol = OnboardingService()
     lazy var plannerService: PlannerServiceProtocol = PlannerService()
     
     private init() { }
