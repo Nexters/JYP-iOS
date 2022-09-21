@@ -8,9 +8,39 @@
 
 import Foundation
 
+enum AuthVendor: Codable {
+    case kakao
+    case apple
+}
+
+enum PersonalityId: Codable {
+    case ME
+    case PE
+    case RT
+    case FW
+}
+
 struct User: Hashable {
     let id: String
     let nickname: String
     let profileImagePath: String
     let personality: String
+}
+
+struct UserUpdate: Codable {
+    let name: String
+    let profileImagePath: String
+}
+
+struct UserSignup: Codable {
+    let authVendor: AuthVendor
+    let authID, name, profileImagePath: String
+    let personalityID: PersonalityId
+
+    enum CodingKeys: String, CodingKey {
+        case authVendor
+        case authID = "authId"
+        case name, profileImagePath
+        case personalityID = "personalityId"
+    }
 }
