@@ -53,17 +53,19 @@ class CreatePlannerDateViewController: NavigationBarViewController, View {
     }
 
     func bind(reactor: CreatePlannerDateReactor) {
-        rx.viewDidLoad
+        rx.viewWillAppear
             .map { _ in Reactor.Action.didTapStartDateTextField }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
         selfView.startDateTextField.rx.tapGesture()
+            .when(.began)
             .map { _ in Reactor.Action.didTapStartDateTextField }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
         selfView.endDateTextField.rx.tapGesture()
+            .when(.began)
             .map { _ in Reactor.Action.didTapEndDateTextField }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
@@ -120,7 +122,7 @@ class CreatePlannerDateViewController: NavigationBarViewController, View {
             .subscribe(onNext: { [weak self] _ in
                 let calendarViewController = CalendarViewController(reactor: reactor.makeCalendarReactor())
 
-                self?.tabBarController?.present(calendarViewController, animated: true)
+                self?.present(calendarViewController, animated: true)
             })
             .disposed(by: disposeBag)
     }
