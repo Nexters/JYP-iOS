@@ -15,12 +15,14 @@ final class CreatePlannerNameReactor: Reactor {
 
     enum PlannerNameTextFieldInputState {
         case valid
-        case invalid
+        case emptyCharacters
+        case exceededCharacters
 
         var guideText: String {
             switch self {
             case .valid: return ""
-            case .invalid: return "입력 가능한 글자를 초과했어요"
+            case .emptyCharacters: return ""
+            case .exceededCharacters: return "입력 가능한 글자를 초과했어요"
             }
         }
     }
@@ -38,7 +40,7 @@ final class CreatePlannerNameReactor: Reactor {
     }
 
     struct State {
-        var validation: PlannerNameTextFieldInputState = .invalid
+        var validation: PlannerNameTextFieldInputState = .emptyCharacters
         var guideText: String = PlannerNameTextFieldInputState.valid.guideText
         var textFieldText: String = ""
         var isPresentCoverBottomSheet: Bool = false
@@ -56,9 +58,11 @@ final class CreatePlannerNameReactor: Reactor {
                 .just(.presentCoverImageBottomSheet(false))
             )
         case let .inputTextField(text):
-            let isValid = (text.count <= Self.MAX_NAME_LENGTH) && !text.isEmpty
+            guard !text.isEmpty else { return .just(.changeValidation(.emptyCharacters)) }
+            let isValid = text.count <= Self.MAX_NAME_LENGTH
 
-            let mutation: Observable<Mutation> = isValid ? .just(.changeValidation(.valid)) : .just(.changeValidation(.invalid))
+            let mutation: Observable<Mutation> = isValid ?
+                .just(.changeValidation(.valid)) : .just(.changeValidation(.exceededCharacters))
             return mutation
         case let .didTapNameTag(tag):
             return .just(.changeTextField(tag.rawValue))
