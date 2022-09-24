@@ -48,7 +48,8 @@ class CreatePlannerDateViewController: NavigationBarViewController, View {
         super.setupLayout()
 
         selfView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+            $0.top.leading.trailing.equalToSuperview()
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
         }
     }
 
@@ -67,6 +68,11 @@ class CreatePlannerDateViewController: NavigationBarViewController, View {
         selfView.endDateTextField.rx.tapGesture()
             .when(.began)
             .map { _ in Reactor.Action.didTapEndDateTextField }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        selfView.submitButton.rx.tap
+            .map { _ in Reactor.Action.didTapSubmitButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
@@ -123,6 +129,17 @@ class CreatePlannerDateViewController: NavigationBarViewController, View {
                 let calendarViewController = CalendarViewController(reactor: reactor.makeCalendarReactor())
 
                 self?.present(calendarViewController, animated: true)
+            })
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .map(\.isPushCreateTagView)
+            .distinctUntilChanged()
+            .filter { $0 }
+            .subscribe(onNext: { [weak self] _ in
+                let createTag = CreatePlannerTagViewController(reactor: reactor.makeCreateTagReactor())
+
+                self?.navigationController?.pushViewController(createTag, animated: true)
             })
             .disposed(by: disposeBag)
     }

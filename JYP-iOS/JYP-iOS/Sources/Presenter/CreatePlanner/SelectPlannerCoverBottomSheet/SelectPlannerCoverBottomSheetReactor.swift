@@ -17,7 +17,7 @@ final class SelectPlannerCoverBottomSheetReactor: Reactor {
 
     enum Mutation {
         case changeSelection(IndexPath)
-        case pushCalendarView
+        case pushCalendarView(Bool)
     }
 
     struct State {
@@ -45,7 +45,10 @@ final class SelectPlannerCoverBottomSheetReactor: Reactor {
         case let .selectTheme(indexPath):
             return .just(.changeSelection(indexPath))
         case .didTapSubmitButton:
-            return .just(.pushCalendarView)
+            return .concat(
+                .just(.pushCalendarView(true)),
+                .just(.pushCalendarView(false))
+            )
         }
     }
 
@@ -55,8 +58,8 @@ final class SelectPlannerCoverBottomSheetReactor: Reactor {
         switch mutation {
         case let .changeSelection(indexPath):
             newState.selectedIndexPath = indexPath
-        case .pushCalendarView:
-            newState.isPushCalendarView = true
+        case let .pushCalendarView(isPush):
+            newState.isPushCalendarView = isPush
         }
 
         return newState
