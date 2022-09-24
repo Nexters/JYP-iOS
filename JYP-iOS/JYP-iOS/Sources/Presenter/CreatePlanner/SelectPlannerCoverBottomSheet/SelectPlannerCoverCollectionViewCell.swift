@@ -56,6 +56,8 @@ class SelectPlannerCoverCollectionViewCell: BaseCollectionViewCell, View {
         themeLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 16)
 
         checkButton.setImage(JYPIOSAsset.iconCheck.image, for: .selected)
+        checkButton.imageView?.contentMode = .scaleAspectFill
+        checkButton.imageView?.clipsToBounds = false
     }
 
     override func setupHierarchy() {

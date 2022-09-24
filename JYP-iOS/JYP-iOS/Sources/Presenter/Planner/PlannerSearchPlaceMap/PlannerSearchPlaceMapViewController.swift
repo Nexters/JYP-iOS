@@ -19,7 +19,14 @@ class PlannerSearchPlaceMapViewController: NavigationBarViewController, View {
     let backButton = UIButton(type: .system)
     let searchTextField = JYPSearchTextField(type: .place)
     #if arch(x86_64)
-    lazy var mapView = GMSMapView(frame: view.bounds, camera: .camera(withLatitude: Double(reactor?.state.y) ?? 0.0, longitude: Double(reactor?.state.x) ?? 0.0, zoom: 18))
+    lazy var mapView = GMSMapView(
+        frame: view.bounds,
+        camera: .camera(
+            withLatitude: 0.0,
+            longitude: 0.0,
+            zoom: 18
+        )
+    )
     #else
         lazy var mapView = UIView().then {
             $0.backgroundColor = .systemRed
