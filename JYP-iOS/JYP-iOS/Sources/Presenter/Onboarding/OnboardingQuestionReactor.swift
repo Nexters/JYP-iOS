@@ -26,7 +26,7 @@ class OnboardingQuestionReactor: Reactor {
         case updateCardViewBState(OnboardingCardViewState)
         case updateIsActiveNextButton(Bool)
         case updateOnboardingQuestionReactor(OnboardingQuestionReactor?)
-        case updateIsPresentNextViewController(Bool)
+        case updateMyPlannerReactor(MyPlannerReactor?)
     }
     
     struct State {
@@ -34,11 +34,13 @@ class OnboardingQuestionReactor: Reactor {
         var stateCardViewB: OnboardingCardViewState = .defualt
         var isActiveNextButton: Bool = false
         var onboardingQuestionReactor: OnboardingQuestionReactor?
-        var isPresentNextViewController: Bool = false
+        var myPlannerReactor: MyPlannerReactor?
     }
     
     let initialState: State
     let mode: Mode
+    
+    let provider: ServiceProviderType = ServiceProvider.shared
     let service: OnboardingServiceProtocol = ServiceProvider.shared.onboaringService
     
     init(mode: Mode) {
@@ -59,6 +61,17 @@ class OnboardingQuestionReactor: Reactor {
         }
     }
     
+    func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
+        let eventMutation = service.event.flatMap { (event) -> Observable<Mutation> in
+            switch event {
+            case let .presentMyPlanner(reactor):
+                return .just(.updateMyPlannerReactor(reactor))
+            }
+        }
+        
+        return Observable.merge(mutation, eventMutation)
+    }
+    
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
         
@@ -71,8 +84,8 @@ class OnboardingQuestionReactor: Reactor {
             newState.isActiveNextButton = bool
         case let .updateOnboardingQuestionReactor(reactor):
             newState.onboardingQuestionReactor = reactor
-        case .updateIsPresentNextViewController(let bool):
-            newState.isPresentNextViewController = bool
+        case let .updateMyPlannerReactor(reactor):
+            newState.myPlannerReactor = reactor
         }
         
         return newState
@@ -95,12 +108,26 @@ class OnboardingQuestionReactor: Reactor {
     }
     
     private func mutateDidTapNextButton() -> Observable<Mutation> {
-        if currentState.isActiveNextButton {
+        if currentState.isActiveNextButton == false { return .empty() }
+        
+        switch mode {
+        case .joruney:
+            let reactor = OnboardingQuestionReactor(mode: .place)
+            
             return .concat([
-                .just(.updateIsPresentNextViewController(true)),
-                .just(.updateIsPresentNextViewController(false))
+                .just(.updateOnboardingQuestionReactor(reactor)),
+                .just(.updateOnboardingQuestionReactor(nil))
             ])
-        } else {
+        case .place:
+            let reactor = OnboardingQuestionReactor(mode: .plan)
+            
+            return .concat([
+                .just(.updateOnboardingQuestionReactor(reactor)),
+                .just(.updateOnboardingQuestionReactor(nil))
+            ])
+        case .plan:
+            service.signup()
+            
             return .empty()
         }
     }

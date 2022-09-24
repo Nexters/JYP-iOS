@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum AuthVendor: Codable {
+enum AuthVendor: String, Codable {
     case kakao
     case apple
 }

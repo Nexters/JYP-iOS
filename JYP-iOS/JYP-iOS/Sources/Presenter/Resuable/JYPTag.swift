@@ -14,7 +14,7 @@ struct JYPTagConfig {
     let backgroundColor: UIColor
 }
 
-enum JYPTagType: Int {
+enum JYPTagType: Int, Codable {
     case soso = 0
     case like = 1
     case dislike = 2

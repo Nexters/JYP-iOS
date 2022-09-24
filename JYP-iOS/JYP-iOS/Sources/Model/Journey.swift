@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Journey: Hashable {
+struct Journey: Codable {
     let id: String
     let name: String
     let startDate: Double

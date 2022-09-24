@@ -12,19 +12,19 @@ class OnboardingSignUpReactor: Reactor {
     enum Action {
         case didTapKakaoLoginButton
         case didTapAppleLoginButton
-        case didLogin
+        case didLogin(authVendor: AuthVendor, authID: String, name: String, profileImagePath: String)
     }
     
     enum Mutation {
         case setIsOpenKakaoLogin(Bool)
         case setIsOpenAppleLogin(Bool)
-        case setIsPresentOnboardingWhatIsTrip(Bool)
+        case updateOnboardingQuestionReactor(OnboardingQuestionReactor?)
     }
     
     struct State {
         var isOpenKakaoLogin: Bool = false
         var isOpenAppleLogin: Bool = false
-        var isPresentOnboardingWhatIsTrip: Bool = false
+        var onboardingQuestionReactor: OnboardingQuestionReactor?
     }
     
     let initialState: State
@@ -34,16 +34,14 @@ class OnboardingSignUpReactor: Reactor {
         self.initialState = initialState
     }
     
-    // MARK: - Setup Mutate
-    
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .didTapKakaoLoginButton:
             return .just(.setIsOpenKakaoLogin(true))
         case .didTapAppleLoginButton:
             return .just(.setIsOpenAppleLogin(true))
-        case .didLogin:
-            return .just(.setIsPresentOnboardingWhatIsTrip(true))
+        case let .didLogin(authVendor, authID, name, profileImagePath):
+            return mutateDidLogin(authVendor: authVendor, authID: authID, name: name, profileImagePath: profileImagePath)
         }
     }
     
@@ -57,10 +55,26 @@ class OnboardingSignUpReactor: Reactor {
             newState.isOpenKakaoLogin = bool
         case .setIsOpenAppleLogin(let bool):
             newState.isOpenAppleLogin = bool
-        case .setIsPresentOnboardingWhatIsTrip(let bool):
-            newState.isPresentOnboardingWhatIsTrip = bool
+        case let .updateOnboardingQuestionReactor(reactor):
+            newState.onboardingQuestionReactor = reactor
         }
         
         return newState
+    }
+    
+    private func mutateDidTapKakaoLoginButton() -> Observable<Mutation> {
+        return .empty()
+    }
+    
+    private func mutateDidLogin(authVendor: AuthVendor, authID: String, name: String, profileImagePath: String) -> Observable<Mutation> {
+        service.updateAuthVender(authVendor)
+        service.updateAuthID(authID)
+        service.updateName(name)
+        service.updateProfileImagePath(profileImagePath)
+        
+        return .concat([
+            .just(.updateOnboardingQuestionReactor(OnboardingQuestionReactor(mode: .joruney))),
+            .just(.updateOnboardingQuestionReactor(nil))
+        ])
     }
 }

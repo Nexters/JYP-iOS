@@ -10,12 +10,14 @@ import Foundation
 import RxSwift
 
 enum OnboardingEvent {
-    case updateSignupRequest(SignupRequest)
+    case presentMyPlanner(MyPlannerReactor?)
 }
 
 protocol OnboardingServiceProtocol {
     var event: PublishSubject<OnboardingEvent> { get }
     var signupReqeust: SignupRequest { get }
+    
+    func signup()
     
     func updatePersonalityId(page: Int, index: Int)
     func updateAuthVender(_ authVender: AuthVendor)
@@ -24,35 +26,43 @@ protocol OnboardingServiceProtocol {
     func updateName(_ name: String)
 }
 
-class OnboardingService: OnboardingServiceProtocol {
+class OnboardingService: BaseService, OnboardingServiceProtocol {
     let event = PublishSubject<OnboardingEvent>()
     
     var signupReqeust: SignupRequest = SignupRequest(authVendor: .kakao, authID: "", name: "", profileImagePath: "", personalityID: .ME)
     var personalityIdInts: [Int] = [0, 0, 0]
     
+    func signup() {
+        provider.userService.signup(request: signupReqeust)
+            .compactMap { $0.data }
+            .withUnretained(self)
+            .bind { this, _ in
+                let reactor = MyPlannerReactor()
+                
+                this.event.onNext(.presentMyPlanner(reactor))
+                this.event.onNext(.presentMyPlanner(nil))
+            }
+            .disposed(by: disposeBag)
+    }
+    
     func updatePersonalityId(page: Int, index: Int) {
         personalityIdInts[page] = index
         signupReqeust.personalityID = PersonalityId.intsToPersonalityId(ints: personalityIdInts)
-        event.onNext(.updateSignupRequest(signupReqeust))
     }
     
     func updateAuthVender(_ authVender: AuthVendor) {
         signupReqeust.authVendor = authVender
-        event.onNext(.updateSignupRequest(signupReqeust))
     }
     
     func updateAuthID(_ authID: String) {
         signupReqeust.authID = authID
-        event.onNext(.updateSignupRequest(signupReqeust))
     }
     
     func updateName(_ name: String) {
         signupReqeust.name = name
-        event.onNext(.updateSignupRequest(signupReqeust))
     }
     
     func updateProfileImagePath(_ profileImagePath: String) {
         signupReqeust.profileImagePath = profileImagePath
-        event.onNext(.updateSignupRequest(signupReqeust))
     }
 }

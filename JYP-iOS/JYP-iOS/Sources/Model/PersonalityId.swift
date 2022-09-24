@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum PersonalityId: Codable {
+enum PersonalityId: String, Codable {
     case ME
     case PE
     case RT

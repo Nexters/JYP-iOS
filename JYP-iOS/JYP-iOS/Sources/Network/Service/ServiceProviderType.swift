@@ -9,6 +9,7 @@
 import Foundation
 
 protocol ServiceProviderType: AnyObject {
+    var userService: UserServiceType { get }
     var kakaoSearchService: KakaoSearchServiceType { get }
     var tagService: TagServiceType { get }
     var journeyService: JourneyServiceType { get }
@@ -20,11 +21,12 @@ protocol ServiceProviderType: AnyObject {
 final class ServiceProvider: ServiceProviderType {
     static let shared = ServiceProvider()
     
+    lazy var userService: UserServiceType = UserService(provider: self)
     lazy var kakaoSearchService: KakaoSearchServiceType = KakaoSearchService(provider: self)
     lazy var tagService: TagServiceType = TagService(provider: self)
     lazy var journeyService: JourneyServiceType = JourneyService(provider: self)
     
-    lazy var onboaringService: OnboardingServiceProtocol = OnboardingService()
+    lazy var onboaringService: OnboardingServiceProtocol = OnboardingService(provider: self)
     lazy var plannerService: PlannerServiceProtocol = PlannerService()
     
     private init() { }

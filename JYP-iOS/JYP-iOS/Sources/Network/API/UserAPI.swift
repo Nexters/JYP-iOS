@@ -24,7 +24,7 @@ extension UserAPI: BaseAPI {
         switch self {
         case let .search(id): return "/users/\(id)"
         case let .update(id, _): return "/users/\(id)"
-        case .signup: return "/users"
+        case .signup: return "users"
         }
     }
 
@@ -43,11 +43,15 @@ extension UserAPI: BaseAPI {
         case let .update(_, request):
             return .requestJSONEncodable(request)
         case let .signup(request):
+            print(request)
             return .requestJSONEncodable(request)
         }
     }
 
     var headers: [String: String]? {
-        ["Authorization": "KakaoAK \(Environment.kakaoRestKey)"]
+        [
+            "jyp-jwt-master-key": Environment.jwtKey,
+            "jyp-override-id": "1"
+        ]
     }
 }
