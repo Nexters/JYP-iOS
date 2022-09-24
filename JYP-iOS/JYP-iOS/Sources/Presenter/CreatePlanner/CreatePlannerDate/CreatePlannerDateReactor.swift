@@ -24,6 +24,7 @@ final class CreatePlannerDateReactor: Reactor {
         case setJourneyDays(String)
         case presentCalendar(Bool)
         case pushCreateTagView(Bool)
+        case completeInputDate(Bool)
     }
 
     struct State {
@@ -36,6 +37,7 @@ final class CreatePlannerDateReactor: Reactor {
         var isHiddenJourneyDaysButton: Bool = true
         var isHiddenSubmitButton: Bool = true
         var isPushCreateTagView: Bool = false
+        var isCompleted: Bool = false
     }
 
     var initialState: State
@@ -79,7 +81,9 @@ extension CreatePlannerDateReactor {
             case let .updateEndDate(date):
                 return .concat(
                     .just(.updateEndDate(date)),
-                    .just(.setJourneyDays(self.service.calcJourneyDays()))
+                    .just(.setJourneyDays(self.service.calcJourneyDays())),
+                    .just(.completeInputDate(true)),
+                    .just(.completeInputDate(false))
                 )
             }
         }
@@ -109,6 +113,8 @@ extension CreatePlannerDateReactor {
             newState.isHiddenJourneyDaysButton = false
         case let .pushCreateTagView(isPush):
             newState.isPushCreateTagView = isPush
+        case let .completeInputDate(isCompleted):
+            newState.isCompleted = isCompleted
         }
 
         return newState

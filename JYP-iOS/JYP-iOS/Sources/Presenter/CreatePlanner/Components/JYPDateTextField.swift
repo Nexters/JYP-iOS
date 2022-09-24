@@ -8,7 +8,7 @@
 
 import UIKit
 
-class JYPDateTextField: UITextField {
+final class JYPDateTextField: UITextField {
     // MARK: - Properties
 
     override var isSelected: Bool {
@@ -24,6 +24,15 @@ class JYPDateTextField: UITextField {
 
                 makeBorder(color: .clear, width: 0.0)
             }
+        }
+    }
+
+    final var isCompleted: Bool = false {
+        didSet {
+            textColor = JYPIOSAsset.textB90.color
+            isEnabled = true
+
+            makeBorder(color: .clear, width: 0.0)
         }
     }
 
@@ -52,5 +61,6 @@ class JYPDateTextField: UITextField {
 
     func setupProperty() {
         textAlignment = .center
+        font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 20)
     }
 }

@@ -60,13 +60,13 @@ class CreatePlannerDateViewController: NavigationBarViewController, View {
             .disposed(by: disposeBag)
 
         selfView.startDateTextField.rx.tapGesture()
-            .when(.began)
+            .when(.recognized)
             .map { _ in Reactor.Action.didTapStartDateTextField }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
         selfView.endDateTextField.rx.tapGesture()
-            .when(.began)
+            .when(.recognized)
             .map { _ in Reactor.Action.didTapEndDateTextField }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
@@ -104,6 +104,15 @@ class CreatePlannerDateViewController: NavigationBarViewController, View {
             .map(\.endDate)
             .distinctUntilChanged()
             .bind(to: selfView.endDateTextField.rx.text)
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .map(\.isCompleted)
+            .distinctUntilChanged()
+            .subscribe(onNext: { [weak self] isCompleted in
+                self?.selfView.startDateTextField.isCompleted = isCompleted
+                self?.selfView.endDateTextField.isCompleted = isCompleted
+            })
             .disposed(by: disposeBag)
 
         reactor.state
