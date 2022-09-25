@@ -88,11 +88,12 @@ class OnboardingQuestionJourneyViewController: NavigationBarViewController, View
             .disposed(by: disposeBag)
         
         reactor.state
-            .map { $0.isPresentNextViewController }
-            .filter { $0 }
-            .bind { [weak self] _ in
-                let onboardingQuestionPlaceViewController = OnboardingQuestionPlaceViewController(reactor: OnboardingQuestionReactor())
-                self?.navigationController?.pushViewController(onboardingQuestionPlaceViewController, animated: true)
+            .compactMap(\.onboardingQuestionReactor)
+            .withUnretained(self)
+            .bind { this, reactor in
+                let onboardingQuestionPlaceViewController = OnboardingQuestionPlaceViewController(reactor: reactor)
+                
+                this.navigationController?.pushViewController(onboardingQuestionPlaceViewController, animated: true)
             }
             .disposed(by: disposeBag)
     }

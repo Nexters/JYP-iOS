@@ -17,7 +17,8 @@ final class NetworkLoggerPlugin: PluginType {
         }
         print("==============[willSend]==============")
         print("[Logger - ✅ Header] \(request.headers)")
-        print("[Logger - ✅ Endpoint] [\(method.rawValue)] - \(String(describing: request.url))")
+        print("[Logger - ✅ Body] \(String(describing: String(data: request.httpBody ?? Data(), encoding: .utf8)))")
+        print("[Logger - ✅ Endpoint] String(describing: [\(method.rawValue)] - \(String(describing: request.url)))")
     }
 
     func didReceive(_ result: Result<Response, MoyaError>, target: TargetType) {

@@ -12,7 +12,7 @@ struct Environment {
     static var url: String {
         JYPIOSResources.bundle.infoDictionary?["SERVER_HOST"] as? String ?? ""
     }
-
+    static let jwtKey: String = JYPIOSResources.bundle.infoDictionary?["SERVER_JWT_MASTER_KEY"] as? String ?? ""
     static var kakaoAPI: String { "https://dapi.kakao.com" }
     static let kakaoRestKey = JYPIOSResources.bundle.infoDictionary?["KAKAO_REST_KEY"] ?? ""
     static let kakaoAppKey: String = JYPIOSResources.bundle.infoDictionary?["KAKAO_APP_KEY"] as? String ?? ""
