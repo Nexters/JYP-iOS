@@ -13,6 +13,7 @@ final class CreatePlannerDateReactor: Reactor {
     enum Action {
         case didTapStartDateTextField
         case didTapEndDateTextField
+        case didTapSubmitButton
     }
 
     enum Mutation {
@@ -22,6 +23,8 @@ final class CreatePlannerDateReactor: Reactor {
         case updateEndDate(Date)
         case setJourneyDays(String)
         case presentCalendar(Bool)
+        case pushCreateTagView(Bool)
+        case completeInputDate(Bool)
     }
 
     struct State {
@@ -33,6 +36,8 @@ final class CreatePlannerDateReactor: Reactor {
         var journeyDays: String = ""
         var isHiddenJourneyDaysButton: Bool = true
         var isHiddenSubmitButton: Bool = true
+        var isPushCreateTagView: Bool = false
+        var isCompleted: Bool = false
     }
 
     var initialState: State
@@ -60,6 +65,11 @@ extension CreatePlannerDateReactor {
             let setEndDateTextFieldFocus: Observable<Mutation> = .just(.setEndTextFieldFocus(true))
 
             return .concat(setStartDateTextFieldFocus, setEndDateTextFieldFocus, openCalendar, closeCalendar)
+        case .didTapSubmitButton:
+            return .concat(
+                .just(.pushCreateTagView(true)),
+                .just(.pushCreateTagView(false))
+            )
         }
     }
 
@@ -71,7 +81,9 @@ extension CreatePlannerDateReactor {
             case let .updateEndDate(date):
                 return .concat(
                     .just(.updateEndDate(date)),
-                    .just(.setJourneyDays(self.service.calcJourneyDays()))
+                    .just(.setJourneyDays(self.service.calcJourneyDays())),
+                    .just(.completeInputDate(true)),
+                    .just(.completeInputDate(false))
                 )
             }
         }
@@ -99,6 +111,10 @@ extension CreatePlannerDateReactor {
         case let .setJourneyDays(days):
             newState.journeyDays = days
             newState.isHiddenJourneyDaysButton = false
+        case let .pushCreateTagView(isPush):
+            newState.isPushCreateTagView = isPush
+        case let .completeInputDate(isCompleted):
+            newState.isCompleted = isCompleted
         }
 
         return newState
@@ -113,5 +129,9 @@ extension CreatePlannerDateReactor {
         let selectedDate = currentState.isFocusStartTextField ? startDate : endDate
 
         return .init(service: service, selectedDate: selectedDate, mode: mode)
+    }
+
+    func makeCreateTagReactor() -> CreatePlannerTagReactor {
+        .init(provider: ServiceProvider.shared)
     }
 }

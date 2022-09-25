@@ -15,6 +15,7 @@ final class CreatePlannerTagReactor: Reactor {
 
     enum Action {
         case selectTag(IndexPath)
+        case didTapStartButton
     }
 
     enum Mutation {
@@ -23,12 +24,14 @@ final class CreatePlannerTagReactor: Reactor {
         case insertSectionTagItem(IndexPath, TagItem)
         case updateSectionTagItem(IndexPath, [TagItem])
         case activeStartButton
+        case pushPlannerView(Bool)
     }
 
     struct State {
         var sections: [TagSectionModel]
         var selectedItems = Set<IndexPath>()
         var isEnabledStartButton: Bool = false
+        var isPushPlannerView: Bool = false
     }
 
     let initialState: State
@@ -62,6 +65,11 @@ final class CreatePlannerTagReactor: Reactor {
                     enableStartButton
                 )
             }
+        case .didTapStartButton:
+            return .concat(
+                .just(.pushPlannerView(true)),
+                .just(.pushPlannerView(false))
+            )
         }
     }
 
@@ -96,6 +104,8 @@ final class CreatePlannerTagReactor: Reactor {
             newState.selectedItems.remove(indexPath)
         case .activeStartButton:
             newState.isEnabledStartButton = !currentState.selectedItems.isEmpty
+        case let .pushPlannerView(isPush):
+            newState.isPushPlannerView = isPush
         }
 
         return newState
@@ -104,7 +114,20 @@ final class CreatePlannerTagReactor: Reactor {
 
 extension CreatePlannerTagReactor {
     static func makeSections() -> [TagSectionModel] {
-        let tags: [Tag] = [.init(topic: "모두 찬성", orientation: .soso, users: []), .init(topic: "상관없어", orientation: .soso, users: []), .init(topic: "고기", orientation: .like, users: []), .init(topic: "해산물", orientation: .like, users: []), .init(topic: "쇼핑", orientation: .like, users: []), .init(topic: "산", orientation: .like, users: []), .init(topic: "바다", orientation: .like, users: []), .init(topic: "도시", orientation: .like, users: []), .init( topic: "핫 플레이스", orientation: .like, users: []), .init(topic: "민초 치킨", orientation: .dislike, users: []), .init(topic: "단팥크림빵", orientation: .dislike, users: []), .init(topic: "약", orientation: .dislike, users: [])]
+        let tags: [Tag] = [
+            .init(topic: "모두 찬성", orientation: .soso, users: []),
+            .init(topic: "상관없어", orientation: .soso, users: []),
+            .init(topic: "고기", orientation: .like, users: []),
+            .init(topic: "해산물", orientation: .like, users: []),
+            .init(topic: "쇼핑", orientation: .like, users: []),
+            .init(topic: "산", orientation: .like, users: []),
+            .init(topic: "바다", orientation: .like, users: []),
+            .init(topic: "도시", orientation: .like, users: []),
+            .init(topic: "핫 플레이스", orientation: .like, users: []),
+            .init(topic: "민초 치킨", orientation: .dislike, users: []),
+            .init(topic: "단팥크림빵", orientation: .dislike, users: []),
+            .init(topic: "약", orientation: .dislike, users: [])
+        ]
 
         let sosoItems = tags.filter { $0.orientation == .soso }
         let sosoSection = TagSectionModel(model: .soso(sosoItems), items: sosoItems.map { .tagCell(.init(tag: $0)) })
