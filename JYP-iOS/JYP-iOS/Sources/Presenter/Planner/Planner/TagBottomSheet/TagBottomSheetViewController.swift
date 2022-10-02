@@ -103,7 +103,7 @@ class TagBottomSheetViewController: BottomSheetViewController, View {
         tag.type = reactor.currentState.orientation
         tag.titleLabel.text = reactor.currentState.topic
         
-        reactor.currentState.users?.forEach {
+        reactor.currentState.users.forEach {
             stackView.addArrangedSubview(ProfileBox(imagePath: $0.profileImagePath, title: $0.nickname))
         }
     }
