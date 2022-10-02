@@ -31,27 +31,27 @@ final class JourneyService: BaseService, JourneyServiceType {
                      endDate: 0,
                      themePath: .city,
                      users: [],
-                     tags: nil,
-                     pikis: nil,
-                     pikmis: nil),
+                     tags: [],
+                     pikis: [],
+                     pikmis: []),
              Journey(id: "1",
                      name: "",
                      startDate: 0,
                      endDate: 0,
                      themePath: .culture,
                      users: [],
-                     tags: nil,
-                     pikis: nil,
-                     pikmis: nil),
+                     tags: [],
+                     pikis: [],
+                     pikmis: []),
              Journey(id: "1",
                      name: "",
                      startDate: 0,
                      endDate: 0,
                      themePath: .mountain,
                      users: [],
-                     tags: nil,
-                     pikis: nil,
-                     pikmis: nil)
+                     tags: [],
+                     pikis: [],
+                     pikmis: [])
             ]
         )
     }
@@ -172,8 +172,8 @@ final class JourneyService: BaseService, JourneyServiceType {
                              endDate: 0,
                              themePath: .culture,
                              users: [],
-                             tags: nil,
-                             pikis: nil,
-                             pikmis: nil))
+                             tags: [],
+                             pikis: [],
+                             pikmis: []))
     }
 }

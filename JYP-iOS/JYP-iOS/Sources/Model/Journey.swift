@@ -15,7 +15,7 @@ struct Journey: Codable {
     let endDate: Double
     let themePath: ThemeType
     let users: [User]
-    let tags: [Tag]?
-    let pikis: [[Pik]]?
-    let pikmis: [Pik]?
+    var tags: [Tag] = []
+    var pikis: [[Pik]] = []
+    var pikmis: [Pik] = []
 }
