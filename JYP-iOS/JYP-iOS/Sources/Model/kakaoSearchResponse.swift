@@ -11,7 +11,7 @@ import Foundation
 // MARK: - KakaoSearchResponse
 
 struct KakaoSearchResponse: Codable {
-    let meta: Meta
+    let meta: Meta?
     let kakaoSearchPlaces: [KakaoSearchPlace]
     
     enum CodingKeys: String, CodingKey {
