@@ -12,10 +12,11 @@ struct User: Codable {
     let id: String
     let nickname: String
     let profileImagePath: String
-    let personality: String
+    let personalityID: PersonalityId
     
     enum CodingKeys: String, CodingKey {
-        case id, profileImagePath, personality
+        case id, profileImagePath
         case nickname = "name"
+        case personalityID = "personalityId"
     }
 }

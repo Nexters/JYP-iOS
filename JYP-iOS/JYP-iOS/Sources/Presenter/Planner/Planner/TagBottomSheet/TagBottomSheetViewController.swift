@@ -13,10 +13,16 @@ import RxSwift
 class TagBottomSheetViewController: BottomSheetViewController, View {
     typealias Reactor = TagBottomSheetReactor
     
-    let bottomSheetView: UIView = .init()
+    // MARK: - UI Components
+    
+    let containerView: UIView = .init()
     let titleLabel: UILabel = .init()
+    let okButton: UIButton = .init()
     let tag: JYPTag = .init()
-    let imageStackView: UIStackView = .init()
+    let scrollView: UIScrollView = .init()
+    let stackView: UIStackView = .init()
+    
+    // MARK: - Initializer
     
     init(reactor: Reactor) {
         super.init(mode: .drag)
@@ -32,32 +38,33 @@ class TagBottomSheetViewController: BottomSheetViewController, View {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        addContentView(view: bottomSheetView)
+        addContentView(view: containerView)
     }
+    
+    // MARK: - Setup Methods
     
     override func setupProperty() {
         super.setupProperty()
-        
-        for _ in 0...3 {
-            let imageBox = ImageBox(image: JYPIOSAsset.iconCulturalInstitution.image, title: "이소")
-            
-            imageStackView.addArrangedSubview(imageBox)
-        }
-        
+  
         titleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 20)
         titleLabel.textColor = JYPIOSAsset.textB80.color
         
+        okButton.setTitle("확인", for: .normal)
+        okButton.setTitleColor(JYPIOSAsset.textB40.color, for: .normal)
+        okButton.titleLabel?.font = JYPIOSFontFamily.Pretendard.regular.font(size: 16)
+        
         tag.isSelected = false
         
-        imageStackView.distribution = .equalSpacing
-        imageStackView.spacing = 12
-        imageStackView.alignment = .leading
+        stackView.distribution = .equalSpacing
+        stackView.spacing = 12
+        stackView.alignment = .leading
     }
     
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        bottomSheetView.addSubviews([titleLabel, tag, imageStackView])
+        containerView.addSubviews([titleLabel, okButton, tag, scrollView])
+        scrollView.addSubviews([stackView])
     }
     
     override func setupLayout() {
@@ -68,15 +75,26 @@ class TagBottomSheetViewController: BottomSheetViewController, View {
             $0.leading.equalToSuperview()
         }
         
+        okButton.snp.makeConstraints {
+            $0.trailing.equalToSuperview()
+            $0.centerY.equalTo(titleLabel)
+        }
+        
         tag.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(24)
             $0.leading.equalToSuperview()
         }
         
-        imageStackView.snp.makeConstraints {
+        scrollView.snp.makeConstraints {
             $0.top.equalTo(tag.snp.bottom).offset(12)
             $0.leading.equalToSuperview()
+            $0.trailing.equalToSuperview()
             $0.bottom.equalToSuperview().inset(23)
+        }
+        
+        stackView.snp.makeConstraints {
+            $0.top.leading.trailing.bottom.equalToSuperview()
+            $0.height.equalToSuperview()
         }
     }
     
@@ -84,5 +102,9 @@ class TagBottomSheetViewController: BottomSheetViewController, View {
         titleLabel.text = reactor.currentState.orientation.title + " 태그"
         tag.type = reactor.currentState.orientation
         tag.titleLabel.text = reactor.currentState.topic
+        
+        reactor.currentState.users?.forEach {
+            stackView.addArrangedSubview(ProfileBox(imagePath: $0.profileImagePath, title: $0.nickname))
+        }
     }
 }

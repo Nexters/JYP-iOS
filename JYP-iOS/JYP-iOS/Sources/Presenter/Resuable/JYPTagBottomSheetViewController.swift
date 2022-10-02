@@ -37,12 +37,6 @@ class JYPTagBottomSheetViewController: BottomSheetViewController, View {
     override func setupProperty() {
         super.setupProperty()
         
-        for _ in 0...3 {
-            let imageBox = ImageBox(image: JYPIOSAsset.iconCulturalInstitution.image, title: "이소")
-            
-            imageStackView.addArrangedSubview(imageBox)
-        }
-        
         titleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 20)
         titleLabel.textColor = JYPIOSAsset.textB80.color
         
