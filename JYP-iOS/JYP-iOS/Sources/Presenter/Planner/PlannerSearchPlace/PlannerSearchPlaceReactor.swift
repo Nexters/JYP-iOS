@@ -67,27 +67,38 @@ extension PlannerSearchPlaceReactor {
     }
     
     private func mutateSearch(_ keyword: String) -> Observable<Mutation> {
-        var emptyView: Observable<Mutation> = .just(.updateEmptyViewState(.none))
+        var emptyView: Observable<Mutation>
+        var search: Observable<Mutation>
         
         if keyword.isEmpty {
             emptyView = .just(.updateEmptyViewState(.empty))
+            search = .just(.setSections([]))
+            
+            return .concat([emptyView, search])
+        } else {
+            emptyView = .just(.updateEmptyViewState(.none))
         }
         
-        let search: Observable<Mutation> = provider.kakaoSearchService.searchPlace(keyword: keyword, page: 1)
-            .map { response in
-                let items = response.kakaoSearchPlaces.map { (kakaoSearchPlace) -> PlannerSearchPlaceItem in
-                    return .kakaoItem(KakaoSearchPlaceTableViewCellReactor(kakaoSearchPlace: kakaoSearchPlace))
+        search = Observable<Mutation>.create { [weak self] observer in
+            self?.provider.kakaoSearchService.searchPlace(keyword: keyword, page: 1)
+                .bind { response in
+                    let items = response.kakaoSearchPlaces.map { (kakaoSearchPlace) -> PlannerSearchPlaceItem in
+                        return .kakaoItem(KakaoSearchPlaceTableViewCellReactor(kakaoSearchPlace: kakaoSearchPlace))
+                    }
+                    let section = PlannerSearchPlaceSectionModel.init(model: .kakaoSection(items), items: items)
+
+                    if items.isEmpty {
+                        observer.onNext(.updateEmptyViewState(.noResult))
+                        observer.onNext(.setSections([]))
+                    } else {
+                        observer.onNext(.setSections([section]))
+                    }
+                    observer.onCompleted()
                 }
-                let section = PlannerSearchPlaceSectionModel.init(model: .kakaoSection(items), items: items)
-                
-                print("[D] \(items)")
-                
-                if items.isEmpty {
-                    emptyView = .just(.updateEmptyViewState(.noResult))
-                }
-                
-                return .setSections([section])
-            }
+            
+            return Disposables.create()
+        }
+
         return .concat([emptyView, search])
     }
     
