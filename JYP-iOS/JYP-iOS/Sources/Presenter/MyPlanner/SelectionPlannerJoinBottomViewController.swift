@@ -59,7 +59,7 @@ class SelectionPlannerJoinBottomViewController: BottomSheetViewController {
 
         createPlannerView.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(32)
-            make.leading.equalToSuperview()
+            make.leading.trailing.equalToSuperview()
             make.height.equalTo(30)
         }
 
@@ -75,7 +75,7 @@ class SelectionPlannerJoinBottomViewController: BottomSheetViewController {
 
         joinPlannerView.snp.makeConstraints { make in
             make.top.equalTo(createPlannerView.snp.bottom).offset(20)
-            make.leading.equalToSuperview()
+            make.leading.trailing.equalToSuperview()
             make.bottom.equalTo(containerView.snp.bottom).offset(-24)
             make.height.equalTo(30)
         }
@@ -89,5 +89,32 @@ class SelectionPlannerJoinBottomViewController: BottomSheetViewController {
             make.centerY.equalTo(joinPlannerIcon)
             make.leading.equalTo(joinPlannerIcon.snp.trailing).offset(16)
         }
+    }
+
+    override func setupBind() {
+        super.setupBind()
+
+        createPlannerView.rx.tapGesture()
+            .when(.recognized)
+            .subscribe(onNext: { [weak self] _ in
+                self?.dismiss(animated: true, completion: {
+                    let createPlannerViewController = CreatePlannerNameViewController(reactor: .init())
+
+                    let keyWindow = UIApplication.shared.connectedScenes
+                        .filter { $0.activationState == .foregroundActive }
+                        .map { $0 as? UIWindowScene }
+                        .compactMap { $0 }
+                        .first?.windows
+                        .filter { $0.isKeyWindow }.first
+
+                    if let navigationController = keyWindow?.rootViewController
+                        as? UINavigationController {
+                        navigationController.pushViewController(
+                            createPlannerViewController,
+                            animated: true)
+                    }
+                })
+            })
+            .disposed(by: disposeBag)
     }
 }
