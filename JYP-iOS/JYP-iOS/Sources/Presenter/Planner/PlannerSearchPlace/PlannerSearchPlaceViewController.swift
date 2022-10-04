@@ -66,13 +66,13 @@ class PlannerSearchPlaceViewController: NavigationBarViewController, View {
         backButton.tintColor = JYPIOSAsset.textB90.color
         
         searchTableView.register(KakaoSearchPlaceTableViewCell.self, forCellReuseIdentifier: String(describing: KakaoSearchPlaceTableViewCell.self))
+        searchTableView.showsVerticalScrollIndicator = false
         
         emptyImageView.image = JYPIOSAsset.searchPlaceIllust.image
         
         emptyLabel.numberOfLines = 2
         emptyLabel.font = JYPIOSFontFamily.Pretendard.regular.font(size: 16)
         emptyLabel.textColor = JYPIOSAsset.textB75.color
-        emptyLabel.text = "등록할 장소를\n검색해 주세요!"
         
         emptyView.isHidden = false
     }

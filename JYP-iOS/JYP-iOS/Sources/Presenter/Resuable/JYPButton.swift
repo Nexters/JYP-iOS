@@ -47,7 +47,7 @@ enum JYPButtonType {
         case .kakaoInvite:
             return "카카오톡 초대"
         case .linkInvite:
-            return "초대링크 복사"
+            return "참여코드 복사하기"
         }
     }
     

@@ -11,6 +11,6 @@ import UIKit
 struct Tag: Codable {
     let topic: String
     let orientation: JYPTagType
-    let users: [User]?
+    var users: [User] = []
     var isSelected: Bool = false
 }

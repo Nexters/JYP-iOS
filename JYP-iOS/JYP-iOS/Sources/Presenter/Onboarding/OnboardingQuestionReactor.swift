@@ -76,11 +76,11 @@ class OnboardingQuestionReactor: Reactor {
         var newState = state
         
         switch mutation {
-        case .updateCardViewAState(let state):
+        case let .updateCardViewAState(state):
             newState.stateCardViewA = state
-        case .updateCardViewBState(let state):
+        case let .updateCardViewBState(state):
             newState.stateCardViewB = state
-        case .updateIsActiveNextButton(let bool):
+        case let .updateIsActiveNextButton(bool):
             newState.isActiveNextButton = bool
         case let .updateOnboardingQuestionReactor(reactor):
             newState.onboardingQuestionReactor = reactor
