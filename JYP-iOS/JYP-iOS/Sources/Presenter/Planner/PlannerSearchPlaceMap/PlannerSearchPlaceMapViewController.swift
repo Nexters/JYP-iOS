@@ -8,7 +8,8 @@
 
 import UIKit
 import ReactorKit
-#if arch(x86_64)
+#if targetEnvironment(simulator)
+#else
     import GoogleMaps
 #endif
 
@@ -18,19 +19,19 @@ class PlannerSearchPlaceMapViewController: NavigationBarViewController, View {
     let topView = UIView()
     let backButton = UIButton(type: .system)
     let searchTextField = JYPSearchTextField(type: .place)
-    #if arch(x86_64)
-    lazy var mapView = GMSMapView(
-        frame: view.bounds,
-        camera: .camera(
-            withLatitude: 0.0,
-            longitude: 0.0,
-            zoom: 18
-        )
-    )
-    #else
+    #if targetEnvironment(simulator)
         lazy var mapView = UIView().then {
             $0.backgroundColor = .systemRed
         }
+    #else
+        lazy var mapView = GMSMapView(
+            frame: view.bounds,
+            camera: .camera(
+                withLatitude: 0.0,
+                longitude: 0.0,
+                zoom: 18
+            )
+        )
     #endif
     
     let bottomView = UIView()
