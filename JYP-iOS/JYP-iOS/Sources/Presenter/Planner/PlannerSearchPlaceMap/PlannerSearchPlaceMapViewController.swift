@@ -66,13 +66,15 @@ class PlannerSearchPlaceMapViewController: NavigationBarViewController, View {
     
     override func setupProperty() {
         super.setupProperty()
+        #if targetEnvironment(simulator)
+        #else
+            marker.map = mapView
+        #endif
         
         topView.backgroundColor = JYPIOSAsset.backgroundWhite100.color
         
         backButton.setImage(JYPIOSAsset.iconBack.image, for: .normal)
         backButton.tintColor = JYPIOSAsset.textB90.color
-        
-        marker.map = mapView
         
         bottomView.backgroundColor = .white
         bottomView.cornerRound(radius: 20, direct: [.layerMinXMinYCorner, .layerMaxXMinYCorner])
