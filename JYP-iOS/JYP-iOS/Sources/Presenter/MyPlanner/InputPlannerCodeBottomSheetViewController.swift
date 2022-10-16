@@ -24,7 +24,7 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
 
     private let textField: JYPSearchTextField = .init(type: .tag)
 
-    private let plannerJoinButton: JYPButton = .init(type: .join)
+    private let plannerJoinButton: JYPButton = .init(type: .plannerJoin)
 
     private let joinCodeButton: UIButton = .init()
 
