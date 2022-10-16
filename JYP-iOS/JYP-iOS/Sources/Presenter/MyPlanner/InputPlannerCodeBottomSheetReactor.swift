@@ -16,10 +16,12 @@ final class InputPlannerCodeBottomSheetReactor: Reactor {
 
     enum Mutation {
         case changeActivePlannerJoinButton(Bool)
+        case pushMyPlanner(Bool)
     }
 
     struct State {
         var isActivePlannerJoinButton: Bool = false
+        var isPushMyPlannerView: Bool = false
     }
 
     var initialState: State = .init()
@@ -28,7 +30,11 @@ final class InputPlannerCodeBottomSheetReactor: Reactor {
         switch action {
         case let .didChangedTextField(str):
             return .just(.changeActivePlannerJoinButton(!str.isEmpty))
-        case .didTapJoinCodeButton: return .empty()
+        case .didTapJoinCodeButton:
+            return .concat(
+                .just(.pushMyPlanner(true)),
+                .just(.pushMyPlanner(false))
+            )
         }
     }
 
@@ -38,6 +44,8 @@ final class InputPlannerCodeBottomSheetReactor: Reactor {
         switch mutation {
         case let .changeActivePlannerJoinButton(isActive):
             newState.isActivePlannerJoinButton = isActive
+        case let .pushMyPlanner(isPush):
+            newState.isPushMyPlannerView = isPush
         }
 
         return newState

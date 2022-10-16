@@ -152,9 +152,9 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
             })
             .disposed(by: disposeBag)
 
-        reactor.state
-            .map(\.isActivePlannerJoinButton)
-            .bind(to: plannerJoinButton.rx.isEnabled)
+        plannerJoinButton.rx.tap
+            .map { Reactor.Action.didTapJoinCodeButton }
+            .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
         textField.textField.rx.text
@@ -162,6 +162,42 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
             .distinctUntilChanged()
             .map { .didChangedTextField($0) }
             .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .map(\.isActivePlannerJoinButton)
+            .bind(to: plannerJoinButton.rx.isEnabled)
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .map(\.isPushMyPlannerView)
+            .distinctUntilChanged()
+            .filter { $0 }
+            .subscribe(onNext: { [weak self] _ in
+                let plannerReactor = PlannerReactor(
+                    state: .init(pik:
+                        Pik(
+                            id: "",
+                            name: "",
+                            address: "",
+                            category: .bank,
+                            likeBy: nil,
+                            longitude: 0.0,
+                            latitude: 0.0,
+                            link: ""
+                        )
+                    )
+                )
+                let plannerViewController = PlannerViewController(reactor: plannerReactor)
+
+                guard let presentingViewContoller = self?.presentingViewController as? UINavigationController else { return }
+                self?.dismiss(animated: true, completion: {
+                    presentingViewContoller.pushViewController(
+                        plannerViewController,
+                        animated: true
+                    )
+                })
+            })
             .disposed(by: disposeBag)
     }
 
