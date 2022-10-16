@@ -220,7 +220,6 @@ extension OnboardingSignUpViewController: ASAuthorizationControllerDelegate, ASA
             let email = appleIDCredential.email
             
             if let authorizationCode = appleIDCredential.authorizationCode, let identityToken = appleIDCredential.identityToken, let authString = String(data: authorizationCode, encoding: .utf8), let tokenString = String(data: identityToken, encoding: .utf8) {
-
                 self.reactor?.action.onNext(.didLogin(authVendor: .apple, authID: tokenString, name: String(describing: fullName), profileImagePath: ""))
                 print("[D] authorizationCode: \(authorizationCode)")
                 print("[D] identityToken: \(identityToken)")

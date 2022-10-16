@@ -8,46 +8,55 @@
 
 import UIKit
 import ReactorKit
-#if arch(x86_64)
+#if targetEnvironment(simulator)
+#else
     import GoogleMaps
 #endif
 
 class PlannerSearchPlaceMapViewController: NavigationBarViewController, View {
     typealias Reactor = PlannerSearchPlaceMapReactor
     
-    let topView = UIView()
-    let backButton = UIButton(type: .system)
-    let searchTextField = JYPSearchTextField(type: .place)
-    #if arch(x86_64)
-    lazy var mapView = GMSMapView(
-        frame: view.bounds,
-        camera: .camera(
-            withLatitude: 0.0,
-            longitude: 0.0,
-            zoom: 18
-        )
-    )
-    #else
+    // MARK: - UI Components
+    
+    let topView: UIView = .init()
+    let backButton: UIButton = .init(type: .system)
+    let searchTextField: JYPSearchTextField = .init(type: .place)
+    #if targetEnvironment(simulator)
         lazy var mapView = UIView().then {
             $0.backgroundColor = .systemRed
         }
+    #else
+        lazy var mapView = GMSMapView(
+            frame: view.bounds,
+            camera: .camera(
+                withLatitude: Double(reactor?.currentState.kakaoSearchPlace.y ?? "") ?? 0.0,
+                longitude: Double(reactor?.currentState.kakaoSearchPlace.x ?? "") ?? 0.0,
+                zoom: 18
+            )
+        )
+        lazy var marker = GMSMarker(position: .init(latitude: mapView.camera.target.latitude, longitude: mapView.camera.target.longitude))
     #endif
     
-    let bottomView = UIView()
-    let titleLabel = UILabel()
-    let subLabel = UILabel()
-    let infoButton = UIButton()
-    let addButton = JYPButton(type: .add)
+    let bottomView: UIView = .init()
+    let titleLabel: UILabel = .init()
+    let subLabel: UILabel = .init()
+    let infoButton: UIButton = .init()
+    let addButton: JYPButton = .init(type: .add)
     
-    required init?(coder: NSCoder) {
-        fatalError("not supported")
-    }
+    // MARK: - Initializer
     
     init(reactor: Reactor) {
         super.init(nibName: nil, bundle: nil)
         
         self.reactor = reactor
     }
+    
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - Setup Methods
     
     override func setupNavigationBar() {
         super.setupNavigationBar()
@@ -57,6 +66,10 @@ class PlannerSearchPlaceMapViewController: NavigationBarViewController, View {
     
     override func setupProperty() {
         super.setupProperty()
+        #if targetEnvironment(simulator)
+        #else
+            marker.map = mapView
+        #endif
         
         topView.backgroundColor = JYPIOSAsset.backgroundWhite100.color
         
@@ -71,8 +84,9 @@ class PlannerSearchPlaceMapViewController: NavigationBarViewController, View {
         
         subLabel.font = JYPIOSFontFamily.Pretendard.regular.font(size: 14)
         subLabel.textColor = JYPIOSAsset.textB40.color
+        subLabel.numberOfLines = 0
         
-        addButton.isEnabled = false
+        addButton.isEnabled = true
         
         infoButton.setImage(JYPIOSAsset.iconInfo.image, for: .normal)
         infoButton.setTitle("정보 보기", for: .normal)
@@ -129,6 +143,7 @@ class PlannerSearchPlaceMapViewController: NavigationBarViewController, View {
         subLabel.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(6)
             $0.leading.equalToSuperview().inset(24)
+            $0.trailing.equalTo(infoButton.snp.leading)
         }
         
         infoButton.snp.makeConstraints {
@@ -148,12 +163,11 @@ class PlannerSearchPlaceMapViewController: NavigationBarViewController, View {
     
     func bind(reactor: PlannerSearchPlaceMapReactor) {
         let state = reactor.currentState
-        
+
         searchTextField.textField.text = state.kakaoSearchPlace.placeName
         titleLabel.text = state.kakaoSearchPlace.placeName
         subLabel.text = state.kakaoSearchPlace.addressName
         
-        // Action
         infoButton.rx.tap
             .map { .didTapInfoButton }
             .bind(to: reactor.action)
@@ -164,26 +178,19 @@ class PlannerSearchPlaceMapViewController: NavigationBarViewController, View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
-        // State
-        reactor.state.map(\.isPresentWebViewController).asObservable()
-            .distinctUntilChanged()
-            .withUnretained(self)
-            .bind { this, url in
-                if let url = url {
-                    let webViewController = WebViewController(reactor: WebReactor(state: .init(url: url)))
-                    
-                    this.tabBarController?.present(webViewController, animated: true, completion: nil)
-                }
+        reactor.state
+            .compactMap(\.webReactor)
+            .bind { [weak self] reactor in
+                let webViewController = WebViewController(reactor: reactor)
+                
+                self?.tabBarController?.present(webViewController, animated: true)
             }
             .disposed(by: disposeBag)
-        
-        reactor.state.map(\.dismiss).asObservable()
-            .distinctUntilChanged()
-            .withUnretained(self)
-            .bind { this, bool in
-                if bool {
-                    this.navigationController?.popViewController(animated: true)
-                }
+                
+        reactor.state.map(\.isDismiss)
+            .filter { $0 }
+            .bind { [weak self] _ in
+                self?.navigationController?.popViewController(animated: true)
             }
             .disposed(by: disposeBag)
     }
