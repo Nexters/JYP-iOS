@@ -21,6 +21,7 @@ enum JYPButtonType {
     case no
     case kakaoInvite
     case linkInvite
+    case join
     
     var title: String {
         switch self {
@@ -48,6 +49,8 @@ enum JYPButtonType {
             return "카카오톡 초대"
         case .linkInvite:
             return "초대링크 복사"
+        case .join:
+            return "입장하기"
         }
     }
     
@@ -77,6 +80,8 @@ enum JYPButtonType {
             return .init(titleColor: JYPIOSAsset.textB80.color, backgroundColor: UIColor(hex: 0xFAE000))
         case .linkInvite:
             return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color)
+        case .join:
+            return .init(titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color)
         }
     }
     
@@ -106,6 +111,8 @@ enum JYPButtonType {
             return nil
         case .linkInvite:
             return nil
+        case .join:
+            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color)
         }
     }
 }

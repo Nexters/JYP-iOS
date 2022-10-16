@@ -116,5 +116,23 @@ class SelectionPlannerJoinBottomViewController: BottomSheetViewController {
                 })
             })
             .disposed(by: disposeBag)
+        
+        joinPlannerView.rx.tapGesture()
+            .when(.recognized)
+            .subscribe(onNext: { [weak self] _ in
+                self?.dismiss(animated: true, completion: {
+                    let keyWindow = UIApplication.shared.connectedScenes
+                        .filter { $0.activationState == .foregroundActive }
+                        .map { $0 as? UIWindowScene }
+                        .compactMap { $0 }
+                        .first?.windows
+                        .filter { $0.isKeyWindow }.first
+
+                    keyWindow?.rootViewController?.present(
+                        InputPlannerCodeBottomSheetViewController(mode: .drag),
+                        animated: true)
+                })
+            })
+            .disposed(by: disposeBag)
     }
 }
