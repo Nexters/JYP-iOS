@@ -128,9 +128,12 @@ class SelectionPlannerJoinBottomViewController: BottomSheetViewController {
                         .first?.windows
                         .filter { $0.isKeyWindow }.first
 
+                    let inputPlannerCodeReactor = InputPlannerCodeBottomSheetReactor()
+                    let inputPlannerCodeBottomSheetViewController = InputPlannerCodeBottomSheetViewController(reactor: inputPlannerCodeReactor)
                     keyWindow?.rootViewController?.present(
-                        InputPlannerCodeBottomSheetViewController(mode: .drag),
-                        animated: true)
+                        inputPlannerCodeBottomSheetViewController,
+                        animated: true
+                    )
                 })
             })
             .disposed(by: disposeBag)

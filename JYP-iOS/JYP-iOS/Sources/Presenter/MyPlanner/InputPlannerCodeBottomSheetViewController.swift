@@ -6,10 +6,12 @@
 //  Copyright © 2022 JYP-iOS. All rights reserved.
 //
 
-import RxSwift
+import ReactorKit
 import UIKit
 
-class InputPlannerCodeBottomSheetViewController: BottomSheetViewController {
+class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View {
+    typealias Reactor = InputPlannerCodeBottomSheetReactor
+
     // MARK: - Properties
 
     private let containerView: UIView = .init()
@@ -28,6 +30,18 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController {
 
     override func touchesBegan(_: Set<UITouch>, with _: UIEvent?) {
         view.endEditing(true)
+    }
+
+    // MARK: - Initializer
+
+    init(reactor: Reactor) {
+        super.init(mode: .drag)
+        self.reactor = reactor
+    }
+
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 
     // MARK: - Setup Methods
@@ -125,9 +139,7 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController {
         }
     }
 
-    override func setupBind() {
-        super.setupBind()
-
+    func bind(reactor: InputPlannerCodeBottomSheetReactor) {
         cancelButton.rx.tap
             .subscribe(onNext: { [weak self] in
                 self?.dismiss(animated: true)
@@ -138,6 +150,18 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController {
             .subscribe(onNext: { [weak self] in
                 self?.textField.textField.text = self?.joinCodeButton.title(for: .normal)
             })
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .map(\.isActivePlannerJoinButton)
+            .bind(to: plannerJoinButton.rx.isEnabled)
+            .disposed(by: disposeBag)
+
+        textField.textField.rx.text
+            .orEmpty
+            .distinctUntilChanged()
+            .map { .didChangedTextField($0) }
+            .bind(to: reactor.action)
             .disposed(by: disposeBag)
     }
 
