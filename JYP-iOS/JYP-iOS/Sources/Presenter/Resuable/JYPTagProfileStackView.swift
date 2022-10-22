@@ -6,7 +6,6 @@
 //  Copyright © 2022 JYP-iOS. All rights reserved.
 //
 
-import Foundation
 import UIKit
 import Kingfisher
 
@@ -29,6 +28,8 @@ class JYPProfileStackView: UIStackView {
     
     init() {
         super.init(frame: .zero)
+        
+        setupProperty()
     }
     
     @available(*, unavailable)
@@ -36,19 +37,33 @@ class JYPProfileStackView: UIStackView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func addArrangedSubview(_ view: UIView) {
+        super.addArrangedSubview(view)
+        
+        sendSubviewToBack(view)
+    }
+    
     // MARK: - Setup Methods
     
+    func update(users: [User]) {
+        profiles = users
+    }
+    
     func setupProperty() {
-        spacing = 12.0
+        spacing = -16.0
         axis = .horizontal
-        distribution = .fillProportionally
+        distribution = .fillEqually
     }
     
     func setupLayout() {
         arrangedSubviews.forEach { $0.removeFromSuperview() }
         
-        profiles.forEach { user in
-            addArrangedSubview(JYPProfileView(user: user))
+        profiles.enumerated().forEach { index, user in
+            if index == 0 {
+                addArrangedSubview(JYPProfileView(image: JYPIOSAsset.iconInvite.image))
+            } else {
+                addArrangedSubview(JYPProfileView(user: user))
+            }
         }
     }
 }
@@ -59,15 +74,21 @@ class JYPProfileView: BaseView {
     // MARK: - UI Components
     
     let imageView: UIImageView = .init()
-    let label: UILabel = .init()
     
     // MARK: - Setup Methods
     
     init(user: User) {
         super.init(frame: .zero)
         
-        imageView.kf.setImage(with: URL(string: user.profileImagePath))
-        label.text = user.nickname
+        // TODO: 실제 이미지 주소 변경
+//        imageView.kf.setImage(with: URL(string: user.profileImagePath))
+        imageView.image = JYPIOSAsset.profile1.image
+    }
+    
+    init(image: UIImage) {
+        super.init(frame: .zero)
+        
+        imageView.image = image
     }
     
     @available(*, unavailable)
@@ -79,27 +100,26 @@ class JYPProfileView: BaseView {
     
     override func setupProperty() {
         super.setupProperty()
-        
-        label.font = JYPIOSFontFamily.Pretendard.regular.font(size: 14)
-        label.textColor = JYPIOSAsset.textB75.color
-        label.textAlignment = .center
-        
+
         imageView.cornerRound(radius: 12)
+        imageView.makeBorder(color: JYPIOSAsset.backgroundGrey300.color, width: 2.18)
+    }
+    
+    override func setupHierarchy() {
+        super.setupHierarchy()
+        
+        addSubviews([imageView])
     }
     
     override func setupLayout() {
         super.setupLayout()
         
         imageView.snp.makeConstraints {
-            $0.top.equalToSuperview()
-            $0.centerX.equalToSuperview()
-            $0.width.height.equalTo(44)
+            $0.top.leading.trailing.bottom.equalToSuperview()
         }
         
-        label.snp.makeConstraints {
-            $0.top.equalTo(imageView.snp.bottom).offset(8)
-            $0.leading.trailing.equalToSuperview()
-            $0.width.equalTo(50)
+        snp.makeConstraints {
+            $0.size.equalTo(44)
         }
     }
 }

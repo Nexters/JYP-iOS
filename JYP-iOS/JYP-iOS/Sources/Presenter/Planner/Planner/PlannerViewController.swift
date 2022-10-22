@@ -16,6 +16,7 @@ class PlannerViewController: NavigationBarViewController, View {
     
     let dateLabel: UILabel = .init()
     let inviteButton: UIButton = .init()
+    let profileView: JYPProfileStackView = .init()
     let headerView: UIView = .init()
     let discussionButton: JYPBottomBorderButton = .init(title: "토론장")
     let journeyPlanButton: JYPBottomBorderButton = .init(title: "여행 계획")
@@ -66,12 +67,15 @@ class PlannerViewController: NavigationBarViewController, View {
         headerView.cornerRound(radius: 20, direct: [.layerMinXMinYCorner, .layerMaxXMinYCorner])
         
         menuDivider.backgroundColor = .black.withAlphaComponent(0.1)
+        
+        profileView.update(users: [.init(id: "", nickname: "", profileImagePath: "", personality: .FW), .init(id: "", nickname: "", profileImagePath: "", personality: .FW), .init(id: "", nickname: "", profileImagePath: "", personality: .FW), .init(id: "", nickname: "", profileImagePath: "", personality: .FW), .init(id: "", nickname: "", profileImagePath: "", personality: .FW)])
+        inviteButton.isHidden = true
     }
     
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        contentView.addSubviews([dateLabel, inviteButton, headerView, discussionButton, journeyPlanButton, menuDivider, discussionView, journeyPlanView])
+        contentView.addSubviews([dateLabel, inviteButton, profileView, headerView, discussionButton, journeyPlanButton, menuDivider, discussionView, journeyPlanView])
     }
     
     override func setupLayout() {
@@ -87,6 +91,11 @@ class PlannerViewController: NavigationBarViewController, View {
             $0.leading.equalToSuperview().inset(24)
             $0.width.equalTo(133)
             $0.height.equalTo(40)
+        }
+        
+        profileView.snp.makeConstraints {
+            $0.top.equalTo(dateLabel.snp.bottom).offset(12)
+            $0.leading.equalToSuperview().inset(24)
         }
         
         headerView.snp.makeConstraints {
