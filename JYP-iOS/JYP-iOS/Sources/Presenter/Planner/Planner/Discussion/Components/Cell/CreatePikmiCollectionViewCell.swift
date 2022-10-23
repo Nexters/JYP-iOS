@@ -22,6 +22,7 @@ class CreatePikmiCollectionViewCell: BaseCollectionViewCell, View {
         super.setupProperty()
         
         contentView.backgroundColor = .white
+        contentView.cornerRound(radius: 16)
         contentView.setShadow(radius: 40, offset: .init(width: 4, height: 10), opacity: 0.06)
     }
     

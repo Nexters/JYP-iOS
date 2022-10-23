@@ -9,11 +9,12 @@
 import UIKit
 import Kingfisher
 
-// MARK: - JYPProfileStackView
+// MARK: - JYPInviteStackView
 
-class JYPProfileStackView: UIStackView {
+class JYPInviteStackView: UIStackView {
     // MARK: - UI Components
     
+    let inviteButton: JYPButton = .init(type: .invite)
     let imageView: UIImageView = .init()
     
     // MARK: - Properties
@@ -52,17 +53,33 @@ class JYPProfileStackView: UIStackView {
     func setupProperty() {
         spacing = -16.0
         axis = .horizontal
-        distribution = .fillEqually
+        distribution = .fillProportionally
     }
     
     func setupLayout() {
         arrangedSubviews.forEach { $0.removeFromSuperview() }
         
-        profiles.enumerated().forEach { index, user in
+        profiles.enumerated().forEach { index, _ in
             if index == 0 {
-                addArrangedSubview(JYPProfileView(image: JYPIOSAsset.iconInvite.image))
+                inviteButton.snp.makeConstraints {
+                    $0.size.equalTo(44)
+                }
+                inviteButton.contentVerticalAlignment = .fill
+                inviteButton.contentHorizontalAlignment = .fill
+                inviteButton.imageEdgeInsets = UIEdgeInsets(top: 1.09, left: 1.09, bottom: 1.09, right: 1.09)
+                
+                addArrangedSubview(inviteButton)
             } else {
-                addArrangedSubview(JYPProfileView(user: user))
+                let profile = JYPProfileImageView()
+                
+                profile.layer.borderColor = JYPIOSAsset.backgroundGrey300.color.cgColor
+                profile.image = [
+                    JYPIOSAsset.profile01.image,
+                    JYPIOSAsset.profile02.image,
+                    JYPIOSAsset.profile03.image
+                ].randomElement()
+                
+                addArrangedSubview(profile)
             }
         }
     }
@@ -76,7 +93,6 @@ class JYPProfileView: BaseView {
     let imageView: UIImageView = .init()
     
     // MARK: - Setup Methods
-    
     init(user: User) {
         super.init(frame: .zero)
         

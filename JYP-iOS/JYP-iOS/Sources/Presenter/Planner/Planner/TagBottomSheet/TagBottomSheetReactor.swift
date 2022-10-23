@@ -9,12 +9,42 @@
 import ReactorKit
 
 class TagBottomSheetReactor: Reactor {
-    enum Action {}
-    enum Mutation {}
+    enum Action {
+        case tapOkButton
+    }
     
-    var initialState: Tag
+    enum Mutation {
+        case updateIsDismiss(Bool)
+    }
     
-    init(tag: Tag) {
-        self.initialState = tag
+    struct State {
+        let tag: Tag
+        var isDimiss: Bool = false
+    }
+    
+    var initialState: State
+    
+    init(state: State) {
+        self.initialState = state
+    }
+}
+
+extension TagBottomSheetReactor {
+    func mutate(action: Action) -> Observable<Mutation> {
+        switch action {
+        case .tapOkButton:
+            return .just(.updateIsDismiss(true))
+        }
+    }
+    
+    func reduce(state: State, mutation: Mutation) -> State {
+        var newState = state
+        
+        switch mutation {
+        case let .updateIsDismiss(bool):
+            newState.isDimiss = bool
+        }
+        
+        return newState
     }
 }

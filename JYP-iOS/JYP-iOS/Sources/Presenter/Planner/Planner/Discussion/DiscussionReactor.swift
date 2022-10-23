@@ -113,7 +113,7 @@ extension DiscussionReactor {
     }
     
     private func makeReactor(from reactor: TagCollectionViewCellReactor) -> TagBottomSheetReactor {
-        return .init(tag: reactor.currentState)
+        return .init(state: .init(tag: reactor.currentState))
     }
     
     private func makeReactor() -> PlannerSearchPlaceReactor {

@@ -19,6 +19,7 @@ enum JYPButtonType {
     case smallMake
     case yes
     case no
+    case invite
     case kakaoInvite
     case linkInvite
     
@@ -44,6 +45,8 @@ enum JYPButtonType {
             return "좋아요"
         case .no:
             return "싫어요"
+        case .invite:
+            return ""
         case .kakaoInvite:
             return "카카오톡 초대"
         case .linkInvite:
@@ -54,44 +57,46 @@ enum JYPButtonType {
     var inactiveConfig: JYPButtonConfig {
         switch self {
         case .next:
-            return .init(titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color)
+            return .init(titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color, image: nil)
         case .done:
-            return .init(titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color)
+            return .init(titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color, image: nil)
         case .start:
-            return .init(titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color)
+            return .init(titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color, image: nil)
         case .startPlan:
-            return .init(titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color)
+            return .init(titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color, image: nil)
         case .add:
-            return .init(titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color)
+            return .init(titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color, image: nil)
         case .addPlace:
-            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.subBlack.color)
+            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.subBlack.color, image: nil)
         case .smallAdd:
-            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.subBlack.color)
+            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.subBlack.color, image: nil)
         case .smallMake:
-            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color)
+            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color, image: nil)
         case .yes:
-            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color)
+            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color, image: nil)
         case .no:
-            return .init(titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color)
+            return .init(titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color, image: nil)
+        case .invite:
+            return .init(titleColor: .clear, backgroundColor: .clear, image: JYPIOSAsset.iconInvite.image)
         case .kakaoInvite:
-            return .init(titleColor: JYPIOSAsset.textB80.color, backgroundColor: UIColor(hex: 0xFAE000))
+            return .init(titleColor: JYPIOSAsset.textB80.color, backgroundColor: UIColor(hex: 0xFAE000), image: nil)
         case .linkInvite:
-            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color)
+            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color, image: nil)
         }
     }
     
     var activeConfig: JYPButtonConfig? {
         switch self {
         case .next:
-            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color)
+            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color, image: nil)
         case .done:
-            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color)
+            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color, image: nil)
         case .start:
-            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color)
+            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color, image: nil)
         case .startPlan:
-            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color)
+            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color, image: nil)
         case .add:
-            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color)
+            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color, image: nil)
         case .addPlace:
             return nil
         case .smallAdd:
@@ -101,6 +106,8 @@ enum JYPButtonType {
         case .yes:
             return nil
         case .no:
+            return nil
+        case .invite:
             return nil
         case .kakaoInvite:
             return nil
@@ -113,6 +120,7 @@ enum JYPButtonType {
 struct JYPButtonConfig {
     let titleColor: UIColor
     let backgroundColor: UIColor
+    let image: UIImage?
 }
 
 class JYPButton: UIButton {
@@ -128,6 +136,7 @@ class JYPButton: UIButton {
         super.init(frame: .zero)
         
         setTitle(type.title, for: .normal)
+        setImage(type.inactiveConfig.image, for: .normal)
         backgroundColor = type.inactiveConfig.backgroundColor
         titleLabel?.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 16)
         cornerRound(radius: 12)
@@ -136,7 +145,11 @@ class JYPButton: UIButton {
     override var isEnabled: Bool {
         didSet {
             backgroundColor = isEnabled ? type.activeConfig?.backgroundColor : type.inactiveConfig.backgroundColor
-            isEnabled ? setTitleColor(type.activeConfig?.titleColor, for: .normal) : setTitleColor(type.inactiveConfig.titleColor, for: .normal)
+            if isEnabled {
+                setTitleColor(type.activeConfig?.titleColor, for: .normal)
+            } else {
+                setTitleColor(type.inactiveConfig.titleColor, for: .normal)
+            }
         }
     }
 }
