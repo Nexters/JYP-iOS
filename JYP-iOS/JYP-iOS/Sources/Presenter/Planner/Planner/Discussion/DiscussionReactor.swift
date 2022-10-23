@@ -12,12 +12,14 @@ import ReactorKit
 class DiscussionReactor: Reactor {
     enum Action {
         case selectCell(IndexPath)
+        case tapToggleButton
         case tapCreatePikmiButton
         case tapPikmiInfoButton(IndexPath)
         case tapPikmiLikeButton(IndexPath)
     }
     
     enum Mutation {
+        case setOriginSections([DiscussionSectionModel])
         case setSections([DiscussionSectionModel])
         case updateSectionItem(IndexPath, DiscussionSectionModel.Item)
         case presentTagBottomSheet(TagBottomSheetReactor?)
@@ -26,6 +28,7 @@ class DiscussionReactor: Reactor {
     }
     
     struct State {
+        var originSections: [DiscussionSectionModel] = []
         var sections: [DiscussionSectionModel] = []
         var tagBottomSheetReactor: TagBottomSheetReactor?
         var plannerSearchPlaceReactor: PlannerSearchPlaceReactor?
@@ -46,6 +49,8 @@ extension DiscussionReactor {
         switch action {
         case let .selectCell(indexPath):
             return mutateSelectCell(indexPath)
+        case let .tapToggleButton:
+            
         case .tapCreatePikmiButton:
             return mutateTapCreatePikmiButton()
         case let .tapPikmiInfoButton(indexPath):
@@ -72,6 +77,8 @@ extension DiscussionReactor {
         var newState = state
         
         switch mutation {
+        case let .setOriginSections(sections):
+            newState.originSections = sections
         case let .setSections(sections):
             newState.sections = sections
         case let .updateSectionItem(indexPath, item):
@@ -92,6 +99,12 @@ extension DiscussionReactor {
         
         plannerService.presentTagBottomSheet(from: makeReactor(from: reactor))
         return .empty()
+    }
+    
+    private func mutateTapToggleButton() -> Observable<Mutation> {
+        if currentState.se
+        
+        return .just(.setSections([]))
     }
     
     private func mutateTapCreatePikmiButton() -> Observable<Mutation> {

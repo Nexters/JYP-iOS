@@ -9,7 +9,6 @@
 import UIKit
 
 class DiscussionTagSectionHeader: BaseCollectionReusableView {
-  
     // MARK: - UI Components
     
     let titleLabel: UILabel = .init()
