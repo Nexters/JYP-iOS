@@ -41,6 +41,7 @@ class PlannerViewController: NavigationBarViewController, View {
     override func setupNavigationBar() {
         super.setupNavigationBar()
         
+        setNavigationBarBackButtonTintColor(.white)
         setNavigationBarBackgroundColor(JYPIOSAsset.backgroundGrey300.color)
         setNavigationBarTitleText("강릉 여행기")
         setNavigationBarTitleTextColor(JYPIOSAsset.textWhite.color)
