@@ -43,7 +43,7 @@ class DiscussionView: BaseView, View {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: PikmiCollectionViewCell.self), for: indexPath) as? PikmiCollectionViewCell else { return .init() }
             cell.reactor = reactor
             cell.infoButton.rx.tap
-                .map { .tapPikmiInfoButton(indexPath) }
+                .map { .tapPikmiCellInfoButton(indexPath) }
                 .bind(to: thisReactor.action)
                 .disposed(by: cell.disposeBag)
             return cell
@@ -52,7 +52,7 @@ class DiscussionView: BaseView, View {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: CreatePikmiCollectionViewCell.self), for: indexPath) as? CreatePikmiCollectionViewCell else { return .init() }
             cell.reactor = reactor
             cell.button.rx.tap
-                .map { .tapCreatePikmiButton }
+                .map { .tapCreatePikmiCellButton(indexPath) }
                 .bind(to: thisReactor.action)
                 .disposed(by: cell.disposeBag)
             return cell
@@ -66,9 +66,9 @@ class DiscussionView: BaseView, View {
             return header
             
         case .pikmi:
-            guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: PlannerHomeDiscussionCandidatePlaceSectionHeader.self), for: indexPath) as? PlannerHomeDiscussionCandidatePlaceSectionHeader else { return .init() }
+            guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: DiscussionPikmiSectionHeader.self), for: indexPath) as? DiscussionPikmiSectionHeader else { return .init() }
             header.trailingButton.rx.tap
-                .map { .tapCreatePikmiButton }
+                .map { .tapPlusButton }
                 .bind(to: thisReactor.action)
                 .disposed(by: header.disposeBag)
             return header
@@ -78,109 +78,6 @@ class DiscussionView: BaseView, View {
     // MARK: - UI Components
     
     let collectionView: UICollectionView = .init(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-    
-    //    let tagCollectionView: UICollectionView = .init(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-    //    let pikmiCollectionView: UICollectionView = .init(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-    
-    
-    //    private lazy var tagDataSource = TagDataSource { [weak self] _, collectionView, indexPath, item -> UICollectionViewCell in
-    //        switch item {
-    //        case let .tag(reactor):
-    //            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: TagCollectionViewCell.self), for: indexPath) as? TagCollectionViewCell else { return .init() }
-    //
-    //            cell.reactor = reactor
-    //
-    //            return cell
-    //        }
-    //    } configureSupplementaryView: { [weak self] dataSource, collectionView, _, indexPath -> UICollectionReusableView in
-    //        guard let reactor = self?.reactor else { return .init() }
-    //
-    //        switch dataSource[indexPath.section].model {
-    //        case .tag:
-    //            guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: DiscussionTagSectionHeader.self), for: indexPath) as? DiscussionTagSectionHeader else { return .init() }
-    //
-    //            return header
-    //        }
-    //    }
-    
-    //    private lazy var pikmiDataSource = PikmiDataSource { [weak self] _, collectionView, indexPath, item -> UICollectionViewCell in
-    //        guard let reactor = self?.reactor else { return .init() }
-    //
-    //        switch item {
-    //        case let .createPikmi(cellReactor):
-    //            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: CreatePikmiCollectionViewCell.self), for: indexPath) as? CreatePikmiCollectionViewCell else { return .init() }
-    //
-    //            cell.reactor = cellReactor
-    //            cell.button
-    //                .rx
-    //                .tap
-    //                .map { .tapCreatePikmiButton }
-    //                .bind(to: reactor.action)
-    //                .disposed(by: cell.disposeBag)
-    //
-    //            return cell
-    //        case let .pikmi(cellReactor):
-    //            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: PikmiCollectionViewCell.self), for: indexPath) as? PikmiCollectionViewCell else { return .init() }
-    //
-    //            cell.reactor = cellReactor
-    //            cell.infoButton.rx.tap
-    //                .map { .tapPikmiInfoButton(indexPath) }
-    //                .bind(to: reactor.action)
-    //                .disposed(by: cell.disposeBag)
-    //
-    //            return cell
-    //        }
-    //    } configureSupplementaryView: { [weak self] dataSource, collectionView, _, indexPath -> UICollectionReusableView in
-    //        guard let reactor = self?.reactor else { return .init() }
-    //
-    //        switch dataSource[indexPath.section].model {
-    //        case .pikmi:
-    //            guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: PlannerHomeDiscussionCandidatePlaceSectionHeader.self), for: indexPath) as? PlannerHomeDiscussionCandidatePlaceSectionHeader else { return .init() }
-    //
-    //            header.trailingButton.rx.tap
-    //                .map { .tapCreatePikmiButton }
-    //                .bind(to: reactor.action)
-    //                .disposed(by: header.disposeBag)
-    //
-    //            return header
-    //        }
-    //    }
-    
-    //    private lazy var dataSource = RxCollectionViewSectionedReloadDataSource<DiscussionSectionModel> { [weak self] _, collectionView, indexPath, item -> UICollectionViewCell in
-    //        guard let reactor = self?.reactor else { return .init() }
-    //
-    //        switch item {
-    //        case let .tag(reactor):
-    //            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: TagCollectionViewCell.self), for: indexPath) as? TagCollectionViewCell else { return .init() }
-    //
-    //            cell.reactor = reactor
-    //
-    //            return cell
-    //        case let .createPikmi(cellReactor):
-    //            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: CreatePikmiCollectionViewCell.self), for: indexPath) as? CreatePikmiCollectionViewCell else { return .init() }
-    //
-    //            cell.reactor = cellReactor
-    //            cell.button
-    //                .rx
-    //                .tap
-    //                .map { .tapCreatePikmiButton }
-    //                .bind(to: reactor.action)
-    //                .disposed(by: cell.disposeBag)
-    //
-    //            return cell
-    //
-    //        case let .pikmi(cellReactor):
-    //            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: PikmiCollectionViewCell.self), for: indexPath) as? PikmiCollectionViewCell else { return .init() }
-    //
-    //            cell.reactor = cellReactor
-    //            cell.infoButton.rx.tap
-    //                .map { .tapPikmiInfoButton(indexPath) }
-    //                .bind(to: reactor.action)
-    //                .disposed(by: cell.disposeBag)
-    //
-    //            return cell
-    //        }
-    //    }
     
     // MARK: - Initializer
     
@@ -205,7 +102,7 @@ class DiscussionView: BaseView, View {
         collectionView.register(CreatePikmiCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: CreatePikmiCollectionViewCell.self))
         collectionView.register(PikmiCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: PikmiCollectionViewCell.self))
         collectionView.register(DiscussionTagSectionHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: DiscussionTagSectionHeader.self))
-        collectionView.register(PlannerHomeDiscussionCandidatePlaceSectionHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: PlannerHomeDiscussionCandidatePlaceSectionHeader.self))
+        collectionView.register(DiscussionPikmiSectionHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: DiscussionPikmiSectionHeader.self))
     }
     
     override func setupHierarchy() {

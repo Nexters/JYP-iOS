@@ -13,9 +13,10 @@ class DiscussionReactor: Reactor {
     enum Action {
         case selectCell(IndexPath)
         case tapToggleButton
-        case tapCreatePikmiButton
-        case tapPikmiInfoButton(IndexPath)
-        case tapPikmiLikeButton(IndexPath)
+        case tapPlusButton
+        case tapCreatePikmiCellButton(IndexPath)
+        case tapPikmiCellInfoButton(IndexPath)
+        case tapPikmiCellLikeButton(IndexPath)
     }
     
     enum Mutation {
@@ -32,8 +33,7 @@ class DiscussionReactor: Reactor {
         var webReactor: WebReactor?
     }
     
-    let plannerService = ServiceProvider.shared.plannerService
-    let service: ServiceProvider = .shared
+    let service = ServiceProvider.shared.plannerService
     
     var initialState: State
     
@@ -51,19 +51,22 @@ extension DiscussionReactor {
         case .tapToggleButton:
             return tapToggleButtonMutation()
             
-        case .tapCreatePikmiButton:
-            return tapCreatePikmiButtonMutation()
+        case .tapPlusButton:
+            return tapPlusButtonMutation()
             
-        case let .tapPikmiInfoButton(indexPath):
-            return tapPikmiInfoButtonMutation(indexPath)
+        case let .tapCreatePikmiCellButton(indexPath):
+            return tapCreatePikmiCellButtonMutation(indexPath)
             
-        case let .tapPikmiLikeButton(indexPath):
-            return tapPikmiLikeButtonMutation(indexPath)
+        case let .tapPikmiCellInfoButton(indexPath):
+            return tapPikmiCellInfoButtonMutation(indexPath)
+            
+        case let .tapPikmiCellLikeButton(indexPath):
+            return tapPikmiCellLikeButtonMutation(indexPath)
         }
     }
 
     func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
-        let eventMutation = plannerService.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
+        let eventMutation = service.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
             switch event {
             case let .fetchJourney(journey):
                 return .just(.setSections(this.makeSections(from: journey)))
@@ -98,10 +101,11 @@ extension DiscussionReactor {
     private func selectCellMutation(_ indexPath: IndexPath) -> Observable<Mutation> {
         switch currentState.sections[indexPath.section].items[indexPath.item] {
         case let .tag(reactor):
-            return .just(.presentTagBottomSheet(makeReactor(from: reactor)))
+            service.presentTagBottomSheet(from: makeReactor(from: reactor))
+            return .empty()
             
-        case let .createPikmi(reactor):
-            return .just(.presentPlannerSearchPlace(makeReactor(from: reactor)))
+        case .createPikmi:
+            return .empty()
             
         case .pikmi:
             return .empty()
@@ -112,15 +116,25 @@ extension DiscussionReactor {
         return .empty()
     }
     
-    private func tapCreatePikmiButtonMutation() -> Observable<Mutation> {
+    private func tapPlusButtonMutation() -> Observable<Mutation> {
+        service.presentPlannerSearchPlace(from: makeReactor())
         return .empty()
     }
     
-    private func tapPikmiInfoButtonMutation(_ indexPath: IndexPath) -> Observable<Mutation> {
+    private func tapCreatePikmiCellButtonMutation(_ indexPath: IndexPath) -> Observable<Mutation> {
+        guard case let .createPikmi(reactor) = currentState.sections[indexPath.section].items[indexPath.item] else { return .empty() }
+        
+        service.presentPlannerSearchPlace(from: makeReactor())
         return .empty()
     }
     
-    private func tapPikmiLikeButtonMutation(_ indexPath: IndexPath) -> Observable<Mutation> {
+    private func tapPikmiCellInfoButtonMutation(_ indexPath: IndexPath) -> Observable<Mutation> {
+        guard case let .pikmi(reactor) = currentState.sections[indexPath.section].items[indexPath.item] else { return .empty() }
+        return .empty()
+    }
+    
+    private func tapPikmiCellLikeButtonMutation(_ indexPath: IndexPath) -> Observable<Mutation> {
+        guard case let .pikmi(reactor) = currentState.sections[indexPath.section].items[indexPath.item] else { return .empty() }
         return .empty()
     }
     
@@ -178,7 +192,7 @@ extension DiscussionReactor {
         return .init(state: .init(tag: reactor.currentState))
     }
     
-    private func makeReactor(from reactor: CreatePikmiCollectionViewCellReactor) -> PlannerSearchPlaceReactor {
+    private func makeReactor() -> PlannerSearchPlaceReactor {
         return .init()
     }
     
