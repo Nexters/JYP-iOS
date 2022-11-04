@@ -29,7 +29,8 @@ class DiscussionTagSectionHeader: BaseCollectionReusableView {
         
         editButton.setImage(JYPIOSAsset.iconModify.image, for: .normal)
         
-        toggleButton.setImage(JYPIOSAsset.iconClose.image, for: .normal)
+        toggleButton.setImage(JYPIOSAsset.iconOpen.image, for: .normal)
+        toggleButton.setImage(JYPIOSAsset.iconClose.image, for: .selected)
     }
     
     override func setupHierarchy() {

@@ -39,6 +39,10 @@ class DiscussionView: BaseView, View {
             cell.reactor = reactor
             return cell
             
+        case .emptyTag:
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: EmptyTagCollectionViewCell.self), for: indexPath) as? EmptyTagCollectionViewCell else { return .init() }
+            return cell
+            
         case let .pikmi(reactor):
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: PikmiCollectionViewCell.self), for: indexPath) as? PikmiCollectionViewCell else { return .init() }
             cell.reactor = reactor
@@ -63,6 +67,14 @@ class DiscussionView: BaseView, View {
         switch dataSource[indexPath.section].model {
         case .tag:
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: DiscussionTagSectionHeader.self), for: indexPath) as? DiscussionTagSectionHeader else { return .init() }
+            header.toggleButton.rx.tap
+                .map { .tapToggleButton }
+                .bind(to: thisReactor.action)
+                .disposed(by: header.disposeBag)
+            thisReactor.state
+                .map(\.isToggleOn)
+                .bind(to: header.toggleButton.rx.isSelected)
+                .disposed(by: header.disposeBag)
             return header
             
         case .pikmi:
@@ -99,6 +111,7 @@ class DiscussionView: BaseView, View {
         backgroundColor = JYPIOSAsset.backgroundWhite100.color
         
         collectionView.register(TagCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: TagCollectionViewCell.self))
+        collectionView.register(EmptyTagCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: EmptyTagCollectionViewCell.self))
         collectionView.register(CreatePikmiCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: CreatePikmiCollectionViewCell.self))
         collectionView.register(PikmiCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: PikmiCollectionViewCell.self))
         collectionView.register(DiscussionTagSectionHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: DiscussionTagSectionHeader.self))
@@ -158,7 +171,8 @@ extension DiscussionView: UICollectionViewDelegateFlowLayout {
         switch dataSource[indexPath.section].items[indexPath.row] {
         case let .tag(reactor):
             return CGSize(width: reactor.currentState.topic.size(withAttributes: [NSAttributedString.Key.font: JYPIOSFontFamily.Pretendard.medium.font(size: 16)]).width + 50, height: UI.tagCellHeight)
-            
+        case let .emptyTag:
+            return CGSize(width: 0, height: 0)
         case .pikmi:
             return CGSize(width: collectionView.frame.width - UI.cellWidthMargin, height: UI.pikmiCellHeight)
             

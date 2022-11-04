@@ -29,7 +29,7 @@ class PlannerReactor: Reactor {
     }
     
     struct State {
-        var pik: Pik
+        var journey: Journey
         var isShowDiscussion: Bool = true
         var isShowJourneyPlan: Bool = false
         var plannerInviteReactor: PlannerInviteReactor?

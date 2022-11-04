@@ -20,17 +20,15 @@ class DiscussionReactor: Reactor {
     }
     
     enum Mutation {
+        case updateJourney(Journey)
         case setSections([DiscussionSectionModel])
-        case presentTagBottomSheet(TagBottomSheetReactor?)
-        case presentPlannerSearchPlace(PlannerSearchPlaceReactor?)
-        case presentWeb(WebReactor?)
+        case updateIsToggleOn(Bool)
     }
     
     struct State {
+        var journey: Journey?
         var sections: [DiscussionSectionModel] = []
-        var tagBottomSheetReactor: TagBottomSheetReactor?
-        var plannerSearchPlaceReactor: PlannerSearchPlaceReactor?
-        var webReactor: WebReactor?
+        var isToggleOn: Bool = true
     }
     
     let service = ServiceProvider.shared.plannerService
@@ -69,7 +67,10 @@ extension DiscussionReactor {
         let eventMutation = service.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
             switch event {
             case let .fetchJourney(journey):
-                return .just(.setSections(this.makeSections(from: journey)))
+                let setSectionsMutation: Observable<Mutation> = .just(.setSections(this.makeSections(from: journey)))
+                let updateJoruneyMutation: Observable<Mutation> = .just(.updateJourney(journey))
+                let sequence: [Observable<Mutation>] = [setSectionsMutation, updateJoruneyMutation]
+                return .concat(sequence)
             default:
                 return .empty()
             }
@@ -82,17 +83,14 @@ extension DiscussionReactor {
         var newState = state
         
         switch mutation {
+        case let .updateJourney(journey):
+            newState.journey = journey
+            
         case let .setSections(sections):
             newState.sections = sections
             
-        case let .presentTagBottomSheet(reactor):
-            newState.tagBottomSheetReactor = reactor
-            
-        case let .presentPlannerSearchPlace(reactor):
-            newState.plannerSearchPlaceReactor = reactor
-            
-        case let .presentWeb(reactor):
-            newState.webReactor = reactor
+        case let .updateIsToggleOn(bool):
+            newState.isToggleOn = bool
         }
         
         return newState
@@ -104,6 +102,9 @@ extension DiscussionReactor {
             service.presentTagBottomSheet(from: makeReactor(from: reactor))
             return .empty()
             
+        case .emptyTag:
+            return .empty()
+            
         case .createPikmi:
             return .empty()
             
@@ -113,7 +114,13 @@ extension DiscussionReactor {
     }
     
     private func tapToggleButtonMutation() -> Observable<Mutation> {
-        return .empty()
+        guard let journey = currentState.journey else { return .empty() }
+        let updateIsToggleOnMutation: Observable<Mutation> = .just(.updateIsToggleOn(!currentState.isToggleOn))
+        var setSectionsMutation: Observable<Mutation> {
+            currentState.isToggleOn ? .just(.setSections(makeEmptyTagSections(from: journey))) : .just(.setSections(makeSections(from: journey)))
+        }
+        let sequence: [Observable<Mutation>] = [updateIsToggleOnMutation, setSectionsMutation]
+        return .concat(sequence)
     }
     
     private func tapPlusButtonMutation() -> Observable<Mutation> {
@@ -123,7 +130,6 @@ extension DiscussionReactor {
     
     private func tapCreatePikmiCellButtonMutation(_ indexPath: IndexPath) -> Observable<Mutation> {
         guard case let .createPikmi(reactor) = currentState.sections[indexPath.section].items[indexPath.item] else { return .empty() }
-        
         service.presentPlannerSearchPlace(from: makeReactor())
         return .empty()
     }
@@ -169,8 +175,29 @@ extension DiscussionReactor {
 //        return .empty()
 //    }
     
+//    private func makeSections() -> [DiscussionSectionModel] {
+//        
+//    }
+    
+    private func makeEmptyTagSections(from journey: Journey) -> [DiscussionSectionModel] {
+        let tagItmes: [DiscussionItem] = [.emptyTag]
+        
+        var pikmiItems: [DiscussionItem] = journey.pikmis.enumerated().map { (index, pik) -> DiscussionItem in
+            return .pikmi(.init(state: .init(pik: pik, rank: index)))
+        }
+
+        if pikmiItems.isEmpty {
+            pikmiItems.append(.createPikmi(.init()))
+        }
+        
+        let tagSectionModel: DiscussionSectionModel = .init(model: .tag(tagItmes), items: tagItmes)
+        let pikmiSectionModel: DiscussionSectionModel = .init(model: .pikmi(pikmiItems), items: pikmiItems)
+        
+        return [tagSectionModel, pikmiSectionModel]
+    }
+    
     private func makeSections(from journey: Journey) -> [DiscussionSectionModel] {
-        let tagSectionItmes: [DiscussionItem] = journey.tags.map { (tag) -> DiscussionItem in
+        let tagItmes: [DiscussionItem] = journey.tags.map { (tag) -> DiscussionItem in
             return .tag(.init(tag: tag))
         }
 
@@ -182,7 +209,7 @@ extension DiscussionReactor {
             pikmiItems.append(.createPikmi(.init()))
         }
 
-        let tagSectionModel: DiscussionSectionModel = .init(model: .tag(tagSectionItmes), items: tagSectionItmes)
+        let tagSectionModel: DiscussionSectionModel = .init(model: .tag(tagItmes), items: tagItmes)
         let pikmiSectionModel: DiscussionSectionModel = .init(model: .pikmi(pikmiItems), items: pikmiItems)
         
         return [tagSectionModel, pikmiSectionModel]
