@@ -11,7 +11,6 @@ import ReactorKit
 import RxDataSources
 
 class DiscussionView: BaseView, View {
-
     // MARK: - Constants
     
     private enum UI {
@@ -171,7 +170,7 @@ extension DiscussionView: UICollectionViewDelegateFlowLayout {
         switch dataSource[indexPath.section].items[indexPath.row] {
         case let .tag(reactor):
             return CGSize(width: reactor.currentState.topic.size(withAttributes: [NSAttributedString.Key.font: JYPIOSFontFamily.Pretendard.medium.font(size: 16)]).width + 50, height: UI.tagCellHeight)
-        case let .emptyTag:
+        case .emptyTag:
             return CGSize(width: 0, height: 0)
         case .pikmi:
             return CGSize(width: collectionView.frame.width - UI.cellWidthMargin, height: UI.pikmiCellHeight)

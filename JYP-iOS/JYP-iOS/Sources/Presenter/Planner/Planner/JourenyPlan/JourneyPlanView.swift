@@ -82,6 +82,7 @@ class JourneyPlanView: BaseView, View {
         
         backgroundColor = JYPIOSAsset.backgroundWhite100.color
         
+        collectionView.dataSource = dataSource
         collectionView.register(DayTagColectionViewCell.self, forCellWithReuseIdentifier: String(describing: DayTagColectionViewCell.self))
         collectionView.register(EmptyPikiCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: EmptyPikiCollectionViewCell.self))
         collectionView.register(PikiCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: PikiCollectionViewCell.self))
@@ -104,16 +105,11 @@ class JourneyPlanView: BaseView, View {
     }
     
     func bind(reactor: Reactor) {
-        // State
-        reactor.state.map(\.sections).asObservable()
-            .bind(to: collectionView.rx.items(dataSource: dataSource))
-            .disposed(by: disposeBag)
-        
         reactor.state.map(\.sections).asObservable()
             .withUnretained(self)
             .bind { this, sections in
-                let layout = this.makeLayout(sections: sections)
-                this.collectionView.collectionViewLayout = layout
+                this.dataSource.setSections(sections)
+                this.collectionView.collectionViewLayout = this.makeLayout(sections: sections)
             }
             .disposed(by: disposeBag)
     }
