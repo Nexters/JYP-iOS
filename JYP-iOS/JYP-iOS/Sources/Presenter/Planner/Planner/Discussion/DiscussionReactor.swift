@@ -129,18 +129,18 @@ extension DiscussionReactor {
     }
     
     private func tapCreatePikmiCellButtonMutation(_ indexPath: IndexPath) -> Observable<Mutation> {
-        guard case let .createPikmi(reactor) = currentState.sections[indexPath.section].items[indexPath.item] else { return .empty() }
+        guard case .createPikmi = currentState.sections[indexPath.section].items[indexPath.item] else { return .empty() }
         service.presentPlannerSearchPlace(from: makeReactor())
         return .empty()
     }
     
     private func tapPikmiCellInfoButtonMutation(_ indexPath: IndexPath) -> Observable<Mutation> {
-        guard case let .pikmi(reactor) = currentState.sections[indexPath.section].items[indexPath.item] else { return .empty() }
+        guard case .pikmi = currentState.sections[indexPath.section].items[indexPath.item] else { return .empty() }
         return .empty()
     }
     
     private func tapPikmiCellLikeButtonMutation(_ indexPath: IndexPath) -> Observable<Mutation> {
-        guard case let .pikmi(reactor) = currentState.sections[indexPath.section].items[indexPath.item] else { return .empty() }
+        guard case .pikmi = currentState.sections[indexPath.section].items[indexPath.item] else { return .empty() }
         return .empty()
     }
     
