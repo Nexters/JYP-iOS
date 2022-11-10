@@ -39,7 +39,7 @@ extension ScheduledJourneyReactor {
                         startDate: 0.0,
                         endDate: 0.0,
                         themePath: .default,
-                        users: [.init(id: "", nickname: "", profileImagePath: "", personality: ""), .init(id: "", nickname: "", profileImagePath: "", personality: ""), .init(id: "", nickname: "", profileImagePath: "", personality: "")],
+                        users: [.init(id: "", nickname: "", profileImagePath: "", personality: .ME), .init(id: "", nickname: "", profileImagePath: "", personality: .ME), .init(id: "", nickname: "", profileImagePath: "", personality: .ME)],
                         tags: [],
                         pikis: [],
                         pikmis: []
@@ -54,7 +54,7 @@ extension ScheduledJourneyReactor {
                         startDate: 0.0,
                         endDate: 0.0,
                         themePath: .city,
-                        users: [.init(id: "", nickname: "", profileImagePath: "", personality: ""), .init(id: "", nickname: "", profileImagePath: "", personality: "")],
+                        users: [.init(id: "", nickname: "", profileImagePath: "", personality: .ME), .init(id: "", nickname: "", profileImagePath: "", personality: .ME)],
                         tags: [],
                         pikis: [],
                         pikmis: []
@@ -69,7 +69,7 @@ extension ScheduledJourneyReactor {
                         startDate: 0.0,
                         endDate: 0.0,
                         themePath: .culture,
-                        users: [.init(id: "", nickname: "", profileImagePath: "", personality: ""), .init(id: "", nickname: "", profileImagePath: "", personality: ""), .init(id: "", nickname: "", profileImagePath: "", personality: ""), .init(id: "", nickname: "", profileImagePath: "", personality: ""), .init(id: "", nickname: "", profileImagePath: "", personality: ""), .init(id: "", nickname: "", profileImagePath: "", personality: "")],
+                        users: [.init(id: "1", nickname: "", profileImagePath: "", personality: .ME), .init(id: "", nickname: "", profileImagePath: "", personality: .FW), .init(id: "", nickname: "", profileImagePath: "", personality: .ME), .init(id: "", nickname: "", profileImagePath: "", personality: .PE), .init(id: "", nickname: "", profileImagePath: "", personality: .RT), .init(id: "", nickname: "", profileImagePath: "", personality: .RT)],
                         tags: [],
                         pikis: [],
                         pikmis: []
@@ -84,7 +84,7 @@ extension ScheduledJourneyReactor {
                         startDate: 0.0,
                         endDate: 0.0,
                         themePath: .sea,
-                        users: [.init(id: "", nickname: "", profileImagePath: "", personality: ""), .init(id: "", nickname: "", profileImagePath: "", personality: ""), .init(id: "", nickname: "", profileImagePath: "", personality: ""), .init(id: "", nickname: "", profileImagePath: "", personality: "")],
+                        users: [.init(id: "", nickname: "", profileImagePath: "", personality: .ME), .init(id: "", nickname: "", profileImagePath: "", personality: .PE), .init(id: "", nickname: "", profileImagePath: "", personality: .ME), .init(id: "", nickname: "", profileImagePath: "", personality: .ME)],
                         tags: [],
                         pikis: [],
                         pikmis: []
@@ -99,7 +99,7 @@ extension ScheduledJourneyReactor {
                         startDate: 0.0,
                         endDate: 0.0,
                         themePath: .mountain,
-                        users: [.init(id: "", nickname: "", profileImagePath: "", personality: ""), .init(id: "", nickname: "", profileImagePath: "", personality: ""), .init(id: "", nickname: "", profileImagePath: "", personality: ""), .init(id: "", nickname: "", profileImagePath: "", personality: ""), .init(id: "", nickname: "", profileImagePath: "", personality: ""), .init(id: "", nickname: "", profileImagePath: "", personality: ""), .init(id: "", nickname: "", profileImagePath: "", personality: "")],
+                        users: [.init(id: "", nickname: "", profileImagePath: "", personality: .PE), .init(id: "", nickname: "", profileImagePath: "", personality: .PE), .init(id: "", nickname: "", profileImagePath: "", personality: .PE), .init(id: "", nickname: "", profileImagePath: "", personality: .PE), .init(id: "", nickname: "", profileImagePath: "", personality: .ME), .init(id: "", nickname: "", profileImagePath: "", personality: .ME), .init(id: "", nickname: "", profileImagePath: "", personality: .ME)],
                         tags: [],
                         pikis: [],
                         pikmis: []

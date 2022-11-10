@@ -139,12 +139,12 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
             .disposed(by: disposeBag)
         
         reactor.state
-            .map { $0.isPresentOnboardingWhatIsTrip }
-            .distinctUntilChanged()
-            .filter { $0 }
-            .bind { [weak self] _ in
-                let onboardingWhatIsJourneyViewController = OnboardingQuestionJourneyViewController(reactor: OnboardingQuestionReactor())
-                self?.navigationController?.pushViewController(onboardingWhatIsJourneyViewController, animated: true)
+            .compactMap(\.onboardingQuestionReactor)
+            .withUnretained(self)
+            .bind { this, reactor in
+                let onboardingQuestionJourneyViewController = OnboardingQuestionJourneyViewController(reactor: reactor)
+                
+                this.navigationController?.pushViewController(onboardingQuestionJourneyViewController, animated: true)
             }
             .disposed(by: disposeBag)
     }
@@ -165,7 +165,13 @@ extension OnboardingSignUpViewController: ASAuthorizationControllerDelegate, ASA
                     // do something
                     _ = oauthToken
                     
-                    self.reactor?.action.onNext(.didLogin)
+                    UserApi.shared.me { (user, _) in
+                        if let error = error {
+                            print(error)
+                        } else {
+                            self.reactor?.action.onNext(.didLogin(authVendor: .kakao, authID: oauthToken?.accessToken ?? "", name: user?.properties?["nickname"] ?? "TEST", profileImagePath: user?.properties?["profile_image"] ?? ""))
+                        }
+                    }
                 }
             }
         } else {
@@ -179,7 +185,13 @@ extension OnboardingSignUpViewController: ASAuthorizationControllerDelegate, ASA
                     // do something
                     _ = oauthToken
                     
-                    self.reactor?.action.onNext(.didLogin)
+                    UserApi.shared.me { (user, _) in
+                        if let error = error {
+                            print(error)
+                        } else {
+                            self.reactor?.action.onNext(.didLogin(authVendor: .kakao, authID: oauthToken?.accessToken ?? "", name: user?.properties?["nickname"] ?? "TEST", profileImagePath: user?.properties?["profile_image"] ?? ""))
+                        }
+                    }
                 }
             }
         }
@@ -208,6 +220,7 @@ extension OnboardingSignUpViewController: ASAuthorizationControllerDelegate, ASA
             let email = appleIDCredential.email
             
             if let authorizationCode = appleIDCredential.authorizationCode, let identityToken = appleIDCredential.identityToken, let authString = String(data: authorizationCode, encoding: .utf8), let tokenString = String(data: identityToken, encoding: .utf8) {
+                self.reactor?.action.onNext(.didLogin(authVendor: .apple, authID: tokenString, name: String(describing: fullName), profileImagePath: ""))
                 print("[D] authorizationCode: \(authorizationCode)")
                 print("[D] identityToken: \(identityToken)")
                 print("[D] authString: \(authString)")
@@ -218,7 +231,7 @@ extension OnboardingSignUpViewController: ASAuthorizationControllerDelegate, ASA
             print("[D] fullName: \(String(describing: fullName))")
             print("[D] email: \(String(describing: email))")
 
-            reactor?.action.onNext(.didLogin)
+//            reactor?.action.onNext(.didLogin)
             
         case let passwordCredential as ASPasswordCredential:
             let username = passwordCredential.user

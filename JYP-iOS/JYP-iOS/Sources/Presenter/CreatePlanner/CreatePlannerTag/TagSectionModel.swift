@@ -10,7 +10,7 @@ import RxDataSources
 
 typealias TagSectionModel = SectionModel<TagSection, TagItem>
 
-enum TagSection: Equatable {
+enum TagSection: Codable {
     case soso([Tag])
     case like([Tag])
     case dislike([Tag])

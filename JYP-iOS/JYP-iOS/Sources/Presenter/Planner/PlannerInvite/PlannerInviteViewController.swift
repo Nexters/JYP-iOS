@@ -16,8 +16,6 @@ class PlannerInviteViewController: NavigationBarViewController, View {
     
     let titleLabel: UILabel = .init()
     let subLabel: UILabel = .init()
-    let buttonStackView: UIStackView = .init()
-    let kakaoInviteButton: JYPButton = .init(type: .kakaoInvite)
     let linkInviteButton: JYPButton = .init(type: .linkInvite)
     
     // MARK: - Initializer
@@ -42,25 +40,17 @@ class PlannerInviteViewController: NavigationBarViewController, View {
         titleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 24)
         titleLabel.textColor = JYPIOSAsset.textB80.color
         
-        subLabel.text = "일행과 함께 여행기를 만들어요"
+        subLabel.text = "일행은 최대 8명까지 초대할 수 있어요"
         subLabel.font = JYPIOSFontFamily.Pretendard.medium.font(size: 16)
         subLabel.textColor = JYPIOSAsset.tagGrey200.color
         
-        buttonStackView.axis = .horizontal
-        buttonStackView.distribution = .fillEqually
-        buttonStackView.spacing = 13
-        
-        kakaoInviteButton.isEnabled = false
         linkInviteButton.isEnabled = false
     }
     
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        contentView.addSubviews([titleLabel, subLabel, buttonStackView])
-        
-        buttonStackView.addArrangedSubview(kakaoInviteButton)
-        buttonStackView.addArrangedSubview(linkInviteButton)
+        contentView.addSubviews([titleLabel, subLabel, linkInviteButton])
     }
     
     override func setupLayout() {
@@ -76,13 +66,12 @@ class PlannerInviteViewController: NavigationBarViewController, View {
             $0.leading.equalToSuperview().inset(24)
         }
         
-        buttonStackView.snp.makeConstraints {
+        linkInviteButton.snp.makeConstraints {
             $0.top.equalTo(subLabel.snp.bottom).offset(26)
             $0.leading.trailing.equalToSuperview().inset(24)
             $0.height.equalTo(52)
         }
     }
     
-    func bind(reactor: Reactor) {  
-    }
+    func bind(reactor: Reactor) { }
 }

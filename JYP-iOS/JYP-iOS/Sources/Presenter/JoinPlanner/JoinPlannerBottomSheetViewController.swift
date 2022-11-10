@@ -21,7 +21,7 @@ class JoinPlannerBottomSheetViewController: BottomSheetViewController {
 
     private let textField: JYPSearchTextField = .init(type: .tag)
 
-    private let addButton: JYPButton = .init(type: .linkInvite)
+    private let addButton: JYPButton = .init(type: .plannerJoin)
 
     // MARK: - Setup
 

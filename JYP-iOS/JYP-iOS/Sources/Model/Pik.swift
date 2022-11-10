@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct Pik: Hashable {
+struct Pik: Codable {
     let id: String
     let name: String
     let address: String

@@ -8,9 +8,14 @@
 
 import Foundation
 
-struct User: Hashable {
+struct User: Codable {
     let id: String
     let nickname: String
     let profileImagePath: String
-    let personality: String
+    let personality: PersonalityId
+    
+    enum CodingKeys: String, CodingKey {
+        case id, profileImagePath, personality
+        case nickname = "name"
+    }
 }

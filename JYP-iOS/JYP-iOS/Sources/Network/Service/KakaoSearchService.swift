@@ -23,7 +23,7 @@ class KakaoSearchService: BaseService, KakaoSearchServiceType {
     
     func searchPlace(keyword: String, page: Int) -> Observable<KakaoSearchResponse> {
         let target = SearchAPI.placeSearch(keyword: keyword, page: page)
-        
+
         return APIService.request(target: target)
             .map(KakaoSearchResponse.self)
             .asObservable()

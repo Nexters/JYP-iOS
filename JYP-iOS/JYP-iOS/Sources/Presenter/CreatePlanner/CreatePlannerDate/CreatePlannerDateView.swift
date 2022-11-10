@@ -23,7 +23,7 @@ class CreatePlannerDateView: BaseView {
 
     var journeyDaysButton: UIButton = .init()
 
-    var submitButton: JYPButton = .init(type: .done)
+    var submitButton: JYPButton = .init(type: .next)
 
     init() {
         super.init(frame: .zero)
@@ -67,10 +67,8 @@ class CreatePlannerDateView: BaseView {
         journeyDaysButton.setTitleColor(JYPIOSAsset.subBlue300.color, for: .normal)
         journeyDaysButton.cornerRound(radius: 20)
 
-        submitButton.setTitle("선택하기", for: .normal)
-        submitButton.backgroundColor = .systemPink
-        submitButton.titleLabel?.textColor = .white
         submitButton.isHidden = true
+        submitButton.isEnabled = true
     }
 
     override func setupHierarchy() {
@@ -129,7 +127,7 @@ class CreatePlannerDateView: BaseView {
 
         submitButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(24)
-            make.bottom.equalTo(safeAreaLayoutGuide.snp.bottom).inset(24)
+            make.bottom.equalToSuperview()
             make.height.equalTo(52)
         }
     }

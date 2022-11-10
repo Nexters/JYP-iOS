@@ -18,7 +18,7 @@ extension BaseAPI {
 
     var headers: [String: String]? {
         [
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         ]
     }
 

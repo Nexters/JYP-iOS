@@ -9,9 +9,10 @@
 import RxSwift
 
 class BaseService {
-  unowned let provider: ServiceProviderType
+    var disposeBag = DisposeBag()
+    unowned let provider: ServiceProviderType
 
-  init(provider: ServiceProviderType) {
-    self.provider = provider
-  }
+    init(provider: ServiceProviderType) {
+        self.provider = provider
+    }
 }

@@ -48,23 +48,31 @@ class CreatePlannerDateViewController: NavigationBarViewController, View {
         super.setupLayout()
 
         selfView.snp.makeConstraints {
-            $0.edges.equalToSuperview()
+            $0.top.leading.trailing.equalToSuperview()
+            $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
         }
     }
 
     func bind(reactor: CreatePlannerDateReactor) {
-        rx.viewDidLoad
+        rx.viewWillAppear
             .map { _ in Reactor.Action.didTapStartDateTextField }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
         selfView.startDateTextField.rx.tapGesture()
+            .when(.recognized)
             .map { _ in Reactor.Action.didTapStartDateTextField }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
         selfView.endDateTextField.rx.tapGesture()
+            .when(.recognized)
             .map { _ in Reactor.Action.didTapEndDateTextField }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
+        selfView.submitButton.rx.tap
+            .map { _ in Reactor.Action.didTapSubmitButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
@@ -99,6 +107,15 @@ class CreatePlannerDateViewController: NavigationBarViewController, View {
             .disposed(by: disposeBag)
 
         reactor.state
+            .map(\.isCompleted)
+            .distinctUntilChanged()
+            .subscribe(onNext: { [weak self] isCompleted in
+                self?.selfView.startDateTextField.isCompleted = isCompleted
+                self?.selfView.endDateTextField.isCompleted = isCompleted
+            })
+            .disposed(by: disposeBag)
+
+        reactor.state
             .map(\.journeyDays)
             .bind(to: selfView.journeyDaysButton.rx.title(for: .normal))
             .disposed(by: disposeBag)
@@ -120,7 +137,18 @@ class CreatePlannerDateViewController: NavigationBarViewController, View {
             .subscribe(onNext: { [weak self] _ in
                 let calendarViewController = CalendarViewController(reactor: reactor.makeCalendarReactor())
 
-                self?.tabBarController?.present(calendarViewController, animated: true)
+                self?.present(calendarViewController, animated: true)
+            })
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .map(\.isPushCreateTagView)
+            .distinctUntilChanged()
+            .filter { $0 }
+            .subscribe(onNext: { [weak self] _ in
+                let createTag = CreatePlannerTagViewController(reactor: reactor.makeCreateTagReactor())
+
+                self?.navigationController?.pushViewController(createTag, animated: true)
             })
             .disposed(by: disposeBag)
     }

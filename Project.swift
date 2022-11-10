@@ -54,6 +54,7 @@ class BaseProjectFactory: ProjectFactory {
         "KAKAO_REST_KEY": "$(KAKAO_REST_KEY)",
         "KAKAO_APP_KEY": "$(KAKAO_APP_KEY)",
         "SERVER_HOST": "$(SERVER_HOST)",
+        "SERVER_JWT_MASTER_KEY": "$(SERVER_JWT_MASTER_KEY)",
         "GOOGLE_API_KEY": "$(GOOGLE_API_KEY)",
         "UIAppFonts": [
             "Item 0": "Pretendard-Medium.otf",

@@ -8,14 +8,14 @@
 
 import Foundation
 
-struct Journey: Hashable {
+struct Journey: Codable {
     let id: String
     let name: String
     let startDate: Double
     let endDate: Double
     let themePath: ThemeType
     let users: [User]
-    let tags: [Tag]?
-    let pikis: [[Pik]]?
-    let pikmis: [Pik]?
+    var tags: [Tag] = []
+    var pikis: [[Pik]] = []
+    var pikmis: [Pik] = []
 }

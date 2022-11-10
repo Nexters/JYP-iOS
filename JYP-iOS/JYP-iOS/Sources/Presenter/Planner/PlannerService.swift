@@ -64,44 +64,38 @@ class PlannerService: PlannerServiceProtocol {
     func makeSections(from journey: Journey) -> [DiscussionSectionModel] {
         var sections: [DiscussionSectionModel] = []
         
-        if let tags = journey.tags {
-            let items = tags.map { (tag) -> DiscussionItem in
-                return DiscussionItem.tag(TagCollectionViewCellReactor(tag: tag))
-            }
-            let section = DiscussionSectionModel(model: DiscussionSection.tag(items), items: items)
+        let items = journey.tags.map { (tag) -> DiscussionItem in
+            return DiscussionItem.tag(TagCollectionViewCellReactor(tag: tag))
+        }
+        let section = DiscussionSectionModel(model: DiscussionSection.tag(items), items: items)
+        
+        sections.append(section)
+        
+        if journey.pikmis.isEmpty {
+            let item = DiscussionSectionModel.Item.createPikmi(.init())
+            let section = DiscussionSectionModel.init(model: .pikmi([item]), items: [item])
             
             sections.append(section)
-        }
-        
-        if let pikmis = journey.pikmis {
-            if pikmis.isEmpty {
-                let item = DiscussionSectionModel.Item.createPikmi(.init())
-                let section = DiscussionSectionModel.init(model: .pikmi([item]), items: [item])
-                
-                sections.append(section)
-            } else {
-                let items = pikmis.enumerated().map { (index, pik) -> DiscussionItem in
-                    return DiscussionItem.pikmi(PikmiCollectionViewCellReactor(state: .init(pik: pik, rank: index)))
-                }
-                let section = DiscussionSectionModel(model: DiscussionSection.pikmi(items), items: items)
-                
-                sections.append(section)
+        } else {
+            let items = journey.pikmis.enumerated().map { (index, pik) -> DiscussionItem in
+                return DiscussionItem.pikmi(PikmiCollectionViewCellReactor(state: .init(pik: pik, rank: index)))
             }
+            let section = DiscussionSectionModel(model: DiscussionSection.pikmi(items), items: items)
+            
+            sections.append(section)
         }
 
         return sections
     }
     
     func makeSections(from journey: Journey) -> [JourneyPlanSectionModel] {
-        guard let pikisList = journey.pikis else { return [] }
-        
         var journeyPlanSectionModels: [JourneyPlanSectionModel] = []
         
-        let daySectionItems = pikisList.enumerated().map { (index, _) -> JourneyPlanItem in
+        let daySectionItems = journey.pikis.enumerated().map { (index, _) -> JourneyPlanItem in
             return JourneyPlanItem.dayTag(DayTagCollectionViewCellReactor(state: .init(day: index + 1)))
         }
         
-        let journeySectionModels = pikisList.enumerated().map { (index, pikis) -> JourneyPlanSectionModel in
+        let journeySectionModels = journey.pikis.enumerated().map { (index, pikis) -> JourneyPlanSectionModel in
             var journeyPlanItems: [JourneyPlanItem] = []
             
             if pikis.isEmpty {

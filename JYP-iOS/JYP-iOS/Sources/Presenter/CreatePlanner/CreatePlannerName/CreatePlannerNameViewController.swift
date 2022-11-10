@@ -134,7 +134,7 @@ class CreatePlannerNameViewController: NavigationBarViewController, View {
 
         nextButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(24)
-            make.bottom.equalToSuperview().inset(34)
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
             make.height.equalTo(52)
         }
     }

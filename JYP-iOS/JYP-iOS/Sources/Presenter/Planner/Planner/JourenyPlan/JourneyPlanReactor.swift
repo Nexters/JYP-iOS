@@ -80,8 +80,8 @@ extension JourneyPlanReactor {
         let order: Int = indexPath.section - 1
         let date: Date = Date(timeIntervalSince1970: journey.startDate)
         let addedDate: Date = DateManager.addDateComponent(byAdding: .day, value: order, to: date)
-        let pikis: [Pik] = journey.pikis?[indexPath.section] ?? []
-        let pikmis: [Pik] = journey.pikmis ?? []
+        let pikis: [Pik] = journey.pikis[indexPath.section]
+        let pikmis: [Pik] = journey.pikmis
         
         return .init(state: .init(order: order, date: addedDate, pikis: pikis, pikmis: pikmis))
     }

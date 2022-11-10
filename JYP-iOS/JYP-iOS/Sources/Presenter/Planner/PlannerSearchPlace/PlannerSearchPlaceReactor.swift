@@ -12,20 +12,25 @@ import ReactorKit
 class PlannerSearchPlaceReactor: Reactor {
     enum Action {
         case search(String)
-        case tapKakaoSearchPlaceCell(IndexPath)
-        case dismiss
+        case selectCell(IndexPath)
     }
     
     enum Mutation {
-        case updatekakaoSearchPlacePresentPlannerSearchPlaceMapViewController(KakaoSearchPlace)
         case setSections([PlannerSearchPlaceSectionModel])
-        case dismiss
+        case updatePlannerSearchPlaceMapReactor(PlannerSearchPlaceMapReactor?)
+        case updateEmptyViewState(EmptyViewState)
+    }
+    
+    enum EmptyViewState {
+        case empty
+        case noResult
+        case none
     }
     
     struct State {
         var sections: [PlannerSearchPlaceSectionModel] = []
-        var kakaoSearchPlacePresentPlannerSearchPlaceMapViewController: KakaoSearchPlace?
-        var dismiss: Bool = false
+        var plannerSearchPlaceMapReactor: PlannerSearchPlaceMapReactor?
+        var emptyViewState: EmptyViewState = .empty
     }
     
     let provider = ServiceProvider.shared
@@ -38,28 +43,12 @@ class PlannerSearchPlaceReactor: Reactor {
 
 extension PlannerSearchPlaceReactor {
     func mutate(action: Action) -> Observable<Mutation> {
-        let state = currentState
-        
         switch action {
         case let .search(keyword):
-            return provider.kakaoSearchService.searchPlace(keyword: keyword, page: 1)
-                .map { kakaoSearchResponse in
-                    let kakaoSearchItems = kakaoSearchResponse.kakaoSearchPlaces.map { (kakaoSearchPlace) -> PlannerSearchPlaceItem in
-                        return .kakaoItem(KakaoSearchPlaceTableViewCellReactor(kakaoSearchPlace: kakaoSearchPlace))
-                    }
-                    let kakaoSearchSection = PlannerSearchPlaceSectionModel(model: .kakaoSection(kakaoSearchItems), items: kakaoSearchItems)
-                    
-                    return .setSections([kakaoSearchSection])
-            }
-        case let .tapKakaoSearchPlaceCell(indexPath):
-            guard case let .kakaoItem(reactor) = state.sections[indexPath.section].items[indexPath.row] else { break }
-            let kakaoSearchPlace = reactor.currentState
-
-            return .just(.updatekakaoSearchPlacePresentPlannerSearchPlaceMapViewController(kakaoSearchPlace))
-        case .dismiss:
-            return .just(.dismiss)
+            return mutateSearch(keyword)
+        case let .selectCell(indexPath):
+            return mutateSelectCell(indexPath)
         }
-        return .empty()
     }
     
     func reduce(state: State, mutation: Mutation) -> State {
@@ -68,12 +57,61 @@ extension PlannerSearchPlaceReactor {
         switch mutation {
         case let .setSections(plannerSearchPlaceSectionModels):
             newState.sections = plannerSearchPlaceSectionModels
-        case let .updatekakaoSearchPlacePresentPlannerSearchPlaceMapViewController(kakaoSearchPlace):
-            newState.kakaoSearchPlacePresentPlannerSearchPlaceMapViewController = kakaoSearchPlace
-        case .dismiss:
-            newState.dismiss = true
+        case let .updatePlannerSearchPlaceMapReactor(reactor):
+            newState.plannerSearchPlaceMapReactor = reactor
+        case let .updateEmptyViewState(state):
+            newState.emptyViewState = state
         }
         
         return newState
+    }
+    
+    private func mutateSearch(_ keyword: String) -> Observable<Mutation> {
+        var emptyView: Observable<Mutation>
+        var search: Observable<Mutation>
+        
+        if keyword.isEmpty {
+            emptyView = .just(.updateEmptyViewState(.empty))
+            search = .just(.setSections([]))
+            
+            return .concat([emptyView, search])
+        } else {
+            emptyView = .just(.updateEmptyViewState(.none))
+        }
+        
+        search = Observable<Mutation>.create { [weak self] observer in
+            self?.provider.kakaoSearchService.searchPlace(keyword: keyword, page: 1)
+                .bind { response in
+                    let items = response.kakaoSearchPlaces.map { (kakaoSearchPlace) -> PlannerSearchPlaceItem in
+                        return .kakaoItem(KakaoSearchPlaceTableViewCellReactor(kakaoSearchPlace: kakaoSearchPlace))
+                    }
+                    let section = PlannerSearchPlaceSectionModel.init(model: .kakaoSection(items), items: items)
+
+                    if items.isEmpty {
+                        observer.onNext(.updateEmptyViewState(.noResult))
+                        observer.onNext(.setSections([]))
+                    } else {
+                        observer.onNext(.setSections([section]))
+                    }
+                    observer.onCompleted()
+                }
+            
+            return Disposables.create()
+        }
+
+        return .concat([emptyView, search])
+    }
+    
+    private func mutateSelectCell(_ indexPath: IndexPath) -> Observable<Mutation> {
+        guard case let .kakaoItem(reactor) =  currentState.sections[indexPath.section].items[indexPath.row] else { return .empty() }
+        
+        return .concat([
+            .just(.updatePlannerSearchPlaceMapReactor(makeReactor(from: reactor))),
+            .just(.updatePlannerSearchPlaceMapReactor(nil))
+        ])
+    }
+    
+    private func makeReactor(from reactor: KakaoSearchPlaceTableViewCellReactor) -> PlannerSearchPlaceMapReactor {
+        return .init(state: .init(kakaoSearchPlace: reactor.currentState))
     }
 }

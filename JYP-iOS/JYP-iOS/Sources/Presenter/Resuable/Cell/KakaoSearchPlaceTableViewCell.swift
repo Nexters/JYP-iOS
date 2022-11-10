@@ -17,12 +17,6 @@ class KakaoSearchPlaceTableViewCell: BaseTableViewCell, View {
     let categoryImageView = UIImageView()
     let categoryLabel = UILabel()
     
-//    func update(title: String, sub: String, category: String) {
-//        titleLabel.text = title
-//        subLabel.text = sub
-//        categoryLabel.text = category
-//    }
-    
     override func prepareForReuse() {
         super.prepareForReuse()
         
@@ -57,6 +51,7 @@ class KakaoSearchPlaceTableViewCell: BaseTableViewCell, View {
         titleLabel.snp.makeConstraints {
             $0.top.equalToSuperview().inset(14)
             $0.leading.equalToSuperview().inset(8)
+            $0.trailing.equalTo(categoryImageView.snp.leading).offset(8)
         }
         
         subLabel.snp.makeConstraints {

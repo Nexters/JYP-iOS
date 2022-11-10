@@ -52,7 +52,7 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
                 let addTagBottomSheetReactor = AddTagBottomSheetReactor(provider: reactor.provider, section: model.self)
                 let addTagBottomSheetViewController = AddTagBottomSheetViewController(reactor: addTagBottomSheetReactor)
 
-                self?.tabBarController?.present(addTagBottomSheetViewController, animated: true)
+                self?.present(addTagBottomSheetViewController, animated: true)
             })
             .disposed(by: header.disposeBag)
 
@@ -143,6 +143,11 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
+        startButton.rx.tap
+            .map { _ in Reactor.Action.didTapStartButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
         reactor.state
             .map(\.sections)
             .bind(to: collectionView.rx.items(dataSource: dataSource))
@@ -152,6 +157,35 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
             .map(\.isEnabledStartButton)
             .distinctUntilChanged()
             .bind(to: startButton.rx.isEnabled)
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .map(\.isPushPlannerView)
+            .distinctUntilChanged()
+            .filter { $0 }
+            .subscribe(onNext: { [weak self] _ in
+                let plannerViewController = PlannerViewController(
+                    reactor: PlannerReactor(
+                        state: .init(
+                            pik: Pik(
+                                id: "",
+                                name: "",
+                                address: "",
+                                category: .bank,
+                                likeBy: nil,
+                                longitude: 0.0,
+                                latitude: 0.0,
+                                link: ""
+                            )
+                        )
+                    )
+                )
+
+                self?.navigationController?.pushViewController(
+                    plannerViewController,
+                    animated: true
+                )
+            })
             .disposed(by: disposeBag)
     }
 }

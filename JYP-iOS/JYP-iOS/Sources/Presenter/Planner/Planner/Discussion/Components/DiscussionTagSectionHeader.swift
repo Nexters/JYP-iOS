@@ -8,9 +8,14 @@
 
 import UIKit
 
-class PlannerHomeDiscussionJYPTagSectionHeader: BaseCollectionReusableView {
-    let titleLabel = UILabel()
-    let subLabel = UILabel()
+class DiscussionTagSectionHeader: BaseCollectionReusableView {
+  
+    // MARK: - UI Components
+    
+    let titleLabel: UILabel = .init()
+    let subLabel: UILabel = .init()
+    let editButton: UIButton = .init()
+    let toggleButton: UIButton = .init()
     
     override func setupProperty() {
         super.setupProperty()
@@ -22,12 +27,16 @@ class PlannerHomeDiscussionJYPTagSectionHeader: BaseCollectionReusableView {
         subLabel.text = "여행 취향을 확인해보세요!"
         subLabel.font = JYPIOSFontFamily.Pretendard.regular.font(size: 14)
         subLabel.textColor = JYPIOSAsset.textB40.color
+        
+        editButton.setImage(JYPIOSAsset.iconModify.image, for: .normal)
+        
+        toggleButton.setImage(JYPIOSAsset.iconClose.image, for: .normal)
     }
     
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        addSubviews([titleLabel, subLabel])
+        addSubviews([titleLabel, subLabel, editButton, toggleButton])
     }
     
     override func setupLayout() {
@@ -41,6 +50,16 @@ class PlannerHomeDiscussionJYPTagSectionHeader: BaseCollectionReusableView {
         subLabel.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(6)
             $0.leading.equalToSuperview().inset(24)
+        }
+        
+        editButton.snp.makeConstraints {
+            $0.trailing.equalToSuperview().inset(60)
+            $0.width.height.equalTo(24)
+        }
+        
+        toggleButton.snp.makeConstraints {
+            $0.trailing.equalToSuperview().inset(20)
+            $0.width.height.equalTo(24)
         }
     }
 }

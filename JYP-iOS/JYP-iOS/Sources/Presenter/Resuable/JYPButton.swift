@@ -45,12 +45,12 @@ enum JYPButtonType {
             return "좋아요"
         case .no:
             return "싫어요"
+        case .plannerJoin:
+            return "입장하기"
         case .kakaoInvite:
             return "카카오톡 초대"
         case .linkInvite:
-            return "초대링크 복사"
-        case .plannerJoin:
-            return "입장하기"
+            return "참여코드 복사하기"
         }
     }
     

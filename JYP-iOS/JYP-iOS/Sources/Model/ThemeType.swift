@@ -8,7 +8,7 @@
 
 import UIKit
 
-enum ThemeType: Int, CaseIterable {
+enum ThemeType: Int, CaseIterable, Codable {
     case `default` = 1
     case sea = 2
     case mountain = 3

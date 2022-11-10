@@ -15,14 +15,14 @@ class PlannerSearchPlaceMapReactor: Reactor {
     }
     
     enum Mutation {
-        case updateIsPresentWebViewController(String?)
-        case dismiss
+        case updateWebReactor(WebReactor?)
+        case updateIsDismiss(Bool)
     }
     
     struct State {
         let kakaoSearchPlace: KakaoSearchPlace
-        var isPresentWebViewController: String?
-        var dismiss: Bool = false
+        var webReactor: WebReactor?
+        var isDismiss: Bool = false
     }
     
     var initialState: State
@@ -34,16 +34,11 @@ class PlannerSearchPlaceMapReactor: Reactor {
 
 extension PlannerSearchPlaceMapReactor {
     func mutate(action: Action) -> Observable<Mutation> {
-        let state = currentState
-        
         switch action {
         case .didTapInfoButton:
-            return .concat([
-                .just(.updateIsPresentWebViewController(state.kakaoSearchPlace.placeURL)),
-                .just(.updateIsPresentWebViewController(nil))
-            ])
+            return mutateDidTapInfoButton()
         case .dismiss:
-            return .just(.dismiss)
+            return mutateDismiss()
         }
     }
     
@@ -51,12 +46,25 @@ extension PlannerSearchPlaceMapReactor {
         var newState = state
         
         switch mutation {
-        case let .updateIsPresentWebViewController(url):
-            newState.isPresentWebViewController = url
-        case .dismiss:
-            newState.dismiss = true
+        case let .updateWebReactor(reactor):
+            newState.webReactor = reactor
+        case let .updateIsDismiss(bool):
+            newState.isDismiss = bool
         }
         
         return newState
+    }
+    
+    private func mutateDidTapInfoButton() -> Observable<Mutation> {
+        let state = currentState
+        
+        return .concat([
+            .just(.updateWebReactor(WebReactor(state: .init(url: state.kakaoSearchPlace.placeURL)))),
+            .just(.updateWebReactor(nil))
+        ])
+    }
+    
+    private func mutateDismiss() -> Observable<Mutation> {
+        return .just(.updateIsDismiss(true))
     }
 }

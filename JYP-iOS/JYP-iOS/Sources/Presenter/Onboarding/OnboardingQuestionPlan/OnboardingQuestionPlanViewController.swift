@@ -84,5 +84,15 @@ class OnboardingQuestionPlanViewController: NavigationBarViewController, View {
                 self?.onboardingQuestionView.nextButton.isEnabled = bool
             }
             .disposed(by: disposeBag)
+        
+        reactor.state
+            .compactMap(\.myPlannerReactor)
+            .withUnretained(self)
+            .bind { this, reactor in
+                let myPlannerViewController = MyPlannerViewController(reactor: reactor)
+                
+                this.navigationController?.pushViewController(myPlannerViewController, animated: true)
+            }
+            .disposed(by: disposeBag)
     }
 }
