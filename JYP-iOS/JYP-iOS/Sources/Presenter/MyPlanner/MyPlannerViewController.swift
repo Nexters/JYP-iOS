@@ -171,8 +171,12 @@ class MyPlannerViewController: NavigationBarViewController, View {
             .distinctUntilChanged()
             .filter { $0 }
             .subscribe(onNext: { [weak self] _ in
-                let createPlannerViewController = CreatePlannerNameViewController(reactor: .init())
-                self?.tabBarController?.navigationController?.pushViewController(createPlannerViewController, animated: true)
+                let selectionPlannerJoinBottomSheet = SelectionPlannerJoinBottomViewController(mode: .drag)
+
+                self?.tabBarController?.present(
+                    selectionPlannerJoinBottomSheet,
+                    animated: true
+                )
             })
             .disposed(by: disposeBag)
     }
