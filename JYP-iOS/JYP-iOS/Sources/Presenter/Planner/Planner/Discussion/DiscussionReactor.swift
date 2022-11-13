@@ -10,6 +10,11 @@ import UIKit
 import ReactorKit
 
 class DiscussionReactor: Reactor {
+    enum SectionType {
+        case empty
+        case defualt
+    }
+    
     enum Action {
         case selectCell(IndexPath)
         case tapToggleButton
@@ -62,7 +67,7 @@ extension DiscussionReactor {
             return tapPikmiCellLikeButtonMutation(indexPath)
         }
     }
-
+    
     func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
         let eventMutation = service.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
             switch event {
@@ -75,7 +80,7 @@ extension DiscussionReactor {
                 return .empty()
             }
         }
-
+        
         return Observable.merge(mutation, eventMutation)
     }
     
@@ -117,7 +122,7 @@ extension DiscussionReactor {
         guard let journey = currentState.journey else { return .empty() }
         let updateIsToggleOnMutation: Observable<Mutation> = .just(.updateIsToggleOn(!currentState.isToggleOn))
         var setSectionsMutation: Observable<Mutation> {
-            currentState.isToggleOn ? .just(.setSections(makeEmptyTagSections(from: journey))) : .just(.setSections(makeSections(from: journey)))
+            currentState.isToggleOn ? .just(.setSections(makeSections(from: journey, type: .empty))) : .just(.setSections(makeSections(from: journey)))
         }
         let sequence: [Observable<Mutation>] = [updateIsToggleOnMutation, setSectionsMutation]
         return .concat(sequence)
@@ -144,71 +149,27 @@ extension DiscussionReactor {
         return .empty()
     }
     
-//    private func mutateSelectCell(_ indexPath: IndexPath) -> Observable<Mutation> {
-//        guard case let .tag(reactor) = currentState.sections[indexPath.section].items[indexPath.row] else { return .empty() }
-//
-//        plannerService.presentTagBottomSheet(from: makeReactor(from: reactor))
-//        return .empty()
-//    }
-    
-//    private func mutateTapToggleButton() -> Observable<Mutation> {
-//        if currentState.se
-//
-//        return .just(.setSections([]))
-//    }
-    
-//    private func mutateTapCreatePikmiButton() -> Observable<Mutation> {
-//        plannerService.presentPlannerSearchPlace(from: makeReactor())
-//
-//        return .empty()
-//    }
-    
-//    private func mutateTapPikmiInfoButton(_ indexPath: IndexPath) -> Observable<Mutation> {
-//        guard case let .pikmi(reactor) = currentState.pikmiSections[indexPath.section].items[indexPath.row] else { return .empty() }
-//
-//        plannerService.presentWeb(from: makeReactor(from: reactor))
-//
-//        return .empty()
-//    }
-    
-//    private func mutateTapPikmiLikeButton(_ indexPath: IndexPath) -> Observable<Mutation> {
-//        return .empty()
-//    }
-    
-//    private func makeSections() -> [DiscussionSectionModel] {
-//        
-//    }
-    
-    private func makeEmptyTagSections(from journey: Journey) -> [DiscussionSectionModel] {
-        let tagItmes: [DiscussionItem] = [.emptyTag]
+    private func makeSections(from journey: Journey, type: SectionType = .defualt) -> [DiscussionSectionModel] {
+        let tagItmes: [DiscussionItem] = {
+            switch type {
+            case .empty:
+                return [.emptyTag]
+                
+            case .defualt:
+                return journey.tags.map { (tag) -> DiscussionItem in
+                    return .tag(.init(tag: tag))
+                }
+            }
+        }()
         
         var pikmiItems: [DiscussionItem] = journey.pikmis.enumerated().map { (index, pik) -> DiscussionItem in
             return .pikmi(.init(state: .init(pik: pik, rank: index)))
         }
-
+        
         if pikmiItems.isEmpty {
             pikmiItems.append(.createPikmi(.init()))
         }
         
-        let tagSectionModel: DiscussionSectionModel = .init(model: .tag(tagItmes), items: tagItmes)
-        let pikmiSectionModel: DiscussionSectionModel = .init(model: .pikmi(pikmiItems), items: pikmiItems)
-        
-        return [tagSectionModel, pikmiSectionModel]
-    }
-    
-    private func makeSections(from journey: Journey) -> [DiscussionSectionModel] {
-        let tagItmes: [DiscussionItem] = journey.tags.map { (tag) -> DiscussionItem in
-            return .tag(.init(tag: tag))
-        }
-
-        var pikmiItems: [DiscussionItem] = journey.pikmis.enumerated().map { (index, pik) -> DiscussionItem in
-            return .pikmi(.init(state: .init(pik: pik, rank: index)))
-        }
-
-        if pikmiItems.isEmpty {
-            pikmiItems.append(.createPikmi(.init()))
-        }
-
         let tagSectionModel: DiscussionSectionModel = .init(model: .tag(tagItmes), items: tagItmes)
         let pikmiSectionModel: DiscussionSectionModel = .init(model: .pikmi(pikmiItems), items: pikmiItems)
         

@@ -215,7 +215,7 @@ class PlannerViewController: NavigationBarViewController, View {
                 this.navigationController?.pushViewController(PlannerRouteViewController(reactor: reactor), animated: true)
             }
             .disposed(by: disposeBag)
-        
+         
         reactor.state
             .compactMap(\.webReactor)
             .withUnretained(self)

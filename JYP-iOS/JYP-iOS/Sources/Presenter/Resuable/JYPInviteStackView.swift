@@ -19,7 +19,7 @@ class JYPInviteStackView: UIStackView {
     
     // MARK: - Properties
     
-    var profiles: [User] = [] {
+    private var profiles: [User] = [] {
         didSet {
             setupLayout()
         }
