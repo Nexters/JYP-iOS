@@ -23,7 +23,7 @@ protocol BaseNavigationBarViewControllerProtocol: AnyObject {
     func setNavigationBarBackgroundColor(_ color: UIColor?)
     func setNavigationBarHidden(_ hidden: Bool)
     func setNavigationBarBackButtonHidden(_ hidden: Bool)
-    func setNavigationBarBackButtonTitleColor(_ color: UIColor?)
+    func setNavigationBarBackButtonTintColor(_ color: UIColor)
     func setNavigationBarTitleText(_ text: String?)
     func setNavigationBarTitleFont(_ font: UIFont?)
     func setNavigationBarTitleTextColor(_ color: UIColor?)
@@ -147,8 +147,8 @@ class NavigationBarViewController: BaseViewController, BaseNavigationBarViewCont
         }
     }
     
-    func setNavigationBarBackButtonTitleColor(_ color: UIColor?) {
-        navigationBar.backButton.setTitleColor(color, for: .normal)
+    func setNavigationBarBackButtonTintColor(_ color: UIColor) {
+        navigationBar.backButton.setImage(JYPIOSAsset.iconBack.image.withTintColor(color), for: .normal)
     }
     
     func setNavigationBarTitleText(_ text: String?) {

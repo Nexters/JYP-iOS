@@ -99,11 +99,11 @@ class TagBottomSheetViewController: BottomSheetViewController, View {
     }
     
     func bind(reactor: Reactor) {        
-        titleLabel.text = reactor.currentState.orientation.title + " 태그"
-        tag.type = reactor.currentState.orientation
-        tag.titleLabel.text = reactor.currentState.topic
+        titleLabel.text = reactor.currentState.tag.orientation.title + " 태그"
+        tag.type = reactor.currentState.tag.orientation
+        tag.titleLabel.text = reactor.currentState.tag.topic
         
-        reactor.currentState.users.forEach {
+        reactor.currentState.tag.users.forEach {
             stackView.addArrangedSubview(ProfileBox(imagePath: $0.profileImagePath, title: $0.nickname))
         }
     }

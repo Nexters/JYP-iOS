@@ -52,7 +52,7 @@ extension JourneyPlanReactor {
         let eventMutation = provider.plannerService.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
             switch event {
             case let .fetchJourney(journey):
-                return Observable.just(Mutation.setSections(this.provider.plannerService.makeSections(from: journey)))
+                return .just(.setSections(this.makeSections(from: journey)))
             default:
                 return .empty()
             }
@@ -72,6 +72,39 @@ extension JourneyPlanReactor {
         }
         
         return newState
+    }
+    
+    private func makeSections(from journey: Journey) -> [JourneyPlanSectionModel] {
+        var journeyPlanSectionModels: [JourneyPlanSectionModel] = []
+        
+        let daySectionItems = journey.pikis.enumerated().map { (index, _) -> JourneyPlanItem in
+            return JourneyPlanItem.dayTag(DayTagCollectionViewCellReactor(state: .init(day: index + 1)))
+        }
+        
+        let journeySectionModels = journey.pikis.enumerated().map { (index, pikis) -> JourneyPlanSectionModel in
+            var journeyPlanItems: [JourneyPlanItem] = []
+            
+            if pikis.isEmpty {
+                let sectionItem = JourneyPlanItem.emptyPiki(EmptyPikiCollectionViewCellReactor(state: .init(order: index, date: DateManager.addDateComponent(byAdding: .day, value: index, to: Date(timeIntervalSince1970: journey.startDate)))))
+                
+                journeyPlanItems.append(sectionItem)
+            } else {
+                let sectionItems = pikis.enumerated().map { (index, pik) -> JourneyPlanItem in
+                    return JourneyPlanItem.piki(PikiCollectionViewCellReactor(state: .init(isLast: index == pikis.count - 1, order: index, date: DateManager.addDateComponent(byAdding: .day, value: index, to: Date(timeIntervalSince1970: journey.startDate)), pik: pik)))
+                }
+                
+                journeyPlanItems.append(contentsOf: sectionItems)
+            }
+            
+            return JourneyPlanSectionModel(model: JourneyPlanSection.journey(journeyPlanItems), items: journeyPlanItems)
+        }
+        
+        let daySection = JourneyPlanSectionModel(model: JourneyPlanSection.day(daySectionItems), items: daySectionItems)
+        
+        journeyPlanSectionModels.append(daySection)
+        journeyPlanSectionModels.append(contentsOf: journeySectionModels)
+        
+        return journeyPlanSectionModels
     }
 
     private func makeReactor(from indexPath: IndexPath) -> PlannerRouteReactor? {

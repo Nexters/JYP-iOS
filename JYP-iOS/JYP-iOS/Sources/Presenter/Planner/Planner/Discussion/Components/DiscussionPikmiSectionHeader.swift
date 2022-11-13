@@ -8,7 +8,7 @@
 
 import UIKit
 
-class PlannerHomeDiscussionCandidatePlaceSectionHeader: BaseCollectionReusableView {
+class DiscussionPikmiSectionHeader: BaseCollectionReusableView {
     let titleLabel = UILabel()
     let subLabel = UILabel()
     let trailingButton = UIButton()

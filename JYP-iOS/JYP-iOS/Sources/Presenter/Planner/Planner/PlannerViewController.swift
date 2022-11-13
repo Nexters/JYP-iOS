@@ -16,6 +16,7 @@ class PlannerViewController: NavigationBarViewController, View {
     
     let dateLabel: UILabel = .init()
     let inviteButton: UIButton = .init()
+    let inviteStackView: JYPInviteStackView = .init()
     let headerView: UIView = .init()
     let discussionButton: JYPBottomBorderButton = .init(title: "토론장")
     let journeyPlanButton: JYPBottomBorderButton = .init(title: "여행 계획")
@@ -40,6 +41,7 @@ class PlannerViewController: NavigationBarViewController, View {
     override func setupNavigationBar() {
         super.setupNavigationBar()
         
+        setNavigationBarBackButtonTintColor(.white)
         setNavigationBarBackgroundColor(JYPIOSAsset.backgroundGrey300.color)
         setNavigationBarTitleText("강릉 여행기")
         setNavigationBarTitleTextColor(JYPIOSAsset.textWhite.color)
@@ -66,12 +68,15 @@ class PlannerViewController: NavigationBarViewController, View {
         headerView.cornerRound(radius: 20, direct: [.layerMinXMinYCorner, .layerMaxXMinYCorner])
         
         menuDivider.backgroundColor = .black.withAlphaComponent(0.1)
+        
+        inviteStackView.update(users: [.init(id: "", nickname: "", profileImagePath: "", personality: .FW), .init(id: "", nickname: "", profileImagePath: "", personality: .FW), .init(id: "", nickname: "", profileImagePath: "", personality: .FW), .init(id: "", nickname: "", profileImagePath: "", personality: .FW), .init(id: "", nickname: "", profileImagePath: "", personality: .FW)])
+        inviteButton.isHidden = true
     }
     
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        contentView.addSubviews([dateLabel, inviteButton, headerView, discussionButton, journeyPlanButton, menuDivider, discussionView, journeyPlanView])
+        contentView.addSubviews([dateLabel, inviteButton, inviteStackView, headerView, discussionButton, journeyPlanButton, menuDivider, discussionView, journeyPlanView])
     }
     
     override func setupLayout() {
@@ -87,6 +92,11 @@ class PlannerViewController: NavigationBarViewController, View {
             $0.leading.equalToSuperview().inset(24)
             $0.width.equalTo(133)
             $0.height.equalTo(40)
+        }
+        
+        inviteStackView.snp.makeConstraints {
+            $0.top.equalTo(dateLabel.snp.bottom).offset(12)
+            $0.leading.equalToSuperview().inset(24)
         }
         
         headerView.snp.makeConstraints {
@@ -132,6 +142,11 @@ class PlannerViewController: NavigationBarViewController, View {
             .disposed(by: disposeBag)
         
         inviteButton.rx.tap
+            .map { .invite }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        inviteStackView.inviteButton.rx.tap
             .map { .invite }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
@@ -200,7 +215,7 @@ class PlannerViewController: NavigationBarViewController, View {
                 this.navigationController?.pushViewController(PlannerRouteViewController(reactor: reactor), animated: true)
             }
             .disposed(by: disposeBag)
-        
+         
         reactor.state
             .compactMap(\.webReactor)
             .withUnretained(self)

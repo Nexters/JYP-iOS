@@ -9,24 +9,12 @@
 import UIKit
 import ReactorKit
 
-class PikiCollectionViewCellReactor: Reactor {
-    typealias Action = NoAction
-    
-    struct State {
-        var order: Int
-        var date: Date
-        var pik: Pik
-    }
-    
-    var initialState: State
-    
-    init(state: State) {
-        initialState = state
-    }
-}
-
 class PikiCollectionViewCell: BaseCollectionViewCell, View {
+    // MARK: - Constants
+    
     typealias Reactor = PikiCollectionViewCellReactor
+    
+    // MARK: - UI Components
     
     let divider: UIView = .init()
     let circleView: UIView = .init()
@@ -36,6 +24,8 @@ class PikiCollectionViewCell: BaseCollectionViewCell, View {
     let subLabel: UILabel = .init()
     let categoryImageView: UIImageView = .init()
     let categoryLabel: UILabel = .init()
+
+    // MARK: - Setup Methods
     
     override func setupProperty() {
         super.setupProperty()
@@ -118,11 +108,23 @@ class PikiCollectionViewCell: BaseCollectionViewCell, View {
             $0.bottom.equalToSuperview().inset(12)
         }
     }
+
+    // MARK: - Bind Method
     
     func bind(reactor: Reactor) {
+        circleLabel.text = "\(reactor.currentState.order + 1)"
         titleLabel.text = reactor.currentState.pik.name
         subLabel.text = reactor.currentState.pik.address
         categoryImageView.image = reactor.currentState.pik.category.image
         categoryLabel.text = reactor.currentState.pik.category.title
+        
+        if reactor.currentState.isLast {
+            divider.snp.remakeConstraints {
+                $0.top.equalToSuperview()
+                $0.bottom.equalTo(pikiView.snp.bottom)
+                $0.centerX.equalTo(circleView)
+                $0.width.equalTo(1)
+            }
+        }
     }
 }
