@@ -174,7 +174,7 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
             .distinctUntilChanged()
             .filter { $0 }
             .subscribe(onNext: { [weak self] _ in
-                let plannerReactor = PlannerReactor(state: .init(journey: .init(id: "", name: "", startDate: 0.0, endDate: 0.0, themePath: .city, users: [])))
+                let plannerReactor = PlannerReactor(journeyId: "1")
                 let plannerViewController = PlannerViewController(reactor: plannerReactor)
 
                 guard let presentingViewContoller = self?.presentingViewController as? UINavigationController else { return }

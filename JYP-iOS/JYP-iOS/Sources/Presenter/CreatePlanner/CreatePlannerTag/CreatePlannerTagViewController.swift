@@ -165,11 +165,7 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
             .filter { $0 }
             .subscribe(onNext: { [weak self] _ in
                 let plannerViewController = PlannerViewController(
-                    reactor: PlannerReactor(
-                        state: .init(
-                            journey: .init(id: "", name: "", startDate: 0.0, endDate: 0.0, themePath: .city, users: [])
-                        )
-                    )
+                    reactor: PlannerReactor(journeyId: "1")
                 )
 
                 self?.navigationController?.pushViewController(

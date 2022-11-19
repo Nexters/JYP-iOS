@@ -29,7 +29,7 @@ class PlannerReactor: Reactor {
     }
     
     struct State {
-        var journey: Journey
+        var journeyId: String
         var isShowDiscussion: Bool = true
         var isShowJourneyPlan: Bool = false
         var plannerInviteReactor: PlannerInviteReactor?
@@ -43,8 +43,8 @@ class PlannerReactor: Reactor {
     
     var initialState: State
     
-    init(state: State) {
-        self.initialState = state
+    init(journeyId: String) {
+        self.initialState = .init(journeyId: journeyId)
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
