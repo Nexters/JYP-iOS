@@ -10,7 +10,7 @@ import Foundation
 import Moya
 
 enum UserAPI {
-    case user(id: String)
+    case fetchUser(id: String)
     case editUser(id: String, request: EditUserRequest)
     case createUser(request: CreateUserRequest)
 }
@@ -22,7 +22,7 @@ extension UserAPI: BaseAPI {
 
     var path: String {
         switch self {
-        case let .user(id):
+        case let .fetchUser(id):
             return "/users/\(id)"
             
         case let .editUser(id, _):
@@ -34,7 +34,7 @@ extension UserAPI: BaseAPI {
 
     var method: Moya.Method {
         switch self {
-        case .user: return .get
+        case .fetchUser: return .get
             
         case .editUser: return .patch
             
@@ -44,7 +44,7 @@ extension UserAPI: BaseAPI {
 
     var task: Task {
         switch self {
-        case .user:
+        case .fetchUser:
             return .requestPlain
             
         case let .editUser(_, request):

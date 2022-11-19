@@ -26,7 +26,7 @@ class UserService: BaseService, UserServiceType {
     var event = PublishSubject<UserEvent>()
     
     func user(id: String) -> Observable<BaseModel<User>> {
-        let target = UserAPI.user(id: id)
+        let target = UserAPI.fetchUser(id: id)
         
         return APIService.request(target: target)
             .map(BaseModel<User>.self)
