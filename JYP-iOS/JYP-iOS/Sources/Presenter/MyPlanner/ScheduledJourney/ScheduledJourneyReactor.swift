@@ -41,8 +41,8 @@ extension ScheduledJourneyReactor {
                         themePath: .default,
                         users: [.init(id: "", nickname: "", profileImagePath: "", personality: .ME), .init(id: "", nickname: "", profileImagePath: "", personality: .ME), .init(id: "", nickname: "", profileImagePath: "", personality: .ME)],
                         tags: [],
-                        pikis: [],
-                        pikmis: []
+                        pikmis: [],
+                        pikidays: []
                     )
                 )
             ),
@@ -56,8 +56,8 @@ extension ScheduledJourneyReactor {
                         themePath: .city,
                         users: [.init(id: "", nickname: "", profileImagePath: "", personality: .ME), .init(id: "", nickname: "", profileImagePath: "", personality: .ME)],
                         tags: [],
-                        pikis: [],
-                        pikmis: []
+                        pikmis: [],
+                        pikidays: []
                     )
                 )
             ),
@@ -71,8 +71,8 @@ extension ScheduledJourneyReactor {
                         themePath: .culture,
                         users: [.init(id: "1", nickname: "", profileImagePath: "", personality: .ME), .init(id: "", nickname: "", profileImagePath: "", personality: .FW), .init(id: "", nickname: "", profileImagePath: "", personality: .ME), .init(id: "", nickname: "", profileImagePath: "", personality: .PE), .init(id: "", nickname: "", profileImagePath: "", personality: .RT), .init(id: "", nickname: "", profileImagePath: "", personality: .RT)],
                         tags: [],
-                        pikis: [],
-                        pikmis: []
+                        pikmis: [],
+                        pikidays: []
                     )
                 )
             ),
@@ -86,8 +86,8 @@ extension ScheduledJourneyReactor {
                         themePath: .sea,
                         users: [.init(id: "", nickname: "", profileImagePath: "", personality: .ME), .init(id: "", nickname: "", profileImagePath: "", personality: .PE), .init(id: "", nickname: "", profileImagePath: "", personality: .ME), .init(id: "", nickname: "", profileImagePath: "", personality: .ME)],
                         tags: [],
-                        pikis: [],
-                        pikmis: []
+                        pikmis: [],
+                        pikidays: []
                     )
                 )
             ),
@@ -101,8 +101,8 @@ extension ScheduledJourneyReactor {
                         themePath: .mountain,
                         users: [.init(id: "", nickname: "", profileImagePath: "", personality: .PE), .init(id: "", nickname: "", profileImagePath: "", personality: .PE), .init(id: "", nickname: "", profileImagePath: "", personality: .PE), .init(id: "", nickname: "", profileImagePath: "", personality: .PE), .init(id: "", nickname: "", profileImagePath: "", personality: .ME), .init(id: "", nickname: "", profileImagePath: "", personality: .ME), .init(id: "", nickname: "", profileImagePath: "", personality: .ME)],
                         tags: [],
-                        pikis: [],
-                        pikmis: []
+                        pikmis: [],
+                        pikidays: []
                     )
                 )
             )

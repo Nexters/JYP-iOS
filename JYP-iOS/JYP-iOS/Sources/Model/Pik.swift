@@ -8,13 +8,14 @@
 
 import Foundation
 
+struct Pikiday: Codable {
+    let pikis: [Pik]
+}
+
 struct Pik: Codable {
-    let id: String
-    let name: String
-    let address: String
+    let id, name, address: String
     let category: JYPCategoryType
     let likeBy: [User]?
-    let longitude: Double
-    let latitude: Double
+    let longitude, latitude: Double
     let link: String
 }

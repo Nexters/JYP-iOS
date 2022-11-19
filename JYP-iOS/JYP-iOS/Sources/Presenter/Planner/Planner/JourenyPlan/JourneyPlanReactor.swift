@@ -74,34 +74,34 @@ extension JourneyPlanReactor {
     private func tapEditButtonMutation(_ indexPath: IndexPath) -> Observable<Mutation> {
         guard let journey = service.journey else { return .empty() }
         guard case let .plan(reactor) = currentState.sections[indexPath.section].items[indexPath.item] else { return .empty() }
-        service.presentPlannerRoute(from: makeReactor(from: reactor, pikis: journey.pikis[indexPath.section], pikmis: journey.pikmis))
+        service.presentPlannerRoute(from: makeReactor(from: reactor, pikis: journey.pikidays[indexPath.section].pikis, pikmis: journey.pikmis))
         return .empty()
     }
     
     private func tapPlusButtonMutation(_ indexPath: IndexPath) -> Observable<Mutation> {
         guard let journey = service.journey else { return .empty() }
         guard case let .emptyPlan(reactor) = currentState.sections[indexPath.section].items[indexPath.item] else { return .empty() }
-        service.presentPlannerRoute(from: makeReactor(from: reactor, pikis: journey.pikis[indexPath.section], pikmis: journey.pikmis))
+        service.presentPlannerRoute(from: makeReactor(from: reactor, pikis: journey.pikidays[indexPath.section].pikis, pikmis: journey.pikmis))
         return .empty()
     }
     
     private func makeSections(from journey: Journey) -> [JourneyPlanSectionModel] {
         var journeyPlanSectionModels: [JourneyPlanSectionModel] = []
         
-        let daySectionItems = journey.pikis.enumerated().map { (index, _) -> JourneyPlanItem in
+        let daySectionItems = journey.pikidays.enumerated().map { (index, _) -> JourneyPlanItem in
             return JourneyPlanItem.dayTag(DayTagCollectionViewCellReactor(state: .init(day: index + 1)))
         }
         
-        let journeySectionModels = journey.pikis.enumerated().map { (index, pikis) -> JourneyPlanSectionModel in
+        let journeySectionModels = journey.pikidays.enumerated().map { (index, pikiday) -> JourneyPlanSectionModel in
             var journeyPlanItems: [JourneyPlanItem] = []
             
-            if pikis.isEmpty {
+            if pikiday.pikis.isEmpty {
                 let sectionItem = JourneyPlanItem.emptyPlan(EmptyPlanCollectionViewCellReactor(state: .init(order: index, date: DateManager.addDateComponent(byAdding: .day, value: index, to: Date(timeIntervalSince1970: journey.startDate)))))
                 
                 journeyPlanItems.append(sectionItem)
             } else {
-                let sectionItems = pikis.enumerated().map { (index, pik) -> JourneyPlanItem in
-                    return JourneyPlanItem.plan(PlanCollectionViewCellReactor(state: .init(isLast: index == pikis.count - 1, order: index, date: DateManager.addDateComponent(byAdding: .day, value: index, to: Date(timeIntervalSince1970: journey.startDate)), pik: pik)))
+                let sectionItems = pikiday.pikis.enumerated().map { (index, pik) -> JourneyPlanItem in
+                    return JourneyPlanItem.plan(PlanCollectionViewCellReactor(state: .init(isLast: index == pikiday.pikis.count - 1, order: index, date: DateManager.addDateComponent(byAdding: .day, value: index, to: Date(timeIntervalSince1970: journey.startDate)), pik: pik)))
                 }
                 
                 journeyPlanItems.append(contentsOf: sectionItems)
