@@ -9,7 +9,7 @@
 import UIKit
 import ReactorKit
 
-class EmptyPikiCollectionViewCellReactor: Reactor {
+class EmptyPlanCollectionViewCellReactor: Reactor {
     enum Action { }
     enum Mutation { }
     
@@ -26,7 +26,7 @@ class EmptyPikiCollectionViewCellReactor: Reactor {
 }
 
 class EmptyPikiCollectionViewCell: BaseCollectionViewCell, View {
-    typealias Reactor = EmptyPikiCollectionViewCellReactor
+    typealias Reactor = EmptyPlanCollectionViewCellReactor
     
     // MARK: - UI Components
     

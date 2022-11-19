@@ -21,8 +21,8 @@ class PlannerViewController: NavigationBarViewController, View {
     let discussionButton: JYPBottomBorderButton = .init(title: "토론장")
     let journeyPlanButton: JYPBottomBorderButton = .init(title: "여행 계획")
     let menuDivider: UIView = .init()
-    lazy var discussionView: DiscussionView = .init(reactor: DiscussionReactor())
-    lazy var journeyPlanView: JourneyPlanView = .init(reactor: JourneyPlanReactor())
+    lazy var discussionView: DiscussionView = .init(reactor: DiscussionReactor(state: .init()))
+    lazy var journeyPlanView: JourneyPlanView = .init(reactor: JourneyPlanReactor(state: .init()))
     
     // MARK: - Initializer
     
