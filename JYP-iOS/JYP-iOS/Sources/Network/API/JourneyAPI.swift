@@ -10,18 +10,18 @@ import Foundation
 import Moya
 
 enum JourneyAPI {
-    case journeys
+    case fetchJourneys
+    case fetchJourney(journeyId: String)
+    case fetchDefaultTags
     case createJourney(request: CreateJourneyRequest)
-    case defaultTags
-    case journey(journeyId: String)
-    case tags(journeyId: String)
+    case fetchTags(journeyId: String)
     case editTags(journeyId: String, request: EditTagsRequest)
     case addPikmi(journeyId: String, request: AddPikmiRequest)
     case editPikis(journeyId: String, request: EditPikisRequest)
-    case join(journeyId: String, request: JoinRequest)
-    case drop(journeyId: String)
-    case like(journeyId: String, pikmiId: String)
-    case unlike(journeyId: String, pikmiId: String)
+    case addJourneyUser(journeyId: String, request: AddJourneyUserRequest)
+    case deleteJourneyUser(journeyId: String)
+    case addPikmiLike(journeyId: String, pikmiId: String)
+    case deletePikmiLike(journeyId: String, pikmiId: String)
 }
 
 extension JourneyAPI: BaseAPI {
@@ -31,19 +31,19 @@ extension JourneyAPI: BaseAPI {
 
     var path: String {
         switch self {
-        case .journeys:
+        case .fetchJourneys:
             return "/journeys"
             
         case .createJourney:
             return "/journeys"
             
-        case .defaultTags:
+        case .fetchDefaultTags:
             return "/journeys/default-tags"
             
-        case let .journey(id):
+        case let .fetchJourney(id):
             return "/journeys/\(id)"
             
-        case let .tags(id):
+        case let .fetchTags(id):
             return "/journeys/\(id)/tags"
             
         case let .editTags(id, _):
@@ -55,35 +55,35 @@ extension JourneyAPI: BaseAPI {
         case let .editPikis(id, _):
             return "/journeys/\(id)/pikis"
             
-        case let .join(id, _):
+        case let .addJourneyUser(id, _):
             return "/journeys/\(id)/join"
 
-        case let .drop(id):
+        case let .deleteJourneyUser(id):
             return "/journeys/\(id)/drop"
             
-        case let .like(journeyId, pikmiId):
+        case let .addPikmiLike(journeyId, pikmiId):
             return "/journeys/\(journeyId)/pikmis/\(pikmiId)/likes"
             
-        case let .unlike(journeyId, pikmiId):
+        case let .deletePikmiLike(journeyId, pikmiId):
             return "/journeys/\(journeyId)/pikmis/\(pikmiId)/unlikes"
         }
     }
 
     var method: Moya.Method {
         switch self {
-        case .journeys:
+        case .fetchJourneys:
             return .get
             
         case .createJourney:
             return .post
             
-        case .defaultTags:
+        case .fetchDefaultTags:
             return .get
             
-        case .journey:
+        case .fetchJourney:
             return .get
             
-        case .tags:
+        case .fetchTags:
             return .get
             
         case .editTags:
@@ -95,35 +95,35 @@ extension JourneyAPI: BaseAPI {
         case .editPikis:
             return .post
             
-        case .join:
+        case .addJourneyUser:
             return .post
             
-        case .drop:
+        case .deleteJourneyUser:
             return .post
             
-        case .like:
+        case .addPikmiLike:
             return .post
             
-        case .unlike:
+        case .deletePikmiLike:
             return .post
         }
     }
 
     var task: Task {
         switch self {
-        case .journeys:
+        case .fetchJourneys:
             return .requestPlain
             
         case let .createJourney(request):
             return .requestJSONEncodable(request)
             
-        case .defaultTags:
+        case .fetchDefaultTags:
             return .requestPlain
             
-        case .journey:
+        case .fetchJourney:
             return .requestPlain
             
-        case .tags:
+        case .fetchTags:
             return .requestPlain
             
         case let .editTags(_, request):
@@ -135,16 +135,16 @@ extension JourneyAPI: BaseAPI {
         case let .editPikis(_, request):
             return .requestJSONEncodable(request)
             
-        case let .join(_, request):
+        case let .addJourneyUser(_, request):
             return .requestJSONEncodable(request)
             
-        case .drop:
+        case .deleteJourneyUser:
             return .requestPlain
             
-        case .like:
+        case .addPikmiLike:
             return .requestPlain
             
-        case .unlike:
+        case .deletePikmiLike:
             return .requestPlain
         }
     }

@@ -10,6 +10,11 @@ import Foundation
 
 struct BaseModel<T: Codable>: Codable {
     var code: String
-    var data: T?
+    var data: T
+    var message: String
+}
+
+struct EmptyModel: Codable {
+    var code: String
     var message: String
 }

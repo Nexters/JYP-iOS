@@ -1,5 +1,5 @@
 //
-//  CreateJourneyRequest.swift
+//  JoinRequest.swift
 //  JYP-iOS
 //
 //  Created by 송영모 on 2022/11/19.
@@ -8,9 +8,6 @@
 
 import Foundation
 
-struct CreateJourneyRequest: Codable {
-    let name: String
-    let startDate, endDate: Double
-    let themePath: String
+struct AddJourneyUserRequest: Codable {
     let tags: [Tag]
 }

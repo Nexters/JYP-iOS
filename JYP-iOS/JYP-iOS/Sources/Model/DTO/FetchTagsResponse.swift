@@ -1,5 +1,5 @@
 //
-//  JoinRequest.swift
+//  FetchTagsResponse.swift
 //  JYP-iOS
 //
 //  Created by 송영모 on 2022/11/19.
@@ -8,6 +8,6 @@
 
 import Foundation
 
-struct JoinRequest: Codable {
+struct FetchTagsResponse: Codable {
     let tags: [Tag]
 }

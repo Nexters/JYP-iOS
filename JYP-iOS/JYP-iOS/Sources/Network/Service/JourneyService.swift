@@ -15,119 +15,89 @@ enum JourneyEvent {
 protocol JourneyServiceType {
     var event: PublishSubject<JourneyEvent> { get }
     
-    func fetchJornenies() -> Observable<[Journey]>
-    func fetchJorney(id: Int) -> Observable<Journey>
-    func create(name: String, startDate: Double, endDate: Double) -> Observable<Journey>
+    func fetchJornenys() -> Observable<BaseModel<FetchJourneysResponse>>
+    func fetchJorney(journeyId: String) -> Observable<BaseModel<Journey>>
+    func fetchDefaultTags() -> Observable<BaseModel<FetchTagsResponse>>
+    func createJourney(request: CreateJourneyRequest) -> Observable<BaseModel<CreateJourneyResponse>>
+    func editTags(journeyId: String, request: EditTagsRequest) -> Observable<EmptyModel>
+    func addJourneyUser(journeyId: String, request: AddJourneyUserRequest) -> Observable<EmptyModel>
+    func deleteJourneyUser(journeyId: String) -> Observable<EmptyModel>
+    func addPikmiLike(journeyId: String, pikmiId: String) -> Observable<EmptyModel>
+    func deletePikmiLike(journeyId: String, pikmiId: String) -> Observable<EmptyModel>
 }
 
 final class JourneyService: BaseService, JourneyServiceType {
     let event = PublishSubject<JourneyEvent>()
     
-    func fetchJornenies() -> Observable<[Journey]> {
-        return .empty()
+    func fetchJornenys() -> Observable<BaseModel<FetchJourneysResponse>> {
+        let target = JourneyAPI.fetchJourneys
+        
+        return APIService.request(target: target)
+            .map(BaseModel<FetchJourneysResponse>.self)
+            .asObservable()
     }
     
-    func fetchJorney(id: Int) -> Observable<Journey> {
-        return .just(
-            Journey(id: "1",
-                    name: "테스트1",
-                    startDate: 1662181200,
-                    endDate: 1662699600,
-                    themePath: .city,
-                    users: [User(id: "1",
-                                 nickname: "닉네임안녕나는",
-                                 profileImagePath: "",
-                                 personality: .ME),
-                            User(id: "2", nickname: "닉네임하나하나", profileImagePath: "", personality: .ME),
-                            User(id: "3", nickname: "닉네임안녕피피", profileImagePath: "", personality: .PE)],
-                    tags: [Tag(topic: "태그1", orientation: .like, users: [User(id: "1",
-                                                                              nickname: "닉네임안녕나는안",
-                                                                              profileImagePath: "https://static.wikia.nocookie.net/pokemon/images/0/0f/%EB%AC%BC%EC%A7%B1%EC%9D%B4_%EA%B3%B5%EC%8B%9D_%EC%9D%BC%EB%9F%AC%EC%8A%A4%ED%8A%B8.png/revision/latest?cb=20170412111617&path-prefix=ko",
-                                                                              personality: .ME),
-                                                                         User(id: "2", nickname: "닉네임테스트야ㅕ", profileImagePath: "https://mblogthumb-phinf.pstatic.net/20160605_113/qkrtnaud11_1465100243458mw28P_PNG/393Piplup.png?type=w2", personality: .ME),
-                                                                         User(id: "3", nickname: "닉네임하하어어", profileImagePath: "https://mblogthumb-phinf.pstatic.net/MjAxOTA3MTFfMjM0/MDAxNTYyODM4MDczMzg3.no6xmpenNPkIL9nb9wSOTkVTlRcTHN7OVZPZI8bMPnwg.n7RJ1J_AF7GAhl7msTqgYm9hfNFRhvoOw6-j4b_WKLgg.JPEG.saehongburn4/%EB%AC%BC%EC%A7%B1%EC%9D%B4_%EA%B3%B5%EC%8B%9D_%EC%9D%BC%EB%9F%AC%EC%8A%A4%ED%8A%B8.jpg?type=w800", personality: .PE)])],
-                    pikmis: [],
-                    pikidays: [.init(pikis: [Pik(id: "1",
-                                                 name: "피키1",
-                                                 address: "피키1 주소",
-                                                 category: .cafe,
-                                                 likeBy: nil,
-                                                 longitude: 0.0,
-                                                 latitude: 0.0,
-                                                 link: ""),
-                                             Pik(id: "1",
-                                                 name: "피키1",
-                                                 address: "피키1 주소",
-                                                 category: .cafe,
-                                                 likeBy: nil,
-                                                 longitude: 0.0,
-                                                 latitude: 0.0,
-                                                 link: ""),
-                                             Pik(id: "1",
-                                                 name: "피키1",
-                                                 address: "피키1 주소",
-                                                 category: .cafe,
-                                                 likeBy: nil,
-                                                 longitude: 0.0,
-                                                 latitude: 0.0,
-                                                 link: "")])]
-//                    pikmis: [Pik(id: "1",
-//                                 name: "픽미1",
-//                                 address: "주소1",
-//                                 category: .bank,
-//                                 likeBy: [User(id: "1",
-//                                               nickname: "닉네임1",
-//                                               profileImagePath: "",
-//                                               personality: ""),
-//                                          User(id: "2", nickname: "닉네임2", profileImagePath: "", personality: ""),
-//                                          User(id: "3", nickname: "닉네임3", profileImagePath: "", personality: "")], longitude: 0.0, latitude: 0.0, link: ""),
-//                             Pik(id: "1",
-//                                 name: "픽미2",
-//                                 address: "주소2",
-//                                 category: .bank,
-//                                 likeBy: [User(id: "1",
-//                                               nickname: "닉네임1",
-//                                               profileImagePath: "",
-//                                               personality: ""),
-//                                          User(id: "2", nickname: "닉네임2", profileImagePath: "", personality: ""),
-//                                          User(id: "3", nickname: "닉네임3", profileImagePath: "", personality: "")], longitude: 0.0, latitude: 0.0, link: ""),
-//                             Pik(id: "1",
-//                                 name: "픽미3",
-//                                 address: "주소3",
-//                                 category: .bank,
-//                                 likeBy: [User(id: "1",
-//                                               nickname: "닉네임1",
-//                                               profileImagePath: "",
-//                                               personality: ""),
-//                                          User(id: "2", nickname: "닉네임2", profileImagePath: "", personality: ""),
-//                                          User(id: "3", nickname: "닉네임3", profileImagePath: "", personality: "")], longitude: 0.0, latitude: 0.0, link: ""),
-//                             Pik(id: "1",
-//                                 name: "픽미4",
-//                                 address: "주소4",
-//                                 category: .bank,
-//                                 likeBy: [User(id: "1",
-//                                               nickname: "닉네임1",
-//                                               profileImagePath: "",
-//                                               personality: ""),
-//                                          User(id: "2", nickname: "닉네임2", profileImagePath: "", personality: ""),
-//                                          User(id: "3", nickname: "닉네임3", profileImagePath: "", personality: "")], longitude: 0.0, latitude: 0.0, link: ""),
-//                             Pik(id: "1",
-//                                 name: "픽미5",
-//                                 address: "주소5",
-//                                 category: .bank,
-//                                 likeBy: [
-//                                    User(id: "1",
-//                                         nickname: "닉네임1",
-//                                         profileImagePath: "",
-//                                         personality: ""),
-//                                    User(id: "2", nickname: "닉네임2", profileImagePath: "", personality: ""),
-//                                    User(id: "3", nickname: "닉네임3", profileImagePath: "", personality: "")], longitude: 0.0, latitude: 0.0, link: "")
-//                            ]
-                   )
-        )
+    func fetchJorney(journeyId: String) -> RxSwift.Observable<BaseModel<Journey>> {
+        let target = JourneyAPI.fetchJourney(journeyId: journeyId)
+        
+        return APIService.request(target: target)
+            .map(BaseModel<Journey>.self)
+            .asObservable()
     }
     
-    func create(name: String, startDate: Double, endDate: Double) -> Observable<Journey> {
-        return .empty()
+    func fetchDefaultTags() -> Observable<BaseModel<FetchTagsResponse>> {
+        let target = JourneyAPI.fetchDefaultTags
+        
+        return APIService.request(target: target)
+            .map(BaseModel<FetchTagsResponse>.self)
+            .asObservable()
+    }
+    
+    func createJourney(request: CreateJourneyRequest) -> Observable<BaseModel<CreateJourneyResponse>> {
+        let target = JourneyAPI.createJourney(request: request)
+        
+        return APIService.request(target: target)
+            .map(BaseModel<CreateJourneyResponse>.self)
+            .asObservable()
+    }
+    
+    func editTags(journeyId: String, request: EditTagsRequest) -> Observable<EmptyModel> {
+        let target = JourneyAPI.editTags(journeyId: journeyId, request: request)
+        
+        return APIService.request(target: target)
+            .map(EmptyModel.self)
+            .asObservable()
+    }
+    
+    func addJourneyUser(journeyId: String, request: AddJourneyUserRequest) -> Observable<EmptyModel> {
+        let target = JourneyAPI.addJourneyUser(journeyId: journeyId, request: request)
+        
+        return APIService.request(target: target)
+            .map(EmptyModel.self)
+            .asObservable()
+    }
+    
+    func deleteJourneyUser(journeyId: String) -> RxSwift.Observable<EmptyModel> {
+        let target = JourneyAPI.deleteJourneyUser(journeyId: journeyId)
+        
+        return APIService.request(target: target)
+            .map(EmptyModel.self)
+            .asObservable()
+    }
+    
+    func addPikmiLike(journeyId: String, pikmiId: String) -> RxSwift.Observable<EmptyModel> {
+        let target = JourneyAPI.addPikmiLike(journeyId: journeyId, pikmiId: pikmiId)
+        
+        return APIService.request(target: target)
+            .map(EmptyModel.self)
+            .asObservable()
+    }
+    
+    func deletePikmiLike(journeyId: String, pikmiId: String) -> RxSwift.Observable<EmptyModel> {
+        let target = JourneyAPI.deletePikmiLike(journeyId: journeyId, pikmiId: pikmiId)
+        
+        return APIService.request(target: target)
+            .map(EmptyModel.self)
+            .asObservable()
     }
 }
