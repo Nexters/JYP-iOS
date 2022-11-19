@@ -9,40 +9,40 @@
 import RxSwift
 
 enum UserEvent {
-    case search(Int)
-    case update(Int, UserUpdateRequest)
-    case signup(SignupRequest)
+    case user(id: String)
+    case editUser(id: String, request: EditUserRequest)
+    case createUser(request: CreateUserRequest)
 }
 
 protocol UserServiceType {
     var event: PublishSubject<UserEvent> { get }
     
-    func search(id: Int) -> Observable<User>
-    func update(id: Int, request: UserUpdateRequest) -> Observable<User>
-    func signup(request: SignupRequest) -> Observable<BaseModel<User>>
+    func user(id: String) -> Observable<BaseModel<User>>
+    func editUser(id: String, request: EditUserRequest) -> Observable<BaseModel<User>>
+    func createUser(request: CreateUserRequest) -> Observable<BaseModel<User>>
 }
 
 class UserService: BaseService, UserServiceType {
     var event = PublishSubject<UserEvent>()
     
-    func search(id: Int) -> Observable<User> {
-        let target = UserAPI.search(id: id)
+    func user(id: String) -> Observable<BaseModel<User>> {
+        let target = UserAPI.user(id: id)
         
         return APIService.request(target: target)
-            .map(User.self)
+            .map(BaseModel<User>.self)
             .asObservable()
     }
     
-    func update(id: Int, request: UserUpdateRequest) -> Observable<User> {
-        let target = UserAPI.update(id: id, request: request)
+    func editUser(id: String, request: EditUserRequest) -> Observable<BaseModel<User>> {
+        let target = UserAPI.editUser(id: id, request: request)
         
         return APIService.request(target: target)
-            .map(User.self)
+            .map(BaseModel<User>.self)
             .asObservable()
     }
     
-    func signup(request: SignupRequest) -> Observable<BaseModel<User>> {
-        let target = UserAPI.signup(request: request)
+    func createUser(request: CreateUserRequest) -> Observable<BaseModel<User>> {
+        let target = UserAPI.createUser(request: request)
         
         return APIService.request(target: target)
             .map(BaseModel<User>.self)

@@ -12,5 +12,5 @@ struct CreateJourneyRequest: Codable {
     let name: String
     let startDate, endDate: Int
     let themePath: String
-    let tags: [TagUpdateRequestDTO]
+    let tags: [Tag]
 }

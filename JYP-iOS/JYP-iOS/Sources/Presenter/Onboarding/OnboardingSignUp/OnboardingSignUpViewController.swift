@@ -162,14 +162,11 @@ extension OnboardingSignUpViewController: ASAuthorizationControllerDelegate, ASA
                 } else {
                     print("loginWithKakaoTalk() success.")
                     
-                    // do something
-                    _ = oauthToken
-                    
                     UserApi.shared.me { (user, _) in
                         if let error = error {
                             print(error)
                         } else {
-                            self.reactor?.action.onNext(.didLogin(authVendor: .kakao, authID: oauthToken?.accessToken ?? "", name: user?.properties?["nickname"] ?? "TEST", profileImagePath: user?.properties?["profile_image"] ?? ""))
+                            self.reactor?.action.onNext(.didLogin(authVendor: .kakao, authId: oauthToken?.accessToken ?? "", name: user?.properties?["nickname"] ?? "", profileImagePath: user?.properties?["profile_image"] ?? ""))
                         }
                     }
                 }
@@ -182,14 +179,11 @@ extension OnboardingSignUpViewController: ASAuthorizationControllerDelegate, ASA
                 } else {
                     print("loginWithKakaoAccount() success.")
                     
-                    // do something
-                    _ = oauthToken
-                    
                     UserApi.shared.me { (user, _) in
                         if let error = error {
                             print(error)
                         } else {
-                            self.reactor?.action.onNext(.didLogin(authVendor: .kakao, authID: oauthToken?.accessToken ?? "", name: user?.properties?["nickname"] ?? "TEST", profileImagePath: user?.properties?["profile_image"] ?? ""))
+                            self.reactor?.action.onNext(.didLogin(authVendor: .kakao, authId: oauthToken?.accessToken ?? "", name: user?.properties?["nickname"] ?? "TEST", profileImagePath: user?.properties?["profile_image"] ?? ""))
                         }
                     }
                 }
@@ -220,31 +214,18 @@ extension OnboardingSignUpViewController: ASAuthorizationControllerDelegate, ASA
             let email = appleIDCredential.email
             
             if let authorizationCode = appleIDCredential.authorizationCode, let identityToken = appleIDCredential.identityToken, let authString = String(data: authorizationCode, encoding: .utf8), let tokenString = String(data: identityToken, encoding: .utf8) {
-                self.reactor?.action.onNext(.didLogin(authVendor: .apple, authID: tokenString, name: String(describing: fullName), profileImagePath: ""))
-                print("[D] authorizationCode: \(authorizationCode)")
-                print("[D] identityToken: \(identityToken)")
-                print("[D] authString: \(authString)")
-                print("[D] tokenString: \(tokenString)")
+                self.reactor?.action.onNext(.didLogin(authVendor: .apple, authId: tokenString, name: String(describing: fullName), profileImagePath: ""))
             }
-            
-            print("[D] useridentifier: \(userIdentifier)")
-            print("[D] fullName: \(String(describing: fullName))")
-            print("[D] email: \(String(describing: email))")
-
-//            reactor?.action.onNext(.didLogin)
             
         case let passwordCredential as ASPasswordCredential:
             let username = passwordCredential.user
             let password = passwordCredential.password
-            
-            print("[D] username: \(username)")
-            print("[D] password: \(password)")
         default:
             break
         }
     }
     
     func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
-        print("[D] 애플 로그인 실패")
+        print(error)
     }
 }

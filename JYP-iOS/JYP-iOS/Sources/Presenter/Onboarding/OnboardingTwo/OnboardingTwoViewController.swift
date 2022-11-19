@@ -55,18 +55,16 @@ class OnboardingTwoViewController: NavigationBarViewController, View {
     // MARK: Binding
     
     func bind(reactor: OnboardingReactor) {
-        // Action
         onboardingView.nextButton.rx.tap
             .map { .didTapNextButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
-        // State
         reactor.state
             .map { $0.isPresentNextViewController }
             .filter { $0 }
             .bind { [weak self] _ in
-                let onboardingSignUpViewController = OnboardingSignUpViewController(reactor: OnboardingSignUpReactor(initialState: .init()))
+                let onboardingSignUpViewController = OnboardingSignUpViewController(reactor: OnboardingSignUpReactor())
                 self?.navigationController?.pushViewController(onboardingSignUpViewController, animated: true)
             }
             .disposed(by: disposeBag)

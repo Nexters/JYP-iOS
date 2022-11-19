@@ -126,7 +126,7 @@ class OnboardingQuestionReactor: Reactor {
                 .just(.updateOnboardingQuestionReactor(nil))
             ])
         case .plan:
-            service.signup()
+            service.createUser()
             
             return .empty()
         }

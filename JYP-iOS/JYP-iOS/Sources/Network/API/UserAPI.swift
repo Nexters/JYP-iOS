@@ -11,8 +11,8 @@ import Moya
 
 enum UserAPI {
     case user(id: String)
-    case editUser(id: String, request: UserUpdateRequest)
-    case createUser(request: SignupRequest)
+    case editUser(id: String, request: EditUserRequest)
+    case createUser(request: CreateUserRequest)
 }
 
 extension UserAPI: BaseAPI {

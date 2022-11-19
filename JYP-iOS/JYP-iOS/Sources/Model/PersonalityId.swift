@@ -14,14 +14,24 @@ enum PersonalityId: String, Codable {
     case RT
     case FW
     
-    static func intsToPersonalityId(ints: [Int]) -> PersonalityId {
-        if ints == [0, 0, 0] || ints == [1, 0, 0] {
+    static func intsToPersonalityId(data: [Int]) -> PersonalityId {
+        var sum: Int = 0
+        
+        for (i, int) in data.enumerated() {
+            sum += Int(pow(Double(2), Double(i))) * int
+        }
+        
+        switch sum  {
+        case 0, 1:
             return .ME
-        } else if ints == [0, 1, 0] || ints == [0, 0, 1] {
+            
+        case 2, 4:
             return .PE
-        } else if ints == [1, 1, 0] || ints == [1, 0, 1] {
+            
+        case 3, 5:
             return .RT
-        } else {
+            
+        default:
             return .FW
         }
     }
