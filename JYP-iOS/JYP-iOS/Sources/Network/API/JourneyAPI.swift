@@ -10,12 +10,18 @@ import Foundation
 import Moya
 
 enum JourneyAPI {
-    case fetchJourneys
-    case fetchJourney
-    case fetchDefaultTags
-    case search(id: Int)
-    case update(id: Int, request: UserUpdateRequest)
-    case signup(request: SignupRequest)
+    case journeys
+    case createJourney(request: CreateJourneyRequest)
+    case defaultTags
+    case journey(journeyId: String)
+    case tags(journeyId: String)
+    case editTags(journeyId: String, request: EditTagsRequest)
+    case addPikmi(journeyId: String, request: AddPikmiRequest)
+    case editPikis(journeyId: String, request: EditPikisRequest)
+    case join(journeyId: String, request: JoinRequest)
+    case drop(journeyId: String)
+    case like(journeyId: String, pikmiId: String)
+    case unlike(journeyId: String, pikmiId: String)
 }
 
 extension JourneyAPI: BaseAPI {
@@ -25,36 +31,121 @@ extension JourneyAPI: BaseAPI {
 
     var path: String {
         switch self {
-        case .fetchJourneys: return ""
-        case .fetchJourney: return ""
-        case .fetchDefaultTags: return ""
-        case let .search(id): return "/users/\(id)"
-        case let .update(id, _): return "/users/\(id)"
-        case .signup: return "users"
+        case .journeys:
+            return "/journeys"
+            
+        case .createJourney:
+            return "/journeys"
+            
+        case .defaultTags:
+            return "/journeys/default-tags"
+            
+        case let .journey(id):
+            return "/journeys/\(id)"
+            
+        case let .tags(id):
+            return "/journeys/\(id)/tags"
+            
+        case let .editTags(id, _):
+            return "/journeys/\(id)/tags"
+            
+        case let .addPikmi(id, _):
+            return "/journeys/\(id)/pikmis"
+            
+        case let .editPikis(id, _):
+            return "/journeys/\(id)/pikis"
+            
+        case let .join(id, _):
+            return "/journeys/\(id)/join"
+
+        case let .drop(id):
+            return "/journeys/\(id)/drop"
+            
+        case let .like(journeyId, pikmiId):
+            return "/journeys/\(journeyId)/pikmis/\(pikmiId)/likes"
+            
+        case let .unlike(journeyId, pikmiId):
+            return "/journeys/\(journeyId)/pikmis/\(pikmiId)/unlikes"
         }
     }
 
     var method: Moya.Method {
         switch self {
-        case .fetchJourneys: return .get
-        case .fetchJourney: return .get
-        case .fetchDefaultTags: return .get
-        case .search: return .get
-        case .update: return .patch
-        case .signup: return .post
+        case .journeys:
+            return .get
+            
+        case .createJourney:
+            return .post
+            
+        case .defaultTags:
+            return .get
+            
+        case .journey:
+            return .get
+            
+        case .tags:
+            return .get
+            
+        case .editTags:
+            return .post
+            
+        case .addPikmi:
+            return .post
+            
+        case .editPikis:
+            return .post
+            
+        case .join:
+            return .post
+            
+        case .drop:
+            return .post
+            
+        case .like:
+            return .post
+            
+        case .unlike:
+            return .post
         }
     }
 
     var task: Task {
         switch self {
-        case .fetchJourneys: return .requestPlain
-        case .fetchJourney: return .requestPlain
-        case .fetchDefaultTags: return .requestPlain
-        case .search: return .requestPlain
-        case let .update(_, request): return .requestJSONEncodable(request)
-        case let .signup(request):
-            print(request)
+        case .journeys:
+            return .requestPlain
+            
+        case let .createJourney(request):
             return .requestJSONEncodable(request)
+            
+        case .defaultTags:
+            return .requestPlain
+            
+        case .journey:
+            return .requestPlain
+            
+        case .tags:
+            return .requestPlain
+            
+        case let .editTags(_, request):
+            return .requestJSONEncodable(request)
+            
+        case let .addPikmi(_, request):
+            return .requestJSONEncodable(request)
+            
+        case let .editPikis(_, request):
+            return .requestJSONEncodable(request)
+            
+        case let .join(_, request):
+            return .requestJSONEncodable(request)
+            
+        case .drop:
+            return .requestPlain
+            
+        case .like:
+            return .requestPlain
+            
+        case .unlike:
+            return .requestPlain
         }
     }
 
