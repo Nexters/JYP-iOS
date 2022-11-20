@@ -14,12 +14,13 @@ class JourneyCardCollectionViewCell: BaseCollectionViewCell, View {
 
     // MARK: - UI Components
 
-    let coverImage: UIImageView = .init()
-    let daysTag: UIButton = .init()
-    let moreButton: UIButton = .init()
-    let titleLabel: UILabel = .init()
-    let daysLabel: UILabel = .init()
-    var memberStackView: JYPMemberStackView = .init()
+    private let coverImage: UIImageView = .init()
+    private let daysTag: UIButton = .init()
+    private let moreButton: UIButton = .init()
+    private let titleLabel: UILabel = .init()
+    private let startDateLabel: UILabel = .init()
+    private let endDateLabel: UILabel = .init()
+    private var memberStackView: JYPMemberStackView = .init()
 
     // MARK: - Initializer
 
@@ -51,17 +52,16 @@ class JourneyCardCollectionViewCell: BaseCollectionViewCell, View {
         daysTag.backgroundColor = JYPIOSAsset.subBlack.color
         daysTag.setTitleColor(JYPIOSAsset.textWhite.color, for: .normal)
 
-        titleLabel.text = "강릉 여행기"
         titleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 22)
 
-        daysLabel.text = "7월 18일 - 7월 20일"
-        daysLabel.font = JYPIOSFontFamily.Pretendard.regular.font(size: 14)
+        startDateLabel.font = JYPIOSFontFamily.Pretendard.regular.font(size: 14)
+        endDateLabel.font = JYPIOSFontFamily.Pretendard.regular.font(size: 14)
     }
 
     override func setupHierarchy() {
         super.setupHierarchy()
 
-        addSubviews([coverImage, daysTag, moreButton, titleLabel, daysLabel, memberStackView])
+        addSubviews([coverImage, daysTag, moreButton, titleLabel, startDateLabel, endDateLabel, memberStackView])
     }
 
     override func setupLayout() {
@@ -87,9 +87,14 @@ class JourneyCardCollectionViewCell: BaseCollectionViewCell, View {
             make.leading.equalTo(daysTag.snp.leading)
         }
 
-        daysLabel.snp.makeConstraints { make in
+        startDateLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(4)
             make.leading.equalTo(titleLabel.snp.leading)
+        }
+
+        endDateLabel.snp.makeConstraints { make in
+            make.leading.equalTo(startDateLabel.snp.trailing)
+            make.centerY.equalTo(startDateLabel)
         }
 
         memberStackView.snp.makeConstraints { make in
@@ -130,7 +135,12 @@ class JourneyCardCollectionViewCell: BaseCollectionViewCell, View {
 
         reactor.state
             .map(\.journey.themePath.textColor)
-            .bind(to: daysLabel.rx.textColor)
+            .bind(to: startDateLabel.rx.textColor)
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .map(\.journey.themePath.textColor)
+            .bind(to: endDateLabel.rx.textColor)
             .disposed(by: disposeBag)
 
         reactor.state
@@ -142,6 +152,18 @@ class JourneyCardCollectionViewCell: BaseCollectionViewCell, View {
         reactor.state
             .map(\.journey.name)
             .bind(to: titleLabel.rx.text)
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .map(\.journey.startDate)
+            .map { DateManager.doubleToDateString(format: "M월 d일", double: $0) }
+            .bind(to: startDateLabel.rx.text)
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .map(\.journey.endDate)
+            .map { "- \(DateManager.doubleToDateString(format: "M월 d일", double: $0))" }
+            .bind(to: endDateLabel.rx.text)
             .disposed(by: disposeBag)
     }
 }

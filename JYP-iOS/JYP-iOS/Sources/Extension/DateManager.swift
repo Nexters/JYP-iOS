@@ -17,11 +17,11 @@ struct DateManager {
         $0.locale = .init(identifier: "ko_KR")
     }
 
-    static func doubleToDateString(double: Double) -> String {
+    static func doubleToDateString(format: String = "yy.MM.dd", double: Double) -> String {
         let timeInterval = TimeInterval(floatLiteral: double)
         let convertedDate = Date(timeIntervalSince1970: timeInterval)
 
-        return Self.dateToString(date: convertedDate)
+        return Self.dateToString(format: format, date: convertedDate)
     }
 
     static func dateToString(format: String = "yy.MM.dd", date: Date) -> String {
@@ -35,8 +35,8 @@ struct DateManager {
 
         return Self.dataFormatter.date(from: date) ?? Date()
     }
-    
+
     static func addDateComponent(byAdding: Calendar.Component, value: Int, to: Date) -> Date {
-        return Calendar.current.date(byAdding: byAdding, value: value, to: to) ?? to
+        Calendar.current.date(byAdding: byAdding, value: value, to: to) ?? to
     }
 }
