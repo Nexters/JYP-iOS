@@ -20,7 +20,6 @@ final class MyPlannerReactor: Reactor {
         case showScheduledJourney(Bool)
         case showPastJourney(Bool)
         case pushCreatePlannerView(Bool)
-        case setJourneyList([Journey])
     }
 
     struct State {
@@ -39,8 +38,8 @@ final class MyPlannerReactor: Reactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .fetchJourneyList:
-            return provider.fetchJornenys()
-                .map { .setJourneyList($0) }
+            provider.fetchJornenys()
+            return .empty()
         case .didTapScheduledJourneyMenu:
             return .concat(
                 .just(.showScheduledJourney(true)),
@@ -69,8 +68,6 @@ final class MyPlannerReactor: Reactor {
             newState.isSelectedPastJourneyView = isSelected
         case let .pushCreatePlannerView(isPush):
             newState.isPushCreatePlannerView = isPush
-        case let .setJourneyList(journeys):
-            newState.journeys = journeys
         }
 
         return newState

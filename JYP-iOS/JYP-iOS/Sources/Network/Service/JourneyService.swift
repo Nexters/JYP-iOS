@@ -16,7 +16,7 @@ enum JourneyEvent {
 protocol JourneyServiceType {
     var event: PublishSubject<JourneyEvent> { get }
     
-    func fetchJornenys() -> Observable<[Journey]>
+    func fetchJornenys()
     func fetchJorney(journeyId: String) -> Observable<BaseModel<Journey>>
     func fetchDefaultTags() -> Observable<BaseModel<FetchTagsResponse>>
     func createJourney(request: CreateJourneyRequest) -> Observable<BaseModel<CreateJourneyResponse>>
@@ -30,13 +30,18 @@ protocol JourneyServiceType {
 final class JourneyService: BaseService, JourneyServiceType {
     let event = PublishSubject<JourneyEvent>()
     
-    func fetchJornenys() -> Observable<[Journey]> {
+    func fetchJornenys() {
         let target = JourneyAPI.fetchJourneys
-        
-        return APIService.request(target: target)
+
+        let request = APIService.request(target: target)
             .map(BaseModel<FetchJourneysResponse>.self)
             .map { $0.data.toDomain() }
             .asObservable()
+        
+        request.subscribe { [weak self] journeyList in
+            self?.event.onNext(.fetchJourneyList(journeyList))
+        }
+        .disposed(by: disposeBag)
     }
     
     func fetchJorney(journeyId: String) -> RxSwift.Observable<BaseModel<Journey>> {
