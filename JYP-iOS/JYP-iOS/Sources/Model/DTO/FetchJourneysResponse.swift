@@ -9,5 +9,29 @@
 import Foundation
 
 struct FetchJourneysResponse: Codable {
-    let journeys: [Journey]
+    let journeys: [JourneyResponse]
+}
+
+extension FetchJourneysResponse {
+    func toDomain() -> [Journey] {
+        journeys.map {
+            Journey(
+                id: $0.id,
+                name: $0.name,
+                startDate: $0.startDate,
+                endDate: $0.endDate,
+                themePath: ThemeType(rawValue: $0.themePath) ?? ThemeType.default,
+                users: $0.users
+            )
+        }
+    }
+}
+
+struct JourneyResponse: Codable {
+    let id: String
+    let name: String
+    let startDate: Double
+    let endDate: Double
+    let themePath: String
+    let users: [User]
 }

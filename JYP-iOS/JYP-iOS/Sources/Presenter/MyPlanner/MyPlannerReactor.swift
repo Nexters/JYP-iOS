@@ -25,6 +25,7 @@ final class MyPlannerReactor: Reactor {
 
     struct State {
         var journeys: [Journey] = []
+        var pastJourneys: [Journey] = []
         var isSelectedSchduledJourneyView: Bool = true
         var isSelectedPastJourneyView: Bool = false
         var isPushCreatePlannerView: Bool = false
@@ -38,7 +39,8 @@ final class MyPlannerReactor: Reactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .fetchJourneyList:
-            return fetchJourneyList()
+            return provider.fetchJornenys()
+                .map { .setJourneyList($0) }
         case .didTapScheduledJourneyMenu:
             return .concat(
                 .just(.showScheduledJourney(true)),
@@ -72,12 +74,5 @@ final class MyPlannerReactor: Reactor {
         }
 
         return newState
-    }
-}
-
-extension MyPlannerReactor {
-    private func fetchJourneyList() -> Observable<Mutation> {
-        provider.fetchJornenys()
-            .map { .setJourneyList($0.data.journeys) }
     }
 }

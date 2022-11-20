@@ -8,12 +8,12 @@
 
 import UIKit
 
-enum ThemeType: Int, CaseIterable, Codable {
-    case `default` = 1
-    case sea = 2
-    case mountain = 3
-    case culture = 4
-    case city = 5
+enum ThemeType: String, CaseIterable, Codable {
+    case `default` = "https://journeypiki.duckdns.org/static/profile_me.png"
+    case sea = "sea.png"
+    case mountain = "mountain.png"
+    case culture = "culture.png"
+    case city = "city.png"
 
     var image: UIImage {
         switch self {
