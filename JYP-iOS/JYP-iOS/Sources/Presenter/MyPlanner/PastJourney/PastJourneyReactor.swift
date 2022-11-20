@@ -10,26 +10,48 @@ import ReactorKit
 
 final class PastJourneyReactor: Reactor {
     enum Action {}
-    enum Mutation {}
+    enum Mutation {
+        case updateSectionItem([JourneyCardItem])
+    }
 
     struct State {
         var sections: [PastJourneySectionModel]
     }
 
     var initialState: State
+    private let provider = ServiceProvider.shared.journeyService
 
     init() {
         let section = PastJourneySectionModel(
             model: (),
-            items: Self.makeMockJourneyItem()
+            items: []
         )
 
         initialState = .init(sections: [section])
     }
-}
 
-extension PastJourneyReactor {
-    private static func makeMockJourneyItem() -> [JourneyCardItem] {
-        [.empty]
+    func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
+        provider.event.flatMap { event -> Observable<Mutation> in
+            switch event {
+            case let .fetchJourneyList(response):
+                let currentTime = DateManager.currentTimeInterval
+
+                let items = response
+                    .filter { $0.startDate < currentTime }
+                    .map { JourneyCardItem.journey(.init(journey: $0)) }
+                return .just(.updateSectionItem(items))
+            default: return .empty()
+            }
+        }
+    }
+
+    func reduce(state: State, mutation: Mutation) -> State {
+        var newState = state
+
+        switch mutation {
+        case let .updateSectionItem(items):
+            newState.sections[0].items = items
+        }
+        return newState
     }
 }
