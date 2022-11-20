@@ -10,6 +10,7 @@ import ReactorKit
 
 final class MyPlannerReactor: Reactor {
     enum Action {
+        case fetchJourneyList
         case didTapScheduledJourneyMenu
         case didTapPastJourneyMenu
         case didTapAddPlannerButton
@@ -19,20 +20,25 @@ final class MyPlannerReactor: Reactor {
         case showScheduledJourney(Bool)
         case showPastJourney(Bool)
         case pushCreatePlannerView(Bool)
+        case setJourneyList([Journey])
     }
 
     struct State {
+        var journeys: [Journey] = []
         var isSelectedSchduledJourneyView: Bool = true
         var isSelectedPastJourneyView: Bool = false
         var isPushCreatePlannerView: Bool = false
     }
 
+    private let provider = ServiceProvider.shared.journeyService
     let initialState = State()
 
     init() {}
 
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
+        case .fetchJourneyList:
+            return fetchJourneyList()
         case .didTapScheduledJourneyMenu:
             return .concat(
                 .just(.showScheduledJourney(true)),
@@ -61,8 +67,17 @@ final class MyPlannerReactor: Reactor {
             newState.isSelectedPastJourneyView = isSelected
         case let .pushCreatePlannerView(isPush):
             newState.isPushCreatePlannerView = isPush
+        case let .setJourneyList(journeys):
+            newState.journeys = journeys
         }
 
         return newState
+    }
+}
+
+extension MyPlannerReactor {
+    private func fetchJourneyList() -> Observable<Mutation> {
+        provider.fetchJornenys()
+            .map { .setJourneyList($0.data.journeys) }
     }
 }
