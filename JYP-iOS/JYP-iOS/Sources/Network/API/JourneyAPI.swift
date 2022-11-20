@@ -15,54 +15,54 @@ enum JourneyAPI {
     case fetchDefaultTags
     case createJourney(request: CreateJourneyRequest)
     case fetchTags(journeyId: String)
-    case editTags(journeyId: String, request: EditTagsRequest)
-    case addPikmi(journeyId: String, request: AddPikmiRequest)
-    case editPikis(journeyId: String, request: EditPikisRequest)
-    case addJourneyUser(journeyId: String, request: AddJourneyUserRequest)
+    case updateTags(journeyId: String, request: UpdateTagsRequest)
+    case createPikmi(journeyId: String, request: CreatePikmiRequest)
+    case updatePikis(journeyId: String, request: UpdatePikisRequest)
+    case createJourneyUser(journeyId: String, request: CreateJourneyUserRequest)
     case deleteJourneyUser(journeyId: String)
-    case addPikmiLike(journeyId: String, pikmiId: String)
+    case createPikmiLike(journeyId: String, pikmiId: String)
     case deletePikmiLike(journeyId: String, pikmiId: String)
 }
 
 extension JourneyAPI: BaseAPI {
     var baseURL: URL {
-        URL(string: Environment.url)!
+        URL(string: Environment.url + "/journeys")!
     }
 
     var path: String {
         switch self {
         case .fetchJourneys:
-            return "/journeys"
+            return ""
             
         case .createJourney:
-            return "/journeys"
+            return ""
             
         case .fetchDefaultTags:
-            return "/journeys/default-tags"
+            return "/default-tags"
             
         case let .fetchJourney(id):
-            return "/journeys/\(id)"
+            return "/\(id)"
             
         case let .fetchTags(id):
-            return "/journeys/\(id)/tags"
+            return "/\(id)/tags"
             
-        case let .editTags(id, _):
-            return "/journeys/\(id)/tags"
+        case let .updateTags(id, _):
+            return "/\(id)/tags"
             
-        case let .addPikmi(id, _):
-            return "/journeys/\(id)/pikmis"
+        case let .createPikmi(id, _):
+            return "/\(id)/pikmis"
             
-        case let .editPikis(id, _):
-            return "/journeys/\(id)/pikis"
+        case let .updatePikis(id, _):
+            return "/\(id)/pikis"
             
-        case let .addJourneyUser(id, _):
-            return "/journeys/\(id)/join"
+        case let .createJourneyUser(id, _):
+            return "/\(id)/join"
 
         case let .deleteJourneyUser(id):
-            return "/journeys/\(id)/drop"
+            return "/\(id)/drop"
             
-        case let .addPikmiLike(journeyId, pikmiId):
-            return "/journeys/\(journeyId)/pikmis/\(pikmiId)/likes"
+        case let .createPikmiLike(journeyId, pikmiId):
+            return "/\(journeyId)/pikmis/\(pikmiId)/likes"
             
         case let .deletePikmiLike(journeyId, pikmiId):
             return "/journeys/\(journeyId)/pikmis/\(pikmiId)/unlikes"
@@ -71,81 +71,33 @@ extension JourneyAPI: BaseAPI {
 
     var method: Moya.Method {
         switch self {
-        case .fetchJourneys:
+        case .fetchJourneys, .fetchDefaultTags, .fetchJourney, .fetchTags:
             return .get
             
-        case .createJourney:
-            return .post
-            
-        case .fetchDefaultTags:
-            return .get
-            
-        case .fetchJourney:
-            return .get
-            
-        case .fetchTags:
-            return .get
-            
-        case .editTags:
-            return .post
-            
-        case .addPikmi:
-            return .post
-            
-        case .editPikis:
-            return .post
-            
-        case .addJourneyUser:
-            return .post
-            
-        case .deleteJourneyUser:
-            return .post
-            
-        case .addPikmiLike:
-            return .post
-            
-        case .deletePikmiLike:
+        case .createJourney, .createPikmi, .createJourneyUser, .createPikmiLike, .updateTags, .updatePikis, .deleteJourneyUser, .deletePikmiLike:
             return .post
         }
     }
 
     var task: Task {
         switch self {
-        case .fetchJourneys:
+        case .fetchJourneys, .fetchDefaultTags, .fetchJourney, .fetchTags, .deleteJourneyUser, .createPikmiLike, .deletePikmiLike:
             return .requestPlain
             
         case let .createJourney(request):
             return .requestJSONEncodable(request)
             
-        case .fetchDefaultTags:
-            return .requestPlain
-            
-        case .fetchJourney:
-            return .requestPlain
-            
-        case .fetchTags:
-            return .requestPlain
-            
-        case let .editTags(_, request):
+        case let .updateTags(_, request):
             return .requestJSONEncodable(request)
             
-        case let .addPikmi(_, request):
+        case let .createPikmi(_, request):
             return .requestJSONEncodable(request)
             
-        case let .editPikis(_, request):
+        case let .updatePikis(_, request):
             return .requestJSONEncodable(request)
             
-        case let .addJourneyUser(_, request):
+        case let .createJourneyUser(_, request):
             return .requestJSONEncodable(request)
-            
-        case .deleteJourneyUser:
-            return .requestPlain
-            
-        case .addPikmiLike:
-            return .requestPlain
-            
-        case .deletePikmiLike:
-            return .requestPlain
         }
     }
 

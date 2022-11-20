@@ -8,13 +8,13 @@
 
 import Foundation
 
-enum PersonalityId: String, Codable {
+enum PersonalityID: String, Codable {
     case ME
     case PE
     case RT
     case FW
     
-    static func intsToPersonalityId(data: [Int]) -> PersonalityId {
+    static func intsToPersonalityID(data: [Int]) -> PersonalityID {
         var sum: Int = 0
         
         for (i, int) in data.enumerated() {

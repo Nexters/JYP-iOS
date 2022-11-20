@@ -19,8 +19,8 @@ protocol JourneyServiceType {
     func fetchJorney(journeyId: String) -> Observable<BaseModel<Journey>>
     func fetchDefaultTags() -> Observable<BaseModel<FetchTagsResponse>>
     func createJourney(request: CreateJourneyRequest) -> Observable<BaseModel<CreateJourneyResponse>>
-    func editTags(journeyId: String, request: EditTagsRequest) -> Observable<EmptyModel>
-    func addJourneyUser(journeyId: String, request: AddJourneyUserRequest) -> Observable<EmptyModel>
+    func editTags(journeyId: String, request: UpdateTagsRequest) -> Observable<EmptyModel>
+    func addJourneyUser(journeyId: String, request: CreateJourneyUserRequest) -> Observable<EmptyModel>
     func deleteJourneyUser(journeyId: String) -> Observable<EmptyModel>
     func addPikmiLike(journeyId: String, pikmiId: String) -> Observable<EmptyModel>
     func deletePikmiLike(journeyId: String, pikmiId: String) -> Observable<EmptyModel>
@@ -61,16 +61,16 @@ final class JourneyService: BaseService, JourneyServiceType {
             .asObservable()
     }
     
-    func editTags(journeyId: String, request: EditTagsRequest) -> Observable<EmptyModel> {
-        let target = JourneyAPI.editTags(journeyId: journeyId, request: request)
+    func editTags(journeyId: String, request: UpdateTagsRequest) -> Observable<EmptyModel> {
+        let target = JourneyAPI.updateTags(journeyId: journeyId, request: request)
         
         return APIService.request(target: target)
             .map(EmptyModel.self)
             .asObservable()
     }
     
-    func addJourneyUser(journeyId: String, request: AddJourneyUserRequest) -> Observable<EmptyModel> {
-        let target = JourneyAPI.addJourneyUser(journeyId: journeyId, request: request)
+    func addJourneyUser(journeyId: String, request: CreateJourneyUserRequest) -> Observable<EmptyModel> {
+        let target = JourneyAPI.createJourneyUser(journeyId: journeyId, request: request)
         
         return APIService.request(target: target)
             .map(EmptyModel.self)
@@ -86,7 +86,7 @@ final class JourneyService: BaseService, JourneyServiceType {
     }
     
     func addPikmiLike(journeyId: String, pikmiId: String) -> RxSwift.Observable<EmptyModel> {
-        let target = JourneyAPI.addPikmiLike(journeyId: journeyId, pikmiId: pikmiId)
+        let target = JourneyAPI.createPikmiLike(journeyId: journeyId, pikmiId: pikmiId)
         
         return APIService.request(target: target)
             .map(EmptyModel.self)

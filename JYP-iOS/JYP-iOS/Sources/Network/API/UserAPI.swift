@@ -11,7 +11,7 @@ import Moya
 
 enum UserAPI {
     case fetchUser(id: String)
-    case editUser(id: String, request: EditUserRequest)
+    case updateUser(id: String, request: EditUserRequest)
     case createUser(request: CreateUserRequest)
 }
 
@@ -25,7 +25,7 @@ extension UserAPI: BaseAPI {
         case let .fetchUser(id):
             return "/users/\(id)"
             
-        case let .editUser(id, _):
+        case let .updateUser(id, _):
             return "/users/\(id)"
             
         case .createUser: return "users"
@@ -36,7 +36,7 @@ extension UserAPI: BaseAPI {
         switch self {
         case .fetchUser: return .get
             
-        case .editUser: return .patch
+        case .updateUser: return .patch
             
         case .createUser: return .post
         }
@@ -47,7 +47,7 @@ extension UserAPI: BaseAPI {
         case .fetchUser:
             return .requestPlain
             
-        case let .editUser(_, request):
+        case let .updateUser(_, request):
             return .requestJSONEncodable(request)
             
         case let .createUser(request):

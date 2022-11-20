@@ -18,7 +18,7 @@ protocol OnboardingServiceProtocol {
     
     func createUser()
     
-    func updatePersonalityIdData(index: Int, int: Int)
+    func updatePersonalityIDData(index: Int, int: Int)
     func updateAuthVender(authVender: AuthVendor)
     func updateAuthID(authId: String)
     func updateName(name: String)
@@ -32,11 +32,11 @@ class OnboardingService: BaseService, OnboardingServiceProtocol {
     private var authId: String = ""
     private var name: String = ""
     private var profileImagePath: String = ""
-    private var personalityId: PersonalityId = .ME
-    private var personalityIdData: [Int] = [0, 0, 0]
+    private var personalityID: PersonalityID = .ME
+    private var personalityIDData: [Int] = [0, 0, 0]
     
     func createUser() {
-        let request: CreateUserRequest = .init(authVendor: authVendor, authID: authId, name: name, profileImagePath: profileImagePath, personalityID: personalityId)
+        let request: CreateUserRequest = .init(authVendor: authVendor, authID: authId, name: name, profileImagePath: profileImagePath, personalityID: personalityID)
         
         provider.userService.createUser(request: request)
             .compactMap { $0.data }
@@ -49,9 +49,9 @@ class OnboardingService: BaseService, OnboardingServiceProtocol {
             .disposed(by: disposeBag)
     }
     
-    func updatePersonalityIdData(index: Int, int: Int) {
-        self.personalityIdData[index] = int
-        self.updatePersonalityId(personalityIdData: personalityIdData)
+    func updatePersonalityIDData(index: Int, int: Int) {
+        self.personalityIDData[index] = int
+        self.updatePersonalityID(personalityIDData: personalityIDData)
     }
     
     func updateAuthVender(authVender: AuthVendor) {
@@ -70,7 +70,7 @@ class OnboardingService: BaseService, OnboardingServiceProtocol {
         self.profileImagePath = profileImagePath
     }
     
-    private func updatePersonalityId(personalityIdData: [Int]) {
-        self.personalityId = PersonalityId.intsToPersonalityId(data: personalityIdData)
+    private func updatePersonalityID(personalityIDData: [Int]) {
+        self.personalityID = PersonalityID.intsToPersonalityID(data: personalityIDData)
     }
 }

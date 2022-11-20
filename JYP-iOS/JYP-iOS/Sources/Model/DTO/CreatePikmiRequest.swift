@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct AddPikmiRequest: Codable {
+struct CreatePikmiRequest: Codable {
     let name, address, category: String
     let longitude, latitude: Int
     let link: String

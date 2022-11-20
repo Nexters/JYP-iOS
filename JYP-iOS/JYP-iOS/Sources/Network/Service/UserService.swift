@@ -34,7 +34,7 @@ class UserService: BaseService, UserServiceType {
     }
     
     func editUser(id: String, request: EditUserRequest) -> Observable<BaseModel<User>> {
-        let target = UserAPI.editUser(id: id, request: request)
+        let target = UserAPI.updateUser(id: id, request: request)
         
         return APIService.request(target: target)
             .map(BaseModel<User>.self)

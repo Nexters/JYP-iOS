@@ -1,5 +1,5 @@
 //
-//  JoinRequest.swift
+//  EditPikisRequest.swift
 //  JYP-iOS
 //
 //  Created by 송영모 on 2022/11/19.
@@ -8,6 +8,7 @@
 
 import Foundation
 
-struct AddJourneyUserRequest: Codable {
-    let tags: [Tag]
+struct UpdatePikisRequest: Codable {
+    let index: Int
+    let pikis: [Pik]
 }

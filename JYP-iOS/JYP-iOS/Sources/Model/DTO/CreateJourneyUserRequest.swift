@@ -1,5 +1,5 @@
 //
-//  EditTagsRequest.swift
+//  JoinRequest.swift
 //  JYP-iOS
 //
 //  Created by 송영모 on 2022/11/19.
@@ -8,6 +8,6 @@
 
 import Foundation
 
-struct EditTagsRequest: Codable {
+struct CreateJourneyUserRequest: Codable {
     let tags: [Tag]
 }
