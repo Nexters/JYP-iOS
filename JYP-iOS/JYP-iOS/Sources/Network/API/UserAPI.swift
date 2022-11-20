@@ -10,9 +10,9 @@ import Foundation
 import Moya
 
 enum UserAPI {
-    case search(id: Int)
-    case update(id: Int, request: UserUpdateRequest)
-    case signup(request: SignupRequest)
+    case fetchUser(id: String)
+    case updateUser(id: String, request: EditUserRequest)
+    case createUser(request: CreateUserRequest)
 }
 
 extension UserAPI: BaseAPI {
@@ -22,28 +22,35 @@ extension UserAPI: BaseAPI {
 
     var path: String {
         switch self {
-        case let .search(id): return "/users/\(id)"
-        case let .update(id, _): return "/users/\(id)"
-        case .signup: return "users"
+        case let .fetchUser(id):
+            return "/users/\(id)"
+            
+        case let .updateUser(id, _):
+            return "/users/\(id)"
+            
+        case .createUser: return "users"
         }
     }
 
     var method: Moya.Method {
         switch self {
-        case .search: return .get
-        case .update: return .patch
-        case .signup: return .post
+        case .fetchUser: return .get
+            
+        case .updateUser: return .patch
+            
+        case .createUser: return .post
         }
     }
 
     var task: Task {
         switch self {
-        case .search:
+        case .fetchUser:
             return .requestPlain
-        case let .update(_, request):
+            
+        case let .updateUser(_, request):
             return .requestJSONEncodable(request)
-        case let .signup(request):
-            print(request)
+            
+        case let .createUser(request):
             return .requestJSONEncodable(request)
         }
     }

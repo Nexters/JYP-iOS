@@ -119,7 +119,7 @@ enum JYPButtonType {
         case .linkInvite:
             return nil
         case .plannerJoin:
-            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color)
+            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color, image: nil)
         }
     }
 }

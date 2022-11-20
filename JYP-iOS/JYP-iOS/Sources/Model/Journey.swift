@@ -9,13 +9,11 @@
 import Foundation
 
 struct Journey: Codable {
-    let id: String
-    let name: String
-    let startDate: Double
-    let endDate: Double
+    let id, name: String
+    let startDate, endDate: Double
     let themePath: ThemeType
     let users: [User]
     var tags: [Tag] = []
-    var pikis: [[Pik]] = []
     var pikmis: [Pik] = []
+    var pikidays: [Pikiday] = []
 }

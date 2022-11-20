@@ -11,8 +11,8 @@ import ReactorKit
 
 class JourneyPlanReactor: Reactor {
     enum Action {
-        case tapPikiHeaderEditButton(IndexPath)
-        case tapEmptyPikiPlusButton(IndexPath)
+        case tapEditButton(IndexPath)
+        case tapPlusButton(IndexPath)
     }
     
     enum Mutation {
@@ -21,38 +21,34 @@ class JourneyPlanReactor: Reactor {
     }
     
     struct State {
-        var sections: [JourneyPlanSectionModel]
+        var sections: [JourneyPlanSectionModel] = []
     }
     
-    let provider = ServiceProvider.shared
+    let service = ServiceProvider.shared.plannerService
     var initialState: State
     
-    init() {
-        initialState = .init(sections: [])
+    init(state: State) {
+        initialState = state
     }
 }
 
 extension JourneyPlanReactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        case let .tapPikiHeaderEditButton(indexPath):
-            if let reactor = makeReactor(from: indexPath) {
-                provider.plannerService.event.onNext(.presentPlannerRoute(reactor))
-            }
-            return .empty()
-        case let .tapEmptyPikiPlusButton(indexPath):
-            if let reactor = makeReactor(from: indexPath) {
-                provider.plannerService.event.onNext(.presentPlannerRoute(reactor))
-            }
-            return .empty()
+        case let .tapEditButton(indexPath):
+            return tapEditButtonMutation(indexPath)
+            
+        case let .tapPlusButton(indexPath):
+            return tapPlusButtonMutation(indexPath)
         }
     }
     
     func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
-        let eventMutation = provider.plannerService.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
+        let eventMutation = service.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
             switch event {
             case let .fetchJourney(journey):
                 return .just(.setSections(this.makeSections(from: journey)))
+                
             default:
                 return .empty()
             }
@@ -67,6 +63,7 @@ extension JourneyPlanReactor {
         switch mutation {
         case let .setSections(sections):
             newState.sections = sections
+            
         case let .updateSectionItem(indexPath, item):
             newState.sections[indexPath.section].items[indexPath.row] = item
         }
@@ -74,23 +71,37 @@ extension JourneyPlanReactor {
         return newState
     }
     
+    private func tapEditButtonMutation(_ indexPath: IndexPath) -> Observable<Mutation> {
+        guard let journey = service.journey else { return .empty() }
+        guard case let .plan(reactor) = currentState.sections[indexPath.section].items[indexPath.item] else { return .empty() }
+        service.presentPlannerRoute(from: makeReactor(from: reactor, pikis: journey.pikidays[indexPath.section].pikis, pikmis: journey.pikmis))
+        return .empty()
+    }
+    
+    private func tapPlusButtonMutation(_ indexPath: IndexPath) -> Observable<Mutation> {
+        guard let journey = service.journey else { return .empty() }
+        guard case let .emptyPlan(reactor) = currentState.sections[indexPath.section].items[indexPath.item] else { return .empty() }
+        service.presentPlannerRoute(from: makeReactor(from: reactor, pikis: journey.pikidays[indexPath.section].pikis, pikmis: journey.pikmis))
+        return .empty()
+    }
+    
     private func makeSections(from journey: Journey) -> [JourneyPlanSectionModel] {
         var journeyPlanSectionModels: [JourneyPlanSectionModel] = []
         
-        let daySectionItems = journey.pikis.enumerated().map { (index, _) -> JourneyPlanItem in
+        let daySectionItems = journey.pikidays.enumerated().map { (index, _) -> JourneyPlanItem in
             return JourneyPlanItem.dayTag(DayTagCollectionViewCellReactor(state: .init(day: index + 1)))
         }
         
-        let journeySectionModels = journey.pikis.enumerated().map { (index, pikis) -> JourneyPlanSectionModel in
+        let journeySectionModels = journey.pikidays.enumerated().map { (index, pikiday) -> JourneyPlanSectionModel in
             var journeyPlanItems: [JourneyPlanItem] = []
             
-            if pikis.isEmpty {
-                let sectionItem = JourneyPlanItem.emptyPiki(EmptyPikiCollectionViewCellReactor(state: .init(order: index, date: DateManager.addDateComponent(byAdding: .day, value: index, to: Date(timeIntervalSince1970: journey.startDate)))))
+            if pikiday.pikis.isEmpty {
+                let sectionItem = JourneyPlanItem.emptyPlan(EmptyPlanCollectionViewCellReactor(state: .init(order: index, date: DateManager.addDateComponent(byAdding: .day, value: index, to: Date(timeIntervalSince1970: journey.startDate)))))
                 
                 journeyPlanItems.append(sectionItem)
             } else {
-                let sectionItems = pikis.enumerated().map { (index, pik) -> JourneyPlanItem in
-                    return JourneyPlanItem.piki(PikiCollectionViewCellReactor(state: .init(isLast: index == pikis.count - 1, order: index, date: DateManager.addDateComponent(byAdding: .day, value: index, to: Date(timeIntervalSince1970: journey.startDate)), pik: pik)))
+                let sectionItems = pikiday.pikis.enumerated().map { (index, pik) -> JourneyPlanItem in
+                    return JourneyPlanItem.plan(PlanCollectionViewCellReactor(state: .init(isLast: index == pikiday.pikis.count - 1, order: index, date: DateManager.addDateComponent(byAdding: .day, value: index, to: Date(timeIntervalSince1970: journey.startDate)), pik: pik)))
                 }
                 
                 journeyPlanItems.append(contentsOf: sectionItems)
@@ -106,16 +117,14 @@ extension JourneyPlanReactor {
         
         return journeyPlanSectionModels
     }
-
-    private func makeReactor(from indexPath: IndexPath) -> PlannerRouteReactor? {
-        guard let journey = provider.plannerService.journey else { return nil }
-        
-        let order: Int = indexPath.section - 1
-        let date: Date = Date(timeIntervalSince1970: journey.startDate)
-        let addedDate: Date = DateManager.addDateComponent(byAdding: .day, value: order, to: date)
-        let pikis: [Pik] = journey.pikis[indexPath.section]
-        let pikmis: [Pik] = journey.pikmis
-        
-        return .init(state: .init(order: order, date: addedDate, pikis: pikis, pikmis: pikmis))
+    
+    private func makeReactor(from reactor: PlanCollectionViewCellReactor, pikis: [Pik], pikmis: [Pik]) -> PlannerRouteReactor {
+        let state = reactor.currentState
+        return .init(state: .init(order: state.order, date: state.date, pikis: pikis, pikmis: pikmis))
+    }
+    
+    private func makeReactor(from reactor: EmptyPlanCollectionViewCellReactor, pikis: [Pik], pikmis: [Pik]) -> PlannerRouteReactor {
+        let state = reactor.currentState
+        return .init(state: .init(order: state.order, date: state.date, pikis: pikis, pikmis: pikmis))
     }
 }

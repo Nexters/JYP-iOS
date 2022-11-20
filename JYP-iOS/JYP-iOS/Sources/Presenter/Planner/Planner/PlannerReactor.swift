@@ -29,7 +29,7 @@ class PlannerReactor: Reactor {
     }
     
     struct State {
-        var journey: Journey
+        var journeyId: String
         var isShowDiscussion: Bool = true
         var isShowJourneyPlan: Bool = false
         var plannerInviteReactor: PlannerInviteReactor?
@@ -43,8 +43,8 @@ class PlannerReactor: Reactor {
     
     var initialState: State
     
-    init(state: State) {
-        self.initialState = state
+    init(journeyId: String) {
+        self.initialState = .init(journeyId: journeyId)
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
@@ -107,10 +107,10 @@ class PlannerReactor: Reactor {
     }
     
     private func mutateRefresh() -> Observable<Mutation> {
-        return provider.journeyService.fetchJorney(id: 0)
+        return provider.journeyService.fetchJorney(journeyId: "0")
             .withUnretained(self)
-            .map { this, journey in
-                this.provider.plannerService.updateJourney(to: journey)
+            .map { this, response in
+                this.provider.plannerService.updateJourney(to: response.data)
                 return .fetchJourney
             }
     }

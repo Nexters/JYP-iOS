@@ -174,20 +174,7 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
             .distinctUntilChanged()
             .filter { $0 }
             .subscribe(onNext: { [weak self] _ in
-                let plannerReactor = PlannerReactor(
-                    state: .init(pik:
-                        Pik(
-                            id: "",
-                            name: "",
-                            address: "",
-                            category: .bank,
-                            likeBy: nil,
-                            longitude: 0.0,
-                            latitude: 0.0,
-                            link: ""
-                        )
-                    )
-                )
+                let plannerReactor = PlannerReactor(journeyId: "1")
                 let plannerViewController = PlannerViewController(reactor: plannerReactor)
 
                 guard let presentingViewContoller = self?.presentingViewController as? UINavigationController else { return }

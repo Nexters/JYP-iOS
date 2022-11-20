@@ -25,13 +25,11 @@ class DiscussionReactor: Reactor {
     }
     
     enum Mutation {
-        case updateJourney(Journey)
         case setSections([DiscussionSectionModel])
         case updateIsToggleOn(Bool)
     }
     
     struct State {
-        var journey: Journey?
         var sections: [DiscussionSectionModel] = []
         var isToggleOn: Bool = true
     }
@@ -40,8 +38,8 @@ class DiscussionReactor: Reactor {
     
     var initialState: State
     
-    init() {
-        initialState = State()
+    init(state: State) {
+        initialState = state
     }
 }
 
@@ -72,10 +70,8 @@ extension DiscussionReactor {
         let eventMutation = service.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
             switch event {
             case let .fetchJourney(journey):
-                let setSectionsMutation: Observable<Mutation> = .just(.setSections(this.makeSections(from: journey)))
-                let updateJoruneyMutation: Observable<Mutation> = .just(.updateJourney(journey))
-                let sequence: [Observable<Mutation>] = [setSectionsMutation, updateJoruneyMutation]
-                return .concat(sequence)
+                return .just(.setSections(this.makeSections(from: journey)))
+                
             default:
                 return .empty()
             }
@@ -88,9 +84,6 @@ extension DiscussionReactor {
         var newState = state
         
         switch mutation {
-        case let .updateJourney(journey):
-            newState.journey = journey
-            
         case let .setSections(sections):
             newState.sections = sections
             
@@ -119,7 +112,8 @@ extension DiscussionReactor {
     }
     
     private func tapToggleButtonMutation() -> Observable<Mutation> {
-        guard let journey = currentState.journey else { return .empty() }
+        guard let journey = service.journey else { return .empty() }
+        
         let updateIsToggleOnMutation: Observable<Mutation> = .just(.updateIsToggleOn(!currentState.isToggleOn))
         var setSectionsMutation: Observable<Mutation> {
             currentState.isToggleOn ? .just(.setSections(makeSections(from: journey, type: .empty))) : .just(.setSections(makeSections(from: journey)))

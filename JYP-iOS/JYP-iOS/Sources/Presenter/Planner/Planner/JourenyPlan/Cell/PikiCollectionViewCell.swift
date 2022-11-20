@@ -12,7 +12,7 @@ import ReactorKit
 class PikiCollectionViewCell: BaseCollectionViewCell, View {
     // MARK: - Constants
     
-    typealias Reactor = PikiCollectionViewCellReactor
+    typealias Reactor = PlanCollectionViewCellReactor
     
     // MARK: - UI Components
     

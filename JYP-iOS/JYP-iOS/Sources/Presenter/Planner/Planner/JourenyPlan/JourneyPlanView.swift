@@ -28,18 +28,18 @@ class JourneyPlanView: BaseView, View {
             
             cell.reactor = reactor
             return cell
-        case let .emptyPiki(cellReactor):
+        case let .emptyPlan(cellReactor):
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: EmptyPikiCollectionViewCell.self), for: indexPath) as? EmptyPikiCollectionViewCell else { return .init() }
             
             cell.reactor = cellReactor
             cell.trailingButton
                 .rx
                 .tap
-                .map { .tapEmptyPikiPlusButton(indexPath) }
+                .map { .tapPlusButton(indexPath) }
                 .bind(to: reactor.action)
                 .disposed(by: cell.disposeBag)
             return cell
-        case let .piki(reactor):
+        case let .plan(reactor):
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: PikiCollectionViewCell.self), for: indexPath) as? PikiCollectionViewCell else { return .init() }
             
             cell.reactor = reactor
@@ -49,13 +49,13 @@ class JourneyPlanView: BaseView, View {
         guard let reactor = self?.reactor else { return .init() }
         switch dataSource[indexPath.section].model {
         case let .journey(items):
-            guard case let .piki(cellReactor) = items.first else { return .init() }
+            guard case let .plan(cellReactor) = items.first else { return .init() }
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: PikiCollectionReusableView.self), for: indexPath) as? PikiCollectionReusableView else { return .init() }
 
             header.reactor = PikiCollectionReusableViewReactor(state: .init(order: cellReactor.currentState.order, date: cellReactor.currentState.date))
             
             header.trailingButton.rx.tap
-                .map { .tapPikiHeaderEditButton(indexPath) }
+                .map { .tapEditButton(indexPath) }
                 .bind(to: reactor.action)
                 .disposed(by: header.disposeBag)
             return header
@@ -158,11 +158,11 @@ extension JourneyPlanView {
         sectionItems.forEach({ sectionItem in
             switch sectionItem {
             case .dayTag: break
-            case .emptyPiki:
+            case .emptyPlan:
                 let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .absolute(72)))
                 
                 items.append(item)
-            case .piki:
+            case .plan:
                 let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .absolute(92)))
                 
                 items.append(item)

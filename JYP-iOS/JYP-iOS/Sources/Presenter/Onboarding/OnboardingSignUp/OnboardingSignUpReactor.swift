@@ -12,12 +12,12 @@ class OnboardingSignUpReactor: Reactor {
     enum Action {
         case didTapKakaoLoginButton
         case didTapAppleLoginButton
-        case didLogin(authVendor: AuthVendor, authID: String, name: String, profileImagePath: String)
+        case didLogin(authVendor: AuthVendor, authId: String, name: String, profileImagePath: String)
     }
     
     enum Mutation {
-        case setIsOpenKakaoLogin(Bool)
-        case setIsOpenAppleLogin(Bool)
+        case updateIsOpenKakaoLogin(Bool)
+        case updateIsOpenAppleLogin(Bool)
         case updateOnboardingQuestionReactor(OnboardingQuestionReactor?)
     }
     
@@ -30,31 +30,35 @@ class OnboardingSignUpReactor: Reactor {
     let initialState: State
     let service: OnboardingServiceProtocol = ServiceProvider.shared.onboaringService
     
-    init(initialState: State) {
-        self.initialState = initialState
+    init() {
+        self.initialState = .init()
     }
-    
+}
+
+extension OnboardingSignUpReactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .didTapKakaoLoginButton:
-            return .just(.setIsOpenKakaoLogin(true))
+            return didTapKakaoLoginButtonMutation()
+            
         case .didTapAppleLoginButton:
-            return .just(.setIsOpenAppleLogin(true))
-        case let .didLogin(authVendor, authID, name, profileImagePath):
-            return mutateDidLogin(authVendor: authVendor, authID: authID, name: name, profileImagePath: profileImagePath)
+            return didTapAppleLoginButtonMutation()
+            
+        case let .didLogin(authVendor, authId, name, profileImagePath):
+            return didLoginMutation(authVendor: authVendor, authId: authId, name: name, profileImagePath: profileImagePath)
         }
     }
-    
-    // MARK: - Setup Reduce
     
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
         
         switch mutation {
-        case .setIsOpenKakaoLogin(let bool):
+        case let .updateIsOpenKakaoLogin(bool):
             newState.isOpenKakaoLogin = bool
-        case .setIsOpenAppleLogin(let bool):
+            
+        case let .updateIsOpenAppleLogin(bool):
             newState.isOpenAppleLogin = bool
+            
         case let .updateOnboardingQuestionReactor(reactor):
             newState.onboardingQuestionReactor = reactor
         }
@@ -62,15 +66,25 @@ class OnboardingSignUpReactor: Reactor {
         return newState
     }
     
-    private func mutateDidTapKakaoLoginButton() -> Observable<Mutation> {
-        return .empty()
+    private func didTapKakaoLoginButtonMutation() -> Observable<Mutation> {
+        return .concat([
+            .just(.updateIsOpenKakaoLogin(true)),
+            .just(.updateIsOpenKakaoLogin(false))
+        ])
     }
     
-    private func mutateDidLogin(authVendor: AuthVendor, authID: String, name: String, profileImagePath: String) -> Observable<Mutation> {
-        service.updateAuthVender(authVendor)
-        service.updateAuthID(authID)
-        service.updateName(name)
-        service.updateProfileImagePath(profileImagePath)
+    private func didTapAppleLoginButtonMutation() -> Observable<Mutation> {
+        return .concat([
+            .just(.updateIsOpenAppleLogin(true)),
+            .just(.updateIsOpenAppleLogin(false))
+        ])
+    }
+    
+    private func didLoginMutation(authVendor: AuthVendor, authId: String, name: String, profileImagePath: String) -> Observable<Mutation> {
+        service.updateAuthVender(authVender: authVendor)
+        service.updateAuthID(authId: authId)
+        service.updateName(name: name)
+        service.updateProfileImagePath(profileImagePath: profileImagePath)
         
         return .concat([
             .just(.updateOnboardingQuestionReactor(OnboardingQuestionReactor(mode: .joruney))),

@@ -15,54 +15,62 @@ enum OnboardingEvent {
 
 protocol OnboardingServiceProtocol {
     var event: PublishSubject<OnboardingEvent> { get }
-    var signupReqeust: SignupRequest { get }
     
-    func signup()
+    func createUser()
     
-    func updatePersonalityId(page: Int, index: Int)
-    func updateAuthVender(_ authVender: AuthVendor)
-    func updateAuthID(_ authID: String)
-    func updateProfileImagePath(_ profileImagePath: String)
-    func updateName(_ name: String)
+    func updatePersonalityIDData(index: Int, int: Int)
+    func updateAuthVender(authVender: AuthVendor)
+    func updateAuthID(authId: String)
+    func updateName(name: String)
+    func updateProfileImagePath(profileImagePath: String)
 }
 
 class OnboardingService: BaseService, OnboardingServiceProtocol {
     let event = PublishSubject<OnboardingEvent>()
     
-    var signupReqeust: SignupRequest = SignupRequest(authVendor: .kakao, authID: "", name: "", profileImagePath: "", personalityID: .ME)
-    var personalityIdInts: [Int] = [0, 0, 0]
+    private var authVendor: AuthVendor = .kakao
+    private var authId: String = ""
+    private var name: String = ""
+    private var profileImagePath: String = ""
+    private var personalityID: PersonalityID = .ME
+    private var personalityIDData: [Int] = [0, 0, 0]
     
-    func signup() {
-        provider.userService.signup(request: signupReqeust)
+    func createUser() {
+        let request: CreateUserRequest = .init(authVendor: authVendor, authID: authId, name: name, profileImagePath: profileImagePath, personalityID: personalityID)
+        
+        provider.userService.createUser(request: request)
             .compactMap { $0.data }
             .withUnretained(self)
             .bind { this, _ in
-                let reactor = MyPlannerReactor()
-                
+                let reactor: MyPlannerReactor = .init()
                 this.event.onNext(.presentMyPlanner(reactor))
                 this.event.onNext(.presentMyPlanner(nil))
             }
             .disposed(by: disposeBag)
     }
     
-    func updatePersonalityId(page: Int, index: Int) {
-        personalityIdInts[page] = index
-        signupReqeust.personalityID = PersonalityId.intsToPersonalityId(ints: personalityIdInts)
+    func updatePersonalityIDData(index: Int, int: Int) {
+        self.personalityIDData[index] = int
+        self.updatePersonalityID(personalityIDData: personalityIDData)
     }
     
-    func updateAuthVender(_ authVender: AuthVendor) {
-        signupReqeust.authVendor = authVender
+    func updateAuthVender(authVender: AuthVendor) {
+        self.authVendor = authVender
     }
     
-    func updateAuthID(_ authID: String) {
-        signupReqeust.authID = authID
+    func updateAuthID(authId: String) {
+        self.authId = authId
     }
     
-    func updateName(_ name: String) {
-        signupReqeust.name = name
+    func updateName(name: String) {
+        self.name = name
     }
     
-    func updateProfileImagePath(_ profileImagePath: String) {
-        signupReqeust.profileImagePath = profileImagePath
+    func updateProfileImagePath(profileImagePath: String) {
+        self.profileImagePath = profileImagePath
+    }
+    
+    private func updatePersonalityID(personalityIDData: [Int]) {
+        self.personalityID = PersonalityID.intsToPersonalityID(data: personalityIDData)
     }
 }
