@@ -32,6 +32,18 @@ class JourneyCardCollectionViewCell: BaseCollectionViewCell, View {
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        daysTag.snp.updateConstraints { make in
+            make.height.equalTo(29)
+        }
+        
+        titleLabel.snp.updateConstraints { make in
+            make.top.equalTo(daysTag.snp.bottom).offset(16)
+        }
+    }
 
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -165,6 +177,17 @@ class JourneyCardCollectionViewCell: BaseCollectionViewCell, View {
             .map { "- \(DateManager.doubleToDateString(format: "M월 d일", double: $0))" }
             .bind(to: endDateLabel.rx.text)
             .disposed(by: disposeBag)
+    }
+    
+    func hideDaysTag() {
+        daysTag.snp.updateConstraints { make in
+            make.height.equalTo(0)
+        }
+        
+        titleLabel.snp.updateConstraints { make in
+            make.top.equalTo(daysTag.snp.bottom).offset(0)
+        }
+
     }
 }
 
