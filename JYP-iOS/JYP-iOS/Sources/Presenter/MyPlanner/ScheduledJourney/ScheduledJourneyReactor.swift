@@ -34,8 +34,10 @@ final class ScheduledJourneyReactor: Reactor {
         provider.event.flatMap { event -> Observable<Mutation> in
             switch event {
             case let .fetchJourneyList(response):
+                guard !response.isEmpty
+                else { return .just(.updateSectionItem([JourneyCardItem.empty])) }
+                
                 let currentTime = DateManager.currentTimeInterval
-
                 let items = response
                     .filter { $0.startDate > currentTime }
                     .map { JourneyCardItem.journey(.init(journey: $0)) }
