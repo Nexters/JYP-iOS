@@ -29,6 +29,7 @@ final class PastJourneyView: BaseView, View {
             return cell
         case let .journey(reactor):
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: JourneyCardCollectionViewCell.self), for: indexPath) as? JourneyCardCollectionViewCell else { return .init() }
+            cell.hideDaysTag()
             cell.reactor = reactor
 
             return cell

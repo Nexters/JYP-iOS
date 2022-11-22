@@ -9,8 +9,19 @@
 import Foundation
 
 struct DateManager {
+    static var currentTimeInterval: TimeInterval {
+        Date().timeIntervalSince1970
+    }
+
     private static let dataFormatter = DateFormatter().then {
         $0.locale = .init(identifier: "ko_KR")
+    }
+
+    static func doubleToDateString(format: String = "yy.MM.dd", double: Double) -> String {
+        let timeInterval = TimeInterval(floatLiteral: double)
+        let convertedDate = Date(timeIntervalSince1970: timeInterval)
+
+        return Self.dateToString(format: format, date: convertedDate)
     }
 
     static func dateToString(format: String = "yy.MM.dd", date: Date) -> String {
@@ -24,8 +35,8 @@ struct DateManager {
 
         return Self.dataFormatter.date(from: date) ?? Date()
     }
-    
+
     static func addDateComponent(byAdding: Calendar.Component, value: Int, to: Date) -> Date {
-        return Calendar.current.date(byAdding: byAdding, value: value, to: to) ?? to
+        Calendar.current.date(byAdding: byAdding, value: value, to: to) ?? to
     }
 }

@@ -9,10 +9,10 @@
 import Foundation
 
 enum PersonalityID: String, Codable {
-    case ME
-    case PE
-    case RT
-    case FW
+    case ME = "꼼꼼한 탐험가"
+    case PE = "열정왕 탐험가"
+    case RT = "낭만적인 여행자"
+    case FW = "자유로운 방랑자"
     
     static func intsToPersonalityID(data: [Int]) -> PersonalityID {
         var sum: Int = 0
@@ -21,7 +21,7 @@ enum PersonalityID: String, Codable {
             sum += Int(pow(Double(2), Double(i))) * int
         }
         
-        switch sum  {
+        switch sum {
         case 0, 1:
             return .ME
             

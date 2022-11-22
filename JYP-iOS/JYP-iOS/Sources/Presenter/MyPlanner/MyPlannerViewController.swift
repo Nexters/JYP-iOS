@@ -127,6 +127,11 @@ class MyPlannerViewController: NavigationBarViewController, View {
     // MARK: - Bind Method
 
     func bind(reactor: MyPlannerReactor) {
+        rx.viewWillAppear
+            .map { _ in .fetchJourneyList }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+
         scheduledJourneyButton.rx.tap
             .map { .didTapScheduledJourneyMenu }
             .bind(to: reactor.action)
