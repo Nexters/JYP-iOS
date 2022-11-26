@@ -75,8 +75,11 @@ class PlannerInviteViewController: NavigationBarViewController, View {
     
     func bind(reactor: Reactor) {
         linkInviteButton.rx.tap
-            .bind { _ in
+            .bind { [weak self] _ in
                 UIPasteboard.general.string = reactor.currentState.id
+                let vc = JYPToastMessageViewController(message: "클립보드에 복사되었습니다!")
+                vc.modalPresentationStyle = .overFullScreen
+                self?.present(vc, animated: false)
             }
             .disposed(by: disposeBag)
     }
