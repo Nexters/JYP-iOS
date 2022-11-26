@@ -44,7 +44,7 @@ class PlannerInviteViewController: NavigationBarViewController, View {
         subLabel.font = JYPIOSFontFamily.Pretendard.medium.font(size: 16)
         subLabel.textColor = JYPIOSAsset.tagGrey200.color
         
-        linkInviteButton.isEnabled = false
+        linkInviteButton.isEnabled = true
     }
     
     override func setupHierarchy() {
@@ -73,5 +73,11 @@ class PlannerInviteViewController: NavigationBarViewController, View {
         }
     }
     
-    func bind(reactor: Reactor) { }
+    func bind(reactor: Reactor) {
+        linkInviteButton.rx.tap
+            .bind { _ in
+                UIPasteboard.general.string = reactor.currentState.id
+            }
+            .disposed(by: disposeBag)
+    }
 }

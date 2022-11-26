@@ -137,6 +137,6 @@ class PlannerReactor: Reactor {
     }
     
     private func makeReactor() -> PlannerInviteReactor {
-        return .init(state: .init())
+        return .init(id: currentState.journeyId)
     }
 }
