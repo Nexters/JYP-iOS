@@ -187,7 +187,7 @@ extension DiscussionReactor {
     }
     
     private func makeReactor() -> PlannerSearchPlaceReactor {
-        return .init()
+        return .init(id: currentState.id)
     }
     
     private func makeReactor(from reactor: PikmiCollectionViewCellReactor) -> WebReactor {

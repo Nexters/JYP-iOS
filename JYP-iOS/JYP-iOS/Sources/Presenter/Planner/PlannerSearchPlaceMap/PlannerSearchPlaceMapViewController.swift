@@ -162,21 +162,30 @@ class PlannerSearchPlaceMapViewController: NavigationBarViewController, View {
     }
     
     func bind(reactor: PlannerSearchPlaceMapReactor) {
-        let state = reactor.currentState
-
-        searchTextField.textField.text = state.kakaoSearchPlace.placeName
-        titleLabel.text = state.kakaoSearchPlace.placeName
-        subLabel.text = state.kakaoSearchPlace.addressName
-        
         infoButton.rx.tap
-            .map { .didTapInfoButton }
+            .map { .tapInfoButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        addButton.rx.tap
+            .map { .tapAddButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
         backButton.rx.tap
-            .map { .dismiss }
-            .bind(to: reactor.action)
+            .bind { [weak self] _ in
+                self?.navigationController?.popViewController(animated: true)
+            }
             .disposed(by: disposeBag)
+        
+        reactor.state
+            .map(\.kakaoSearchPlace)
+            .withUnretained(self)
+            .bind { this, kakaoSearchPlace in
+                this.searchTextField.textField.text = kakaoSearchPlace.placeName
+                this.titleLabel.text = kakaoSearchPlace.placeName
+                this.subLabel.text = kakaoSearchPlace.addressName
+            }
         
         reactor.state
             .compactMap(\.webReactor)
@@ -184,13 +193,6 @@ class PlannerSearchPlaceMapViewController: NavigationBarViewController, View {
                 let webViewController = WebViewController(reactor: reactor)
                 
                 self?.tabBarController?.present(webViewController, animated: true)
-            }
-            .disposed(by: disposeBag)
-                
-        reactor.state.map(\.isDismiss)
-            .filter { $0 }
-            .bind { [weak self] _ in
-                self?.navigationController?.popViewController(animated: true)
             }
             .disposed(by: disposeBag)
     }

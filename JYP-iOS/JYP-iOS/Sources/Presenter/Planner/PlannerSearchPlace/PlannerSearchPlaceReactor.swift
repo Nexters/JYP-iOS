@@ -28,6 +28,7 @@ class PlannerSearchPlaceReactor: Reactor {
     }
     
     struct State {
+        var id: String
         var sections: [PlannerSearchPlaceSectionModel] = []
         var plannerSearchPlaceMapReactor: PlannerSearchPlaceMapReactor?
         var emptyViewState: EmptyViewState = .empty
@@ -36,8 +37,8 @@ class PlannerSearchPlaceReactor: Reactor {
     let provider = ServiceProvider.shared
     var initialState: State
     
-    init() {
-        initialState = State()
+    init(id: String) {
+        self.initialState = State(id: id)
     }
 }
 
@@ -112,6 +113,6 @@ extension PlannerSearchPlaceReactor {
     }
     
     private func makeReactor(from reactor: KakaoSearchPlaceTableViewCellReactor) -> PlannerSearchPlaceMapReactor {
-        return .init(state: .init(kakaoSearchPlace: reactor.currentState))
+        return .init(id: currentState.id, kakaoSearchPlace: reactor.currentState)
     }
 }
