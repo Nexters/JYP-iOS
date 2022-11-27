@@ -22,12 +22,13 @@ class PlannerViewController: NavigationBarViewController, View {
     let journeyPlanButton: JYPBottomBorderButton = .init(title: "여행 계획")
     let menuDivider: UIView = .init()
     let discussionView: DiscussionView
-    lazy var journeyPlanView: JourneyPlanView = .init(reactor: JourneyPlanReactor(state: .init()))
+    let journeyPlanView: JourneyPlanView
     
     // MARK: - Initializer
     
     init(reactor: Reactor) {
         discussionView = .init(reactor: .init(id: reactor.currentState.id))
+        journeyPlanView = .init(reactor: .init(id: reactor.currentState.id))
         
         super.init(nibName: nil, bundle: nil)
         self.reactor = reactor

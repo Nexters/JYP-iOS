@@ -49,6 +49,7 @@ class PlannerReactor: Reactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .refresh:
+            provider.plannerService.refresh()
             return .empty()
             
         case .showDiscussion:
@@ -72,9 +73,10 @@ class PlannerReactor: Reactor {
     }
     
     func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
-        let eventMutation = provider.plannerService.event.flatMap { (event) -> Observable<Mutation> in
+        let eventMutation = provider.plannerService.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
             switch event {
-            case .fetchJourney:
+            case .refresh:
+                this.provider.journeyService.fetchJorney(id: this.currentState.id)
                 return .empty()
                 
             case let .presentTagBottomSheet(reactor):

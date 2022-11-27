@@ -95,7 +95,6 @@ class DiscussionView: BaseView, View {
     init(reactor: Reactor) {
         super.init(frame: .zero)
         self.reactor = reactor
-        reactor.action.onNext(.refresh)
     }
     
     @available(*, unavailable)
