@@ -47,7 +47,7 @@ extension JourneyPlanReactor {
     }
     
     func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
-        let eventMutation = provider.journeyService.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
+        let APIMutation = provider.journeyService.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
             switch event {
             case let .fetchJourney(journey):
                 return .concat([.just(.setJourney(journey)),
@@ -58,7 +58,7 @@ extension JourneyPlanReactor {
             }
         }
         
-        return Observable.merge(mutation, eventMutation)
+        return Observable.merge(mutation, APIMutation)
     }
     
     func reduce(state: State, mutation: Mutation) -> State {

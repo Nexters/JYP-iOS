@@ -18,6 +18,7 @@ class PlannerReactor: Reactor {
     }
     
     enum Mutation {
+        case setJourney(Journey)
         case setIsShowDiscussion(Bool)
         case setIsShowJourneyPlan(Bool)
         case setPlannerInviteReactor(PlannerInviteReactor?)
@@ -29,6 +30,7 @@ class PlannerReactor: Reactor {
     
     struct State {
         var id: String
+        var journey: Journey?
         var isShowDiscussion: Bool = true
         var isShowJourneyPlan: Bool = false
         var plannerInviteReactor: PlannerInviteReactor?
@@ -73,6 +75,16 @@ class PlannerReactor: Reactor {
     }
     
     func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
+        let APIMutation = provider.journeyService.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
+            switch event {
+            case let .fetchJourney(journey):
+                return .just(.setJourney(journey))
+                
+            default:
+                return .empty()
+            }
+        }
+        
         let eventMutation = provider.plannerService.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
             switch event {
             case .refresh:
@@ -96,13 +108,16 @@ class PlannerReactor: Reactor {
             }
         }
         
-        return Observable.merge(mutation, eventMutation)
+        return Observable.merge(mutation, APIMutation, eventMutation)
     }
     
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
         
         switch mutation {
+        case let .setJourney(journey):
+            newState.journey = journey
+            
         case let .setIsShowDiscussion(bool):
             newState.isShowDiscussion = bool
             
