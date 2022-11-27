@@ -186,6 +186,7 @@ class PlannerSearchPlaceMapViewController: NavigationBarViewController, View {
                 this.titleLabel.text = kakaoSearchPlace.placeName
                 this.subLabel.text = kakaoSearchPlace.addressName
             }
+            .disposed(by: disposeBag)
         
         reactor.state
             .compactMap(\.webReactor)
