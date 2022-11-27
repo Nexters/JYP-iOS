@@ -12,5 +12,5 @@ struct Tag: Codable {
     let topic: String
     let orientation: JYPTagType
     var users: [User] = []
-    var isSelected: Bool = false
+    var isSelected: Bool? = false
 }

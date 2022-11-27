@@ -165,7 +165,7 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
             .filter { $0 }
             .subscribe(onNext: { [weak self] _ in
                 let plannerViewController = PlannerViewController(
-                    reactor: PlannerReactor(journeyId: "1")
+                    reactor: PlannerReactor(id: "1")
                 )
 
                 self?.navigationController?.pushViewController(

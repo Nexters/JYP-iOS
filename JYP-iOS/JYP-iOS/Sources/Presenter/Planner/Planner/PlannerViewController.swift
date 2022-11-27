@@ -21,12 +21,14 @@ class PlannerViewController: NavigationBarViewController, View {
     let discussionButton: JYPBottomBorderButton = .init(title: "토론장")
     let journeyPlanButton: JYPBottomBorderButton = .init(title: "여행 계획")
     let menuDivider: UIView = .init()
-    lazy var discussionView: DiscussionView = .init(reactor: DiscussionReactor(state: .init()))
+    let discussionView: DiscussionView
     lazy var journeyPlanView: JourneyPlanView = .init(reactor: JourneyPlanReactor(state: .init()))
     
     // MARK: - Initializer
     
     init(reactor: Reactor) {
+        discussionView = .init(reactor: .init(id: reactor.currentState.id))
+        
         super.init(nibName: nil, bundle: nil)
         self.reactor = reactor
     }
@@ -134,8 +136,6 @@ class PlannerViewController: NavigationBarViewController, View {
     // MARK: - Bind Method
     
     func bind(reactor: Reactor) {
-        // Action
-        
         rx.viewWillAppear
             .map { _ in .refresh }
             .bind(to: reactor.action)

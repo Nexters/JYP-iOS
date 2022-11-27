@@ -10,6 +10,7 @@ import RxSwift
 
 enum JourneyEvent {
     case fetchJourneyList([Journey])
+    case fetchJourney(Journey)
     case create(Journey)
 }
 
@@ -17,7 +18,7 @@ protocol JourneyServiceType {
     var event: PublishSubject<JourneyEvent> { get }
     
     func fetchJornenys()
-    func fetchJorney(journeyId: String) -> Observable<BaseModel<Journey>>
+    func fetchJorney(id: String)
     func fetchDefaultTags() -> Observable<BaseModel<FetchTagsResponse>>
     func createJourney(request: CreateJourneyRequest) -> Observable<BaseModel<CreateJourneyResponse>>
     func editTags(journeyId: String, request: UpdateTagsRequest) -> Observable<EmptyModel>
@@ -44,12 +45,18 @@ final class JourneyService: BaseService, JourneyServiceType {
         .disposed(by: disposeBag)
     }
     
-    func fetchJorney(journeyId: String) -> RxSwift.Observable<BaseModel<Journey>> {
-        let target = JourneyAPI.fetchJourney(journeyId: journeyId)
+    func fetchJorney(id: String) {
+        let target = JourneyAPI.fetchJourney(journeyId: id)
         
-        return APIService.request(target: target)
+        let request = APIService.request(target: target)
             .map(BaseModel<Journey>.self)
+            .map { $0.data }
             .asObservable()
+        
+        request.bind { [weak self] journey in
+            self?.event.onNext(.fetchJourney(journey))
+        }
+        .disposed(by: disposeBag)
     }
     
     func fetchDefaultTags() -> Observable<BaseModel<FetchTagsResponse>> {
