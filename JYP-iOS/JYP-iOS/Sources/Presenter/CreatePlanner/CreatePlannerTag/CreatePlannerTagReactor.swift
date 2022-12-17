@@ -103,6 +103,13 @@ final class CreatePlannerTagReactor: Reactor {
         var newState: State = state
 
         switch mutation {
+        case let .setTags(tags):
+            let soso = tags.filter { $0.orientation == .nomatter }.map { TagItem.tagCell(.init(tag: $0)) }
+            let like = tags.filter { $0.orientation == .like }.map { TagItem.tagCell(.init(tag: $0)) }
+            let dislike = tags.filter { $0.orientation == .dislike }.map { TagItem.tagCell(.init(tag: $0)) }
+            newState.sections[0].items = soso
+            newState.sections[1].items = like
+            newState.sections[2].items = dislike
         case let .insertSectionTagItem(indexPath, tags):
             newState.sections[indexPath.section].items.append(tags)
         case let .updateSectionTagItem(indexPath, tags):
@@ -124,8 +131,8 @@ final class CreatePlannerTagReactor: Reactor {
 extension CreatePlannerTagReactor {
     static func makeSections() -> [TagSectionModel] {
         let tags: [Tag] = [
-            .init(topic: "모두 찬성", orientation: .soso, users: []),
-            .init(topic: "상관없어", orientation: .soso, users: []),
+            .init(topic: "모두 찬성", orientation: .nomatter, users: []),
+            .init(topic: "상관없어", orientation: .nomatter, users: []),
             .init(topic: "고기", orientation: .like, users: []),
             .init(topic: "해산물", orientation: .like, users: []),
             .init(topic: "쇼핑", orientation: .like, users: []),
@@ -138,7 +145,7 @@ extension CreatePlannerTagReactor {
             .init(topic: "약", orientation: .dislike, users: [])
         ]
 
-        let sosoItems = tags.filter { $0.orientation == .soso }
+        let sosoItems = tags.filter { $0.orientation == .nomatter }
         let sosoSection = TagSectionModel(model: .soso(sosoItems), items: sosoItems.map { .tagCell(.init(tag: $0)) })
 
         let likeItems = tags.filter { $0.orientation == .like }

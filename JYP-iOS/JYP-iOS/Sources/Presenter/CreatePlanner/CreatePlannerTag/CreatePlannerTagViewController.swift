@@ -138,6 +138,11 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
     // MARK: - Bind Method
 
     func bind(reactor: Reactor) {
+        rx.viewDidLoad
+            .map { _ in Reactor.Action.fetchJourneyTags }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
         collectionView.rx.itemSelected
             .map { indexPath in Reactor.Action.selectTag(indexPath) }
             .bind(to: reactor.action)
