@@ -28,6 +28,7 @@ final class CreatePlannerDateReactor: Reactor {
     }
 
     struct State {
+        var journey: Journey
         var isFocusStartTextField: Bool = false
         var isFocusEndTextField: Bool = false
         var isPresent: Bool = false
@@ -43,9 +44,9 @@ final class CreatePlannerDateReactor: Reactor {
     var initialState: State
     let service: CalendarServiceProtocol
 
-    init(service: CalendarServiceProtocol) {
+    init(service: CalendarServiceProtocol, journey: Journey) {
         self.service = service
-        initialState = .init()
+        initialState = .init(journey: journey)
     }
 }
 

@@ -11,6 +11,8 @@ import RxSwift
 enum JourneyEvent {
     case fetchJourneyList([Journey])
     case create(Journey)
+    
+    case changeJourneyData(_ journey: Journey)
 }
 
 protocol JourneyServiceType {
@@ -25,10 +27,18 @@ protocol JourneyServiceType {
     func deleteJourneyUser(journeyId: String) -> Observable<EmptyModel>
     func addPikmiLike(journeyId: String, pikmiId: String) -> Observable<EmptyModel>
     func deletePikmiLike(journeyId: String, pikmiId: String) -> Observable<EmptyModel>
+    
+    /// local
+    func changeJourneyData(_ journey: Journey?)
 }
 
 final class JourneyService: BaseService, JourneyServiceType {
     let event = PublishSubject<JourneyEvent>()
+    
+    func changeJourneyData(_ journey: Journey?) {
+        guard let journey else { return }
+        self.event.onNext(.changeJourneyData(journey))
+    }
     
     func fetchJornenys() {
         let target = JourneyAPI.fetchJourneys

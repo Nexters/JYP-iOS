@@ -188,9 +188,14 @@ class CreatePlannerNameViewController: NavigationBarViewController, View {
             .distinctUntilChanged()
             .filter { $0 }
             .subscribe(onNext: { [weak self] _ in
-                let bottomSheet = SelectPlannerCoverBottomSheetViewController(reactor: .init())
-
-                self?.navigationController?.present(bottomSheet, animated: true)
+                guard let self,
+                      let journey = self.reactor?.currentState.journey
+                else { return }
+                
+                let bottomSheet = SelectPlannerCoverBottomSheetViewController(
+                    reactor: .init(journey: journey)
+                )
+                self.navigationController?.present(bottomSheet, animated: true)
             })
             .disposed(by: disposeBag)
     }

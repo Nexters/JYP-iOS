@@ -125,10 +125,13 @@ class SelectPlannerCoverBottomSheetViewController: BottomSheetViewController, Vi
     func bind(reactor: Reactor) {
         collectionView.rx.setDelegate(self).disposed(by: disposeBag)
 
-        collectionView.rx.itemSelected
-            .map { Reactor.Action.selectTheme($0) }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
+        Observable.zip(
+            collectionView.rx.itemSelected,
+            collectionView.rx.modelSelected(type(of: self.dataSource).Section.Item.self)
+        )
+        .map { Reactor.Action.selectTheme($0, $1) }
+        .bind(to: reactor.action)
+        .disposed(by: disposeBag)
 
         submitButton.rx.tap
             .map { Reactor.Action.didTapSubmitButton }
@@ -153,8 +156,10 @@ class SelectPlannerCoverBottomSheetViewController: BottomSheetViewController, Vi
             .distinctUntilChanged()
             .filter { $0 }
             .subscribe(onNext: { [weak self] _ in
-                guard let self = self else { return }
-                let calendarReactor = CreatePlannerDateReactor(service: CalendarService())
+                guard let self,
+                    let journey = self.reactor?.currentState.journey
+                else { return }
+                let calendarReactor = CreatePlannerDateReactor(service: CalendarService(), journey: journey)
                 let createPlannerDateViewController = CreatePlannerDateViewController(reactor: calendarReactor)
 
                 guard let presentingViewContoller = self.presentingViewController as? UINavigationController else { return }
