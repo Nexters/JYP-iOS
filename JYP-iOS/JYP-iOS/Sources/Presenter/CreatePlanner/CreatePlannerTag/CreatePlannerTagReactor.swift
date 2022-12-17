@@ -14,11 +14,13 @@ final class CreatePlannerTagReactor: Reactor {
     static let MAX_SELECTION_COUNT = 3
 
     enum Action {
+        case fetchJourneyTags
         case selectTag(IndexPath)
         case didTapStartButton
     }
 
     enum Mutation {
+        case setTags([Tag])
         case insertIndexPath(IndexPath)
         case removeIndexPath(IndexPath)
         case insertSectionTagItem(IndexPath, TagItem)
@@ -28,6 +30,7 @@ final class CreatePlannerTagReactor: Reactor {
     }
 
     struct State {
+        var journey: Journey
         var sections: [TagSectionModel]
         var selectedItems = Set<IndexPath>()
         var isEnabledStartButton: Bool = false
@@ -37,13 +40,19 @@ final class CreatePlannerTagReactor: Reactor {
     let initialState: State
     let provider: ServiceProviderType
 
-    init(provider: ServiceProviderType) {
+    init(provider: ServiceProviderType, journey: Journey) {
         self.provider = provider
-        initialState = State(sections: CreatePlannerTagReactor.makeSections())
+        initialState = State(
+            journey: journey,
+            sections: CreatePlannerTagReactor.makeSections()
+        )
     }
 
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
+        case .fetchJourneyTags:
+            return provider.journeyService.fetchDefaultTags()
+                .map { .setTags($0) }
         case let .selectTag(indexPath):
             let items = remakeSelectedTagItems(indexPath: indexPath)
 
@@ -77,7 +86,7 @@ final class CreatePlannerTagReactor: Reactor {
         let tagEvent = provider.tagService.event.flatMap { event -> Observable<Mutation> in
             switch event {
             case let .save(tag):
-                let section = tag.orientation.rawValue
+                let section = tag.orientation.section
                 let item = self.currentState.sections[section].items.count
                 let indexPath = IndexPath(item: item, section: section)
 

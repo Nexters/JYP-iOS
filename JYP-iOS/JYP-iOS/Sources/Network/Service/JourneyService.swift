@@ -11,35 +11,36 @@ import RxSwift
 enum JourneyEvent {
     case fetchJourneyList([Journey])
     case create(Journey)
-    
+
     case changeJourneyData(_ journey: Journey)
 }
 
 protocol JourneyServiceType {
     var event: PublishSubject<JourneyEvent> { get }
-    
+
     func fetchJornenys()
     func fetchJorney(journeyId: String) -> Observable<BaseModel<Journey>>
-    func fetchDefaultTags() -> Observable<BaseModel<FetchTagsResponse>>
+    func fetchDefaultTags() -> Observable<[Tag]>
+    func fetchJourneyTags(journeyId: String, isIncludeDefaultTags: Bool) -> Observable<[Tag]>
     func createJourney(request: CreateJourneyRequest) -> Observable<BaseModel<CreateJourneyResponse>>
     func editTags(journeyId: String, request: UpdateTagsRequest) -> Observable<EmptyModel>
     func addJourneyUser(journeyId: String, request: CreateJourneyUserRequest) -> Observable<EmptyModel>
     func deleteJourneyUser(journeyId: String) -> Observable<EmptyModel>
     func addPikmiLike(journeyId: String, pikmiId: String) -> Observable<EmptyModel>
     func deletePikmiLike(journeyId: String, pikmiId: String) -> Observable<EmptyModel>
-    
+
     /// local
     func changeJourneyData(_ journey: Journey?)
 }
 
 final class JourneyService: BaseService, JourneyServiceType {
     let event = PublishSubject<JourneyEvent>()
-    
+
     func changeJourneyData(_ journey: Journey?) {
         guard let journey else { return }
-        self.event.onNext(.changeJourneyData(journey))
+        event.onNext(.changeJourneyData(journey))
     }
-    
+
     func fetchJornenys() {
         let target = JourneyAPI.fetchJourneys
 

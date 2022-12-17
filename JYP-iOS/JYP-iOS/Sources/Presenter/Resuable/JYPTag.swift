@@ -14,14 +14,22 @@ struct JYPTagConfig {
     let backgroundColor: UIColor
 }
 
-enum JYPTagType: Int, Codable {
-    case soso = 0
-    case like = 1
-    case dislike = 2
+enum JYPTagType: String, Codable {
+    case nomatter
+    case like
+    case dislike
     
+    var section: Int {
+        switch self {
+        case .nomatter: return 0
+        case .like: return 1
+        case .dislike: return 2
+        }
+    }
+
     var title: String {
         switch self {
-        case .soso:
+        case .nomatter:
             return "상관없어요"
         case .like:
             return "좋아요"
@@ -29,10 +37,10 @@ enum JYPTagType: Int, Codable {
             return "싫어요"
         }
     }
-    
+
     var inactiveConfig: JYPTagConfig {
         switch self {
-        case .soso:
+        case .nomatter:
             return JYPTagConfig(image: JYPIOSAsset.iconDontCareUnselect.image.grayscale(), textColor: JYPIOSAsset.tagGrey200.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color)
         case .like:
             return JYPTagConfig(image: JYPIOSAsset.iconLikeUnselect.image.grayscale(), textColor: JYPIOSAsset.tagGrey200.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color)
@@ -40,10 +48,10 @@ enum JYPTagType: Int, Codable {
             return JYPTagConfig(image: JYPIOSAsset.iconHateUnselect.image.grayscale(), textColor: JYPIOSAsset.tagGrey200.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color)
         }
     }
-    
+
     var unselectedConfig: JYPTagConfig {
         switch self {
-        case .soso:
+        case .nomatter:
             return JYPTagConfig(image: JYPIOSAsset.iconDontCareUnselect.image, textColor: JYPIOSAsset.tagOrange300.color, backgroundColor: JYPIOSAsset.tagWhiteOrange100.color)
         case .like:
             return JYPTagConfig(image: JYPIOSAsset.iconLikeUnselect.image, textColor: JYPIOSAsset.subBlue300.color, backgroundColor: JYPIOSAsset.tagWhiteBlue100.color)
@@ -51,10 +59,10 @@ enum JYPTagType: Int, Codable {
             return JYPTagConfig(image: JYPIOSAsset.iconHateUnselect.image, textColor: JYPIOSAsset.tagRed300.color, backgroundColor: JYPIOSAsset.tagWhiteRed100.color)
         }
     }
-    
+
     var selectedConfig: JYPTagConfig {
         switch self {
-        case .soso:
+        case .nomatter:
             return JYPTagConfig(image: JYPIOSAsset.iconDontCareSelect.image, textColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.tagOrange200.color)
         case .like:
             return JYPTagConfig(image: JYPIOSAsset.iconLikeSelect.image, textColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.tagBlue100.color)
