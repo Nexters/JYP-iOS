@@ -14,7 +14,14 @@ class CalendarViewController: BottomSheetViewController, View {
 
     // MARK: - UI Components
 
-    private var datePicker = UIDatePicker()
+    private lazy var datePicker: UIDatePicker = {
+        let picker = UIDatePicker(frame: .zero)
+        picker.preferredDatePickerStyle = .wheels
+        picker.datePickerMode = .date
+        picker.locale = Locale(identifier: "ko-KR")
+        picker.timeZone = .autoupdatingCurrent
+        return picker
+    }()
 
     // MARK: - Initializer
 
@@ -30,15 +37,6 @@ class CalendarViewController: BottomSheetViewController, View {
     }
 
     // MARK: - Setup Methods
-
-    override func setupProperty() {
-        super.setupProperty()
-
-        datePicker.preferredDatePickerStyle = .inline
-        datePicker.datePickerMode = .date
-        datePicker.locale = Locale(identifier: "ko-KR")
-        datePicker.timeZone = .autoupdatingCurrent
-    }
 
     override func setupLayout() {
         super.setupLayout()

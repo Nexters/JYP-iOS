@@ -18,7 +18,7 @@ class TabBarViewController: UITabBarController {
         tabBar.layer.borderColor = .init(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.1)
 
         let myPlannerReactor = MyPlannerReactor()
-        let myPlannerNavigationViewController = UINavigationController(rootViewController: MyPlannerViewController(reactor: myPlannerReactor))
+        let myPlannerNavigationViewController = MyPlannerViewController(reactor: myPlannerReactor)
         let myPlannerTabBarItem = UITabBarItem(title: nil, image: JYPIOSAsset.myJourneyInactive.image.withRenderingMode(.alwaysOriginal), selectedImage: JYPIOSAsset.myJourneyActive.image.withRenderingMode(.alwaysOriginal))
         myPlannerTabBarItem.imageInsets = .init(top: 9, left: 0, bottom: -9, right: 0)
 
