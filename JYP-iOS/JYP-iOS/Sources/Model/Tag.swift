@@ -8,7 +8,7 @@
 
 import UIKit
 
-struct Tag: Codable {
+struct Tag: Codable, Equatable {
     let topic: String
     let orientation: JYPTagType
     var users: [User] = []
@@ -26,5 +26,9 @@ struct Tag: Codable {
         orientation = try container.decode(JYPTagType.self, forKey: .orientation)
         users = (try? container.decode([User].self, forKey: .users)) ?? []
         isSelected = (try? container.decode(Bool.self, forKey: .users)) ?? false
+    }
+
+    static func == (lhs: Tag, rhs: Tag) -> Bool {
+        (lhs.topic == rhs.topic) && (lhs.orientation == rhs.orientation)
     }
 }
