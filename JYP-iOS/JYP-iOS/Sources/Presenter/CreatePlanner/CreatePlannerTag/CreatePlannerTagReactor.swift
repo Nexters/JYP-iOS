@@ -135,7 +135,7 @@ final class CreatePlannerTagReactor: Reactor {
         case let .removeIndexPath(indexPath):
             newState.selectedItems.remove(indexPath)
             if case let TagItem.tagCell(tag) = state.sections[indexPath.section].items[indexPath.row],
-               let index = newState.journey.tags.firstIndex(where: { $0 == tag.currentState }){
+               let index = newState.journey.tags.firstIndex(where: { $0 == tag.currentState }) {
                 newState.journey.tags.remove(at: index)
             }
         case .activeStartButton:

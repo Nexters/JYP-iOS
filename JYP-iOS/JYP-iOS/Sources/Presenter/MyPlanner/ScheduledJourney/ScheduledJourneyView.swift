@@ -84,7 +84,7 @@ final class ScheduledJourneyView: BaseView, View {
                 if case let JourneyCardItem.journey(cellReactor) = planner {
                     let id = cellReactor.currentState.journey.id
                     let plannerViewController = PlannerViewController(
-                        reactor: PlannerReactor(journeyId: id)
+                        reactor: PlannerReactor(id: id)
                     )
 
                     parent.tabBarController?.navigationController?.pushViewController(plannerViewController, animated: true)

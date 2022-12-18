@@ -80,7 +80,8 @@ class BaseProjectFactory: ProjectFactory {
         .external(name: "KakaoSDKAuth"),
         .external(name: "KakaoSDKUser"),
         .external(name: "GoogleMaps"),
-        .external(name: "Kingfisher")
+        .external(name: "Kingfisher"),
+        .external(name: "KeychainAccess")
     ]
 
     func generateConfigurations() -> Settings {

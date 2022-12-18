@@ -190,7 +190,7 @@ class MyPlannerViewController: NavigationBarViewController, View {
             .distinctUntilChanged()
             .subscribe(onNext: { [weak self] id in
                 let plannerViewController = PlannerViewController(
-                    reactor: PlannerReactor(journeyId: id)
+                    reactor: PlannerReactor(id: id)
                 )
 
                 self?.tabBarController?.navigationController?.pushViewController(plannerViewController, animated: true)

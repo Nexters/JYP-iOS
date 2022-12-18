@@ -59,28 +59,18 @@ class JYPInviteStackView: UIStackView {
     func setupLayout() {
         arrangedSubviews.forEach { $0.removeFromSuperview() }
         
-        profiles.enumerated().forEach { index, _ in
-            if index == 0 {
-                inviteButton.snp.makeConstraints {
-                    $0.size.equalTo(44)
-                }
-                inviteButton.contentVerticalAlignment = .fill
-                inviteButton.contentHorizontalAlignment = .fill
-                inviteButton.imageEdgeInsets = UIEdgeInsets(top: 1.09, left: 1.09, bottom: 1.09, right: 1.09)
-                
-                addArrangedSubview(inviteButton)
-            } else {
-                let profile = JYPProfileImageView()
-                
-                profile.layer.borderColor = JYPIOSAsset.backgroundGrey300.color.cgColor
-                profile.image = [
-                    JYPIOSAsset.profile01.image,
-                    JYPIOSAsset.profile02.image,
-                    JYPIOSAsset.profile03.image
-                ].randomElement()
-                
-                addArrangedSubview(profile)
-            }
+        inviteButton.snp.makeConstraints {
+            $0.size.equalTo(44)
+        }
+        inviteButton.contentVerticalAlignment = .fill
+        inviteButton.contentHorizontalAlignment = .fill
+        inviteButton.imageEdgeInsets = UIEdgeInsets(top: 1.09, left: 1.09, bottom: 1.09, right: 1.09)
+        addArrangedSubview(inviteButton)
+        
+        profiles.forEach { user in
+            let profile = JYPProfileView(user: user)
+            profile.layer.borderColor = JYPIOSAsset.backgroundGrey300.color.cgColor
+            addArrangedSubview(profile)
         }
     }
 }
@@ -96,9 +86,8 @@ class JYPProfileView: BaseView {
     init(user: User) {
         super.init(frame: .zero)
         
-        // TODO: 실제 이미지 주소 변경
-//        imageView.kf.setImage(with: URL(string: user.profileImagePath))
-        imageView.image = JYPIOSAsset.profile1.image
+        imageView.kf.setImage(with: URL(string: user.profileImagePath),
+                              placeholder: JYPIOSAsset.profile1.image)
     }
     
     init(image: UIImage) {

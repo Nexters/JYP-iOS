@@ -16,6 +16,7 @@ class DiscussionReactor: Reactor {
     }
     
     enum Action {
+        case refresh
         case selectCell(IndexPath)
         case tapToggleButton
         case tapPlusButton
@@ -25,27 +26,34 @@ class DiscussionReactor: Reactor {
     }
     
     enum Mutation {
+        case setJourney(Journey)
         case setSections([DiscussionSectionModel])
         case updateIsToggleOn(Bool)
     }
     
     struct State {
+        var id: String
+        var journey: Journey?
         var sections: [DiscussionSectionModel] = []
         var isToggleOn: Bool = true
     }
     
-    let service = ServiceProvider.shared.plannerService
+    let provider = ServiceProvider.shared
     
     var initialState: State
     
-    init(state: State) {
-        initialState = state
+    init(id: String) {
+        self.initialState = State(id: id)
     }
 }
 
 extension DiscussionReactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
+        case .refresh:
+            provider.journeyService.fetchJorney(id: currentState.id)
+            return .empty()
+            
         case let .selectCell(indexPath):
             return selectCellMutation(indexPath)
             
@@ -67,23 +75,27 @@ extension DiscussionReactor {
     }
     
     func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
-        let eventMutation = service.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
+        let APIMutation = provider.journeyService.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
             switch event {
             case let .fetchJourney(journey):
-                return .just(.setSections(this.makeSections(from: journey)))
+                return .concat([.just(.setJourney(journey)),
+                                .just(.setSections(this.makeSections(from: journey)))])
                 
             default:
                 return .empty()
             }
         }
         
-        return Observable.merge(mutation, eventMutation)
+        return Observable.merge(mutation, APIMutation)
     }
     
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
         
         switch mutation {
+        case let .setJourney(journey):
+            newState.journey = journey
+            
         case let .setSections(sections):
             newState.sections = sections
             
@@ -97,7 +109,7 @@ extension DiscussionReactor {
     private func selectCellMutation(_ indexPath: IndexPath) -> Observable<Mutation> {
         switch currentState.sections[indexPath.section].items[indexPath.item] {
         case let .tag(reactor):
-            service.presentTagBottomSheet(from: makeReactor(from: reactor))
+            provider.plannerService.presentTagBottomSheet(from: makeReactor(from: reactor))
             return .empty()
             
         case .emptyTag:
@@ -112,7 +124,7 @@ extension DiscussionReactor {
     }
     
     private func tapToggleButtonMutation() -> Observable<Mutation> {
-        guard let journey = service.journey else { return .empty() }
+        guard let journey = currentState.journey else { return .empty() }
         
         let updateIsToggleOnMutation: Observable<Mutation> = .just(.updateIsToggleOn(!currentState.isToggleOn))
         var setSectionsMutation: Observable<Mutation> {
@@ -123,13 +135,13 @@ extension DiscussionReactor {
     }
     
     private func tapPlusButtonMutation() -> Observable<Mutation> {
-        service.presentPlannerSearchPlace(from: makeReactor())
+        provider.plannerService.presentPlannerSearchPlace(from: makeReactor())
         return .empty()
     }
     
     private func tapCreatePikmiCellButtonMutation(_ indexPath: IndexPath) -> Observable<Mutation> {
         guard case .createPikmi = currentState.sections[indexPath.section].items[indexPath.item] else { return .empty() }
-        service.presentPlannerSearchPlace(from: makeReactor())
+        provider.plannerService.presentPlannerSearchPlace(from: makeReactor())
         return .empty()
     }
     
@@ -175,7 +187,7 @@ extension DiscussionReactor {
     }
     
     private func makeReactor() -> PlannerSearchPlaceReactor {
-        return .init()
+        return .init(id: currentState.id)
     }
     
     private func makeReactor(from reactor: PikmiCollectionViewCellReactor) -> WebReactor {

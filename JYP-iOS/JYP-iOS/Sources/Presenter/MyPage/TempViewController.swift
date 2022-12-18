@@ -106,7 +106,7 @@ class TempViewController: BaseViewController {
             .bind { [weak self] in
                 self?.hidesBottomBarWhenPushed = true
                 
-                let plannerViewController = PlannerViewController(reactor: .init(journeyId: "1"))
+                let plannerViewController = PlannerViewController(reactor: .init(id: "1"))
                 self?.navigationController?.pushViewController(plannerViewController, animated: true)
             }
             .disposed(by: disposeBag)

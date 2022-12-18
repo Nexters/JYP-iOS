@@ -134,7 +134,7 @@ class PikmiCollectionViewCell: BaseCollectionViewCell, View {
         categoryLabel.text = reactor.currentState.pik.category.title
         titleLabel.text = reactor.currentState.pik.name
         subLabel.text = reactor.currentState.pik.address
-        likeLabel.text = String(describing: reactor.currentState.pik.likeBy?.count)
+        likeLabel.text = "\(reactor.currentState.pik.likeBy?.count ?? 0)"
         
         switch state.rank {
         case 0:

@@ -21,12 +21,15 @@ class PlannerViewController: NavigationBarViewController, View {
     let discussionButton: JYPBottomBorderButton = .init(title: "토론장")
     let journeyPlanButton: JYPBottomBorderButton = .init(title: "여행 계획")
     let menuDivider: UIView = .init()
-    lazy var discussionView: DiscussionView = .init(reactor: DiscussionReactor(state: .init()))
-    lazy var journeyPlanView: JourneyPlanView = .init(reactor: JourneyPlanReactor(state: .init()))
+    let discussionView: DiscussionView
+    let journeyPlanView: JourneyPlanView
     
     // MARK: - Initializer
     
     init(reactor: Reactor) {
+        discussionView = .init(reactor: .init(id: reactor.currentState.id))
+        journeyPlanView = .init(reactor: .init(id: reactor.currentState.id))
+        
         super.init(nibName: nil, bundle: nil)
         self.reactor = reactor
     }
@@ -43,7 +46,6 @@ class PlannerViewController: NavigationBarViewController, View {
         
         setNavigationBarBackButtonTintColor(.white)
         setNavigationBarBackgroundColor(JYPIOSAsset.backgroundGrey300.color)
-        setNavigationBarTitleText("강릉 여행기")
         setNavigationBarTitleTextColor(JYPIOSAsset.textWhite.color)
         setNavigationBarTitleFont(JYPIOSFontFamily.Pretendard.semiBold.font(size: 20))
     }
@@ -53,7 +55,7 @@ class PlannerViewController: NavigationBarViewController, View {
         
         view.backgroundColor = JYPIOSAsset.backgroundGrey300.color
         
-        dateLabel.text = "7월 18일 - 7월 20일"
+        dateLabel.text = ""
         dateLabel.font = JYPIOSFontFamily.Pretendard.medium.font(size: 16)
         dateLabel.textColor = JYPIOSAsset.textWhite.color
         
@@ -68,9 +70,9 @@ class PlannerViewController: NavigationBarViewController, View {
         headerView.cornerRound(radius: 20, direct: [.layerMinXMinYCorner, .layerMaxXMinYCorner])
         
         menuDivider.backgroundColor = .black.withAlphaComponent(0.1)
-        
-        inviteStackView.update(users: [.init(id: "", nickname: "", profileImagePath: "", personality: .FW), .init(id: "", nickname: "", profileImagePath: "", personality: .FW), .init(id: "", nickname: "", profileImagePath: "", personality: .FW), .init(id: "", nickname: "", profileImagePath: "", personality: .FW), .init(id: "", nickname: "", profileImagePath: "", personality: .FW)])
+           
         inviteButton.isHidden = true
+        inviteStackView.isHidden = true
     }
     
     override func setupHierarchy() {
@@ -134,7 +136,7 @@ class PlannerViewController: NavigationBarViewController, View {
     // MARK: - Bind Method
     
     func bind(reactor: Reactor) {
-        // Action
+        print("[D] 바인드 호출")
         
         rx.viewWillAppear
             .map { _ in .refresh }
@@ -161,7 +163,22 @@ class PlannerViewController: NavigationBarViewController, View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
-        // State
+        reactor.state
+            .compactMap(\.journey)
+            .withUnretained(self)
+            .bind { this, journey in
+                this.dateLabel.text = DateManager.doubleToDateString(format: "M월d일", double: journey.startDate) + " - " + DateManager.doubleToDateString(format: "M월d일", double: journey.endDate)
+                if journey.users.isEmpty {
+                    this.inviteButton.isHidden = false
+                    this.inviteStackView.isHidden = true
+                } else {
+                    this.inviteStackView.update(users: journey.users)
+                    this.inviteButton.isHidden = true
+                    this.inviteStackView.isHidden = false
+                }
+                this.setNavigationBarTitleText(journey.name)
+            }
+            .disposed(by: disposeBag)
         
         reactor.state
             .map(\.isShowDiscussion)
