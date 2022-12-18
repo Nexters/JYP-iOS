@@ -30,7 +30,7 @@ class TabBarViewController: UITabBarController {
         let myPageTabBarItem = UITabBarItem(title: nil, image: JYPIOSAsset.myPageInactive.image.withRenderingMode(.alwaysOriginal), selectedImage: JYPIOSAsset.myPageActive.image.withRenderingMode(.alwaysOriginal))
         myPageTabBarItem.imageInsets = .init(top: 9, left: 0, bottom: -9, right: 0)
         
-        let plannerNavigationViewController = UINavigationController(rootViewController: PlannerViewController(reactor: .init(journeyId: "1")))
+        let plannerNavigationViewController = UINavigationController(rootViewController: PlannerViewController(reactor: .init(id: "637a0da6de1b7009ce8f6af6")))
         let plannerTabBarItem = UITabBarItem(title: nil, image: JYPIOSAsset.myPageInactive.image.withRenderingMode(.alwaysOriginal), selectedImage: JYPIOSAsset.myPageInactive.image.withRenderingMode(.alwaysOriginal))
         plannerTabBarItem.imageInsets = .init(top: 9, left: 0, bottom: -9, right: 0)
 

@@ -10,35 +10,40 @@ import ReactorKit
 
 class PlannerSearchPlaceMapReactor: Reactor {
     enum Action {
-        case didTapInfoButton
-        case dismiss
+        case tapInfoButton
+        case tapAddButton
     }
     
     enum Mutation {
-        case updateWebReactor(WebReactor?)
-        case updateIsDismiss(Bool)
+        case setWebReactor(WebReactor?)
     }
     
     struct State {
+        let id: String
         let kakaoSearchPlace: KakaoSearchPlace
         var webReactor: WebReactor?
-        var isDismiss: Bool = false
     }
     
+    let provider = ServiceProvider.shared
     var initialState: State
     
-    init(state: State) {
-        initialState = state
+    init(id: String, kakaoSearchPlace: KakaoSearchPlace) {
+        self.initialState = State(id: id, kakaoSearchPlace: kakaoSearchPlace)
     }
 }
 
 extension PlannerSearchPlaceMapReactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        case .didTapInfoButton:
-            return mutateDidTapInfoButton()
-        case .dismiss:
-            return mutateDismiss()
+        case .tapInfoButton:
+            return .concat([
+                .just(.setWebReactor(WebReactor(state: .init(url: currentState.kakaoSearchPlace.placeURL)))),
+                .just(.setWebReactor(nil))
+            ])
+            
+        case .tapAddButton:
+            createPikmi()
+            return .empty()
         }
     }
     
@@ -46,25 +51,22 @@ extension PlannerSearchPlaceMapReactor {
         var newState = state
         
         switch mutation {
-        case let .updateWebReactor(reactor):
+        case let .setWebReactor(reactor):
             newState.webReactor = reactor
-        case let .updateIsDismiss(bool):
-            newState.isDismiss = bool
         }
         
         return newState
     }
     
-    private func mutateDidTapInfoButton() -> Observable<Mutation> {
-        let state = currentState
+    private func createPikmi() {
+        let id = currentState.id
+        let name = currentState.kakaoSearchPlace.placeName
+        let address = currentState.kakaoSearchPlace.addressName
+        let category = JYPCategoryType.getJYPCategoryType(categoryGroupCode: currentState.kakaoSearchPlace.categoryGroupCode)
+        let longitude = Double(currentState.kakaoSearchPlace.x) ?? 0.0
+        let latitude = Double(currentState.kakaoSearchPlace.y) ?? 0.0
+        let link = currentState.kakaoSearchPlace.placeURL
         
-        return .concat([
-            .just(.updateWebReactor(WebReactor(state: .init(url: state.kakaoSearchPlace.placeURL)))),
-            .just(.updateWebReactor(nil))
-        ])
-    }
-    
-    private func mutateDismiss() -> Observable<Mutation> {
-        return .just(.updateIsDismiss(true))
+        provider.journeyService.createPikmi(id: id, name: name, address: address, category: category, longitude: longitude, latitude: latitude, link: link)
     }
 }

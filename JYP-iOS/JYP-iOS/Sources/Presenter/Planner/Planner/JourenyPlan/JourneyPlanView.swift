@@ -173,7 +173,6 @@ extension JourneyPlanView {
         
         let section = NSCollectionLayoutSection(group: group)
         section.contentInsets = .init(top: 10, leading: 20, bottom: 12, trailing: 20)
-        
         if sectionItems.count > 1 {
             let header = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(50)), elementKind: UICollectionView.elementKindSectionHeader, alignment: .top)
             

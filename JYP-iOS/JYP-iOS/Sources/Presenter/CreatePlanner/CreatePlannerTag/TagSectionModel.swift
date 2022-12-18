@@ -27,7 +27,7 @@ extension TagSection {
     
     var type: JYPTagType {
         switch self {
-        case .soso: return .soso
+        case .soso: return .nomatter
         case .like: return .like
         case .dislike: return .dislike
         }

@@ -10,6 +10,6 @@ import Foundation
 
 struct CreatePikmiRequest: Codable {
     let name, address, category: String
-    let longitude, latitude: Int
+    let longitude, latitude: Double
     let link: String
 }

@@ -77,7 +77,7 @@ final class CreatePlannerTagReactor: Reactor {
         let tagEvent = provider.tagService.event.flatMap { event -> Observable<Mutation> in
             switch event {
             case let .save(tag):
-                let section = tag.orientation.rawValue
+                let section = tag.orientation.index
                 let item = self.currentState.sections[section].items.count
                 let indexPath = IndexPath(item: item, section: section)
 
@@ -115,8 +115,8 @@ final class CreatePlannerTagReactor: Reactor {
 extension CreatePlannerTagReactor {
     static func makeSections() -> [TagSectionModel] {
         let tags: [Tag] = [
-            .init(topic: "모두 찬성", orientation: .soso, users: []),
-            .init(topic: "상관없어", orientation: .soso, users: []),
+            .init(topic: "모두 찬성", orientation: .nomatter, users: []),
+            .init(topic: "상관없어", orientation: .nomatter, users: []),
             .init(topic: "고기", orientation: .like, users: []),
             .init(topic: "해산물", orientation: .like, users: []),
             .init(topic: "쇼핑", orientation: .like, users: []),
@@ -129,7 +129,7 @@ extension CreatePlannerTagReactor {
             .init(topic: "약", orientation: .dislike, users: [])
         ]
 
-        let sosoItems = tags.filter { $0.orientation == .soso }
+        let sosoItems = tags.filter { $0.orientation == .nomatter }
         let sosoSection = TagSectionModel(model: .soso(sosoItems), items: sosoItems.map { .tagCell(.init(tag: $0)) })
 
         let likeItems = tags.filter { $0.orientation == .like }
@@ -153,7 +153,7 @@ extension CreatePlannerTagReactor {
 
         guard case let TagItem.tagCell(reactor) = currentTag else { return .init() }
         var newTag = reactor.currentState
-        newTag.isSelected.toggle()
+        newTag.isSelected?.toggle()
 
         items.replaceSubrange(indexPath.row ... indexPath.row, with: [.tagCell(JYPTagCollectionViewCellReactor(tag: newTag))])
 

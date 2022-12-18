@@ -39,7 +39,7 @@ class JYPTagCollectionViewCell: BaseCollectionViewCell, View {
             .disposed(by: disposeBag)
         
         reactor.state
-            .map(\.isSelected)
+            .compactMap(\.isSelected)
             .bind(to: jypTag.rx.isSelected)
             .disposed(by: disposeBag)
     }
