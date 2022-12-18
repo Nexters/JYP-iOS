@@ -17,6 +17,7 @@ final class CreatePlannerTagReactor: Reactor {
         case fetchJourneyTags
         case selectTag(IndexPath)
         case didTapStartButton
+        case successCreatePlanner(String)
     }
 
     enum Mutation {
@@ -84,6 +85,9 @@ final class CreatePlannerTagReactor: Reactor {
             return provider.journeyService
                 .createJourney(journey: currentState.journey)
                 .map { .pushPlannerView($0) }
+        case let .successCreatePlanner(id):
+            provider.journeyService.didFinishCreatePlanner(id)
+            return .empty()
         }
     }
 

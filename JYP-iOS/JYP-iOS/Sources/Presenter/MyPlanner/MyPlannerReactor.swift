@@ -20,6 +20,7 @@ final class MyPlannerReactor: Reactor {
         case showScheduledJourney(Bool)
         case showPastJourney(Bool)
         case pushCreatePlannerView(Bool)
+        case pushNewPlannerView(String)
     }
 
     struct State {
@@ -28,6 +29,7 @@ final class MyPlannerReactor: Reactor {
         var isSelectedSchduledJourneyView: Bool = true
         var isSelectedPastJourneyView: Bool = false
         var isPushCreatePlannerView: Bool = false
+        var didCreatedPlannerID: String?
     }
 
     private let provider = ServiceProvider.shared.journeyService
@@ -58,6 +60,18 @@ final class MyPlannerReactor: Reactor {
         }
     }
 
+    func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
+        let newEvent = provider.event.flatMap { event -> Observable<Mutation> in
+            switch event {
+            case let .didFinishCreatePlanner(id):
+                return .just(.pushNewPlannerView(id))
+            default: return .empty()
+            }
+        }
+
+        return Observable.merge(mutation, newEvent)
+    }
+
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
 
@@ -68,6 +82,8 @@ final class MyPlannerReactor: Reactor {
             newState.isSelectedPastJourneyView = isSelected
         case let .pushCreatePlannerView(isPush):
             newState.isPushCreatePlannerView = isPush
+        case let .pushNewPlannerView(id):
+            newState.didCreatedPlannerID = id
         }
 
         return newState

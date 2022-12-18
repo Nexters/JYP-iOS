@@ -168,14 +168,8 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
             .compactMap(\.createdPlannerID)
             .distinctUntilChanged()
             .subscribe(onNext: { [weak self] id in
-                let plannerViewController = PlannerViewController(
-                    reactor: PlannerReactor(journeyId: id)
-                )
-
-                self?.navigationController?.pushViewController(
-                    plannerViewController,
-                    animated: true
-                )
+                self?.navigationController?.popToRootViewController(animated: true)
+                reactor.action.onNext(.successCreatePlanner(id))
             })
             .disposed(by: disposeBag)
     }

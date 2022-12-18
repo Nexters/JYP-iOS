@@ -12,7 +12,9 @@ enum JourneyEvent {
     case fetchJourneyList([Journey])
     case create(Journey)
 
+    /// local
     case changeJourneyData(_ journey: Journey)
+    case didFinishCreatePlanner(_ id: String)
 }
 
 protocol JourneyServiceType {
@@ -31,6 +33,7 @@ protocol JourneyServiceType {
 
     /// local
     func changeJourneyData(_ journey: Journey?)
+    func didFinishCreatePlanner(_ id: String)
 }
 
 final class JourneyService: BaseService, JourneyServiceType {
@@ -39,6 +42,10 @@ final class JourneyService: BaseService, JourneyServiceType {
     func changeJourneyData(_ journey: Journey?) {
         guard let journey else { return }
         event.onNext(.changeJourneyData(journey))
+    }
+
+    func didFinishCreatePlanner(_ id: String) {
+        event.onNext(.didFinishCreatePlanner(id))
     }
 
     func fetchJornenys() {

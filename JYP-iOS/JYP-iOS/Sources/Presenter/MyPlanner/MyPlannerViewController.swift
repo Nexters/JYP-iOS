@@ -184,5 +184,17 @@ class MyPlannerViewController: NavigationBarViewController, View {
                 )
             })
             .disposed(by: disposeBag)
+
+        reactor.state
+            .compactMap(\.didCreatedPlannerID)
+            .distinctUntilChanged()
+            .subscribe(onNext: { [weak self] id in
+                let plannerViewController = PlannerViewController(
+                    reactor: PlannerReactor(journeyId: id)
+                )
+
+                self?.tabBarController?.navigationController?.pushViewController(plannerViewController, animated: true)
+            })
+            .disposed(by: disposeBag)
     }
 }
