@@ -80,9 +80,7 @@ final class JourneyService: BaseService, JourneyServiceType {
 
         return APIService.request(target: target)
             .map(BaseModel<FetchTagsResponse>.self)
-            .debug()
             .map(\.data.tags)
-            .debug()
             .asObservable()
     }
 
