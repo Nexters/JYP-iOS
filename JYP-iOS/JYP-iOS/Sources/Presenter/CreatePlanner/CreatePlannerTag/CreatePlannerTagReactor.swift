@@ -153,7 +153,7 @@ extension CreatePlannerTagReactor {
 
         guard case let TagItem.tagCell(reactor) = currentTag else { return .init() }
         var newTag = reactor.currentState
-        newTag.isSelected?.toggle()
+        newTag.isSelected.toggle()
 
         items.replaceSubrange(indexPath.row ... indexPath.row, with: [.tagCell(JYPTagCollectionViewCellReactor(tag: newTag))])
 
