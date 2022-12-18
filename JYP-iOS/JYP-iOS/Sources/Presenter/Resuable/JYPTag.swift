@@ -19,17 +19,14 @@ enum JYPTagType: String, Codable {
     case like
     case dislike
     
-    var index: Int {
+    var section: Int {
         switch self {
-        case .nomatter:
-            return 0
-        case .like:
-            return 1
-        case .dislike:
-            return 2
+        case .nomatter: return 0
+        case .like: return 1
+        case .dislike: return 2
         }
     }
-    
+
     var title: String {
         switch self {
         case .nomatter:
@@ -40,7 +37,7 @@ enum JYPTagType: String, Codable {
             return "싫어요"
         }
     }
-    
+
     var inactiveConfig: JYPTagConfig {
         switch self {
         case .nomatter:
@@ -51,7 +48,7 @@ enum JYPTagType: String, Codable {
             return JYPTagConfig(image: JYPIOSAsset.iconHateUnselect.image.grayscale(), textColor: JYPIOSAsset.tagGrey200.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color)
         }
     }
-    
+
     var unselectedConfig: JYPTagConfig {
         switch self {
         case .nomatter:
@@ -62,7 +59,7 @@ enum JYPTagType: String, Codable {
             return JYPTagConfig(image: JYPIOSAsset.iconHateUnselect.image, textColor: JYPIOSAsset.tagRed300.color, backgroundColor: JYPIOSAsset.tagWhiteRed100.color)
         }
     }
-    
+
     var selectedConfig: JYPTagConfig {
         switch self {
         case .nomatter:
@@ -86,7 +83,7 @@ class JYPTag: BaseView {
             }
         }
     }
-    
+
     var isSelected: Bool {
         didSet {
             if isSelected {
@@ -100,7 +97,7 @@ class JYPTag: BaseView {
             }
         }
     }
-    
+
     var isInactive: Bool {
         didSet {
             if isInactive {
@@ -112,42 +109,43 @@ class JYPTag: BaseView {
             }
         }
     }
-    
+
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("not supported")
     }
-    
+
     init() {
         isSelected = false
         isInactive = false
         super.init(frame: .zero)
     }
-    
+
     let imageView = UIImageView()
     let titleLabel = UILabel()
-    
+
     override func setupProperty() {
         super.setupProperty()
-        
+
         cornerRound(radius: 15)
-        
+
         titleLabel.font = JYPIOSFontFamily.Pretendard.medium.font(size: 16)
     }
-    
+
     override func setupHierarchy() {
         super.setupHierarchy()
-        
+
         addSubviews([imageView, titleLabel])
     }
-    
+
     override func setupLayout() {
         super.setupLayout()
-        
+
         imageView.snp.makeConstraints {
             $0.top.leading.bottom.equalToSuperview().inset(4)
             $0.width.height.equalTo(24)
         }
-        
+
         titleLabel.snp.makeConstraints {
             $0.leading.equalTo(imageView.snp.trailing).offset(9)
             $0.trailing.equalToSuperview().inset(6)

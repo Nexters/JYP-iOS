@@ -142,8 +142,8 @@ class CreatePlannerNameViewController: NavigationBarViewController, View {
     // MARK: - Bind
 
     func bind(reactor: Reactor) {
-        rx.viewDidLoad
-            .subscribe(onNext: { [weak self] in
+        rx.viewDidAppear
+            .subscribe(onNext: { [weak self] _ in
                 self?.textField.textField.becomeFirstResponder()
             })
             .disposed(by: disposeBag)
@@ -188,17 +188,15 @@ class CreatePlannerNameViewController: NavigationBarViewController, View {
             .distinctUntilChanged()
             .filter { $0 }
             .subscribe(onNext: { [weak self] _ in
-                let bottomSheet = SelectPlannerCoverBottomSheetViewController(reactor: .init())
-
-                self?.navigationController?.present(bottomSheet, animated: true)
+                guard let self,
+                      let journey = self.reactor?.currentState.journey
+                else { return }
+                
+                let bottomSheet = SelectPlannerCoverBottomSheetViewController(
+                    reactor: .init(journey: journey)
+                )
+                self.navigationController?.present(bottomSheet, animated: true)
             })
             .disposed(by: disposeBag)
-    }
-
-    // MARK: - Objc Method
-
-    @objc
-    func didTapDoneButton(_: UIBarButtonItem) {
-        textField.resignFirstResponder()
     }
 }

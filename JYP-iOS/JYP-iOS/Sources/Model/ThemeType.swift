@@ -9,11 +9,11 @@
 import UIKit
 
 enum ThemeType: String, CaseIterable, Codable {
-    case `default` = "https://journeypiki.duckdns.org/static/profile_me.png"
-    case sea = "sea.png"
-    case mountain = "mountain.png"
-    case culture = "culture.png"
-    case city = "city.png"
+    case `default` = "https://journeypiki.duckdns.org/static/theme_basic.png"
+    case sea = "https://journeypiki.duckdns.org/static/theme_beach.png"
+    case mountain = "https://journeypiki.duckdns.org/static/theme_mountain.png"
+    case culture = "https://journeypiki.duckdns.org/static/theme_historic_spot.png"
+    case city = "https://journeypiki.duckdns.org/static/theme_city.png"
 
     var image: UIImage {
         switch self {

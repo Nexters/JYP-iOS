@@ -13,6 +13,7 @@ enum JourneyAPI {
     case fetchJourneys
     case fetchJourney(journeyId: String)
     case fetchDefaultTags
+    case fetchJourneyTags(journeyId: String, isIncludeDefault: Bool)
     case createJourney(request: CreateJourneyRequest)
     case fetchTags(journeyId: String)
     case updateTags(journeyId: String, request: UpdateTagsRequest)
@@ -43,6 +44,9 @@ extension JourneyAPI: BaseAPI {
         case let .fetchJourney(id):
             return "/\(id)"
             
+        case let .fetchJourneyTags(id, _):
+            return "/\(id)\tags"
+            
         case let .fetchTags(id):
             return "/\(id)/tags"
             
@@ -71,7 +75,7 @@ extension JourneyAPI: BaseAPI {
 
     var method: Moya.Method {
         switch self {
-        case .fetchJourneys, .fetchDefaultTags, .fetchJourney, .fetchTags:
+        case .fetchJourneys, .fetchDefaultTags, .fetchJourneyTags, .fetchJourney, .fetchTags:
             return .get
             
         case .createJourney, .createPikmi, .createJourneyUser, .createPikmiLike, .updateTags, .updatePikis, .deleteJourneyUser, .deletePikmiLike:
@@ -83,6 +87,12 @@ extension JourneyAPI: BaseAPI {
         switch self {
         case .fetchJourneys, .fetchDefaultTags, .fetchJourney, .fetchTags, .deleteJourneyUser, .createPikmiLike, .deletePikmiLike:
             return .requestPlain
+            
+        case let .fetchJourneyTags(_, isIncludeDefault):
+            return .requestParameters(
+                parameters: ["isIncludeDefaults" : isIncludeDefault],
+                encoding: URLEncoding.queryString
+            )
             
         case let .createJourney(request):
             return .requestJSONEncodable(request)

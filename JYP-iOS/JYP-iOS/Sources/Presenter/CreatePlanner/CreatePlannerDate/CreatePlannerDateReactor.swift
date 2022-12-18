@@ -28,6 +28,7 @@ final class CreatePlannerDateReactor: Reactor {
     }
 
     struct State {
+        var journey: Journey
         var isFocusStartTextField: Bool = false
         var isFocusEndTextField: Bool = false
         var isPresent: Bool = false
@@ -43,9 +44,9 @@ final class CreatePlannerDateReactor: Reactor {
     var initialState: State
     let service: CalendarServiceProtocol
 
-    init(service: CalendarServiceProtocol) {
+    init(service: CalendarServiceProtocol, journey: Journey) {
         self.service = service
-        initialState = .init()
+        initialState = .init(journey: journey)
     }
 }
 
@@ -102,10 +103,12 @@ extension CreatePlannerDateReactor {
         case let .updateStartDate(date):
             newState.isFocusStartTextField = false
             newState.startDate = DateManager.dateToString(date: date)
+            newState.journey.startDate = Double(date.timeIntervalSince1970)
         case let .updateEndDate(date):
             newState.isFocusEndTextField = false
             newState.isHiddenSubmitButton = false
             newState.endDate = DateManager.dateToString(date: date)
+            newState.journey.endDate = Double(date.timeIntervalSince1970)
         case let .presentCalendar(flag):
             newState.isPresent = flag
         case let .setJourneyDays(days):
@@ -132,6 +135,6 @@ extension CreatePlannerDateReactor {
     }
 
     func makeCreateTagReactor() -> CreatePlannerTagReactor {
-        .init(provider: ServiceProvider.shared)
+        .init(provider: ServiceProvider.shared, journey: currentState.journey)
     }
 }

@@ -11,7 +11,7 @@ import RxDataSources
 typealias TagSectionModel = SectionModel<TagSection, TagItem>
 
 enum TagSection: Codable {
-    case soso([Tag])
+    case nomatter([Tag])
     case like([Tag])
     case dislike([Tag])
 }
@@ -19,7 +19,7 @@ enum TagSection: Codable {
 extension TagSection {
     var title: String {
         switch self {
-        case .soso: return "상관없어요 태그"
+        case .nomatter: return "상관없어요 태그"
         case .like: return "좋아요 태그"
         case .dislike: return "싫어요 태그"
         }
@@ -27,7 +27,7 @@ extension TagSection {
     
     var type: JYPTagType {
         switch self {
-        case .soso: return .nomatter
+        case .nomatter: return .nomatter
         case .like: return .like
         case .dislike: return .dislike
         }
@@ -35,15 +35,15 @@ extension TagSection {
 
     var isHiddenRightButton: Bool {
         switch self {
-        case .soso: return true
+        case .nomatter: return true
         case .like, .dislike: return false
         }
     }
 
     init(original: TagSection, tags: [Tag]) {
         switch original {
-        case .soso:
-            self = .soso(tags)
+        case .nomatter:
+            self = .nomatter(tags)
         case .like:
             self = .like(tags)
         case .dislike:

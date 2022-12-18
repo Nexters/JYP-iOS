@@ -24,8 +24,8 @@ class MyPlannerViewController: NavigationBarViewController, View {
 
     let menuDivider: UIView = .init()
 
-    lazy var scheduledJourneyView: ScheduledJourneyView = .init(reactor: ScheduledJourneyReactor())
-    lazy var pastJourneyView: PastJourneyView = .init(reactor: PastJourneyReactor())
+    lazy var scheduledJourneyView: ScheduledJourneyView = .init(reactor: ScheduledJourneyReactor(parent: self))
+    lazy var pastJourneyView: PastJourneyView = .init(reactor: PastJourneyReactor(parent: self))
 
     // MARK: - Initializer
 
@@ -182,6 +182,18 @@ class MyPlannerViewController: NavigationBarViewController, View {
                     selectionPlannerJoinBottomSheet,
                     animated: true
                 )
+            })
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .compactMap(\.didCreatedPlannerID)
+            .distinctUntilChanged()
+            .subscribe(onNext: { [weak self] id in
+                let plannerViewController = PlannerViewController(
+                    reactor: PlannerReactor(id: id)
+                )
+
+                self?.tabBarController?.navigationController?.pushViewController(plannerViewController, animated: true)
             })
             .disposed(by: disposeBag)
     }

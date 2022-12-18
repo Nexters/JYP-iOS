@@ -44,9 +44,18 @@ final class CreatePlannerNameReactor: Reactor {
         var guideText: String = PlannerNameTextFieldInputState.valid.guideText
         var textFieldText: String = ""
         var isPresentCoverBottomSheet: Bool = false
+        var journey: Journey = .init(
+            id: "",
+            name: "",
+            startDate: 0,
+            endDate: 0,
+            themePath: .default,
+            users: []
+        )
     }
 
     var initialState: State = .init()
+    private let provider = ServiceProvider.shared.journeyService
 
     // MARK: - Mutate
 
@@ -80,6 +89,7 @@ final class CreatePlannerNameReactor: Reactor {
             newState.guideText = validation.guideText
         case let .changeTextField(text):
             newState.textFieldText = text
+            newState.journey.name = text
         case let .presentCoverImageBottomSheet(flag):
             newState.isPresentCoverBottomSheet = flag
         }

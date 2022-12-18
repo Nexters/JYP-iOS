@@ -7,6 +7,7 @@
 //
 
 import ReactorKit
+import UIKit
 
 final class ScheduledJourneyReactor: Reactor {
     enum Action {}
@@ -16,18 +17,19 @@ final class ScheduledJourneyReactor: Reactor {
 
     struct State {
         var sections: [ScheduledJourneySectionModel]
+        weak var parentView: UIViewController?
     }
 
     var initialState: State
     private let provider = ServiceProvider.shared.journeyService
 
-    init() {
+    init(parent: UIViewController?) {
         let section = ScheduledJourneySectionModel(
             model: (),
             items: []
         )
 
-        initialState = .init(sections: [section])
+        initialState = .init(sections: [section], parentView: parent)
     }
 
     func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
@@ -36,7 +38,7 @@ final class ScheduledJourneyReactor: Reactor {
             case let .fetchJourneyList(response):
                 guard !response.isEmpty
                 else { return .just(.updateSectionItem([JourneyCardItem.empty])) }
-                
+
                 let currentTime = DateManager.currentTimeInterval
                 let items = response
                     .filter { $0.startDate > currentTime }
