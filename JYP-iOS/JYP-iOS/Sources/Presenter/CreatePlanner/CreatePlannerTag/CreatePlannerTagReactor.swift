@@ -21,13 +21,13 @@ final class CreatePlannerTagReactor: Reactor {
 
     enum Mutation {
         case setTags([Tag])
-        case updateSections
+        case updateAllSections
         case insertIndexPath(IndexPath)
         case removeIndexPath(IndexPath)
         case insertSectionTagItem(IndexPath, TagItem)
         case updateSectionTagItem(IndexPath, [TagItem])
         case activeStartButton
-        case pushPlannerView(Bool)
+        case pushPlannerView(String)
     }
 
     struct State {
@@ -38,7 +38,7 @@ final class CreatePlannerTagReactor: Reactor {
         var dislikeItems: [TagItem] = []
         var selectedItems = Set<IndexPath>()
         var isEnabledStartButton: Bool = false
-        var isPushPlannerView: Bool = false
+        var createdPlannerID: String?
     }
 
     let initialState: State
@@ -57,7 +57,7 @@ final class CreatePlannerTagReactor: Reactor {
         case .fetchJourneyTags:
             return .concat([
                 provider.journeyService.fetchDefaultTags().map { .setTags($0) },
-                .just(.updateSections)
+                .just(.updateAllSections)
             ])
         case let .selectTag(indexPath):
             let items = remakeSelectedTagItems(indexPath: indexPath)
@@ -81,10 +81,9 @@ final class CreatePlannerTagReactor: Reactor {
                 )
             }
         case .didTapStartButton:
-            return .concat(
-                .just(.pushPlannerView(true)),
-                .just(.pushPlannerView(false))
-            )
+            return provider.journeyService
+                .createJourney(journey: currentState.journey)
+                .map { .pushPlannerView($0) }
         }
     }
 
@@ -116,7 +115,7 @@ final class CreatePlannerTagReactor: Reactor {
                 .map { TagItem.tagCell(.init(tag: $0)) }
             newState.dislikeItems = tags.filter { $0.orientation == .dislike }
                 .map { TagItem.tagCell(.init(tag: $0)) }
-        case .updateSections:
+        case .updateAllSections:
             newState.sections[JYPTagType.nomatter.section].items = newState.nomatterItems
             newState.sections[JYPTagType.like.section].items = newState.likeItems
             newState.sections[JYPTagType.dislike.section].items = newState.dislikeItems
@@ -126,12 +125,19 @@ final class CreatePlannerTagReactor: Reactor {
             newState.sections[indexPath.section].items = tags
         case let .insertIndexPath(indexPath):
             newState.selectedItems.insert(indexPath)
+            if case let TagItem.tagCell(tag) = state.sections[indexPath.section].items[indexPath.row] {
+                newState.journey.tags.append(tag.currentState)
+            }
         case let .removeIndexPath(indexPath):
             newState.selectedItems.remove(indexPath)
+            if case let TagItem.tagCell(tag) = state.sections[indexPath.section].items[indexPath.row],
+               let index = newState.journey.tags.firstIndex(where: { $0 == tag.currentState }){
+                newState.journey.tags.remove(at: index)
+            }
         case .activeStartButton:
             newState.isEnabledStartButton = !currentState.selectedItems.isEmpty
-        case let .pushPlannerView(isPush):
-            newState.isPushPlannerView = isPush
+        case let .pushPlannerView(id):
+            newState.createdPlannerID = id
         }
 
         return newState
@@ -156,13 +162,22 @@ extension CreatePlannerTagReactor {
         ]
 
         let nomatterItems = tags.filter { $0.orientation == .nomatter }
-        let nomatterSection = TagSectionModel(model: .nomatter(nomatterItems), items: nomatterItems.map { .tagCell(.init(tag: $0)) })
+        let nomatterSection = TagSectionModel(
+            model: .nomatter(nomatterItems),
+            items: nomatterItems.map { .tagCell(.init(tag: $0)) }
+        )
 
         let likeItems = tags.filter { $0.orientation == .like }
-        let likeSection = TagSectionModel(model: .like(likeItems), items: tags.filter { $0.orientation == .like }.map { .tagCell(.init(tag: $0)) })
+        let likeSection = TagSectionModel(
+            model: .like(likeItems),
+            items: tags.filter { $0.orientation == .like }.map { .tagCell(.init(tag: $0)) }
+        )
 
         let dislikeItems = tags.filter { $0.orientation == .dislike }
-        let dislikeSection = TagSectionModel(model: .dislike(dislikeItems), items: dislikeItems.map { .tagCell(.init(tag: $0)) })
+        let dislikeSection = TagSectionModel(
+            model: .dislike(dislikeItems),
+            items: dislikeItems.map { .tagCell(.init(tag: $0)) }
+        )
 
         return [nomatterSection, likeSection, dislikeSection]
     }

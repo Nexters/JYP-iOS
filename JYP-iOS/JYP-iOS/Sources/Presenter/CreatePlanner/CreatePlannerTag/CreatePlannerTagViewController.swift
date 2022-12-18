@@ -142,7 +142,7 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
             .map { _ in Reactor.Action.fetchJourneyTags }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
-        
+
         collectionView.rx.itemSelected
             .map { indexPath in Reactor.Action.selectTag(indexPath) }
             .bind(to: reactor.action)
@@ -165,12 +165,11 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
             .disposed(by: disposeBag)
 
         reactor.state
-            .map(\.isPushPlannerView)
+            .compactMap(\.createdPlannerID)
             .distinctUntilChanged()
-            .filter { $0 }
-            .subscribe(onNext: { [weak self] _ in
+            .subscribe(onNext: { [weak self] id in
                 let plannerViewController = PlannerViewController(
-                    reactor: PlannerReactor(journeyId: "1")
+                    reactor: PlannerReactor(journeyId: id)
                 )
 
                 self?.navigationController?.pushViewController(

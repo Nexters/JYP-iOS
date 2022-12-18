@@ -22,7 +22,7 @@ protocol JourneyServiceType {
     func fetchJorney(journeyId: String) -> Observable<BaseModel<Journey>>
     func fetchDefaultTags() -> Observable<[Tag]>
     func fetchJourneyTags(journeyId: String, isIncludeDefaultTags: Bool) -> Observable<[Tag]>
-    func createJourney(request: CreateJourneyRequest) -> Observable<BaseModel<CreateJourneyResponse>>
+    func createJourney(journey: Journey) -> Observable<String>
     func editTags(journeyId: String, request: UpdateTagsRequest) -> Observable<EmptyModel>
     func addJourneyUser(journeyId: String, request: CreateJourneyUserRequest) -> Observable<EmptyModel>
     func deleteJourneyUser(journeyId: String) -> Observable<EmptyModel>
@@ -84,11 +84,19 @@ final class JourneyService: BaseService, JourneyServiceType {
             .asObservable()
     }
 
-    func createJourney(request: CreateJourneyRequest) -> Observable<BaseModel<CreateJourneyResponse>> {
-        let target = JourneyAPI.createJourney(request: request)
+    func createJourney(journey: Journey) -> Observable<String> {
+        let createJourneyRequest = CreateJourneyRequest(
+            name: journey.name,
+            startDate: journey.startDate,
+            endDate: journey.endDate,
+            themePath: journey.themePath.rawValue,
+            tags: journey.tags
+        )
+        let target = JourneyAPI.createJourney(request: createJourneyRequest)
 
         return APIService.request(target: target)
             .map(BaseModel<CreateJourneyResponse>.self)
+            .map(\.data.id)
             .asObservable()
     }
 
