@@ -76,6 +76,23 @@ final class PastJourneyView: BaseView, View {
     func bind(reactor: PastJourneyReactor) {
         collectionView.rx.setDelegate(self).disposed(by: disposeBag)
 
+        collectionView.rx.modelSelected(type(of: dataSource).Section.Item.self)
+            .subscribe(onNext: { [weak self] planner in
+                guard let self,
+                      let parent = self.reactor?.currentState.parentView
+                else { return }
+
+                if case let JourneyCardItem.journey(cellReactor) = planner {
+                    let id = cellReactor.currentState.journey.id
+                    let plannerViewController = PlannerViewController(
+                        reactor: PlannerReactor(journeyId: id)
+                    )
+
+                    parent.tabBarController?.navigationController?.pushViewController(plannerViewController, animated: true)
+                }
+            })
+            .disposed(by: disposeBag)
+
         reactor.state
             .asObservable()
             .map(\.sections)

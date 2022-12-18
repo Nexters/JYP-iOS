@@ -187,7 +187,6 @@ class JourneyCardCollectionViewCell: BaseCollectionViewCell, View {
         titleLabel.snp.updateConstraints { make in
             make.top.equalTo(daysTag.snp.bottom).offset(0)
         }
-
     }
 }
 

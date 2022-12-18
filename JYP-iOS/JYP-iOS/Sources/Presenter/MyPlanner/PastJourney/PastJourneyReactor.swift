@@ -7,6 +7,7 @@
 //
 
 import ReactorKit
+import UIKit
 
 final class PastJourneyReactor: Reactor {
     enum Action {}
@@ -16,18 +17,19 @@ final class PastJourneyReactor: Reactor {
 
     struct State {
         var sections: [PastJourneySectionModel]
+        weak var parentView: UIViewController?
     }
 
     var initialState: State
     private let provider = ServiceProvider.shared.journeyService
 
-    init() {
+    init(parent: UIViewController?) {
         let section = PastJourneySectionModel(
             model: (),
             items: []
         )
 
-        initialState = .init(sections: [section])
+        initialState = .init(sections: [section], parentView: parent)
     }
 
     func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {

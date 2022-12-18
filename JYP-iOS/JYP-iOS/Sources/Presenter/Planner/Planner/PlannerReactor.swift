@@ -107,7 +107,7 @@ class PlannerReactor: Reactor {
     }
     
     private func mutateRefresh() -> Observable<Mutation> {
-        return provider.journeyService.fetchJorney(journeyId: "0")
+        return provider.journeyService.fetchJorney(journeyId: currentState.journeyId)
             .withUnretained(self)
             .map { this, response in
                 this.provider.plannerService.updateJourney(to: response.data)
