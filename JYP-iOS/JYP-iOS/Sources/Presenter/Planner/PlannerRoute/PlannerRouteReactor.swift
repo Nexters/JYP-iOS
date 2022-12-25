@@ -14,6 +14,7 @@ class PlannerRouteReactor: Reactor {
         case refresh
         case tapRouteCell(IndexPath)
         case tapPikmiRouteCell(IndexPath)
+        case tapDoneButton
     }
     enum Mutation {
         case setRouteSections([RouteSectionModel])
@@ -22,16 +23,18 @@ class PlannerRouteReactor: Reactor {
         case updatePikmiRouteSectionItem(IndexPath, PikmiRouteSectionModel.Item)
         case updateRouteSectionItem(IndexPath, RouteSectionModel.Item)
         case appendRouteSectionItem(IndexPath, RouteSectionModel.Item)
+        case setIsDone(Bool)
     }
     
     struct State {
+        let id: String
         let order: Int
         let date: Date
         let pikis: [Pik]
         let pikmis: [Pik]
-        
         var routeSections: [RouteSectionModel] = []
         var pikmiRouteSections: [PikmiRouteSectionModel] = []
+        var isDone: Bool = false
     }
     
     let provider = ServiceProvider.shared
@@ -50,14 +53,41 @@ extension PlannerRouteReactor {
                 .just(.setRouteSections(makeSections(pikis: currentState.pikis))),
                 .just(.setPikmiRouteSections(makeSections(pikmis: currentState.pikmis)))
             ])
+            
         case let .tapRouteCell(indexPath):
             return .just(.deleteRouteSectionItem(indexPath))
+            
         case let .tapPikmiRouteCell(indexPath):
             guard case let .pikmiRoute(reactor) = currentState.pikmiRouteSections[indexPath.section].items[indexPath.row] else { return .empty() }
             let item = RouteSectionModel.Item.route(.init(state: .init(pik: reactor.currentState.pik)))
             
             return .just(.appendRouteSectionItem(indexPath, item))
+            
+        case .tapDoneButton:
+            guard let sections = currentState.routeSections.first else { return .empty() }
+            var pikis: [Pik] = []
+            sections.items.forEach { (item) in
+                if case let .route(reactor) = item {
+                    pikis.append(reactor.currentState.pik)
+                }
+            }
+            provider.journeyService.updatePikis(journeyId: currentState.id, request: .init(index: currentState.order, pikis: pikis))
+            return .empty()
         }
+    }
+    
+    func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
+        let APIMutation = provider.journeyService.event.withUnretained(self).flatMap { (_, event) -> Observable<Mutation> in
+            switch event {
+            case .updatePikis:
+                return .concat([.just(.setIsDone(true)), .just(.setIsDone(false))])
+                
+            default:
+                return .empty()
+            }
+        }
+
+        return Observable.merge(mutation, APIMutation)
     }
     
     func reduce(state: State, mutation: Mutation) -> State {
@@ -66,16 +96,24 @@ extension PlannerRouteReactor {
         switch mutation {
         case let .setRouteSections(sections):
             newState.routeSections = sections
+            
         case let .deleteRouteSectionItem(indexPath):
             newState.routeSections[indexPath.section].items.remove(at: indexPath.row)
+            
         case let .setPikmiRouteSections(sections):
             newState.pikmiRouteSections = sections
+            
         case let .updatePikmiRouteSectionItem(indexPath, item):
             newState.pikmiRouteSections[indexPath.section].items[indexPath.row] = item
+            
         case let .updateRouteSectionItem(indexPath, item):
             newState.routeSections[indexPath.section].items[indexPath.row] = item
+            
         case let .appendRouteSectionItem(indexPath, item):
             newState.routeSections[indexPath.section].items.append(item)
+            
+        case let .setIsDone(bool):
+            newState.isDone = bool
         }
         
         return newState
@@ -83,6 +121,7 @@ extension PlannerRouteReactor {
     
     private func makeSections(pikis: [Pik]) -> [RouteSectionModel] {
         if pikis.isEmpty {
+//            return []
             return [RouteSectionModel.init(model: .route([RouteItem.route(.init(state: .init(pik: Pik(id: "", name: "", address: "", category: .etc, likeBy: nil, longitude: 0.0, latitude: 0.0, link: ""))))]), items: [])]
         }
         

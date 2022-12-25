@@ -111,10 +111,10 @@ extension JourneyAPI: BaseAPI {
         }
     }
 
-//    var headers: [String: String]? {
-//        [
-//            "jyp-jwt-master-key": Environment.jwtKey,
-//            "jyp-override-id": "2"
-//        ]
-//    }
+    var headers: [String: String]? {
+        [
+            "jyp-jwt-master-key": Environment.jwtKey,
+            "jyp-override-id": "2"
+        ]
+    }
 }

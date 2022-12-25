@@ -13,6 +13,7 @@ enum JourneyEvent {
     case fetchJourney(Journey)
     case create(Journey)
     case createPikmi(id: String)
+    case updatePikis(ids: [String])
 
     /// local
     case changeJourneyData(_ journey: Journey)
@@ -28,6 +29,7 @@ protocol JourneyServiceType {
     func fetchJourneyTags(journeyId: String, isIncludeDefaultTags: Bool) -> Observable<[Tag]>
     func createJourney(journey: Journey) -> Observable<String>
     func createPikmi(id: String, name: String, address: String, category: JYPCategoryType, longitude: Double, latitude: Double, link: String)
+    func updatePikis(journeyId: String, request: UpdatePikisRequest)
     func editTags(journeyId: String, request: UpdateTagsRequest) -> Observable<EmptyModel>
     func addJourneyUser(journeyId: String, request: CreateJourneyUserRequest) -> Observable<EmptyModel>
     func deleteJourneyUser(journeyId: String) -> Observable<EmptyModel>
@@ -126,6 +128,20 @@ final class JourneyService: BaseService, JourneyServiceType {
 
         request.bind { [weak self] id in
             self?.event.onNext(.createPikmi(id: id))
+        }
+        .disposed(by: disposeBag)
+    }
+    
+    func updatePikis(journeyId: String, request: UpdatePikisRequest) {
+        let target = JourneyAPI.updatePikis(journeyId: journeyId, request: request)
+        
+        let request = APIService.request(target: target)
+            .map(BaseModel<UpdatePikisResponse>.self)
+            .map(\.data.ids)
+            .asObservable()
+        
+        request.bind { [weak self] ids in
+            self?.event.onNext(.updatePikis(ids: ids))
         }
         .disposed(by: disposeBag)
     }

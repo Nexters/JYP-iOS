@@ -81,14 +81,14 @@ extension JourneyPlanReactor {
     private func tapEditButtonMutation(_ indexPath: IndexPath) -> Observable<Mutation> {
         guard let journey = currentState.journey else { return .empty() }
         guard case let .plan(reactor) = currentState.sections[indexPath.section].items[indexPath.item] else { return .empty() }
-        provider.plannerService.presentPlannerRoute(from: makeReactor(from: reactor, pikis: journey.pikidays[indexPath.section].pikis, pikmis: journey.pikmis))
+        provider.plannerService.presentPlannerRoute(from: makeReactor(from: reactor, pikis: journey.pikidays[indexPath.section - 1].pikis, pikmis: journey.pikmis))
         return .empty()
     }
     
     private func tapPlusButtonMutation(_ indexPath: IndexPath) -> Observable<Mutation> {
         guard let journey = currentState.journey else { return .empty() }
         guard case let .emptyPlan(reactor) = currentState.sections[indexPath.section].items[indexPath.item] else { return .empty() }
-        provider.plannerService.presentPlannerRoute(from: makeReactor(from: reactor, pikis: journey.pikidays[indexPath.section].pikis, pikmis: journey.pikmis))
+        provider.plannerService.presentPlannerRoute(from: makeReactor(from: reactor, pikis: journey.pikidays[indexPath.section - 1].pikis, pikmis: journey.pikmis))
         return .empty()
     }
     
@@ -126,11 +126,11 @@ extension JourneyPlanReactor {
     
     private func makeReactor(from reactor: PlanCollectionViewCellReactor, pikis: [Pik], pikmis: [Pik]) -> PlannerRouteReactor {
         let state = reactor.currentState
-        return .init(state: .init(order: state.order, date: state.date, pikis: pikis, pikmis: pikmis))
+        return .init(state: .init(id: currentState.id, order: state.order, date: state.date, pikis: pikis, pikmis: pikmis))
     }
     
     private func makeReactor(from reactor: EmptyPlanCollectionViewCellReactor, pikis: [Pik], pikmis: [Pik]) -> PlannerRouteReactor {
         let state = reactor.currentState
-        return .init(state: .init(order: state.order, date: state.date, pikis: pikis, pikmis: pikmis))
+        return .init(state: .init(id: currentState.id, order: state.order, date: state.date, pikis: pikis, pikmis: pikmis))
     }
 }

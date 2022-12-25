@@ -11,15 +11,10 @@ import ReactorKit
 import RxDataSources
 
 class PlannerRouteViewController: NavigationBarViewController, View {
-    typealias Reactor = PlannerRouteReactor
-    
-    // MARK: - UI Components
-    
-    let emptyLabel: UILabel = .init()
-    let routeCollectionView: UICollectionView = .init(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-    let pikmiRouteCollectionView: UICollectionView = .init(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     
     // MARK: - Properties
+    
+    typealias Reactor = PlannerRouteReactor
     
     private lazy var routeDataSource = RxCollectionViewSectionedReloadDataSource<RouteSectionModel> { [weak self] _, collectionView, indexPath, item -> UICollectionViewCell in
         switch item {
@@ -48,6 +43,13 @@ class PlannerRouteViewController: NavigationBarViewController, View {
         }
     }
     
+    // MARK: - UI Components
+    
+    let emptyLabel: UILabel = .init()
+    let routeCollectionView: UICollectionView = .init(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+    let pikmiRouteCollectionView: UICollectionView = .init(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+    let doneButton: JYPButton = .init(type: .done)
+    
     // MARK: - Initializer
     
     init(reactor: Reactor) {
@@ -65,9 +67,6 @@ class PlannerRouteViewController: NavigationBarViewController, View {
     
     override func setupNavigationBar() {
         super.setupNavigationBar()
-        
-        setNavigationBarTitleText("DAY 1")
-        setNavigationBarSubTitleText("7월 18일")
     }
     
     override func setupProperty() {
@@ -84,13 +83,14 @@ class PlannerRouteViewController: NavigationBarViewController, View {
         pikmiRouteCollectionView.register(PikmiRouteCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: PikmiRouteCollectionViewCell.self))
         pikmiRouteCollectionView.register(RouteCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: RouteCollectionViewCell.self))
         pikmiRouteCollectionView.register(PikmiRouteCollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: PikmiRouteCollectionReusableView.self))
+        
+        doneButton.isEnabled = true
     }
     
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        contentView.addSubviews([routeCollectionView, pikmiRouteCollectionView])
-        
+        contentView.addSubviews([routeCollectionView, pikmiRouteCollectionView, doneButton])
         routeCollectionView.addSubviews([emptyLabel])
     }
     
@@ -110,6 +110,12 @@ class PlannerRouteViewController: NavigationBarViewController, View {
             $0.top.equalTo(routeCollectionView.snp.bottom)
             $0.leading.trailing.bottom.equalToSuperview()
         }
+        
+        doneButton.snp.makeConstraints {
+            $0.leading.trailing.equalToSuperview().inset(24)
+            $0.bottom.equalToSuperview().inset(34)
+            $0.height.equalTo(52)
+        }
     }
     
     func bind(reactor: Reactor) {
@@ -125,6 +131,11 @@ class PlannerRouteViewController: NavigationBarViewController, View {
         
         pikmiRouteCollectionView.rx.itemSelected
             .map { .tapPikmiRouteCell($0) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        doneButton.rx.tap
+            .map { .tapDoneButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
@@ -173,6 +184,15 @@ class PlannerRouteViewController: NavigationBarViewController, View {
             .bind { this, sections in
                 let layout = this.makePikmiRouteLayout(sections: sections)
                 this.pikmiRouteCollectionView.collectionViewLayout = layout
+            }
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .map(\.isDone)
+            .filter { $0 }
+            .withUnretained(self)
+            .bind { this, _ in
+                this.navigationController?.dismiss(animated: true)
             }
             .disposed(by: disposeBag)
     }
