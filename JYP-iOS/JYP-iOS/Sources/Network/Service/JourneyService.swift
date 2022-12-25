@@ -69,8 +69,8 @@ final class JourneyService: BaseService, JourneyServiceType {
         let target = JourneyAPI.fetchJourney(journeyId: id)
 
         let request = APIService.request(target: target)
-            .map(BaseModel<Journey>.self)
-            .map(\.data)
+            .map(BaseModel<FetchJourneyDetailResponse>.self)
+            .map { $0.data.toDomain() }
             .asObservable()
 
         request.bind { [weak self] journey in

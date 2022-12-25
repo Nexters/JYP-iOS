@@ -93,13 +93,17 @@ extension JourneyPlanReactor {
     }
     
     private func makeSections(from journey: Journey) -> [JourneyPlanSectionModel] {
-        var journeyPlanSectionModels: [JourneyPlanSectionModel] = []
+        var sections: [JourneyPlanSectionModel] = []
         
-        let daySectionItems = journey.pikidays.enumerated().map { (index, _) -> JourneyPlanItem in
+        let dayItems = journey.pikidays.enumerated().map { (index, _) -> JourneyPlanItem in
             return JourneyPlanItem.dayTag(DayTagCollectionViewCellReactor(state: .init(day: index + 1)))
         }
         
-        let journeySectionModels = journey.pikidays.enumerated().map { (index, pikiday) -> JourneyPlanSectionModel in
+        if dayItems.isEmpty == false {
+            sections.append(.init(model: .day(dayItems), items: dayItems))
+        }
+        
+        journey.pikidays.enumerated().forEach { (index, pikiday) in
             var journeyPlanItems: [JourneyPlanItem] = []
             
             if pikiday.pikis.isEmpty {
@@ -114,15 +118,10 @@ extension JourneyPlanReactor {
                 journeyPlanItems.append(contentsOf: sectionItems)
             }
             
-            return JourneyPlanSectionModel(model: JourneyPlanSection.journey(journeyPlanItems), items: journeyPlanItems)
+            sections.append(.init(model: .journey(journeyPlanItems), items: journeyPlanItems))
         }
         
-        let daySection = JourneyPlanSectionModel(model: JourneyPlanSection.day(daySectionItems), items: daySectionItems)
-        
-        journeyPlanSectionModels.append(daySection)
-        journeyPlanSectionModels.append(contentsOf: journeySectionModels)
-        
-        return journeyPlanSectionModels
+        return sections
     }
     
     private func makeReactor(from reactor: PlanCollectionViewCellReactor, pikis: [Pik], pikmis: [Pik]) -> PlannerRouteReactor {
