@@ -8,6 +8,7 @@
 
 import Foundation
 import RxSwift
+import UIKit
 
 enum PlannerEvent {
     case refresh
@@ -19,8 +20,9 @@ enum PlannerEvent {
 
 protocol PlannerServiceProtocol {
     var event: PublishSubject<PlannerEvent> { get }
+    var rootViewController: UIViewController? { get }
     
-    func refresh()
+    func refresh(_ viewController: UIViewController)
     func presentTagBottomSheet(from reactor: TagBottomSheetReactor)
     func presentPlannerSearchPlace(from reactor: PlannerSearchPlaceReactor)
     func presentWeb(from reactor: WebReactor)
@@ -29,8 +31,10 @@ protocol PlannerServiceProtocol {
 
 class PlannerService: PlannerServiceProtocol {
     let event = PublishSubject<PlannerEvent>()
+    var rootViewController: UIViewController?
     
-    func refresh() {
+    func refresh(_ viewController: UIViewController) {
+        rootViewController = viewController
         event.onNext(.refresh)
     }
 

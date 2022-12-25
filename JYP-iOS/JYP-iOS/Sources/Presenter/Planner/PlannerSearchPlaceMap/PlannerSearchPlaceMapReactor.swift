@@ -7,6 +7,7 @@
 //
 
 import ReactorKit
+import UIKit
 
 class PlannerSearchPlaceMapReactor: Reactor {
     enum Action {
@@ -16,12 +17,14 @@ class PlannerSearchPlaceMapReactor: Reactor {
     
     enum Mutation {
         case setWebReactor(WebReactor?)
+        case setRootViewController(UIViewController?)
     }
     
     struct State {
         let id: String
         let kakaoSearchPlace: KakaoSearchPlace
         var webReactor: WebReactor?
+        var rootViewController: UIViewController?
     }
     
     let provider = ServiceProvider.shared
@@ -47,12 +50,32 @@ extension PlannerSearchPlaceMapReactor {
         }
     }
     
+    func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
+        let APIMutation = provider.journeyService.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
+            switch event {
+            case .createPikmi:
+                return .concat([
+                    .just(.setRootViewController(this.provider.plannerService.rootViewController)),
+                    .just(.setRootViewController(nil))
+                ])
+                
+            default:
+                return .empty()
+            }
+        }
+
+        return Observable.merge(mutation, APIMutation)
+    }
+    
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
         
         switch mutation {
         case let .setWebReactor(reactor):
             newState.webReactor = reactor
+            
+        case let .setRootViewController(viewController):
+            newState.rootViewController = viewController
         }
         
         return newState

@@ -136,10 +136,8 @@ class PlannerViewController: NavigationBarViewController, View {
     // MARK: - Bind Method
     
     func bind(reactor: Reactor) {
-        print("[D] 바인드 호출")
-        
         rx.viewWillAppear
-            .map { _ in .refresh }
+            .map { _ in .refresh(self) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         

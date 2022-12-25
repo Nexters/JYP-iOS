@@ -196,5 +196,12 @@ class PlannerSearchPlaceMapViewController: NavigationBarViewController, View {
                 self?.tabBarController?.present(webViewController, animated: true)
             }
             .disposed(by: disposeBag)
+        
+        reactor.state
+            .compactMap(\.rootViewController)
+            .bind { [weak self] viewController in
+                self?.navigationController?.popToViewController(viewController, animated: true)
+            }
+            .disposed(by: disposeBag)
     }
 }

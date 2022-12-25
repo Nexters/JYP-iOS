@@ -8,10 +8,11 @@
 
 import Foundation
 import ReactorKit
+import UIKit
 
 class PlannerReactor: Reactor {
     enum Action {
-        case refresh
+        case refresh(UIViewController)
         case showDiscussion
         case showJourneyPlan
         case invite
@@ -50,8 +51,8 @@ class PlannerReactor: Reactor {
 
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        case .refresh:
-            provider.plannerService.refresh()
+        case let .refresh(viewController):
+            provider.plannerService.refresh(viewController)
             return .empty()
 
         case .showDiscussion:
