@@ -14,7 +14,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: windowScene)
         
-        let mainViewController = UINavigationController(rootViewController: TabBarViewController())
+        var mainViewController: UIViewController
+        
+        if let accessToken = ServiceProvider.shared.keychainService.getAccessToken() {
+            mainViewController = UINavigationController(rootViewController: TabBarViewController())
+        } else {
+            mainViewController = UINavigationController(rootViewController: OnboardingOneViewController(reactor: .init()))
+        }
         window?.rootViewController = mainViewController
         window?.makeKeyAndVisible()
     }

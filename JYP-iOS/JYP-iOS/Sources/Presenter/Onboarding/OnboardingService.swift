@@ -36,7 +36,7 @@ class OnboardingService: BaseService, OnboardingServiceProtocol {
     private var personalityIDData: [Int] = [0, 0, 0]
     
     func createUser() {
-        let request: CreateUserRequest = .init(authVendor: authVendor, authID: authId, name: name, profileImagePath: profileImagePath, personalityID: personalityID)
+        let request: CreateUserRequest = .init(name: name, profileImagePath: profileImagePath, personalityID: personalityID)
         
         provider.userService.createUser(request: request)
             .compactMap { $0.data }
@@ -56,18 +56,32 @@ class OnboardingService: BaseService, OnboardingServiceProtocol {
     
     func updateAuthVender(authVender: AuthVendor) {
         self.authVendor = authVender
+        
+        try? provider.keychainService.setAuthVendor(authVender)
     }
     
     func updateAuthID(authId: String) {
         self.authId = authId
+        
+        if authId.isEmpty == false {
+            try? provider.keychainService.setAccessToken(authId)
+        }
     }
     
     func updateName(name: String) {
         self.name = name
+        
+        if name.isEmpty == false {
+            try? provider.keychainService.setName(name)
+        }
     }
     
     func updateProfileImagePath(profileImagePath: String) {
         self.profileImagePath = profileImagePath
+        
+        if profileImagePath.isEmpty == false {
+            try? provider.keychainService.setImagePath(profileImagePath)
+        }
     }
     
     private func updatePersonalityID(personalityIDData: [Int]) {

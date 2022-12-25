@@ -29,6 +29,7 @@ class OnboardingSignUpReactor: Reactor {
     
     let initialState: State
     let service: OnboardingServiceProtocol = ServiceProvider.shared.onboaringService
+    let provider = ServiceProvider.shared
     
     init() {
         self.initialState = .init()
@@ -81,10 +82,10 @@ extension OnboardingSignUpReactor {
     }
     
     private func didLoginMutation(authVendor: AuthVendor, authId: String, name: String, profileImagePath: String) -> Observable<Mutation> {
-        service.updateAuthVender(authVender: authVendor)
-        service.updateAuthID(authId: authId)
-        service.updateName(name: name)
-        service.updateProfileImagePath(profileImagePath: profileImagePath)
+        provider.onboaringService.updateAuthVender(authVender: authVendor)
+        provider.onboaringService.updateAuthID(authId: authId)
+        provider.onboaringService.updateName(name: name)
+        provider.onboaringService.updateProfileImagePath(profileImagePath: profileImagePath)
         
         return .concat([
             .just(.updateOnboardingQuestionReactor(OnboardingQuestionReactor(mode: .joruney))),

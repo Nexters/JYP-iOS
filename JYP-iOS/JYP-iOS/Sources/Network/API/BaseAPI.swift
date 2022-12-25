@@ -18,6 +18,7 @@ extension BaseAPI {
 
     var headers: [String: String]? {
         [
+            "Authorization": "Bearer \(Environment.accessToken)",
             "Content-Type": "application/json",
         ]
     }

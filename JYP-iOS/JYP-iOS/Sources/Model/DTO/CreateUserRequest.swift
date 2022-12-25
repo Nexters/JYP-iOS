@@ -9,13 +9,10 @@
 import Foundation
 
 struct CreateUserRequest: Codable {
-    var authVendor: AuthVendor
-    var authID, name, profileImagePath: String
+    var name, profileImagePath: String
     var personalityID: PersonalityID
 
     enum CodingKeys: String, CodingKey {
-        case authVendor
-        case authID = "authId"
         case name, profileImagePath
         case personalityID = "personalityId"
     }
