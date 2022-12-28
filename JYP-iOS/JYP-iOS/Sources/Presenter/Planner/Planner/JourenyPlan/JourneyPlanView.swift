@@ -105,11 +105,13 @@ class JourneyPlanView: BaseView, View {
     }
     
     func bind(reactor: Reactor) {
-        reactor.state.map(\.sections).asObservable()
+        reactor.state.map(\.sections)
+            .asObservable()
             .withUnretained(self)
             .bind { this, sections in
                 this.dataSource.setSections(sections)
                 this.collectionView.collectionViewLayout = this.makeLayout(sections: sections)
+                this.collectionView.reloadData()
             }
             .disposed(by: disposeBag)
     }

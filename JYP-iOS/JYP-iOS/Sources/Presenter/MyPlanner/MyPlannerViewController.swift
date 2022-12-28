@@ -11,7 +11,9 @@ import UIKit
 
 class MyPlannerViewController: NavigationBarViewController, View {
     typealias Reactor = MyPlannerReactor
-
+    
+    var pushPlannerScreen: (_ id: String) -> PlannerViewController
+    
     // MARK: - UI Components
 
     let headerView: UIView = .init()
@@ -24,12 +26,14 @@ class MyPlannerViewController: NavigationBarViewController, View {
 
     let menuDivider: UIView = .init()
 
-    lazy var scheduledJourneyView: ScheduledJourneyView = .init(reactor: ScheduledJourneyReactor(parent: self))
+    lazy var scheduledJourneyView: ScheduledJourneyView = .init(reactor: ScheduledJourneyReactor(parent: self), pushPlannerScreen: pushPlannerScreen)
     lazy var pastJourneyView: PastJourneyView = .init(reactor: PastJourneyReactor(parent: self))
 
     // MARK: - Initializer
 
-    init(reactor: Reactor) {
+    init(reactor: Reactor,
+         pushPlannerScreen: @escaping (_ id: String) -> PlannerViewController) {
+        self.pushPlannerScreen = pushPlannerScreen
         super.init(nibName: nil, bundle: nil)
         self.reactor = reactor
     }
@@ -189,12 +193,18 @@ class MyPlannerViewController: NavigationBarViewController, View {
             .compactMap(\.didCreatedPlannerID)
             .distinctUntilChanged()
             .subscribe(onNext: { [weak self] id in
-                let plannerViewController = PlannerViewController(
-                    reactor: PlannerReactor(id: id)
-                )
-
-                self?.tabBarController?.navigationController?.pushViewController(plannerViewController, animated: true)
+                self?.goToPlannerViewController(id: id)
             })
             .disposed(by: disposeBag)
+    }
+}
+
+extension MyPlannerViewController {
+    func goToPlannerViewController(id: String) {
+        let viewController = pushPlannerScreen(id)
+        
+        hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(viewController, animated: true)
+        hidesBottomBarWhenPushed = false
     }
 }

@@ -11,7 +11,6 @@ import ReactorKit
 import RxDataSources
 
 class PlannerRouteViewController: NavigationBarViewController, View {
-    
     // MARK: - Properties
     
     typealias Reactor = PlannerRouteReactor
@@ -188,11 +187,10 @@ class PlannerRouteViewController: NavigationBarViewController, View {
             .disposed(by: disposeBag)
         
         reactor.state
-            .map(\.isDone)
-            .filter { $0 }
+            .compactMap(\.rootViewController)
             .withUnretained(self)
-            .bind { this, _ in
-                this.navigationController?.dismiss(animated: true)
+            .bind { this, rootViewController in
+                this.navigationController?.popToViewController(rootViewController, animated: true)
             }
             .disposed(by: disposeBag)
     }

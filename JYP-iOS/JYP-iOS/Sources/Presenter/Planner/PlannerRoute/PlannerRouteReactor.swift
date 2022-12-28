@@ -6,7 +6,7 @@
 //  Copyright © 2022 JYP-iOS. All rights reserved.
 //
 
-import Foundation
+import UIKit
 import ReactorKit
 
 class PlannerRouteReactor: Reactor {
@@ -23,7 +23,7 @@ class PlannerRouteReactor: Reactor {
         case updatePikmiRouteSectionItem(IndexPath, PikmiRouteSectionModel.Item)
         case updateRouteSectionItem(IndexPath, RouteSectionModel.Item)
         case appendRouteSectionItem(IndexPath, RouteSectionModel.Item)
-        case setIsDone(Bool)
+        case setRootViewController(UIViewController?)
     }
     
     struct State {
@@ -34,7 +34,7 @@ class PlannerRouteReactor: Reactor {
         let pikmis: [Pik]
         var routeSections: [RouteSectionModel] = []
         var pikmiRouteSections: [PikmiRouteSectionModel] = []
-        var isDone: Bool = false
+        var rootViewController: UIViewController?
     }
     
     let provider = ServiceProvider.shared
@@ -64,9 +64,8 @@ extension PlannerRouteReactor {
             return .just(.appendRouteSectionItem(indexPath, item))
             
         case .tapDoneButton:
-            guard let sections = currentState.routeSections.first else { return .empty() }
             var pikis: [Pik] = []
-            sections.items.forEach { (item) in
+            currentState.routeSections.first?.items.forEach { (item) in
                 if case let .route(reactor) = item {
                     pikis.append(reactor.currentState.pik)
                 }
@@ -77,10 +76,13 @@ extension PlannerRouteReactor {
     }
     
     func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
-        let APIMutation = provider.journeyService.event.withUnretained(self).flatMap { (_, event) -> Observable<Mutation> in
+        let APIMutation = provider.journeyService.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
             switch event {
             case .updatePikis:
-                return .concat([.just(.setIsDone(true)), .just(.setIsDone(false))])
+                return .concat([
+                    .just(.setRootViewController(this.provider.plannerService.rootViewController)),
+                    .just(.setRootViewController(nil))
+                ])
                 
             default:
                 return .empty()
@@ -112,8 +114,8 @@ extension PlannerRouteReactor {
         case let .appendRouteSectionItem(indexPath, item):
             newState.routeSections[indexPath.section].items.append(item)
             
-        case let .setIsDone(bool):
-            newState.isDone = bool
+        case let .setRootViewController(viewController):
+            newState.rootViewController = viewController
         }
         
         return newState
@@ -121,7 +123,6 @@ extension PlannerRouteReactor {
     
     private func makeSections(pikis: [Pik]) -> [RouteSectionModel] {
         if pikis.isEmpty {
-//            return []
             return [RouteSectionModel.init(model: .route([RouteItem.route(.init(state: .init(pik: Pik(id: "", name: "", address: "", category: .etc, likeBy: nil, longitude: 0.0, latitude: 0.0, link: ""))))]), items: [])]
         }
         

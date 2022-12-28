@@ -9,20 +9,14 @@ import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
+    var dependency: AppDependency!
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
-        window = UIWindow(windowScene: windowScene)
-        
-        var mainViewController: UIViewController
-        
-        if let accessToken = ServiceProvider.shared.keychainService.getAccessToken() {
-            mainViewController = UINavigationController(rootViewController: TabBarViewController())
-        } else {
-            mainViewController = UINavigationController(rootViewController: OnboardingOneViewController(reactor: .init()))
-        }
-        window?.rootViewController = mainViewController
-        window?.makeKeyAndVisible()
+        self.dependency = self.dependency ?? CompositionRoot.resolve(windowScene: windowScene)
+        self.dependency.configureSDKs()
+        self.dependency.configureAppearance()
+        self.window = self.dependency.window
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

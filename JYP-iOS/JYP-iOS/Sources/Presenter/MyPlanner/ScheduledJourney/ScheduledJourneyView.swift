@@ -14,6 +14,8 @@ final class ScheduledJourneyView: BaseView, View {
     typealias Reactor = ScheduledJourneyReactor
     typealias DataSource = RxCollectionViewSectionedReloadDataSource<ScheduledJourneySectionModel>
 
+    var pushPlannerScreen: (_ id: String) -> PlannerViewController
+    
     // MARK: - UI Components
 
     private let layout: UICollectionViewFlowLayout = .init()
@@ -37,7 +39,9 @@ final class ScheduledJourneyView: BaseView, View {
 
     // MARK: - Initializer
 
-    init(reactor: Reactor) {
+    init(reactor: Reactor,
+         pushPlannerScreen: @escaping (_ id: String) -> PlannerViewController) {
+        self.pushPlannerScreen = pushPlannerScreen
         super.init(frame: .zero)
         self.reactor = reactor
     }
@@ -83,11 +87,11 @@ final class ScheduledJourneyView: BaseView, View {
                 
                 if case let JourneyCardItem.journey(cellReactor) = planner {
                     let id = cellReactor.currentState.journey.id
-                    let plannerViewController = PlannerViewController(
-                        reactor: PlannerReactor(id: id)
-                    )
-
-                    parent.tabBarController?.navigationController?.pushViewController(plannerViewController, animated: true)
+                    let viewController = self.pushPlannerScreen(id)
+                    
+                    parent.hidesBottomBarWhenPushed = true
+                    parent.navigationController?.pushViewController(viewController, animated: true)
+                    parent.hidesBottomBarWhenPushed = false
                 }
             })
             .disposed(by: disposeBag)
