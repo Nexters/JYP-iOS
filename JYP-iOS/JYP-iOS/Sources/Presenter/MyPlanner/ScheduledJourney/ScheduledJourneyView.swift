@@ -14,7 +14,7 @@ final class ScheduledJourneyView: BaseView, View {
     typealias Reactor = ScheduledJourneyReactor
     typealias DataSource = RxCollectionViewSectionedReloadDataSource<ScheduledJourneySectionModel>
 
-    var pushPlannerScreen: (_ id: String) -> PlannerViewController
+    let pushPlannerScreen: (_ id: String) -> PlannerViewController
     
     // MARK: - UI Components
 
@@ -88,10 +88,8 @@ final class ScheduledJourneyView: BaseView, View {
                 if case let JourneyCardItem.journey(cellReactor) = planner {
                     let id = cellReactor.currentState.journey.id
                     let viewController = self.pushPlannerScreen(id)
-                    
-                    parent.hidesBottomBarWhenPushed = true
+                    viewController.hidesBottomBarWhenPushed = true
                     parent.navigationController?.pushViewController(viewController, animated: true)
-                    parent.hidesBottomBarWhenPushed = false
                 }
             })
             .disposed(by: disposeBag)

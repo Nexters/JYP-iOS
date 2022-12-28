@@ -11,7 +11,9 @@ import UIKit
 
 class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View {
     typealias Reactor = InputPlannerCodeBottomSheetReactor
-
+    
+    let pushPlannerInviteScreen: (_ id: String) -> PlannerInviteViewController
+    
     // MARK: - Properties
 
     private let containerView: UIView = .init()
@@ -34,7 +36,9 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
 
     // MARK: - Initializer
 
-    init(reactor: Reactor) {
+    init(reactor: Reactor,
+         pushPlannerInviteScreen: @escaping (_ id: String) -> PlannerInviteViewController) {
+        self.pushPlannerInviteScreen = pushPlannerInviteScreen
         super.init(mode: .drag)
         self.reactor = reactor
     }
@@ -174,11 +178,11 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
             .distinctUntilChanged()
             .filter { $0 }
             .subscribe(onNext: { [weak self] _ in
-                let plannerReactor = PlannerReactor(id: "1")
-                let plannerViewController = PlannerViewController(reactor: plannerReactor)
-
-                guard let presentingViewContoller = self?.presentingViewController as? UINavigationController else { return }
-                self?.dismiss(animated: true, completion: {
+//                let plannerReactor = PlannerReactor(id: "1")
+//                let plannerViewController = PlannerViewController(reactor: plannerReactor)
+                guard let self, let presentingViewContoller = self.presentingViewController as? UINavigationController else { return }
+                let plannerViewController = self.pushPlannerInviteScreen("1")
+                self.dismiss(animated: true, completion: {
                     presentingViewContoller.pushViewController(
                         plannerViewController,
                         animated: true

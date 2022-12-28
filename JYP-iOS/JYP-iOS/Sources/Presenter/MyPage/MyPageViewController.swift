@@ -110,7 +110,7 @@ class MyPageViewController: NavigationBarViewController {
 
         noticeButton.rx.tap
             .subscribe(onNext: { [weak self] in
-                self?.navigationController?.pushViewController(TempViewController(), animated: true)
+//                self?.navigationController?.pushViewController(TempViewController(), animated: true)
             })
             .disposed(by: disposeBag)
     }

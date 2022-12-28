@@ -12,6 +12,8 @@ import ReactorKit
 class PlannerViewController: NavigationBarViewController, View {
     typealias Reactor = PlannerReactor
     
+    let pushPlannerInviteScreen: (_ id: String) -> PlannerInviteViewController
+    
     // MARK: - UI Components
     
     let dateLabel: UILabel = .init()
@@ -26,10 +28,11 @@ class PlannerViewController: NavigationBarViewController, View {
     
     // MARK: - Initializer
     
-    init(reactor: Reactor) {
-        discussionView = .init(reactor: .init(id: reactor.currentState.id))
-        journeyPlanView = .init(reactor: .init(id: reactor.currentState.id))
-        
+    init(reactor: Reactor,
+         pushPlannerInviteScreen: @escaping (_ id: String) -> PlannerInviteViewController) {
+        discussionView = .init(reactor: .init(id: reactor.id))
+        journeyPlanView = .init(reactor: .init(id: reactor.id))
+        self.pushPlannerInviteScreen = pushPlannerInviteScreen
         super.init(nibName: nil, bundle: nil)
         self.reactor = reactor
     }
@@ -142,13 +145,17 @@ class PlannerViewController: NavigationBarViewController, View {
             .disposed(by: disposeBag)
         
         inviteButton.rx.tap
-            .map { .invite }
-            .bind(to: reactor.action)
+            .withUnretained(self)
+            .bind { this, _ in
+                this.goToPlannerInviteViewController(id: reactor.id)
+            }
             .disposed(by: disposeBag)
         
         inviteStackView.inviteButton.rx.tap
-            .map { .invite }
-            .bind(to: reactor.action)
+            .withUnretained(self)
+            .bind { this, _ in
+                this.goToPlannerInviteViewController(id: reactor.id)
+            }
             .disposed(by: disposeBag)
         
         discussionButton.rx.tap
@@ -196,16 +203,16 @@ class PlannerViewController: NavigationBarViewController, View {
             }
             .disposed(by: disposeBag)
         
-        reactor.state
-            .compactMap(\.plannerInviteReactor)
-            .withUnretained(self)
-            .bind { this, reactor in
-                let plannerInviteViewController = PlannerInviteViewController(reactor: reactor)
-                
-                plannerInviteViewController.hidesBottomBarWhenPushed = true
-                this.navigationController?.pushViewController(plannerInviteViewController, animated: true)
-            }
-            .disposed(by: disposeBag)
+//        reactor.state
+//            .compactMap(\.plannerInviteReactor)
+//            .withUnretained(self)
+//            .bind { this, reactor in
+//                let plannerInviteViewController = PlannerInviteViewController(reactor: reactor)
+//
+//                plannerInviteViewController.hidesBottomBarWhenPushed = true
+//                this.navigationController?.pushViewController(plannerInviteViewController, animated: true)
+//            }
+//            .disposed(by: disposeBag)
         
         reactor.state
             .compactMap(\.tagBottomSheetReactor)
@@ -238,5 +245,13 @@ class PlannerViewController: NavigationBarViewController, View {
                 this.navigationController?.present(WebViewController(reactor: reactor), animated: true)
             }
             .disposed(by: disposeBag)
+    }
+}
+
+extension PlannerViewController {
+    func goToPlannerInviteViewController(id: String) {
+        let viewController = pushPlannerInviteScreen(id)
+        viewController.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(viewController, animated: true)
     }
 }

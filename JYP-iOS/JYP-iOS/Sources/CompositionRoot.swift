@@ -50,15 +50,41 @@ extension CompositionRoot {
     }
     
     static func makeMyPlannerScreen() -> MyPlannerViewController {
+        let pushPlannerInviteScreen: (_ id: String) -> PlannerInviteViewController = { (id) in
+            let reactor = PlannerInviteReactor(id: id)
+            let controller = PlannerInviteViewController(reactor: reactor)
+            
+            return controller
+        }
+        
         let pushPlannerScreen: (_ id: String) -> PlannerViewController = { (id) in
             let reactor = PlannerReactor(id: id)
-            let controller = PlannerViewController(reactor: reactor)
+            let controller = PlannerViewController(reactor: reactor,
+                                                   pushPlannerInviteScreen: pushPlannerInviteScreen)
+            
+            return controller
+        }
+        
+        let pushInputPlannerCodeBottomSheetScreen: () -> InputPlannerCodeBottomSheetViewController = {
+            let reactor = InputPlannerCodeBottomSheetReactor()
+            let controller = InputPlannerCodeBottomSheetViewController(reactor: reactor,
+                                                                       pushPlannerInviteScreen: pushPlannerInviteScreen)
+            
+            return controller
+        }
+        
+        let pushSelectionPlannerJoinBottomScreen: () -> SelectionPlannerJoinBottomViewController = {
+            let controller = SelectionPlannerJoinBottomViewController(mode: .drag,
+                                                                      pushInputPlannerCodeBottomSheetScreen: pushInputPlannerCodeBottomSheetScreen)
             
             return controller
         }
         
         let reactor = MyPlannerReactor()
-        let viewController = MyPlannerViewController(reactor: reactor, pushPlannerScreen: pushPlannerScreen)
+        let viewController = MyPlannerViewController(reactor: reactor,
+                                                     pushSelectionPlannerJoinBottomScreen: pushSelectionPlannerJoinBottomScreen,
+                                                     pushPlannerScreen: pushPlannerScreen)
+        
         let tabBarItem = UITabBarItem(title: nil, image: JYPIOSAsset.myJourneyInactive.image.withRenderingMode(.alwaysOriginal), selectedImage: JYPIOSAsset.myJourneyActive.image.withRenderingMode(.alwaysOriginal))
         
         tabBarItem.imageInsets = .init(top: 9, left: 0, bottom: -9, right: 0)
@@ -86,53 +112,4 @@ extension CompositionRoot {
         
         return viewController
     }
-//    static func makeTabBarScreen() -> TabBarViewController {
-//
-//        let walkService: WalkServiceType = WalkService()
-//
-//        let tabBarViewController = TabBarViewController()
-//        let footprintRootViewController = makeFootprintRootScreen(walkService: walkService)
-//        let calendarViewController = makeCalendarScreen()
-//        let recommendViewController = makeRecommendScreen()
-//        let myPageViewController = makeMyPageScreen()
-//
-//        tabBarViewController.viewControllers = [
-//            footprintRootViewController.navigationWrap(),
-//            calendarViewController.navigationWrap(),
-//            recommendViewController.navigationWrap(),
-//            myPageViewController.navigationWrap()
-//        ]
-//
-//        return tabBarViewController
-//    }
-//
-//    static func makeFootprintRootScreen(walkService: WalkServiceType) -> FootprintRootViewController {
-//        let pushFootprintWriteScreen: () -> FootprintWriteViewController = {
-//            let reactor = FootprintWriteReactor(state: .init())
-//            let controller = FootprintWriteViewController(reactor: reactor)
-//            return controller
-//        }
-//
-//        let pushFootprintMapScreen: () -> FootprintMapViewController = {
-//            let reactor = FootprintMapReactor(state: .init())
-//            let controller = FootprintMapViewController(reactor: reactor,
-//                                                        pushFootprintWriteScreen: pushFootprintWriteScreen)
-//            return controller
-//        }
-//
-//        let pushRecordSearchScreen: (Int) -> RecordSearchViewController = { (id) in
-//            let reactor: RecordSearchReactor = .init(id: id, walkService: walkService)
-//            return .init(reactor: reactor)
-//        }
-//
-//        let reactor = FootprintRootReactor(state: .init())
-//        let controller = FootprintRootViewController(reactor: reactor,
-//                                                     pushFootprintMapScreen: pushFootprintMapScreen,
-//                                                     pushRecordSearchScreen: pushRecordSearchScreen)
-//
-//        controller.title = "홈"
-//        controller.tabBarItem.image = nil
-//        controller.tabBarItem.selectedImage = nil
-//        return controller
-//    }
 }

@@ -9,6 +9,8 @@
 import UIKit
 
 class SelectionPlannerJoinBottomViewController: BottomSheetViewController {
+    let pushInputPlannerCodeBottomSheetScreen: () -> InputPlannerCodeBottomSheetViewController
+    
     // MARK: - UI Components
 
     private let containerView: UIView = .init()
@@ -22,6 +24,17 @@ class SelectionPlannerJoinBottomViewController: BottomSheetViewController {
     private let joinPlannerView: UIView = .init()
     private let joinPlannerIcon: UIImageView = .init()
     private let joinPlannerLabel: UILabel = .init()
+    
+    init(mode: BottomSheetViewController.Mode,
+         pushInputPlannerCodeBottomSheetScreen: @escaping () -> InputPlannerCodeBottomSheetViewController) {
+        self.pushInputPlannerCodeBottomSheetScreen = pushInputPlannerCodeBottomSheetScreen
+        super.init(mode: mode)
+    }
+    
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func setupProperty() {
         super.setupProperty()
@@ -121,21 +134,41 @@ class SelectionPlannerJoinBottomViewController: BottomSheetViewController {
             .when(.recognized)
             .subscribe(onNext: { [weak self] _ in
                 self?.dismiss(animated: true, completion: {
-                    let keyWindow = UIApplication.shared.connectedScenes
-                        .filter { $0.activationState == .foregroundActive }
-                        .map { $0 as? UIWindowScene }
-                        .compactMap { $0 }
-                        .first?.windows
-                        .filter { $0.isKeyWindow }.first
-
-                    let inputPlannerCodeReactor = InputPlannerCodeBottomSheetReactor()
-                    let inputPlannerCodeBottomSheetViewController = InputPlannerCodeBottomSheetViewController(reactor: inputPlannerCodeReactor)
-                    keyWindow?.rootViewController?.present(
-                        inputPlannerCodeBottomSheetViewController,
-                        animated: true
-                    )
+                    self?.goToInputPlannerCodeBottomSheetViewController()
+                    //FIXME: 고치기
+//                    let keyWindow = UIApplication.shared.connectedScenes
+//                        .filter { $0.activationState == .foregroundActive }
+//                        .map { $0 as? UIWindowScene }
+//                        .compactMap { $0 }
+//                        .first?.windows
+//                        .filter { $0.isKeyWindow }.first
+//
+//                    let inputPlannerCodeReactor = InputPlannerCodeBottomSheetReactor()
+//                    let inputPlannerCodeBottomSheetViewController = InputPlannerCodeBottomSheetViewController(reactor: inputPlannerCodeReactor)
+//                    keyWindow?.rootViewController?.present(
+//                        inputPlannerCodeBottomSheetViewController,
+//                        animated: true
+//                    )
                 })
             })
             .disposed(by: disposeBag)
+    }
+}
+
+extension SelectionPlannerJoinBottomViewController {
+    func goToInputPlannerCodeBottomSheetViewController() {
+        let viewController = pushInputPlannerCodeBottomSheetScreen()
+        
+        let keyWindow = UIApplication.shared.connectedScenes
+            .filter { $0.activationState == .foregroundActive }
+            .map { $0 as? UIWindowScene }
+            .compactMap { $0 }
+            .first?.windows
+            .filter { $0.isKeyWindow }.first
+
+        keyWindow?.rootViewController?.present(
+            viewController,
+            animated: true
+        )
     }
 }

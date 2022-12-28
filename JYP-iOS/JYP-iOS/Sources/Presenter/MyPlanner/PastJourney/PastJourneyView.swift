@@ -14,6 +14,8 @@ final class PastJourneyView: BaseView, View {
     typealias Reactor = PastJourneyReactor
     typealias DataSource = RxCollectionViewSectionedReloadDataSource<PastJourneySectionModel>
 
+    let pushPlannerScreen: (_ id: String) -> PlannerViewController
+    
     // MARK: - UI Components
 
     private let layout: UICollectionViewFlowLayout = .init()
@@ -38,7 +40,9 @@ final class PastJourneyView: BaseView, View {
 
     // MARK: - Initializer
 
-    init(reactor: Reactor) {
+    init(reactor: Reactor,
+         pushPlannerScreen: @escaping (_ id: String) -> PlannerViewController) {
+        self.pushPlannerScreen = pushPlannerScreen
         super.init(frame: .zero)
         self.reactor = reactor
     }
@@ -84,10 +88,11 @@ final class PastJourneyView: BaseView, View {
 
                 if case let JourneyCardItem.journey(cellReactor) = planner {
                     let id = cellReactor.currentState.journey.id
-                    let plannerViewController = PlannerViewController(
-                        reactor: PlannerReactor(id: id)
-                    )
-
+//                    let plannerViewController = PlannerViewController(
+//                        reactor: PlannerReactor(id: id)
+//                    )
+                    let plannerViewController = self.pushPlannerScreen(id)
+                    
                     parent.tabBarController?.navigationController?.pushViewController(plannerViewController, animated: true)
                 }
             })
