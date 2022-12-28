@@ -187,12 +187,21 @@ class PlannerRouteViewController: NavigationBarViewController, View {
             .disposed(by: disposeBag)
         
         reactor.state
-            .compactMap(\.rootViewController)
+            .map(\.didUpdatePikis)
+            .filter { $0 }
             .withUnretained(self)
-            .bind { this, rootViewController in
-                this.navigationController?.popToViewController(rootViewController, animated: true)
+            .bind { this, _ in
+                this.backToPlannerViewController()
             }
             .disposed(by: disposeBag)
+    }
+}
+
+extension PlannerRouteViewController {
+    func backToPlannerViewController() {
+        guard let viewController = self.navigationController?.viewControllers.filter({ $0 is PlannerViewController }).first else { return }
+
+        self.navigationController?.popToViewController(viewController, animated: true)
     }
 }
 

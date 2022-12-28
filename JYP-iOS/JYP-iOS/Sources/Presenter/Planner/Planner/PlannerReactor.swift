@@ -53,8 +53,8 @@ class PlannerReactor: Reactor {
 
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        case let .refresh(viewController):
-            provider.plannerService.refresh(viewController)
+        case .refresh:
+            provider.plannerService.refresh()
             return .empty()
 
         case .showDiscussion:

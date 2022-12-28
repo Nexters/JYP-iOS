@@ -17,14 +17,14 @@ class PlannerSearchPlaceMapReactor: Reactor {
     
     enum Mutation {
         case setWebReactor(WebReactor?)
-        case setRootViewController(UIViewController?)
+        case setIsBack(Bool)
     }
     
     struct State {
         let id: String
         let kakaoSearchPlace: KakaoSearchPlace
         var webReactor: WebReactor?
-        var rootViewController: UIViewController?
+        var isBack: Bool = false
     }
     
     let provider = ServiceProvider.shared
@@ -55,8 +55,8 @@ extension PlannerSearchPlaceMapReactor {
             switch event {
             case .createPikmi:
                 return .concat([
-                    .just(.setRootViewController(this.provider.plannerService.rootViewController)),
-                    .just(.setRootViewController(nil))
+                    .just(.setIsBack(true)),
+                    .just(.setIsBack(false))
                 ])
                 
             default:
@@ -74,8 +74,8 @@ extension PlannerSearchPlaceMapReactor {
         case let .setWebReactor(reactor):
             newState.webReactor = reactor
             
-        case let .setRootViewController(viewController):
-            newState.rootViewController = viewController
+        case let .setIsBack(bool):
+            newState.isBack = bool
         }
         
         return newState

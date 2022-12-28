@@ -198,10 +198,18 @@ class PlannerSearchPlaceMapViewController: NavigationBarViewController, View {
             .disposed(by: disposeBag)
         
         reactor.state
-            .compactMap(\.rootViewController)
-            .bind { [weak self] viewController in
-                self?.navigationController?.popToViewController(viewController, animated: true)
+            .map(\.isBack)
+            .filter { $0 }
+            .bind { [weak self] _ in
+                self?.backToPlannerViewController()
             }
             .disposed(by: disposeBag)
+    }
+}
+extension PlannerSearchPlaceMapViewController {
+    func backToPlannerViewController() {
+        guard let viewController = self.navigationController?.viewControllers.filter({ $0 is PlannerViewController }).first else { return }
+        
+        self.navigationController?.popToViewController(viewController, animated: true)
     }
 }

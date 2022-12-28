@@ -23,7 +23,7 @@ class PlannerRouteReactor: Reactor {
         case updatePikmiRouteSectionItem(IndexPath, PikmiRouteSectionModel.Item)
         case updateRouteSectionItem(IndexPath, RouteSectionModel.Item)
         case appendRouteSectionItem(IndexPath, RouteSectionModel.Item)
-        case setRootViewController(UIViewController?)
+        case setDidUpdatePikis(Bool)
     }
     
     struct State {
@@ -34,7 +34,7 @@ class PlannerRouteReactor: Reactor {
         let pikmis: [Pik]
         var routeSections: [RouteSectionModel] = []
         var pikmiRouteSections: [PikmiRouteSectionModel] = []
-        var rootViewController: UIViewController?
+        var didUpdatePikis: Bool = false
     }
     
     let provider = ServiceProvider.shared
@@ -76,12 +76,12 @@ extension PlannerRouteReactor {
     }
     
     func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
-        let APIMutation = provider.journeyService.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
+        let APIMutation = provider.journeyService.event.withUnretained(self).flatMap { (_, event) -> Observable<Mutation> in
             switch event {
             case .updatePikis:
                 return .concat([
-                    .just(.setRootViewController(this.provider.plannerService.rootViewController)),
-                    .just(.setRootViewController(nil))
+                    .just(.setDidUpdatePikis(true)),
+                    .just(.setDidUpdatePikis(false))
                 ])
                 
             default:
@@ -114,8 +114,8 @@ extension PlannerRouteReactor {
         case let .appendRouteSectionItem(indexPath, item):
             newState.routeSections[indexPath.section].items.append(item)
             
-        case let .setRootViewController(viewController):
-            newState.rootViewController = viewController
+        case let .setDidUpdatePikis(bool):
+            newState.didUpdatePikis = bool
         }
         
         return newState
