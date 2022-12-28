@@ -84,7 +84,6 @@ extension CompositionRoot {
         let viewController = MyPlannerViewController(reactor: reactor,
                                                      pushSelectionPlannerJoinBottomScreen: pushSelectionPlannerJoinBottomScreen,
                                                      pushPlannerScreen: pushPlannerScreen)
-        
         let tabBarItem = UITabBarItem(title: nil, image: JYPIOSAsset.myJourneyInactive.image.withRenderingMode(.alwaysOriginal), selectedImage: JYPIOSAsset.myJourneyActive.image.withRenderingMode(.alwaysOriginal))
         
         tabBarItem.imageInsets = .init(top: 9, left: 0, bottom: -9, right: 0)
