@@ -49,7 +49,7 @@ class JourneyPlanView: BaseView, View {
         guard let reactor = self?.reactor else { return .init() }
         switch dataSource[indexPath.section].model {
         case let .journey(items):
-            guard case let .plan(cellReactor) = items.first else { return .init() }
+            guard case let .plan(cellReactor) = items[indexPath.section - 1] else { return .init() }
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: PikiCollectionReusableView.self), for: indexPath) as? PikiCollectionReusableView else { return .init() }
 
             header.reactor = PikiCollectionReusableViewReactor(state: .init(order: cellReactor.currentState.order, date: cellReactor.currentState.date))

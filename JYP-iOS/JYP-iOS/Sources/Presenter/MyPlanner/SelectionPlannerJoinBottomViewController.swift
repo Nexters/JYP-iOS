@@ -112,6 +112,7 @@ class SelectionPlannerJoinBottomViewController: BottomSheetViewController {
             .subscribe(onNext: { [weak self] _ in
                 self?.dismiss(animated: true, completion: {
                     let createPlannerViewController = CreatePlannerNameViewController(reactor: .init())
+                    createPlannerViewController.hidesBottomBarWhenPushed = true
 
                     let keyWindow = UIApplication.shared.connectedScenes
                         .filter { $0.activationState == .foregroundActive }
@@ -119,8 +120,8 @@ class SelectionPlannerJoinBottomViewController: BottomSheetViewController {
                         .compactMap { $0 }
                         .first?.windows
                         .filter { $0.isKeyWindow }.first
-
-                    if let navigationController = keyWindow?.rootViewController
+                    
+                    if let navigationController = keyWindow?.rootViewController?.children.first
                         as? UINavigationController {
                         navigationController.pushViewController(
                             createPlannerViewController,
