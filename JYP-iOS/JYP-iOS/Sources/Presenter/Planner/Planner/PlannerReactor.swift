@@ -25,8 +25,9 @@ class PlannerReactor: Reactor {
 //        case setPlannerInviteReactor(PlannerInviteReactor?)
         case setTagBottomSheetReactor(TagBottomSheetReactor?)
         case setPlannerSearchPlaceReactor(PlannerSearchPlaceReactor?)
-        case setPlannerRouteReactor(PlannerRouteReactor?)
+//        case setPlannerRouteReactor(PlannerRouteReactor?)
         case setWebReactor(WebReactor?)
+        case setOrderPlannerRouteScreen(Int?)
     }
 
     struct State {
@@ -36,8 +37,9 @@ class PlannerReactor: Reactor {
 //        var plannerInviteReactor: PlannerInviteReactor?
         var tagBottomSheetReactor: TagBottomSheetReactor?
         var plannerSearchPlaceReactor: PlannerSearchPlaceReactor?
-        var plannerRouteReactor: PlannerRouteReactor?
+//        var plannerRouteReactor: PlannerRouteReactor?
         var webReactor: WebReactor?
+        var orderPlannerRouteScreen: Int?
     }
 
     let provider = ServiceProvider.shared
@@ -100,14 +102,20 @@ class PlannerReactor: Reactor {
             case let .presentPlannerSearchPlace(reactor):
                 return .just(.setPlannerSearchPlaceReactor(reactor))
 
-            case let .presentPlannerRoute(reactor):
-                return .concat([
-                    .just(.setPlannerRouteReactor(reactor)),
-                    .just(.setPlannerRouteReactor(nil))
-                ])
+//            case let .presentPlannerRoute(reactor):
+//                return .concat([
+//                    .just(.setPlannerRouteReactor(reactor)),
+//                    .just(.setPlannerRouteReactor(nil))
+//                ])
 
             case let .presentWeb(reactor):
                 return .just(.setWebReactor(reactor))
+                
+            case let .showPlannerRouteScreen(order):
+                return .concat([
+                    .just(.setOrderPlannerRouteScreen(order)),
+                    .just(.setOrderPlannerRouteScreen(nil))
+                ])
             }
         }
 
@@ -136,11 +144,14 @@ class PlannerReactor: Reactor {
         case let .setPlannerSearchPlaceReactor(reactor):
             newState.plannerSearchPlaceReactor = reactor
 
-        case let .setPlannerRouteReactor(reactor):
-            newState.plannerRouteReactor = reactor
+//        case let .setPlannerRouteReactor(reactor):
+//            newState.plannerRouteReactor = reactor
 
         case let .setWebReactor(reactor):
             newState.webReactor = reactor
+            
+        case let .setOrderPlannerRouteScreen(order):
+            newState.orderPlannerRouteScreen = order
         }
 
         return newState

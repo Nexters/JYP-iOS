@@ -50,6 +50,8 @@ extension CompositionRoot {
     }
     
     static func makeMyPlannerScreen() -> MyPlannerViewController {
+        let journeyService: JourneyServiceType = JourneyService(provider: ServiceProvider.shared)
+        
         let pushPlannerInviteScreen: (_ id: String) -> PlannerInviteViewController = { (id) in
             let reactor = PlannerInviteReactor(id: id)
             let controller = PlannerInviteViewController(reactor: reactor)
@@ -57,10 +59,18 @@ extension CompositionRoot {
             return controller
         }
         
+        let pushPlannerRouteScreen: (_ root: AnyObject.Type, _ journey: Journey, _ order: Int) -> PlannerRouteViewController = { (root, journey, order) in
+            let reactor = PlannerRouteReactor(journey: journey, order: order, journeyService: journeyService)
+            let controller = PlannerRouteViewController(reactor: reactor, root: PlannerViewController.self)
+            
+            return controller
+        }
+        
         let pushPlannerScreen: (_ id: String) -> PlannerViewController = { (id) in
             let reactor = PlannerReactor(id: id)
             let controller = PlannerViewController(reactor: reactor,
-                                                   pushPlannerInviteScreen: pushPlannerInviteScreen)
+                                                   pushPlannerInviteScreen: pushPlannerInviteScreen,
+                                                   pushPlannerRouteScreen: pushPlannerRouteScreen)
             
             return controller
         }

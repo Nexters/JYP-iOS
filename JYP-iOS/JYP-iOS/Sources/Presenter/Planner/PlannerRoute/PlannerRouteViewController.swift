@@ -42,6 +42,8 @@ class PlannerRouteViewController: NavigationBarViewController, View {
         }
     }
     
+    let root: AnyObject.Type
+    
     // MARK: - UI Components
     
     let emptyLabel: UILabel = .init()
@@ -51,7 +53,8 @@ class PlannerRouteViewController: NavigationBarViewController, View {
     
     // MARK: - Initializer
     
-    init(reactor: Reactor) {
+    init(reactor: Reactor, root: AnyObject.Type) {
+        self.root = root
         super.init(nibName: nil, bundle: nil)
         
         self.reactor = reactor
@@ -128,8 +131,11 @@ class PlannerRouteViewController: NavigationBarViewController, View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
-        pikmiRouteCollectionView.rx.itemSelected
-            .map { .tapPikmiRouteCell($0) }
+        Observable
+            .zip(
+                pikmiRouteCollectionView.rx.itemSelected,
+                pikmiRouteCollectionView.rx.modelSelected(type(of: self.pikmiRouteDataSource).Section.Item.self))
+            .map { .tapPikmiRouteCell($0, $1) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
@@ -146,13 +152,13 @@ class PlannerRouteViewController: NavigationBarViewController, View {
             }
             .disposed(by: disposeBag)
         
-        reactor.state
-            .map(\.date)
-            .withUnretained(self)
-            .bind { this, date in
-                this.setNavigationBarSubTitleText(DateManager.dateToString(format: "M월 d일", date: date))
-            }
-            .disposed(by: disposeBag)
+//        reactor.state
+//            .map(\.date)
+//            .withUnretained(self)
+//            .bind { this, date in
+//                this.setNavigationBarSubTitleText(DateManager.dateToString(format: "M월 d일", date: date))
+//            }
+//            .disposed(by: disposeBag)
         
         reactor.state
             .map(\.routeSections)
@@ -191,15 +197,15 @@ class PlannerRouteViewController: NavigationBarViewController, View {
             .filter { $0 }
             .withUnretained(self)
             .bind { this, _ in
-                this.backToPlannerViewController()
+                this.backToRootViewController(root: this.root)
             }
             .disposed(by: disposeBag)
     }
 }
 
 extension PlannerRouteViewController {
-    func backToPlannerViewController() {
-        guard let viewController = self.navigationController?.viewControllers.filter({ $0 is PlannerViewController }).first else { return }
+    func backToRootViewController(root: AnyObject.Type) {
+        guard let viewController = self.navigationController?.viewControllers.filter({ type(of: $0).isEqual(root) }).first else { return }
 
         self.navigationController?.popToViewController(viewController, animated: true)
     }

@@ -13,6 +13,7 @@ class PlannerViewController: NavigationBarViewController, View {
     typealias Reactor = PlannerReactor
     
     let pushPlannerInviteScreen: (_ id: String) -> PlannerInviteViewController
+    let pushPlannerRouteScreen: (_ root: AnyObject.Type, _ journey: Journey, _ order: Int) -> PlannerRouteViewController
     
     // MARK: - UI Components
     
@@ -29,10 +30,12 @@ class PlannerViewController: NavigationBarViewController, View {
     // MARK: - Initializer
     
     init(reactor: Reactor,
-         pushPlannerInviteScreen: @escaping (_ id: String) -> PlannerInviteViewController) {
+         pushPlannerInviteScreen: @escaping (_ id: String) -> PlannerInviteViewController,
+         pushPlannerRouteScreen: @escaping (_ root: AnyObject.Type, _ journey: Journey, _ order: Int) -> PlannerRouteViewController) {
         discussionView = .init(reactor: .init(id: reactor.id))
         journeyPlanView = .init(reactor: .init(id: reactor.id))
         self.pushPlannerInviteScreen = pushPlannerInviteScreen
+        self.pushPlannerRouteScreen = pushPlannerRouteScreen
         super.init(nibName: nil, bundle: nil)
         self.reactor = reactor
     }
@@ -229,14 +232,6 @@ class PlannerViewController: NavigationBarViewController, View {
                 this.navigationController?.pushViewController(PlannerSearchPlaceViewController(reactor: reactor), animated: true)
             }
             .disposed(by: disposeBag)
-        
-        reactor.state
-            .compactMap(\.plannerRouteReactor)
-            .withUnretained(self)
-            .bind { this, reactor in
-                this.navigationController?.pushViewController(PlannerRouteViewController(reactor: reactor), animated: true)
-            }
-            .disposed(by: disposeBag)
          
         reactor.state
             .compactMap(\.webReactor)
@@ -245,12 +240,28 @@ class PlannerViewController: NavigationBarViewController, View {
                 this.navigationController?.present(WebViewController(reactor: reactor), animated: true)
             }
             .disposed(by: disposeBag)
+        
+        reactor.state
+            .compactMap(\.orderPlannerRouteScreen)
+            .withUnretained(self)
+            .bind { this, order in
+                let root = type(of: self)
+                guard let journey = reactor.currentState.journey else { return }
+                this.goToPlannerRouteViewController(root: root, journey: journey, order: order)
+            }
+            .disposed(by: disposeBag)
     }
 }
 
 extension PlannerViewController {
     func goToPlannerInviteViewController(id: String) {
         let viewController = pushPlannerInviteScreen(id)
+        viewController.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(viewController, animated: true)
+    }
+    
+    func goToPlannerRouteViewController(root: AnyObject.Type, journey: Journey, order: Int) {
+        let viewController = pushPlannerRouteScreen(root, journey, order)
         viewController.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(viewController, animated: true)
     }

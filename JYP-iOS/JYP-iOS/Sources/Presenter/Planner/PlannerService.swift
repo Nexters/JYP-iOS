@@ -15,7 +15,7 @@ enum PlannerEvent {
     case presentTagBottomSheet(TagBottomSheetReactor?)
     case presentPlannerSearchPlace(PlannerSearchPlaceReactor?)
     case presentWeb(WebReactor?)
-    case presentPlannerRoute(PlannerRouteReactor?)
+    case showPlannerRouteScreen(Int)
 }
 
 protocol PlannerServiceProtocol {
@@ -25,12 +25,11 @@ protocol PlannerServiceProtocol {
     func presentTagBottomSheet(from reactor: TagBottomSheetReactor)
     func presentPlannerSearchPlace(from reactor: PlannerSearchPlaceReactor)
     func presentWeb(from reactor: WebReactor)
-    func presentPlannerRoute(from reactor: PlannerRouteReactor)
+    func showPlannerRouteScreen(order: Int)
 }
 
 class PlannerService: PlannerServiceProtocol {
     let event = PublishSubject<PlannerEvent>()
-    var rootViewController: UIViewController?
     
     func refresh() {
         event.onNext(.refresh)
@@ -51,8 +50,7 @@ class PlannerService: PlannerServiceProtocol {
         event.onNext(.presentWeb(nil))
     }
     
-    func presentPlannerRoute(from reactor: PlannerRouteReactor) {
-        event.onNext(.presentPlannerRoute(reactor))
-        event.onNext(.presentPlannerRoute(nil))
+    func showPlannerRouteScreen(order: Int) {
+        event.onNext(.showPlannerRouteScreen(order))
     }
 }
