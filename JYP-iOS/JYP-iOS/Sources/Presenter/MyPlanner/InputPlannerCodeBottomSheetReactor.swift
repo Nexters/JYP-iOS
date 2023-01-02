@@ -25,6 +25,7 @@ final class InputPlannerCodeBottomSheetReactor: Reactor {
         var plannerCode: String?
         var isActivePlannerJoinButton: Bool = false
         var isPushMyPlannerView: String?
+        var guideLabel: String?
     }
 
     var initialState: State = .init()
@@ -50,16 +51,17 @@ final class InputPlannerCodeBottomSheetReactor: Reactor {
         case let .changePlannerCode(code):
             newState.plannerCode = code
         case let .changeActivePlannerJoinButton(isActive):
+            newState.guideLabel = nil
             newState.isActivePlannerJoinButton = isActive
         case let .pushMyPlanner(id):
             newState.isPushMyPlannerView = id
         case let .validateJoin(model):
-            print(model)
             switch model.code {
             case "20000":
-                print("success")
                 newState.isPushMyPlannerView = state.plannerCode
-            default: break
+            default:
+                newState.guideLabel = "잘못된 참여 코드에요"
+                newState.isActivePlannerJoinButton = false
             }
         }
 

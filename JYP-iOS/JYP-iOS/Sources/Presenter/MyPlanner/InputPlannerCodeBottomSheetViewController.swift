@@ -73,6 +73,7 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
 
         guideLabel.font = JYPIOSFontFamily.Pretendard.regular.font(size: 12)
         guideLabel.textColor = JYPIOSAsset.mainPink.color
+        guideLabel.textAlignment = .right
 
         textField.textField.leftView = UIView()
         textField.setupToolBar()
@@ -120,6 +121,7 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
 
         guideLabel.snp.makeConstraints { make in
             make.centerY.equalTo(plannerCodeLabel.snp.centerY)
+            make.leading.equalTo(plannerCodeLabel.snp.trailing).offset(5)
             make.trailing.equalTo(cancelButton.snp.trailing)
         }
 
@@ -195,6 +197,13 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
                     )
                 })
             })
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .map(\.guideLabel)
+            .asObservable()
+            .distinctUntilChanged()
+            .bind(to: guideLabel.rx.text)
             .disposed(by: disposeBag)
     }
 
