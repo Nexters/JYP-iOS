@@ -25,6 +25,20 @@ final class ScheduledJourneyView: BaseView, View {
         switch item {
         case .empty:
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: EmptyJourneyCardCollectionViewCell.self), for: indexPath) as? EmptyJourneyCardCollectionViewCell else { return .init() }
+            cell.makeButton.rx.tap
+                .subscribe(onNext: { [weak self] in
+                    guard let self,
+                          let parentView = self.reactor?.currentState.parentView
+                    else { return }
+
+                    let selectionPlannerJoinBottomSheet = SelectionPlannerJoinBottomViewController(mode: .drag)
+
+                    parentView.tabBarController?.present(
+                        selectionPlannerJoinBottomSheet,
+                        animated: true
+                    )
+                })
+                .disposed(by: cell.disposeBag)
 
             return cell
         case let .journey(reactor):
@@ -80,7 +94,7 @@ final class ScheduledJourneyView: BaseView, View {
                 guard let self,
                       let parent = self.reactor?.currentState.parentView
                 else { return }
-                
+
                 if case let JourneyCardItem.journey(cellReactor) = planner {
                     let id = cellReactor.currentState.journey.id
                     let plannerViewController = PlannerViewController(
