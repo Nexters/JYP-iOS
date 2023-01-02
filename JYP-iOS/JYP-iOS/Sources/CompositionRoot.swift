@@ -74,7 +74,7 @@ extension CompositionRoot {
         let pushInputPlannerCodeBottomSheetScreen: () -> InputPlannerCodeBottomSheetViewController = {
             let reactor = InputPlannerCodeBottomSheetReactor()
             let controller = InputPlannerCodeBottomSheetViewController(reactor: reactor,
-                                                                       pushPlannerInviteScreen: pushPlannerInviteScreen)
+                                                                       pushPlannerScreen: pushPlannerScreen)
             
             return controller
         }

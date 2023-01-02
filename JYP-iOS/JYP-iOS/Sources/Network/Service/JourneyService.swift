@@ -31,7 +31,7 @@ protocol JourneyServiceType {
     func createPikmi(id: String, name: String, address: String, category: JYPCategoryType, longitude: Double, latitude: Double, link: String)
     func updatePikis(journeyId: String, request: UpdatePikisRequest)
     func editTags(journeyId: String, request: UpdateTagsRequest) -> Observable<EmptyModel>
-    func addJourneyUser(journeyId: String, request: CreateJourneyUserRequest) -> Observable<EmptyModel>
+    func joinPlanner(journeyId: String) -> Observable<EmptyModel>
     func deleteJourneyUser(journeyId: String) -> Observable<EmptyModel>
     func addPikmiLike(journeyId: String, pikmiId: String) -> Observable<EmptyModel>
     func deletePikmiLike(journeyId: String, pikmiId: String) -> Observable<EmptyModel>
@@ -154,8 +154,11 @@ final class JourneyService: BaseService, JourneyServiceType {
             .asObservable()
     }
 
-    func addJourneyUser(journeyId: String, request: CreateJourneyUserRequest) -> Observable<EmptyModel> {
-        let target = JourneyAPI.createJourneyUser(journeyId: journeyId, request: request)
+    func joinPlanner(journeyId: String) -> Observable<EmptyModel> {
+        let target = JourneyAPI.joinPlanner(
+            journeyId: journeyId,
+            request: .init(tags: [])
+        )
 
         return APIService.request(target: target)
             .map(EmptyModel.self)

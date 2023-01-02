@@ -11,9 +11,8 @@ import UIKit
 
 class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View {
     typealias Reactor = InputPlannerCodeBottomSheetReactor
-    
-    private let pushPlannerInviteScreen: (_ id: String) -> PlannerInviteViewController
-    
+    private let pushPlannerScreen: (_ id: String) -> PlannerViewController
+
     // MARK: - Properties
 
     private let containerView: UIView = .init()
@@ -37,8 +36,8 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
     // MARK: - Initializer
 
     init(reactor: Reactor,
-         pushPlannerInviteScreen: @escaping (_ id: String) -> PlannerInviteViewController) {
-        self.pushPlannerInviteScreen = pushPlannerInviteScreen
+         pushPlannerScreen: @escaping (_ id: String) -> PlannerViewController) {
+        self.pushPlannerScreen = pushPlannerScreen
         super.init(mode: .drag)
         self.reactor = reactor
     }
@@ -157,7 +156,13 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
             .disposed(by: disposeBag)
 
         plannerJoinButton.rx.tap
-            .map { Reactor.Action.didTapJoinCodeButton }
+            .withUnretained(self)
+            .compactMap { this, _ in
+                this.textField.textField.text
+            }
+            .map { code in
+                Reactor.Action.didTapJoinCodeButton(code)
+            }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
@@ -176,10 +181,13 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
         reactor.state
             .map(\.isPushMyPlannerView)
             .distinctUntilChanged()
-            .filter { $0 }
-            .subscribe(onNext: { [weak self] _ in
-                guard let self, let presentingViewContoller = self.presentingViewController as? UINavigationController else { return }
-                let plannerViewController = self.pushPlannerInviteScreen("1")
+            .compactMap { $0 }
+            .subscribe(onNext: { [weak self] id in
+                guard let self,
+                      let presentingViewContoller = self.presentingViewController as? UINavigationController
+                else { return }
+                
+                let plannerViewController = self.pushPlannerScreen(id)
                 self.dismiss(animated: true, completion: {
                     presentingViewContoller.pushViewController(
                         plannerViewController,

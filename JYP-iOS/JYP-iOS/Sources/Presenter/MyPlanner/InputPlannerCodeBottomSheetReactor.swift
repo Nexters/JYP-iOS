@@ -11,30 +11,35 @@ import ReactorKit
 final class InputPlannerCodeBottomSheetReactor: Reactor {
     enum Action {
         case didChangedTextField(String)
-        case didTapJoinCodeButton
+        case didTapJoinCodeButton(String)
     }
 
     enum Mutation {
+        case changePlannerCode(String)
         case changeActivePlannerJoinButton(Bool)
-        case pushMyPlanner(Bool)
+        case pushMyPlanner(String?)
+        case validateJoin(EmptyModel)
     }
 
     struct State {
+        var plannerCode: String?
         var isActivePlannerJoinButton: Bool = false
-        var isPushMyPlannerView: Bool = false
+        var isPushMyPlannerView: String?
     }
 
     var initialState: State = .init()
+    private let provider = ServiceProvider.shared.journeyService
 
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case let .didChangedTextField(str):
-            return .just(.changeActivePlannerJoinButton(!str.isEmpty))
-        case .didTapJoinCodeButton:
-            return .concat(
-                .just(.pushMyPlanner(true)),
-                .just(.pushMyPlanner(false))
-            )
+            return .concat([
+                .just(.changeActivePlannerJoinButton(!str.isEmpty)),
+                .just(.changePlannerCode(str))
+            ])
+        case let .didTapJoinCodeButton(code):
+            return provider.joinPlanner(journeyId: code)
+                .map { .validateJoin($0) }
         }
     }
 
@@ -42,10 +47,20 @@ final class InputPlannerCodeBottomSheetReactor: Reactor {
         var newState = state
 
         switch mutation {
+        case let .changePlannerCode(code):
+            newState.plannerCode = code
         case let .changeActivePlannerJoinButton(isActive):
             newState.isActivePlannerJoinButton = isActive
-        case let .pushMyPlanner(isPush):
-            newState.isPushMyPlannerView = isPush
+        case let .pushMyPlanner(id):
+            newState.isPushMyPlannerView = id
+        case let .validateJoin(model):
+            print(model)
+            switch model.code {
+            case "20000":
+                print("success")
+                newState.isPushMyPlannerView = state.plannerCode
+            default: break
+            }
         }
 
         return newState

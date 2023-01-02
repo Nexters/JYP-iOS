@@ -19,7 +19,7 @@ enum JourneyAPI {
     case updateTags(journeyId: String, request: UpdateTagsRequest)
     case createPikmi(journeyId: String, request: CreatePikmiRequest)
     case updatePikis(journeyId: String, request: UpdatePikisRequest)
-    case createJourneyUser(journeyId: String, request: CreateJourneyUserRequest)
+    case joinPlanner(journeyId: String, request: CreateJourneyUserRequest)
     case deleteJourneyUser(journeyId: String)
     case createPikmiLike(journeyId: String, pikmiId: String)
     case deletePikmiLike(journeyId: String, pikmiId: String)
@@ -59,7 +59,7 @@ extension JourneyAPI: BaseAPI {
         case let .updatePikis(id, _):
             return "/\(id)/pikis"
             
-        case let .createJourneyUser(id, _):
+        case let .joinPlanner(id, _):
             return "/\(id)/join"
 
         case let .deleteJourneyUser(id):
@@ -78,7 +78,7 @@ extension JourneyAPI: BaseAPI {
         case .fetchJourneys, .fetchDefaultTags, .fetchJourneyTags, .fetchJourney, .fetchTags:
             return .get
             
-        case .createJourney, .createPikmi, .createJourneyUser, .createPikmiLike, .updateTags, .updatePikis, .deleteJourneyUser, .deletePikmiLike:
+        case .createJourney, .createPikmi, .joinPlanner, .createPikmiLike, .updateTags, .updatePikis, .deleteJourneyUser, .deletePikmiLike:
             return .post
         }
     }
@@ -106,7 +106,7 @@ extension JourneyAPI: BaseAPI {
         case let .updatePikis(_, request):
             return .requestJSONEncodable(request)
             
-        case let .createJourneyUser(_, request):
+        case let .joinPlanner(_, request):
             return .requestJSONEncodable(request)
         }
     }
