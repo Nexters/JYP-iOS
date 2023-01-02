@@ -14,7 +14,7 @@ final class ScheduledJourneyView: BaseView, View {
     typealias Reactor = ScheduledJourneyReactor
     typealias DataSource = RxCollectionViewSectionedReloadDataSource<ScheduledJourneySectionModel>
 
-    let pushPlannerScreen: (_ id: String) -> PlannerViewController
+    private let pushPlannerScreen: (_ id: String) -> PlannerViewController
     
     // MARK: - UI Components
 

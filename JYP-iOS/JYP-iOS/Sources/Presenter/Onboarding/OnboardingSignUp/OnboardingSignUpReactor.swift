@@ -46,7 +46,7 @@ extension OnboardingSignUpReactor {
             return didTapAppleLoginButtonMutation()
             
         case let .didLogin(authVendor, authId, name, profileImagePath):
-            return didLoginMutation(authVendor: authVendor, authId: authId, name: name, profileImagePath: profileImagePath)
+            return didLoginMutation(authVendor: authVendor, authID: authId, name: name, profileImagePath: profileImagePath)
         }
     }
     
@@ -81,9 +81,9 @@ extension OnboardingSignUpReactor {
         ])
     }
     
-    private func didLoginMutation(authVendor: AuthVendor, authId: String, name: String, profileImagePath: String) -> Observable<Mutation> {
+    private func didLoginMutation(authVendor: AuthVendor, authID: String, name: String, profileImagePath: String) -> Observable<Mutation> {
         provider.onboaringService.updateAuthVender(authVender: authVendor)
-        provider.onboaringService.updateAuthID(authId: authId)
+        provider.onboaringService.updateAuthID(authID: authID)
         provider.onboaringService.updateName(name: name)
         provider.onboaringService.updateProfileImagePath(profileImagePath: profileImagePath)
         

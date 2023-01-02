@@ -12,8 +12,8 @@ import UIKit
 class MyPlannerViewController: NavigationBarViewController, View {
     typealias Reactor = MyPlannerReactor
     
-    let pushSelectionPlannerJoinBottomScreen: () -> SelectionPlannerJoinBottomViewController
-    let pushPlannerScreen: (_ id: String) -> PlannerViewController
+    private let pushSelectionPlannerJoinBottomScreen: () -> SelectionPlannerJoinBottomViewController
+    private let pushPlannerScreen: (_ id: String) -> PlannerViewController
     
     // MARK: - UI Components
 
@@ -183,14 +183,7 @@ class MyPlannerViewController: NavigationBarViewController, View {
             .distinctUntilChanged()
             .filter { $0 }
             .subscribe(onNext: { [weak self] _ in
-                self?.goToSelectionPlannerJoinBottomViewController()
-                //FIXME: 컴포지션 루트 고치기
-//                let selectionPlannerJoinBottomSheet = SelectionPlannerJoinBottomViewController(mode: .drag)
-//
-//                self?.tabBarController?.present(
-//                    selectionPlannerJoinBottomSheet,
-//                    animated: true
-//                )
+                self?.willPushSelectionPlannerJoinBottomViewController()
             })
             .disposed(by: disposeBag)
 
@@ -198,20 +191,20 @@ class MyPlannerViewController: NavigationBarViewController, View {
             .compactMap(\.didCreatedPlannerID)
             .distinctUntilChanged()
             .subscribe(onNext: { [weak self] id in
-                self?.goToPlannerViewController(id: id)
+                self?.willPushPlannerViewController(id: id)
             })
             .disposed(by: disposeBag)
     }
 }
 
 extension MyPlannerViewController {
-    func goToSelectionPlannerJoinBottomViewController() {
+    func willPushSelectionPlannerJoinBottomViewController() {
         let viewController = pushSelectionPlannerJoinBottomScreen()
         
         self.tabBarController?.present(viewController, animated: true)
     }
     
-    func goToPlannerViewController(id: String) {
+    func willPushPlannerViewController(id: String) {
         let viewController = pushPlannerScreen(id)
         
         viewController.hidesBottomBarWhenPushed = true

@@ -9,7 +9,7 @@
 import UIKit
 
 class SelectionPlannerJoinBottomViewController: BottomSheetViewController {
-    let pushInputPlannerCodeBottomSheetScreen: () -> InputPlannerCodeBottomSheetViewController
+    private let pushInputPlannerCodeBottomSheetScreen: () -> InputPlannerCodeBottomSheetViewController
     
     // MARK: - UI Components
 
@@ -135,21 +135,7 @@ class SelectionPlannerJoinBottomViewController: BottomSheetViewController {
             .when(.recognized)
             .subscribe(onNext: { [weak self] _ in
                 self?.dismiss(animated: true, completion: {
-                    self?.goToInputPlannerCodeBottomSheetViewController()
-                    //FIXME: 고치기
-//                    let keyWindow = UIApplication.shared.connectedScenes
-//                        .filter { $0.activationState == .foregroundActive }
-//                        .map { $0 as? UIWindowScene }
-//                        .compactMap { $0 }
-//                        .first?.windows
-//                        .filter { $0.isKeyWindow }.first
-//
-//                    let inputPlannerCodeReactor = InputPlannerCodeBottomSheetReactor()
-//                    let inputPlannerCodeBottomSheetViewController = InputPlannerCodeBottomSheetViewController(reactor: inputPlannerCodeReactor)
-//                    keyWindow?.rootViewController?.present(
-//                        inputPlannerCodeBottomSheetViewController,
-//                        animated: true
-//                    )
+                    self?.willPresentInputPlannerCodeBottomSheetViewController()
                 })
             })
             .disposed(by: disposeBag)
@@ -157,7 +143,7 @@ class SelectionPlannerJoinBottomViewController: BottomSheetViewController {
 }
 
 extension SelectionPlannerJoinBottomViewController {
-    func goToInputPlannerCodeBottomSheetViewController() {
+    func willPresentInputPlannerCodeBottomSheetViewController() {
         let viewController = pushInputPlannerCodeBottomSheetScreen()
         
         let keyWindow = UIApplication.shared.connectedScenes

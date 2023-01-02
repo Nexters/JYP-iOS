@@ -12,8 +12,8 @@ import ReactorKit
 class PlannerViewController: NavigationBarViewController, View {
     typealias Reactor = PlannerReactor
     
-    let pushPlannerInviteScreen: (_ id: String) -> PlannerInviteViewController
-    let pushPlannerRouteScreen: (_ root: AnyObject.Type, _ journey: Journey, _ order: Int) -> PlannerRouteViewController
+    private let pushPlannerInviteScreen: (_ id: String) -> PlannerInviteViewController
+    private let pushPlannerRouteScreen: (_ root: AnyObject.Type, _ journey: Journey, _ order: Int) -> PlannerRouteViewController
     
     // MARK: - UI Components
     
@@ -150,14 +150,14 @@ class PlannerViewController: NavigationBarViewController, View {
         inviteButton.rx.tap
             .withUnretained(self)
             .bind { this, _ in
-                this.goToPlannerInviteViewController(id: reactor.id)
+                this.willPushPlannerInviteViewController(id: reactor.id)
             }
             .disposed(by: disposeBag)
         
         inviteStackView.inviteButton.rx.tap
             .withUnretained(self)
             .bind { this, _ in
-                this.goToPlannerInviteViewController(id: reactor.id)
+                this.willPushPlannerInviteViewController(id: reactor.id)
             }
             .disposed(by: disposeBag)
         
@@ -247,20 +247,20 @@ class PlannerViewController: NavigationBarViewController, View {
             .bind { this, order in
                 let root = type(of: self)
                 guard let journey = reactor.currentState.journey else { return }
-                this.goToPlannerRouteViewController(root: root, journey: journey, order: order)
+                this.willPushPlannerRouteViewController(root: root, journey: journey, order: order)
             }
             .disposed(by: disposeBag)
     }
 }
 
 extension PlannerViewController {
-    func goToPlannerInviteViewController(id: String) {
+    func willPushPlannerInviteViewController(id: String) {
         let viewController = pushPlannerInviteScreen(id)
         viewController.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(viewController, animated: true)
     }
     
-    func goToPlannerRouteViewController(root: AnyObject.Type, journey: Journey, order: Int) {
+    func willPushPlannerRouteViewController(root: AnyObject.Type, journey: Journey, order: Int) {
         let viewController = pushPlannerRouteScreen(root, journey, order)
         viewController.hidesBottomBarWhenPushed = true
         self.navigationController?.pushViewController(viewController, animated: true)

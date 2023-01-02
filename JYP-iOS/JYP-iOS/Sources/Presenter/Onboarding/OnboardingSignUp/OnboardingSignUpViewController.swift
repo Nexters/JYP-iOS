@@ -209,21 +209,13 @@ extension OnboardingSignUpViewController: ASAuthorizationControllerDelegate, ASA
     func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
         switch authorization.credential {
         case let appleIDCredential as ASAuthorizationAppleIDCredential:
-//            let userIdentifier = appleIDCredential.user
-//            let email = appleIDCredential.email
             let fullName = appleIDCredential.fullName
             
-            if let authorizationCode = appleIDCredential.authorizationCode,
-                let identityToken = appleIDCredential.identityToken,
-                let _ = String(data: authorizationCode, encoding: .utf8),
+            if let identityToken = appleIDCredential.identityToken,
                 let tokenString = String(data: identityToken, encoding: .utf8) {
                 self.reactor?.action.onNext(.didLogin(authVendor: .apple, authId: tokenString, name: String(describing: fullName), profileImagePath: ""))
             }
             
-//        case let passwordCredential as ASPasswordCredential:
-//            let username = passwordCredential.user
-//            let password = passwordCredential.password
-//            break
         default:
             break
         }

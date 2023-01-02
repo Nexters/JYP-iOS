@@ -14,7 +14,7 @@ final class PastJourneyView: BaseView, View {
     typealias Reactor = PastJourneyReactor
     typealias DataSource = RxCollectionViewSectionedReloadDataSource<PastJourneySectionModel>
 
-    let pushPlannerScreen: (_ id: String) -> PlannerViewController
+    private let pushPlannerScreen: (_ id: String) -> PlannerViewController
     
     // MARK: - UI Components
 

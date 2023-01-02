@@ -10,11 +10,10 @@ import UIKit
 
 struct AppDependency {
     let window: UIWindow
-    let configureSDKs: () -> Void
     let configureAppearance: () -> Void
 }
 
-class CompositionRoot {
+final class CompositionRoot {
     static func resolve(windowScene: UIWindowScene) -> AppDependency {
         let window = UIWindow(windowScene: windowScene)
         window.backgroundColor = .white
@@ -23,12 +22,9 @@ class CompositionRoot {
         window.rootViewController = makeTabBarScreen()
         
         return AppDependency(window: window,
-                             configureSDKs: self.configureSDKs,
                              configureAppearance: self.configureAppearance)
     }
-    
-    static func configureSDKs() { }
-    
+     
     static func configureAppearance() { }
 }
 
@@ -94,7 +90,9 @@ extension CompositionRoot {
         let viewController = MyPlannerViewController(reactor: reactor,
                                                      pushSelectionPlannerJoinBottomScreen: pushSelectionPlannerJoinBottomScreen,
                                                      pushPlannerScreen: pushPlannerScreen)
-        let tabBarItem = UITabBarItem(title: nil, image: JYPIOSAsset.myJourneyInactive.image.withRenderingMode(.alwaysOriginal), selectedImage: JYPIOSAsset.myJourneyActive.image.withRenderingMode(.alwaysOriginal))
+        let tabBarItem = UITabBarItem(title: nil,
+                                      image: JYPIOSAsset.myJourneyInactive.image.withRenderingMode(.alwaysOriginal),
+                                      selectedImage: JYPIOSAsset.myJourneyActive.image.withRenderingMode(.alwaysOriginal))
         
         tabBarItem.imageInsets = .init(top: 9, left: 0, bottom: -9, right: 0)
         viewController.tabBarItem = tabBarItem
@@ -104,7 +102,9 @@ extension CompositionRoot {
     
     static func makeAnotherJourneyScreen() -> AnotherJourneyViewController {
         let viewController = AnotherJourneyViewController()
-        let tabBarItem = UITabBarItem(title: nil, image: JYPIOSAsset.anotherJourneyInactive.image.withRenderingMode(.alwaysOriginal), selectedImage: JYPIOSAsset.anotherJourneyActive.image.withRenderingMode(.alwaysOriginal))
+        let tabBarItem = UITabBarItem(title: nil,
+                                      image: JYPIOSAsset.anotherJourneyInactive.image.withRenderingMode(.alwaysOriginal),
+                                      selectedImage: JYPIOSAsset.anotherJourneyActive.image.withRenderingMode(.alwaysOriginal))
         
         tabBarItem.imageInsets = .init(top: 9, left: 0, bottom: -9, right: 0)
         viewController.tabBarItem = tabBarItem
@@ -114,7 +114,9 @@ extension CompositionRoot {
     
     static func makeMyPageScreen() -> MyPageViewController {
         let viewController = MyPageViewController()
-        let tabBarItem = UITabBarItem(title: nil, image: JYPIOSAsset.myPageInactive.image.withRenderingMode(.alwaysOriginal), selectedImage: JYPIOSAsset.myPageActive.image.withRenderingMode(.alwaysOriginal))
+        let tabBarItem = UITabBarItem(title: nil,
+                                      image: JYPIOSAsset.myPageInactive.image.withRenderingMode(.alwaysOriginal),
+                                      selectedImage: JYPIOSAsset.myPageActive.image.withRenderingMode(.alwaysOriginal))
         
         tabBarItem.imageInsets = .init(top: 9, left: 0, bottom: -9, right: 0)
         viewController.tabBarItem = tabBarItem

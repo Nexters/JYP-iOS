@@ -12,7 +12,7 @@ import UIKit
 class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View {
     typealias Reactor = InputPlannerCodeBottomSheetReactor
     
-    let pushPlannerInviteScreen: (_ id: String) -> PlannerInviteViewController
+    private let pushPlannerInviteScreen: (_ id: String) -> PlannerInviteViewController
     
     // MARK: - Properties
 
@@ -178,9 +178,6 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
             .distinctUntilChanged()
             .filter { $0 }
             .subscribe(onNext: { [weak self] _ in
-                //FIXME: 컴포지션 루트 고치기
-//                let plannerReactor = PlannerReactor(id: "1")
-//                let plannerViewController = PlannerViewController(reactor: plannerReactor)
                 guard let self, let presentingViewContoller = self.presentingViewController as? UINavigationController else { return }
                 let plannerViewController = self.pushPlannerInviteScreen("1")
                 self.dismiss(animated: true, completion: {

@@ -20,7 +20,7 @@ protocol OnboardingServiceProtocol {
     
     func updatePersonalityIDData(index: Int, int: Int)
     func updateAuthVender(authVender: AuthVendor)
-    func updateAuthID(authId: String)
+    func updateAuthID(authID: String)
     func updateName(name: String)
     func updateProfileImagePath(profileImagePath: String)
 }
@@ -29,7 +29,7 @@ class OnboardingService: BaseService, OnboardingServiceProtocol {
     let event = PublishSubject<OnboardingEvent>()
     
     private var authVendor: AuthVendor = .kakao
-    private var authId: String = ""
+    private var authID: String = ""
     private var name: String = ""
     private var profileImagePath: String = ""
     private var personalityID: PersonalityID = .ME
@@ -60,11 +60,11 @@ class OnboardingService: BaseService, OnboardingServiceProtocol {
         try? provider.keychainService.setAuthVendor(authVender)
     }
     
-    func updateAuthID(authId: String) {
-        self.authId = authId
+    func updateAuthID(authID: String) {
+        self.authID = authID
         
-        if authId.isEmpty == false {
-            try? provider.keychainService.setAccessToken(authId)
+        if authID.isEmpty == false {
+            try? provider.keychainService.setAccessToken(authID)
         }
     }
     
@@ -79,7 +79,7 @@ class OnboardingService: BaseService, OnboardingServiceProtocol {
     func updateProfileImagePath(profileImagePath: String) {
         self.profileImagePath = profileImagePath
         
-        if profileImagePath.isEmpty == false {
+        if !profileImagePath.isEmpty {
             try? provider.keychainService.setImagePath(profileImagePath)
         }
     }
