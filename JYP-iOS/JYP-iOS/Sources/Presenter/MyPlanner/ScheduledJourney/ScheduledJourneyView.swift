@@ -15,7 +15,8 @@ final class ScheduledJourneyView: BaseView, View {
     typealias DataSource = RxCollectionViewSectionedReloadDataSource<ScheduledJourneySectionModel>
 
     private let pushPlannerScreen: (_ id: String) -> PlannerViewController
-    
+    private let pushSelectionPlannerJoinBottomScreen: () -> SelectionPlannerJoinBottomViewController
+
     // MARK: - UI Components
 
     private let layout: UICollectionViewFlowLayout = .init()
@@ -33,10 +34,9 @@ final class ScheduledJourneyView: BaseView, View {
                           let parentView = self.reactor?.currentState.parentView
                     else { return }
 
-                    let selectionPlannerJoinBottomSheet = SelectionPlannerJoinBottomViewController(mode: .drag)
-
+                    let viewController = self.pushSelectionPlannerJoinBottomScreen()
                     parentView.tabBarController?.present(
-                        selectionPlannerJoinBottomSheet,
+                        viewController,
                         animated: true
                     )
                 })
@@ -53,9 +53,13 @@ final class ScheduledJourneyView: BaseView, View {
 
     // MARK: - Initializer
 
-    init(reactor: Reactor,
-         pushPlannerScreen: @escaping (_ id: String) -> PlannerViewController) {
+    init(
+        reactor: Reactor,
+        pushPlannerScreen: @escaping (_ id: String) -> PlannerViewController,
+        pushSelectionPlannerJoinBottomScreen: @escaping () -> SelectionPlannerJoinBottomViewController
+    ) {
         self.pushPlannerScreen = pushPlannerScreen
+        self.pushSelectionPlannerJoinBottomScreen = pushSelectionPlannerJoinBottomScreen
         super.init(frame: .zero)
         self.reactor = reactor
     }
