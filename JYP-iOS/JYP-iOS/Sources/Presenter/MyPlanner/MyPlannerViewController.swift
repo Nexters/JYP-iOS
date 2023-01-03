@@ -11,7 +11,10 @@ import UIKit
 
 class MyPlannerViewController: NavigationBarViewController, View {
     typealias Reactor = MyPlannerReactor
-
+    
+    private let pushSelectionPlannerJoinBottomScreen: () -> SelectionPlannerJoinBottomViewController
+    private let pushPlannerScreen: (_ id: String) -> PlannerViewController
+    
     // MARK: - UI Components
 
     let headerView: UIView = .init()
@@ -24,12 +27,16 @@ class MyPlannerViewController: NavigationBarViewController, View {
 
     let menuDivider: UIView = .init()
 
-    lazy var scheduledJourneyView: ScheduledJourneyView = .init(reactor: ScheduledJourneyReactor(parent: self))
-    lazy var pastJourneyView: PastJourneyView = .init(reactor: PastJourneyReactor(parent: self))
+    lazy var scheduledJourneyView: ScheduledJourneyView = .init(reactor: ScheduledJourneyReactor(parent: self), pushPlannerScreen: pushPlannerScreen)
+    lazy var pastJourneyView: PastJourneyView = .init(reactor: PastJourneyReactor(parent: self), pushPlannerScreen: pushPlannerScreen)
 
     // MARK: - Initializer
 
-    init(reactor: Reactor) {
+    init(reactor: Reactor,
+         pushSelectionPlannerJoinBottomScreen: @escaping () -> SelectionPlannerJoinBottomViewController,
+         pushPlannerScreen: @escaping (_ id: String) -> PlannerViewController) {
+        self.pushSelectionPlannerJoinBottomScreen = pushSelectionPlannerJoinBottomScreen
+        self.pushPlannerScreen = pushPlannerScreen
         super.init(nibName: nil, bundle: nil)
         self.reactor = reactor
     }
@@ -176,12 +183,7 @@ class MyPlannerViewController: NavigationBarViewController, View {
             .distinctUntilChanged()
             .filter { $0 }
             .subscribe(onNext: { [weak self] _ in
-                let selectionPlannerJoinBottomSheet = SelectionPlannerJoinBottomViewController(mode: .drag)
-
-                self?.tabBarController?.present(
-                    selectionPlannerJoinBottomSheet,
-                    animated: true
-                )
+                self?.willPushSelectionPlannerJoinBottomViewController()
             })
             .disposed(by: disposeBag)
 
@@ -189,12 +191,23 @@ class MyPlannerViewController: NavigationBarViewController, View {
             .compactMap(\.didCreatedPlannerID)
             .distinctUntilChanged()
             .subscribe(onNext: { [weak self] id in
-                let plannerViewController = PlannerViewController(
-                    reactor: PlannerReactor(id: id)
-                )
-
-                self?.tabBarController?.navigationController?.pushViewController(plannerViewController, animated: true)
+                self?.willPushPlannerViewController(id: id)
             })
             .disposed(by: disposeBag)
+    }
+}
+
+extension MyPlannerViewController {
+    func willPushSelectionPlannerJoinBottomViewController() {
+        let viewController = pushSelectionPlannerJoinBottomScreen()
+        
+        self.tabBarController?.present(viewController, animated: true)
+    }
+    
+    func willPushPlannerViewController(id: String) {
+        let viewController = pushPlannerScreen(id)
+        
+        viewController.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(viewController, animated: true)
     }
 }

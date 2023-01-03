@@ -34,11 +34,14 @@ extension UserAPI: BaseAPI {
 
     var method: Moya.Method {
         switch self {
-        case .fetchUser: return .get
+        case .fetchUser:
+            return .get
             
-        case .updateUser: return .patch
+        case .updateUser:
+            return .patch
             
-        case .createUser: return .post
+        case .createUser:
+            return .post
         }
     }
 
@@ -53,12 +56,5 @@ extension UserAPI: BaseAPI {
         case let .createUser(request):
             return .requestJSONEncodable(request)
         }
-    }
-
-    var headers: [String: String]? {
-        [
-            "jyp-jwt-master-key": Environment.jwtKey,
-            "jyp-override-id": "1"
-        ]
     }
 }

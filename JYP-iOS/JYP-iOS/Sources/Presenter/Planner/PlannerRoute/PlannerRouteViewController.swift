@@ -11,15 +11,9 @@ import ReactorKit
 import RxDataSources
 
 class PlannerRouteViewController: NavigationBarViewController, View {
-    typealias Reactor = PlannerRouteReactor
-    
-    // MARK: - UI Components
-    
-    let emptyLabel: UILabel = .init()
-    let routeCollectionView: UICollectionView = .init(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-    let pikmiRouteCollectionView: UICollectionView = .init(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-    
     // MARK: - Properties
+    
+    typealias Reactor = PlannerRouteReactor
     
     private lazy var routeDataSource = RxCollectionViewSectionedReloadDataSource<RouteSectionModel> { [weak self] _, collectionView, indexPath, item -> UICollectionViewCell in
         switch item {
@@ -48,9 +42,19 @@ class PlannerRouteViewController: NavigationBarViewController, View {
         }
     }
     
+    let root: AnyObject.Type
+    
+    // MARK: - UI Components
+    
+    let emptyLabel: UILabel = .init()
+    let routeCollectionView: UICollectionView = .init(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+    let pikmiRouteCollectionView: UICollectionView = .init(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+    let doneButton: JYPButton = .init(type: .done)
+    
     // MARK: - Initializer
     
-    init(reactor: Reactor) {
+    init(reactor: Reactor, root: AnyObject.Type) {
+        self.root = root
         super.init(nibName: nil, bundle: nil)
         
         self.reactor = reactor
@@ -65,9 +69,6 @@ class PlannerRouteViewController: NavigationBarViewController, View {
     
     override func setupNavigationBar() {
         super.setupNavigationBar()
-        
-        setNavigationBarTitleText("DAY 1")
-        setNavigationBarSubTitleText("7월 18일")
     }
     
     override func setupProperty() {
@@ -84,13 +85,14 @@ class PlannerRouteViewController: NavigationBarViewController, View {
         pikmiRouteCollectionView.register(PikmiRouteCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: PikmiRouteCollectionViewCell.self))
         pikmiRouteCollectionView.register(RouteCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: RouteCollectionViewCell.self))
         pikmiRouteCollectionView.register(PikmiRouteCollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: PikmiRouteCollectionReusableView.self))
+        
+        doneButton.isEnabled = true
     }
     
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        contentView.addSubviews([routeCollectionView, pikmiRouteCollectionView])
-        
+        contentView.addSubviews([routeCollectionView, pikmiRouteCollectionView, doneButton])
         routeCollectionView.addSubviews([emptyLabel])
     }
     
@@ -110,6 +112,12 @@ class PlannerRouteViewController: NavigationBarViewController, View {
             $0.top.equalTo(routeCollectionView.snp.bottom)
             $0.leading.trailing.bottom.equalToSuperview()
         }
+        
+        doneButton.snp.makeConstraints {
+            $0.leading.trailing.equalToSuperview().inset(24)
+            $0.bottom.equalToSuperview().inset(34)
+            $0.height.equalTo(52)
+        }
     }
     
     func bind(reactor: Reactor) {
@@ -123,8 +131,16 @@ class PlannerRouteViewController: NavigationBarViewController, View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
-        pikmiRouteCollectionView.rx.itemSelected
-            .map { .tapPikmiRouteCell($0) }
+        Observable
+            .zip(
+                pikmiRouteCollectionView.rx.itemSelected,
+                pikmiRouteCollectionView.rx.modelSelected(type(of: self.pikmiRouteDataSource).Section.Item.self))
+            .map { .tapPikmiRouteCell($0, $1) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        doneButton.rx.tap
+            .map { .tapDoneButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
@@ -136,13 +152,13 @@ class PlannerRouteViewController: NavigationBarViewController, View {
             }
             .disposed(by: disposeBag)
         
-        reactor.state
-            .map(\.date)
-            .withUnretained(self)
-            .bind { this, date in
-                this.setNavigationBarSubTitleText(DateManager.dateToString(format: "M월 d일", date: date))
-            }
-            .disposed(by: disposeBag)
+//        reactor.state
+//            .map(\.date)
+//            .withUnretained(self)
+//            .bind { this, date in
+//                this.setNavigationBarSubTitleText(DateManager.dateToString(format: "M월 d일", date: date))
+//            }
+//            .disposed(by: disposeBag)
         
         reactor.state
             .map(\.routeSections)
@@ -175,6 +191,23 @@ class PlannerRouteViewController: NavigationBarViewController, View {
                 this.pikmiRouteCollectionView.collectionViewLayout = layout
             }
             .disposed(by: disposeBag)
+        
+        reactor.state
+            .map(\.didUpdatePikis)
+            .filter { $0 }
+            .withUnretained(self)
+            .bind { this, _ in
+                this.backToRootViewController(root: this.root)
+            }
+            .disposed(by: disposeBag)
+    }
+}
+
+extension PlannerRouteViewController {
+    func backToRootViewController(root: AnyObject.Type) {
+        guard let viewController = self.navigationController?.viewControllers.filter({ type(of: $0).isEqual(root) }).first else { return }
+
+        self.navigationController?.popToViewController(viewController, animated: true)
     }
 }
 

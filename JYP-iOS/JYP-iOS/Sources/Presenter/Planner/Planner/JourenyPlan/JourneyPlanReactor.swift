@@ -81,25 +81,31 @@ extension JourneyPlanReactor {
     private func tapEditButtonMutation(_ indexPath: IndexPath) -> Observable<Mutation> {
         guard let journey = currentState.journey else { return .empty() }
         guard case let .plan(reactor) = currentState.sections[indexPath.section].items[indexPath.item] else { return .empty() }
-        provider.plannerService.presentPlannerRoute(from: makeReactor(from: reactor, pikis: journey.pikidays[indexPath.section].pikis, pikmis: journey.pikmis))
+        provider.plannerService.showPlannerRouteScreen(order: indexPath.section - 1)
+//        provider.plannerService.presentPlannerRoute(from: makeReactor(from: reactor, pikis: journey.pikidays[indexPath.section - 1].pikis, pikmis: journey.pikmis))
         return .empty()
     }
     
     private func tapPlusButtonMutation(_ indexPath: IndexPath) -> Observable<Mutation> {
         guard let journey = currentState.journey else { return .empty() }
         guard case let .emptyPlan(reactor) = currentState.sections[indexPath.section].items[indexPath.item] else { return .empty() }
-        provider.plannerService.presentPlannerRoute(from: makeReactor(from: reactor, pikis: journey.pikidays[indexPath.section].pikis, pikmis: journey.pikmis))
+        provider.plannerService.showPlannerRouteScreen(order: indexPath.section - 1)
+//        provider.plannerService.presentPlannerRoute(from: makeReactor(from: reactor, pikis: journey.pikidays[indexPath.section - 1].pikis, pikmis: journey.pikmis))
         return .empty()
     }
     
     private func makeSections(from journey: Journey) -> [JourneyPlanSectionModel] {
-        var journeyPlanSectionModels: [JourneyPlanSectionModel] = []
+        var sections: [JourneyPlanSectionModel] = []
         
-        let daySectionItems = journey.pikidays.enumerated().map { (index, _) -> JourneyPlanItem in
+        let dayItems = journey.pikidays.enumerated().map { (index, _) -> JourneyPlanItem in
             return JourneyPlanItem.dayTag(DayTagCollectionViewCellReactor(state: .init(day: index + 1)))
         }
         
-        let journeySectionModels = journey.pikidays.enumerated().map { (index, pikiday) -> JourneyPlanSectionModel in
+        if dayItems.isEmpty == false {
+            sections.append(.init(model: .day(dayItems), items: dayItems))
+        }
+        
+        journey.pikidays.enumerated().forEach { (index, pikiday) in
             var journeyPlanItems: [JourneyPlanItem] = []
             
             if pikiday.pikis.isEmpty {
@@ -114,24 +120,19 @@ extension JourneyPlanReactor {
                 journeyPlanItems.append(contentsOf: sectionItems)
             }
             
-            return JourneyPlanSectionModel(model: JourneyPlanSection.journey(journeyPlanItems), items: journeyPlanItems)
+            sections.append(.init(model: .journey(journeyPlanItems), items: journeyPlanItems))
         }
-        
-        let daySection = JourneyPlanSectionModel(model: JourneyPlanSection.day(daySectionItems), items: daySectionItems)
-        
-        journeyPlanSectionModels.append(daySection)
-        journeyPlanSectionModels.append(contentsOf: journeySectionModels)
-        
-        return journeyPlanSectionModels
+        print("[D] \(sections)")
+        return sections
     }
     
-    private func makeReactor(from reactor: PlanCollectionViewCellReactor, pikis: [Pik], pikmis: [Pik]) -> PlannerRouteReactor {
-        let state = reactor.currentState
-        return .init(state: .init(order: state.order, date: state.date, pikis: pikis, pikmis: pikmis))
-    }
+//    private func makeReactor(from reactor: PlanCollectionViewCellReactor, pikis: [Pik], pikmis: [Pik]) -> PlannerRouteReactor {
+//        let state = reactor.currentState
+//        return .init(state: .init(id: currentState.id, order: state.order, date: state.date, pikis: pikis, pikmis: pikmis))
+//    }
     
-    private func makeReactor(from reactor: EmptyPlanCollectionViewCellReactor, pikis: [Pik], pikmis: [Pik]) -> PlannerRouteReactor {
-        let state = reactor.currentState
-        return .init(state: .init(order: state.order, date: state.date, pikis: pikis, pikmis: pikmis))
-    }
+//    private func makeReactor(from reactor: EmptyPlanCollectionViewCellReactor, pikis: [Pik], pikmis: [Pik]) -> PlannerRouteReactor {
+//        let state = reactor.currentState
+//        return .init(state: .init(id: currentState.id, order: state.order, date: state.date, pikis: pikis, pikmis: pikmis))
+//    }
 }

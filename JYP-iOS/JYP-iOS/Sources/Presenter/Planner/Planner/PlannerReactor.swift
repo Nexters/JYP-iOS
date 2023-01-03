@@ -6,46 +6,50 @@
 //  Copyright © 2022 JYP-iOS. All rights reserved.
 //
 
-import Foundation
 import ReactorKit
+import UIKit
 
 class PlannerReactor: Reactor {
     enum Action {
-        case refresh
+        case refresh(UIViewController)
         case showDiscussion
         case showJourneyPlan
-        case invite
+//        case invite
     }
 
     enum Mutation {
         case setJourney(Journey)
         case setIsShowDiscussion(Bool)
         case setIsShowJourneyPlan(Bool)
-        case setPlannerInviteReactor(PlannerInviteReactor?)
+//        case setPlannerInviteReactor(PlannerInviteReactor?)
         case setTagBottomSheetReactor(TagBottomSheetReactor?)
         case setPlannerSearchPlaceReactor(PlannerSearchPlaceReactor?)
-        case setPlannerRouteReactor(PlannerRouteReactor?)
+//        case setPlannerRouteReactor(PlannerRouteReactor?)
         case setWebReactor(WebReactor?)
+        case setOrderPlannerRouteScreen(Int?)
     }
 
     struct State {
-        var id: String
         var journey: Journey?
         var isShowDiscussion: Bool = true
         var isShowJourneyPlan: Bool = false
-        var plannerInviteReactor: PlannerInviteReactor?
+//        var plannerInviteReactor: PlannerInviteReactor?
         var tagBottomSheetReactor: TagBottomSheetReactor?
         var plannerSearchPlaceReactor: PlannerSearchPlaceReactor?
-        var plannerRouteReactor: PlannerRouteReactor?
+//        var plannerRouteReactor: PlannerRouteReactor?
         var webReactor: WebReactor?
+        var orderPlannerRouteScreen: Int?
     }
 
     let provider = ServiceProvider.shared
 
     var initialState: State
-
+    
+    let id: String
+    
     init(id: String) {
-        initialState = .init(id: id)
+        self.id = id
+        self.initialState = .init()
     }
 
     func mutate(action: Action) -> Observable<Mutation> {
@@ -66,11 +70,11 @@ class PlannerReactor: Reactor {
                 .just(.setIsShowJourneyPlan(true))
             ])
 
-        case .invite:
-            return .concat([
-                .just(.setPlannerInviteReactor(makeReactor())),
-                .just(.setPlannerInviteReactor(nil))
-            ])
+//        case .invite:
+//            return .concat([
+//                .just(.setPlannerInviteReactor(makeReactor())),
+//                .just(.setPlannerInviteReactor(nil))
+//            ])
         }
     }
 
@@ -88,7 +92,7 @@ class PlannerReactor: Reactor {
         let eventMutation = provider.plannerService.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
             switch event {
             case .refresh:
-                this.provider.journeyService.fetchJorney(id: this.currentState.id)
+                this.provider.journeyService.fetchJorney(id: this.id)
                 return .empty()
 
             case let .presentTagBottomSheet(reactor):
@@ -97,14 +101,20 @@ class PlannerReactor: Reactor {
             case let .presentPlannerSearchPlace(reactor):
                 return .just(.setPlannerSearchPlaceReactor(reactor))
 
-            case let .presentPlannerRoute(reactor):
-                return .concat([
-                    .just(.setPlannerRouteReactor(reactor)),
-                    .just(.setPlannerRouteReactor(nil))
-                ])
+//            case let .presentPlannerRoute(reactor):
+//                return .concat([
+//                    .just(.setPlannerRouteReactor(reactor)),
+//                    .just(.setPlannerRouteReactor(nil))
+//                ])
 
             case let .presentWeb(reactor):
                 return .just(.setWebReactor(reactor))
+                
+            case let .showPlannerRouteScreen(order):
+                return .concat([
+                    .just(.setOrderPlannerRouteScreen(order)),
+                    .just(.setOrderPlannerRouteScreen(nil))
+                ])
             }
         }
 
@@ -124,8 +134,8 @@ class PlannerReactor: Reactor {
         case let .setIsShowJourneyPlan(bool):
             newState.isShowJourneyPlan = bool
 
-        case let .setPlannerInviteReactor(reactor):
-            newState.plannerInviteReactor = reactor
+//        case let .setPlannerInviteReactor(reactor):
+//            newState.plannerInviteReactor = reactor
 
         case let .setTagBottomSheetReactor(reactor):
             newState.tagBottomSheetReactor = reactor
@@ -133,17 +143,20 @@ class PlannerReactor: Reactor {
         case let .setPlannerSearchPlaceReactor(reactor):
             newState.plannerSearchPlaceReactor = reactor
 
-        case let .setPlannerRouteReactor(reactor):
-            newState.plannerRouteReactor = reactor
+//        case let .setPlannerRouteReactor(reactor):
+//            newState.plannerRouteReactor = reactor
 
         case let .setWebReactor(reactor):
             newState.webReactor = reactor
+            
+        case let .setOrderPlannerRouteScreen(order):
+            newState.orderPlannerRouteScreen = order
         }
 
         return newState
     }
 
     private func makeReactor() -> PlannerInviteReactor {
-        .init(id: currentState.id)
+        .init(id: id)
     }
 }

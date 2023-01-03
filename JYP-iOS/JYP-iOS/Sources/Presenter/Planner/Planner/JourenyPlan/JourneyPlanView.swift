@@ -49,10 +49,11 @@ class JourneyPlanView: BaseView, View {
         guard let reactor = self?.reactor else { return .init() }
         switch dataSource[indexPath.section].model {
         case let .journey(items):
-            guard case let .plan(cellReactor) = items.first else { return .init() }
+            print("[D] \(indexPath)")
+            guard case let .plan(cellReactor) = items[indexPath.item] else { return .init() }
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: PikiCollectionReusableView.self), for: indexPath) as? PikiCollectionReusableView else { return .init() }
-
-            header.reactor = PikiCollectionReusableViewReactor(state: .init(order: cellReactor.currentState.order, date: cellReactor.currentState.date))
+            
+            header.reactor = PikiCollectionReusableViewReactor(journey: reactor.currentState.journey, order: indexPath.section - 1)
             
             header.trailingButton.rx.tap
                 .map { .tapEditButton(indexPath) }
@@ -105,11 +106,13 @@ class JourneyPlanView: BaseView, View {
     }
     
     func bind(reactor: Reactor) {
-        reactor.state.map(\.sections).asObservable()
+        reactor.state.map(\.sections)
+            .asObservable()
             .withUnretained(self)
             .bind { this, sections in
                 this.dataSource.setSections(sections)
                 this.collectionView.collectionViewLayout = this.makeLayout(sections: sections)
+                this.collectionView.reloadData()
             }
             .disposed(by: disposeBag)
     }
@@ -173,7 +176,16 @@ extension JourneyPlanView {
         
         let section = NSCollectionLayoutSection(group: group)
         section.contentInsets = .init(top: 10, leading: 20, bottom: 12, trailing: 20)
-        if sectionItems.count > 1 {
+        
+        var isHeader = true
+        
+        sectionItems.forEach({ item in
+            if case .plan = item {} else {
+                isHeader = false
+            }
+        })
+        
+        if isHeader && sectionItems.count >= 1 {
             let header = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(50)), elementKind: UICollectionView.elementKindSectionHeader, alignment: .top)
             
             section.boundarySupplementaryItems = [header]

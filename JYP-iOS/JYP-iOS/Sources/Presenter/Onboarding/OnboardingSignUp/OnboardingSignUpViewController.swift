@@ -183,7 +183,7 @@ extension OnboardingSignUpViewController: ASAuthorizationControllerDelegate, ASA
                         if let error = error {
                             print(error)
                         } else {
-                            self.reactor?.action.onNext(.didLogin(authVendor: .kakao, authId: oauthToken?.accessToken ?? "", name: user?.properties?["nickname"] ?? "TEST", profileImagePath: user?.properties?["profile_image"] ?? ""))
+                            self.reactor?.action.onNext(.didLogin(authVendor: .kakao, authId: oauthToken?.accessToken ?? "", name: user?.properties?["nickname"] ?? "", profileImagePath: user?.properties?["profile_image"] ?? ""))
                         }
                     }
                 }
@@ -209,17 +209,13 @@ extension OnboardingSignUpViewController: ASAuthorizationControllerDelegate, ASA
     func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
         switch authorization.credential {
         case let appleIDCredential as ASAuthorizationAppleIDCredential:
-            let userIdentifier = appleIDCredential.user
             let fullName = appleIDCredential.fullName
-            let email = appleIDCredential.email
             
-            if let authorizationCode = appleIDCredential.authorizationCode, let identityToken = appleIDCredential.identityToken, let authString = String(data: authorizationCode, encoding: .utf8), let tokenString = String(data: identityToken, encoding: .utf8) {
+            if let identityToken = appleIDCredential.identityToken,
+                let tokenString = String(data: identityToken, encoding: .utf8) {
                 self.reactor?.action.onNext(.didLogin(authVendor: .apple, authId: tokenString, name: String(describing: fullName), profileImagePath: ""))
             }
             
-        case let passwordCredential as ASPasswordCredential:
-            let username = passwordCredential.user
-            let password = passwordCredential.password
         default:
             break
         }

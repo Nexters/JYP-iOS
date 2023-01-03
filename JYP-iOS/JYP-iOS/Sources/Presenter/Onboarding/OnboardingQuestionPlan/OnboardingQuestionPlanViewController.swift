@@ -85,14 +85,14 @@ class OnboardingQuestionPlanViewController: NavigationBarViewController, View {
             }
             .disposed(by: disposeBag)
         
-        reactor.state
-            .compactMap(\.myPlannerReactor)
-            .withUnretained(self)
-            .bind { this, reactor in
-                let myPlannerViewController = MyPlannerViewController(reactor: reactor)
-                
-                this.navigationController?.pushViewController(myPlannerViewController, animated: true)
-            }
-            .disposed(by: disposeBag)
+//        reactor.state
+//            .compactMap(\.myPlannerReactor)
+//            .withUnretained(self)
+//            .bind { this, reactor in
+//                let myPlannerViewController = MyPlannerViewController(reactor: reactor, p)
+//
+//                this.navigationController?.pushViewController(myPlannerViewController, animated: true)
+//            }
+//            .disposed(by: disposeBag)
     }
 }

@@ -8,6 +8,6 @@
 
 import Foundation
 
-struct EditPikisResponse: Codable {
+struct UpdatePikisResponse: Codable {
     let ids: [String]
 }

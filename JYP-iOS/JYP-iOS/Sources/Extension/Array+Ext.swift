@@ -12,4 +12,8 @@ extension Array {
     func indexExists(_ index: Int) -> Bool {
         return self.indices.contains(index)
     }
+    
+    subscript (safe index: Int) -> Element? {
+        return indices ~= index ? self[index] : nil
+    }
 }

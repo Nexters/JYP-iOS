@@ -9,19 +9,18 @@
 import ReactorKit
 
 class PlannerInviteReactor: Reactor {
-    enum Action {
-    }
+    enum Action { }
     
-    enum Mutation {
-    }
+    enum Mutation { }
     
-    struct State {
-        var id: String
-    }
+    struct State { }
     
     var initialState: State
     
+    let id: String
+    
     init(id: String) {
-        self.initialState = State(id: id)
+        self.id = id
+        self.initialState = .init()
     }
 }
