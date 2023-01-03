@@ -71,10 +71,22 @@ extension CompositionRoot {
             return controller
         }
         
+        let pushCreatePlannerTagScreen: () -> CreatePlannerTagViewController = {
+            let reactor = CreatePlannerTagReactor(
+                provider: ServiceProvider.shared,
+                journey: .init(id: "", name: "", startDate: 0.0, endDate: 0.0, themePath: .default, users: [])
+            )
+            let viewController = CreatePlannerTagViewController(reactor: reactor)
+            return viewController
+        }
+        
         let pushInputPlannerCodeBottomSheetScreen: () -> InputPlannerCodeBottomSheetViewController = {
             let reactor = InputPlannerCodeBottomSheetReactor()
-            let controller = InputPlannerCodeBottomSheetViewController(reactor: reactor,
-                                                                       pushPlannerScreen: pushPlannerScreen)
+            let controller = InputPlannerCodeBottomSheetViewController(
+                reactor: reactor,
+                pushPlannerScreen: pushPlannerScreen,
+                pushCreatePlannerTagScreen: pushCreatePlannerTagScreen
+            )
             
             return controller
         }

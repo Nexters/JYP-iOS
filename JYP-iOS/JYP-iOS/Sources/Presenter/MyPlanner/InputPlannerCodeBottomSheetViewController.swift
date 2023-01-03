@@ -11,7 +11,9 @@ import UIKit
 
 class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View {
     typealias Reactor = InputPlannerCodeBottomSheetReactor
+
     private let pushPlannerScreen: (_ id: String) -> PlannerViewController
+    private let pushCreatePlannerTagScreen: () -> CreatePlannerTagViewController
 
     // MARK: - Properties
 
@@ -25,7 +27,7 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
 
     private let textField: JYPSearchTextField = .init(type: .tag)
 
-    private let plannerJoinButton: JYPButton = .init(type: .plannerJoin)
+    private let plannerJoinButton: JYPButton = .init(type: .next)
 
     private let joinCodeButton: UIButton = .init()
 
@@ -35,9 +37,13 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
 
     // MARK: - Initializer
 
-    init(reactor: Reactor,
-         pushPlannerScreen: @escaping (_ id: String) -> PlannerViewController) {
+    init(
+        reactor: Reactor,
+        pushPlannerScreen: @escaping (_ id: String) -> PlannerViewController,
+        pushCreatePlannerTagScreen: @escaping () -> CreatePlannerTagViewController
+    ) {
         self.pushPlannerScreen = pushPlannerScreen
+        self.pushCreatePlannerTagScreen = pushCreatePlannerTagScreen
         super.init(mode: .drag)
         self.reactor = reactor
     }
@@ -158,14 +164,11 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
             .disposed(by: disposeBag)
 
         plannerJoinButton.rx.tap
-            .withUnretained(self)
-            .compactMap { this, _ in
-                this.textField.textField.text
-            }
-            .map { code in
-                Reactor.Action.didTapJoinCodeButton(code)
-            }
-            .bind(to: reactor.action)
+            .subscribe(onNext: { [weak self] in
+                self?.dismiss(animated: true) {
+                    self?.willPushCreatePlannerTagViewController()
+                }
+            })
             .disposed(by: disposeBag)
 
         textField.textField.rx.text
@@ -180,25 +183,6 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
             .bind(to: plannerJoinButton.rx.isEnabled)
             .disposed(by: disposeBag)
 
-        reactor.state
-            .map(\.isPushMyPlannerView)
-            .distinctUntilChanged()
-            .compactMap { $0 }
-            .subscribe(onNext: { [weak self] id in
-                guard let self,
-                      let presentingViewContoller = self.presentingViewController as? UINavigationController
-                else { return }
-                
-                let plannerViewController = self.pushPlannerScreen(id)
-                self.dismiss(animated: true, completion: {
-                    presentingViewContoller.pushViewController(
-                        plannerViewController,
-                        animated: true
-                    )
-                })
-            })
-            .disposed(by: disposeBag)
-        
         reactor.state
             .map(\.guideLabel)
             .asObservable()
@@ -220,5 +204,24 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
         guard let clipboardString: String = sender.object as? String else { return }
 
         setJoinCodeButton(clipboardString)
+    }
+}
+
+extension InputPlannerCodeBottomSheetViewController {
+    func willPushCreatePlannerTagViewController() {
+        let viewController = pushCreatePlannerTagScreen()
+        viewController.modalPresentationStyle = .fullScreen
+        
+        let keyWindow = UIApplication.shared.connectedScenes
+            .filter { $0.activationState == .foregroundActive }
+            .map { $0 as? UIWindowScene }
+            .compactMap { $0 }
+            .first?.windows
+            .filter { $0.isKeyWindow }.first
+
+        keyWindow?.rootViewController?.present(
+            viewController,
+            animated: true
+        )
     }
 }
