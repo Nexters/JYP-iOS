@@ -9,7 +9,7 @@
 import ReactorKit
 import UIKit
 
-class EmptyJourneyCardCollectionViewCell: BaseCollectionViewCell, View {
+final class EmptyJourneyCardCollectionViewCell: BaseCollectionViewCell, View {
     typealias Reactor = EmptyJourneyCardCollectionViewCellReactor
 
     // MARK: - UI Components
