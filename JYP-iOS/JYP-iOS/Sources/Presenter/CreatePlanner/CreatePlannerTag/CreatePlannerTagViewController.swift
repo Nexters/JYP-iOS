@@ -80,6 +80,8 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
         setNavigationBarTitleText("여행 취향 태그")
         setNavigationBarTitleTextColor(JYPIOSAsset.textB75.color)
         setNavigationBarTitleFont(JYPIOSFontFamily.Pretendard.medium.font(size: 16))
+        setNavigationBarCloseButtonHidden(reactor?.currentState.viewMode != .join)
+        setNavigationBarBackButtonHidden(reactor?.currentState.viewMode == .join)
     }
 
     override func setupProperty() {
@@ -170,6 +172,20 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
             .subscribe(onNext: { [weak self] id in
                 self?.navigationController?.popToRootViewController(animated: true)
                 reactor.action.onNext(.successCreatePlanner(id))
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .map(\.viewMode)
+            .asObservable()
+            .distinctUntilChanged()
+            .subscribe(onNext: { mode in
+                switch mode {
+                case .create:
+                    print("Create")
+                case .join:
+                    print("Join")
+                }
             })
             .disposed(by: disposeBag)
     }

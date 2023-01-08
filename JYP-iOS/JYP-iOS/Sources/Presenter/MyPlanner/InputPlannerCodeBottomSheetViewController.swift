@@ -13,7 +13,7 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
     typealias Reactor = InputPlannerCodeBottomSheetReactor
 
     private let pushPlannerScreen: (_ id: String) -> PlannerViewController
-    private let pushCreatePlannerTagScreen: () -> CreatePlannerTagViewController
+    private let pushJoinPlannerTagScreen: () -> CreatePlannerTagViewController
 
     // MARK: - Properties
 
@@ -43,7 +43,7 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
         pushCreatePlannerTagScreen: @escaping () -> CreatePlannerTagViewController
     ) {
         self.pushPlannerScreen = pushPlannerScreen
-        self.pushCreatePlannerTagScreen = pushCreatePlannerTagScreen
+        self.pushJoinPlannerTagScreen = pushCreatePlannerTagScreen
         super.init(mode: .drag)
         self.reactor = reactor
     }
@@ -209,7 +209,7 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
 
 extension InputPlannerCodeBottomSheetViewController {
     func willPushCreatePlannerTagViewController() {
-        let viewController = pushCreatePlannerTagScreen()
+        let viewController = pushJoinPlannerTagScreen()
         viewController.modalPresentationStyle = .fullScreen
         
         let keyWindow = UIApplication.shared.connectedScenes

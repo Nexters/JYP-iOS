@@ -13,6 +13,11 @@ import RxDataSources
 final class CreatePlannerTagReactor: Reactor {
     static let MAX_SELECTION_COUNT = 3
 
+    enum ViewMode {
+        case create
+        case join
+    }
+
     enum Action {
         case fetchJourneyTags
         case selectTag(IndexPath)
@@ -32,6 +37,7 @@ final class CreatePlannerTagReactor: Reactor {
     }
 
     struct State {
+        var viewMode: ViewMode
         var journey: Journey
         var sections: [TagSectionModel]
         var nomatterItems: [TagItem] = []
@@ -45,9 +51,10 @@ final class CreatePlannerTagReactor: Reactor {
     let initialState: State
     let provider: ServiceProviderType
 
-    init(provider: ServiceProviderType, journey: Journey) {
+    init(provider: ServiceProviderType, journey: Journey, viewMode: ViewMode) {
         self.provider = provider
         initialState = State(
+            viewMode: viewMode,
             journey: journey,
             sections: CreatePlannerTagReactor.makeSections()
         )

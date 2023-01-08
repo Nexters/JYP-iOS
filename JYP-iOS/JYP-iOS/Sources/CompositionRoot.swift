@@ -71,10 +71,11 @@ extension CompositionRoot {
             return controller
         }
         
-        let pushCreatePlannerTagScreen: () -> CreatePlannerTagViewController = {
+        let pushJoinPlannerTagScreen: () -> CreatePlannerTagViewController = {
             let reactor = CreatePlannerTagReactor(
                 provider: ServiceProvider.shared,
-                journey: .init(id: "", name: "", startDate: 0.0, endDate: 0.0, themePath: .default, users: [])
+                journey: .init(id: "", name: "", startDate: 0.0, endDate: 0.0, themePath: .default, users: []),
+                viewMode: .join
             )
             let viewController = CreatePlannerTagViewController(reactor: reactor)
             return viewController
@@ -85,7 +86,7 @@ extension CompositionRoot {
             let controller = InputPlannerCodeBottomSheetViewController(
                 reactor: reactor,
                 pushPlannerScreen: pushPlannerScreen,
-                pushCreatePlannerTagScreen: pushCreatePlannerTagScreen
+                pushCreatePlannerTagScreen: pushJoinPlannerTagScreen
             )
             
             return controller
