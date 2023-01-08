@@ -150,7 +150,10 @@ class CreatePlannerDateViewController: NavigationBarViewController, View {
             .distinctUntilChanged()
             .filter { $0 }
             .subscribe(onNext: { [weak self] _ in
-                let createTag = CreatePlannerTagViewController(reactor: reactor.makeCreateTagReactor())
+                let createTag = CreatePlannerTagViewController(
+                    reactor: reactor.makeCreateTagReactor(),
+                    pushPlannerScreen: nil
+                )
 
                 self?.navigationController?.pushViewController(createTag, animated: true)
             })

@@ -12,8 +12,7 @@ import UIKit
 class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View {
     typealias Reactor = InputPlannerCodeBottomSheetReactor
 
-    private let pushPlannerScreen: (_ id: String) -> PlannerViewController
-    private let pushJoinPlannerTagScreen: () -> CreatePlannerTagViewController
+    private let pushJoinPlannerTagScreen: (_ id: String) -> CreatePlannerTagViewController
 
     // MARK: - Properties
 
@@ -39,11 +38,9 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
 
     init(
         reactor: Reactor,
-        pushPlannerScreen: @escaping (_ id: String) -> PlannerViewController,
-        pushCreatePlannerTagScreen: @escaping () -> CreatePlannerTagViewController
+        pushJoinPlannerTagScreen: @escaping (_ id: String) -> CreatePlannerTagViewController
     ) {
-        self.pushPlannerScreen = pushPlannerScreen
-        self.pushJoinPlannerTagScreen = pushCreatePlannerTagScreen
+        self.pushJoinPlannerTagScreen = pushJoinPlannerTagScreen
         super.init(mode: .drag)
         self.reactor = reactor
     }
@@ -165,8 +162,16 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
 
         plannerJoinButton.rx.tap
             .subscribe(onNext: { [weak self] in
-                self?.dismiss(animated: true) {
-                    self?.willPushCreatePlannerTagViewController()
+                guard let self,
+                      let tabBarController = self.presentingViewController as? UITabBarController,
+                      let id = reactor.currentState.plannerCode
+                else { return }
+
+                let viewController = self.pushJoinPlannerTagScreen(id)
+                viewController.modalPresentationStyle = .fullScreen
+
+                self.dismiss(animated: true) {
+                    tabBarController.present(viewController, animated: true)
                 }
             })
             .disposed(by: disposeBag)
@@ -204,24 +209,5 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
         guard let clipboardString: String = sender.object as? String else { return }
 
         setJoinCodeButton(clipboardString)
-    }
-}
-
-extension InputPlannerCodeBottomSheetViewController {
-    func willPushCreatePlannerTagViewController() {
-        let viewController = pushJoinPlannerTagScreen()
-        viewController.modalPresentationStyle = .fullScreen
-        
-        let keyWindow = UIApplication.shared.connectedScenes
-            .filter { $0.activationState == .foregroundActive }
-            .map { $0 as? UIWindowScene }
-            .compactMap { $0 }
-            .first?.windows
-            .filter { $0.isKeyWindow }.first
-
-        keyWindow?.rootViewController?.present(
-            viewController,
-            animated: true
-        )
     }
 }

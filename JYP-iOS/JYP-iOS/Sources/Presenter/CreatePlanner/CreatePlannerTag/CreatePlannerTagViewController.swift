@@ -14,6 +14,8 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
     typealias Reactor = CreatePlannerTagReactor
     typealias CreateTagDataSource = RxCollectionViewSectionedReloadDataSource<TagSectionModel>
 
+    private let pushPlannerScreen: ((_ id: String) -> PlannerViewController)?
+
     // MARK: - UI Components
 
     private let titleLabel: UILabel = .init()
@@ -61,7 +63,11 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
 
     // MARK: - Initializer
 
-    init(reactor: Reactor) {
+    init(
+        reactor: Reactor,
+        pushPlannerScreen: ((_ id: String) -> PlannerViewController)?
+    ) {
+        self.pushPlannerScreen = pushPlannerScreen
         super.init(nibName: nil, bundle: nil)
         self.reactor = reactor
     }
@@ -174,17 +180,20 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
                 reactor.action.onNext(.successCreatePlanner(id))
             })
             .disposed(by: disposeBag)
-        
+
         reactor.state
-            .map(\.viewMode)
-            .asObservable()
+            .compactMap(\.joinedPlannerID)
             .distinctUntilChanged()
-            .subscribe(onNext: { mode in
-                switch mode {
-                case .create:
-                    print("Create")
-                case .join:
-                    print("Join")
+            .subscribe(onNext: { [weak self] id in
+                guard let self,
+                      let pushPlannerScreen = self.pushPlannerScreen,
+                      let navigationController = self.presentingViewController as? UINavigationController
+                else { return }
+
+                self.dismiss(animated: true) {
+                    let viewController = pushPlannerScreen(id)
+
+                    navigationController.pushViewController(viewController, animated: true)
                 }
             })
             .disposed(by: disposeBag)

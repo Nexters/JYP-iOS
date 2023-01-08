@@ -34,6 +34,7 @@ final class CreatePlannerTagReactor: Reactor {
         case updateSectionTagItem(IndexPath, [TagItem])
         case activeStartButton
         case pushPlannerView(String)
+        case finishedJoinPlanner(String)
     }
 
     struct State {
@@ -46,6 +47,7 @@ final class CreatePlannerTagReactor: Reactor {
         var selectedItems = Set<IndexPath>()
         var isEnabledStartButton: Bool = false
         var createdPlannerID: String?
+        var joinedPlannerID: String?
     }
 
     let initialState: State
@@ -89,9 +91,21 @@ final class CreatePlannerTagReactor: Reactor {
                 )
             }
         case .didTapStartButton:
-            return provider.journeyService
-                .createJourney(journey: currentState.journey)
-                .map { .pushPlannerView($0) }
+            switch currentState.viewMode {
+            case .create:
+                return provider.journeyService
+                    .createJourney(journey: currentState.journey)
+                    .map { .pushPlannerView($0) }
+            case .join:
+                return provider.journeyService
+                    .joinPlanner(
+                        journeyId: currentState.journey.id,
+                        request: .init(tags: currentState.journey.tags)
+                    )
+                    .map { [weak self] _ in
+                        .finishedJoinPlanner(self?.currentState.journey.id ?? "0")
+                    }
+            }
         case let .successCreatePlanner(id):
             provider.journeyService.didFinishCreatePlanner(id)
             return .empty()
@@ -149,6 +163,8 @@ final class CreatePlannerTagReactor: Reactor {
             newState.isEnabledStartButton = !currentState.selectedItems.isEmpty
         case let .pushPlannerView(id):
             newState.createdPlannerID = id
+        case let .finishedJoinPlanner(id):
+            newState.joinedPlannerID = id
         }
 
         return newState
