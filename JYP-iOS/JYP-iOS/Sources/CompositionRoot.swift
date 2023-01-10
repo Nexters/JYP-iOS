@@ -19,6 +19,7 @@ final class CompositionRoot {
         window.backgroundColor = .white
         window.makeKeyAndVisible()
         
+        if 
         window.rootViewController = makeTabBarScreen()
         
         return AppDependency(window: window,
