@@ -10,29 +10,29 @@ import ReactorKit
 
 class OnboardingSignUpReactor: Reactor {
     enum Action {
-        case didTapKakaoLoginButton
-        case didTapAppleLoginButton
-        case didLogin(authVendor: AuthVendor, authId: String, name: String, profileImagePath: String)
+        case tapAppleLoginButton
+        case tapKakaoLoginButton
+        case login(String)
     }
     
     enum Mutation {
         case updateIsOpenKakaoLogin(Bool)
         case updateIsOpenAppleLogin(Bool)
-        case updateOnboardingQuestionReactor(OnboardingQuestionReactor?)
     }
     
     struct State {
         var isOpenKakaoLogin: Bool = false
         var isOpenAppleLogin: Bool = false
-        var onboardingQuestionReactor: OnboardingQuestionReactor?
     }
     
     let initialState: State
-    let service: OnboardingServiceProtocol = ServiceProvider.shared.onboaringService
-    let authService: AuthServiceType
-    let provider = ServiceProvider.shared
     
-    init(authService: AuthServiceType) {
+    let onboardingService: OnboardingServiceType
+    let authService: AuthServiceType
+    
+    init(onboardingService: OnboardingServiceType,
+         authService: AuthServiceType) {
+        self.onboardingService = onboardingService
         self.authService = authService
         self.initialState = .init()
     }

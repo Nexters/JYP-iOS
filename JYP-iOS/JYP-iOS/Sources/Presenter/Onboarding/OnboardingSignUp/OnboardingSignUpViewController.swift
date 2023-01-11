@@ -121,39 +121,18 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
     
     func bind(reactor: OnboardingSignUpReactor) {
         kakaoLoginButton.rx.tap
-            .map { .didTapKakaoLoginButton }
-            .bind(to: reactor.action)
+            .bind { [weak self] _ in
+                self?.willPresentKakaoLoginScreen() { token in
+                    self?.reactor?.action.onNext(.login(token))
+                }
+            }
             .disposed(by: disposeBag)
         
         appleLoginButton.rx.tapGesture()
+            .when(.recognized)
             .filter { $0.state == .ended }
-            .map { _ in .didTapAppleLoginButton }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
-        
-        reactor.state
-            .map { $0.isOpenKakaoLogin }
-            .distinctUntilChanged()
-            .filter { $0 }
-            .map { _ in }
-            .bind(onNext: openKakaoLogin)
-            .disposed(by: disposeBag)
-        
-        reactor.state
-            .map { $0.isOpenAppleLogin }
-            .distinctUntilChanged()
-            .filter { $0 }
-            .map { _ in }
-            .bind(onNext: openAppleLogin)
-            .disposed(by: disposeBag)
-        
-        reactor.state
-            .compactMap(\.onboardingQuestionReactor)
-            .withUnretained(self)
-            .bind { this, reactor in
-                let onboardingQuestionJourneyViewController = OnboardingQuestionJourneyViewController(reactor: reactor)
-                
-                this.navigationController?.pushViewController(onboardingQuestionJourneyViewController, animated: true)
+            .bind { [weak self] _ in
+                self?.willPresentAppleLoginScreen()
             }
             .disposed(by: disposeBag)
     }
@@ -162,45 +141,27 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
 // MARK: Sign Up Methods
 
 extension OnboardingSignUpViewController: ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
-    private func openKakaoLogin() {
+    private func willPresentKakaoLoginScreen(completion: @escaping (String) -> Void) {
         if UserApi.isKakaoTalkLoginAvailable() {
-            // 카카오톡으로 로그인
             UserApi.shared.loginWithKakaoTalk {(oauthToken, error) in
                 if let error = error {
                     print(error)
-                } else {
-                    print("loginWithKakaoTalk() success.")
-                    
-                    UserApi.shared.me { (user, _) in
-                        if let error = error {
-                            print(error)
-                        } else {
-                            self.reactor?.action.onNext(.didLogin(authVendor: .kakao, authId: oauthToken?.accessToken ?? "", name: user?.properties?["nickname"] ?? "", profileImagePath: user?.properties?["profile_image"] ?? ""))
-                        }
-                    }
+                } else if let token = oauthToken?.accessToken {
+                    completion(token)
                 }
             }
         } else {
-            // 카카오 계정으로 로그인
             UserApi.shared.loginWithKakaoAccount {(oauthToken, error) in
                 if let error = error {
                     print(error)
-                } else {
-                    print("loginWithKakaoAccount() success.")
-                    
-                    UserApi.shared.me { (user, _) in
-                        if let error = error {
-                            print(error)
-                        } else {
-                            self.reactor?.action.onNext(.didLogin(authVendor: .kakao, authId: oauthToken?.accessToken ?? "", name: user?.properties?["nickname"] ?? "", profileImagePath: user?.properties?["profile_image"] ?? ""))
-                        }
-                    }
+                } else if let token = oauthToken?.accessToken {
+                    completion(token)
                 }
             }
         }
     }
     
-    private func openAppleLogin() {
+    private func willPresentAppleLoginScreen() {
         let appleIDProvider = ASAuthorizationAppleIDProvider()
         let request = appleIDProvider.createRequest()
         request.requestedScopes = [.fullName, .email]
@@ -218,11 +179,9 @@ extension OnboardingSignUpViewController: ASAuthorizationControllerDelegate, ASA
     func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
         switch authorization.credential {
         case let appleIDCredential as ASAuthorizationAppleIDCredential:
-            let fullName = appleIDCredential.fullName
-            
             if let identityToken = appleIDCredential.identityToken,
-                let tokenString = String(data: identityToken, encoding: .utf8) {
-                self.reactor?.action.onNext(.didLogin(authVendor: .apple, authId: tokenString, name: String(describing: fullName), profileImagePath: ""))
+               let token = String(data: identityToken, encoding: .utf8){
+                reactor?.action.onNext(.login(token))
             }
             
         default:
