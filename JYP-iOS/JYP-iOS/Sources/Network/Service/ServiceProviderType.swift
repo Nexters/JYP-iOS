@@ -26,7 +26,7 @@ final class ServiceProvider: ServiceProviderType {
     lazy var kakaoSearchService: KakaoSearchServiceType = KakaoSearchService(provider: self)
     lazy var tagService: TagServiceType = TagService(provider: self)
     lazy var journeyService: JourneyServiceType = JourneyService(provider: self)
-    lazy var keychainService: KeychainServiceType = KeychainService(provider: self)
+    lazy var keychainService: KeychainServiceType = KeychainService()
     
     lazy var onboaringService: OnboardingServiceProtocol = OnboardingService(provider: self)
     lazy var plannerService: PlannerServiceProtocol = PlannerService()

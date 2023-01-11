@@ -27,22 +27,22 @@ enum OnboardingQuestionViewType {
     var cardViewTypeA: OnboardingCardViewType {
         switch self {
         case .journey:
-            return .journeyA
+            return .journeyFirst
         case .place:
-            return .placeA
+            return .placeFirst
         case .plan:
-            return .planA
+            return .planFirst
         }
     }
     
     var cardViewTypeB: OnboardingCardViewType {
         switch self {
         case .journey:
-            return .journeyB
+            return .journeySecond
         case .place:
-            return .placeB
+            return .placeSecond
         case .plan:
-            return .planB
+            return .planSecond
         }
     }
 }

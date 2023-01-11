@@ -10,7 +10,11 @@ import UIKit
 import ReactorKit
 
 class OnboardingQuestionJourneyViewController: NavigationBarViewController, View {
+    // MARK: - Properties
+    
     typealias Reactor = OnboardingQuestionReactor
+    
+    private let pushOnboardingQuestionPlaceScreen: () -> OnboardingQuestionPlaceViewController
     
     // MARK: - UI Components
     
@@ -18,15 +22,20 @@ class OnboardingQuestionJourneyViewController: NavigationBarViewController, View
     
     // MARK: - Setup Methods
     
-    required init?(coder: NSCoder) {
-        fatalError("not supported")
-    }
-    
-    init(reactor: OnboardingQuestionReactor) {
+    init(reactor: OnboardingQuestionReactor,
+         pushOnboardingQuestionPlaceScreen: @escaping () -> OnboardingQuestionPlaceViewController) {
+        self.pushOnboardingQuestionPlaceScreen = pushOnboardingQuestionPlaceScreen
         super.init(nibName: nil, bundle: nil)
         
         self.reactor = reactor
     }
+    
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - Setup Methods
     
     override func setupNavigationBar() {
         super.setupNavigationBar()
@@ -51,30 +60,30 @@ class OnboardingQuestionJourneyViewController: NavigationBarViewController, View
     func bind(reactor: OnboardingQuestionReactor) {
         onboardingQuestionView.onboardingCardViewA.rx.tapGesture()
             .filter { $0.state == .ended }
-            .map { _ in .didTapCardViewA }
+            .map { _ in .tapFirstView }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
         onboardingQuestionView.onboardingCardViewB.rx.tapGesture()
             .filter { $0.state == .ended }
-            .map { _ in .didTapCardViewB }
+            .map { _ in .tapSecondView }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
         onboardingQuestionView.nextButton.rx.tap
-            .map { .didTapNextButton }
+            .map { .tapNextButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
         reactor.state
-            .map { $0.stateCardViewA }
+            .map { $0.stateFirstView }
             .bind { [weak self] state in
                 self?.onboardingQuestionView.onboardingCardViewA.state = state
             }
             .disposed(by: disposeBag)
         
         reactor.state
-            .map { $0.stateCardViewB }
+            .map { $0.stateSecondView }
             .bind { [weak self] state in
                 self?.onboardingQuestionView.onboardingCardViewB.state = state
             }
@@ -96,5 +105,12 @@ class OnboardingQuestionJourneyViewController: NavigationBarViewController, View
                 this.navigationController?.pushViewController(onboardingQuestionPlaceViewController, animated: true)
             }
             .disposed(by: disposeBag)
+    }
+}
+
+extension OnboardingQuestionJourneyViewController {
+    func willPushOnboardingQuestionPlaceViewController() {
+        let viewController = pushOnboardingQuestionPlaceScreen()
+        self.navigationController?.pushViewController(viewController, animated: true)
     }
 }

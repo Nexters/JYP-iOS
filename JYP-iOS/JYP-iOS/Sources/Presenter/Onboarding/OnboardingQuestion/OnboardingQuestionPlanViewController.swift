@@ -1,5 +1,5 @@
 //
-//  OnboardingHowToNewPlaceViewController.swift
+//  OnboardingWhenJourneyPlanViewController.swift
 //  JYP-iOS
 //
 //  Created by 송영모 on 2022/08/02.
@@ -9,12 +9,12 @@
 import UIKit
 import ReactorKit
 
-class OnboardingQuestionPlaceViewController: NavigationBarViewController, View {
+class OnboardingQuestionPlanViewController: NavigationBarViewController, View {
     typealias Reactor = OnboardingQuestionReactor
     
     // MARK: - UI Components
     
-    let onboardingQuestionView = OnboardingQuestionView(type: .place)
+    let onboardingQuestionView = OnboardingQuestionView(type: .plan)
     
     required init?(coder: NSCoder) {
         fatalError("not supported")
@@ -27,6 +27,10 @@ class OnboardingQuestionPlaceViewController: NavigationBarViewController, View {
     }
     
     // MARK: - Setup Methods
+    
+    override func setupProperty() {
+        super.setupProperty()
+    }
     
     override func setupHierarchy() {
         super.setupHierarchy()
@@ -45,30 +49,30 @@ class OnboardingQuestionPlaceViewController: NavigationBarViewController, View {
     func bind(reactor: OnboardingQuestionReactor) {
         onboardingQuestionView.onboardingCardViewA.rx.tapGesture()
             .filter { $0.state == .ended }
-            .map { _ in .didTapCardViewA }
+            .map { _ in .tapFirstView }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
         onboardingQuestionView.onboardingCardViewB.rx.tapGesture()
             .filter { $0.state == .ended }
-            .map { _ in .didTapCardViewB }
+            .map { _ in .tapSecondView }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
         onboardingQuestionView.nextButton.rx.tap
-            .map { .didTapNextButton }
+            .map { .tapNextButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
         reactor.state
-            .map { $0.stateCardViewA }
+            .map { $0.stateFirstView }
             .bind { [weak self] state in
                 self?.onboardingQuestionView.onboardingCardViewA.state = state
             }
             .disposed(by: disposeBag)
         
         reactor.state
-            .map { $0.stateCardViewB }
+            .map { $0.stateSecondView }
             .bind { [weak self] state in
                 self?.onboardingQuestionView.onboardingCardViewB.state = state
             }
@@ -81,14 +85,14 @@ class OnboardingQuestionPlaceViewController: NavigationBarViewController, View {
             }
             .disposed(by: disposeBag)
         
-        reactor.state
-            .compactMap(\.onboardingQuestionReactor)
-            .withUnretained(self)
-            .bind { this, reactor in
-                let onboardingQuestionPlanViewController = OnboardingQuestionPlanViewController(reactor: reactor)
-                
-                this.navigationController?.pushViewController(onboardingQuestionPlanViewController, animated: true)
-            }
-            .disposed(by: disposeBag)
+//        reactor.state
+//            .compactMap(\.myPlannerReactor)
+//            .withUnretained(self)
+//            .bind { this, reactor in
+//                let myPlannerViewController = MyPlannerViewController(reactor: reactor, p)
+//
+//                this.navigationController?.pushViewController(myPlannerViewController, animated: true)
+//            }
+//            .disposed(by: disposeBag)
     }
 }

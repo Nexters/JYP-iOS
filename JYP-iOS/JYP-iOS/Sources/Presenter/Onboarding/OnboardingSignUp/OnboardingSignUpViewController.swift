@@ -14,7 +14,11 @@ import KakaoSDKAuth
 import KakaoSDKUser
 
 class OnboardingSignUpViewController: NavigationBarViewController, View {
+    // MARK: - Properties
+    
     typealias Reactor = OnboardingSignUpReactor
+    
+    private let pushOnboardingQuestionJourneyScreen: () -> OnboardingQuestionJourneyViewController
     
     // MARK: - UI Components
     
@@ -25,14 +29,19 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
     let kakaoLoginButton = UIButton()
     let appleLoginButton = ASAuthorizationAppleIDButton()
     
-    required init?(coder: NSCoder) {
-        fatalError("not supported")
-    }
+    // MARK: - Initializer
     
-    init(reactor: OnboardingSignUpReactor) {
+    init(reactor: OnboardingSignUpReactor,
+         pushOnboardingQuestionJourneyScreen: @escaping () -> OnboardingQuestionJourneyViewController) {
+        self.pushOnboardingQuestionJourneyScreen = pushOnboardingQuestionJourneyScreen
         super.init(nibName: nil, bundle: nil)
         
         self.reactor = reactor
+    }
+    
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     // MARK: - Setup Methods
@@ -223,5 +232,12 @@ extension OnboardingSignUpViewController: ASAuthorizationControllerDelegate, ASA
     
     func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
         print(error)
+    }
+}
+
+extension OnboardingSignUpViewController {
+    func willPushOnboardingQuestionJourneyViewController() {
+        let viewController = pushOnboardingQuestionJourneyScreen()
+        self.navigationController?.pushViewController(viewController, animated: true)
     }
 }

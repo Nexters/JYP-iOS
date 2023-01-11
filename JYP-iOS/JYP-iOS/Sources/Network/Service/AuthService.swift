@@ -20,7 +20,7 @@ protocol AuthServiceType {
     func kakaoLogin()
 }
 
-final class AuthService: BaseService, AuthServiceType {
+final class AuthService: GlobalService, AuthServiceType {
     let event = PublishSubject<AuthEvent>()
     
     func appleLogin() {

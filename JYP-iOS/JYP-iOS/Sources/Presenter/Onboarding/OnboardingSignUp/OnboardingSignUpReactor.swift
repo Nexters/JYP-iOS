@@ -29,9 +29,11 @@ class OnboardingSignUpReactor: Reactor {
     
     let initialState: State
     let service: OnboardingServiceProtocol = ServiceProvider.shared.onboaringService
+    let authService: AuthServiceType
     let provider = ServiceProvider.shared
     
-    init() {
+    init(authService: AuthServiceType) {
+        self.authService = authService
         self.initialState = .init()
     }
 }

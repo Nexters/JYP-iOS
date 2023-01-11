@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct EditUserRequest: Codable {
+struct UpdateUserRequest: Codable {
     let name: String
     let profileImagePath: String
 }

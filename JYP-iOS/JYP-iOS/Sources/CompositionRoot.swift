@@ -19,9 +19,15 @@ final class CompositionRoot {
         window.backgroundColor = .white
         window.makeKeyAndVisible()
         
-        if 
-        window.rootViewController = makeTabBarScreen()
-        
+        let keychainService: KeychainServiceType = KeychainService()
+        let authService: AuthServiceType = AuthService()
+         
+        if let token = keychainService.getAccessToken() {
+            window.rootViewController = makeOnboardingScreen(authService: authService).navigationWrap()
+        } else {
+            window.rootViewController = makeTabBarScreen()
+        }
+          
         return AppDependency(window: window,
                              configureAppearance: self.configureAppearance)
     }
@@ -38,11 +44,28 @@ extension CompositionRoot {
         let myPageViewController = makeMyPageScreen()
         
         viewController.viewControllers = [
-            UINavigationController(rootViewController: myPlannerViewController),
-            UINavigationController(rootViewController: anotherJourneyViewController),
-            UINavigationController(rootViewController: myPageViewController)
+            myPlannerViewController.navigationWrap(),
+            anotherJourneyViewController.navigationWrap(),
+            myPageViewController.navigationWrap()
         ]
 
+        return viewController
+    }
+    
+    static func makeOnboardingScreen(authService: AuthServiceType) -> OnboardingOneViewController {
+        let pushOnboardingSignUpScreen: () -> OnboardingSignUpViewController = {
+            let reactor = OnboardingSignUpReactor(authService: authService)
+            let viewController = OnboardingSignUpViewController(reactor: reactor)
+            return viewController
+        }
+        
+        let pushOnboardingTwoScreen: () -> OnboardingTwoViewController = {
+            let viewController = OnboardingTwoViewController(pushOnboardingSignUpScreen: pushOnboardingSignUpScreen)
+            return viewController
+        }
+        
+        let viewController = OnboardingOneViewController(pushOnboardingTwoScreen: pushOnboardingTwoScreen)
+        
         return viewController
     }
     
