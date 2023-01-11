@@ -19,7 +19,7 @@ protocol OnboardingServiceType {
     func updateIsQuestion(mode: OnboardingQuestionReactor.Mode, value: Bool)
 }
 
-class OnboardingService: BaseService, OnboardingServiceType {
+class OnboardingService: LocalService, OnboardingServiceType {
     let event = PublishSubject<OnboardingEvent>()
     
     private var isJourneyQuestion: Bool = false

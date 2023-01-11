@@ -122,8 +122,8 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
     func bind(reactor: OnboardingSignUpReactor) {
         kakaoLoginButton.rx.tap
             .bind { [weak self] _ in
-                self?.willPresentKakaoLoginScreen() { token in
-                    self?.reactor?.action.onNext(.login(token))
+                self?.willPresentKakaoLoginScreen { token in
+                    self?.reactor?.action.onNext(.login(.kakao, token))
                 }
             }
             .disposed(by: disposeBag)
@@ -180,8 +180,8 @@ extension OnboardingSignUpViewController: ASAuthorizationControllerDelegate, ASA
         switch authorization.credential {
         case let appleIDCredential as ASAuthorizationAppleIDCredential:
             if let identityToken = appleIDCredential.identityToken,
-               let token = String(data: identityToken, encoding: .utf8){
-                reactor?.action.onNext(.login(token))
+               let token = String(data: identityToken, encoding: .utf8) {
+                reactor?.action.onNext(.login(.apple, token))
             }
             
         default:

@@ -9,6 +9,6 @@
 import Foundation
 
 enum AuthVendor: String, Codable {
-    case kakao = "KAKAO"
     case apple = "APPLE"
+    case kakao = "KAKAO"
 }

@@ -10,20 +10,30 @@ import UIKit
 import ReactorKit
 
 class OnboardingQuestionPlaceViewController: NavigationBarViewController, View {
+    // MARK: - Properties
+    
     typealias Reactor = OnboardingQuestionReactor
+    
+    private let pushOnboardingQuestionPlanScreen: () -> OnboardingQuestionPlanViewController
     
     // MARK: - UI Components
     
     let onboardingQuestionView = OnboardingQuestionView(type: .place)
     
-    required init?(coder: NSCoder) {
-        fatalError("not supported")
-    }
+    // MARK: - Initializer
     
-    init(reactor: OnboardingQuestionReactor) {
+    init(reactor: OnboardingQuestionReactor,
+         pushOnboardingQuestionPlanScreen: @escaping () -> OnboardingQuestionPlanViewController) {
+        self.pushOnboardingQuestionPlanScreen = pushOnboardingQuestionPlanScreen
+        
         super.init(nibName: nil, bundle: nil)
         
         self.reactor = reactor
+    }
+    
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     // MARK: - Setup Methods
@@ -43,52 +53,58 @@ class OnboardingQuestionPlaceViewController: NavigationBarViewController, View {
     }
     
     func bind(reactor: OnboardingQuestionReactor) {
-        onboardingQuestionView.onboardingCardViewA.rx.tapGesture()
+        onboardingQuestionView.firstView.rx.tapGesture()
+            .when(.recognized)
             .filter { $0.state == .ended }
             .map { _ in .tapFirstView }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
-        onboardingQuestionView.onboardingCardViewB.rx.tapGesture()
+        onboardingQuestionView.secondView.rx.tapGesture()
+            .when(.recognized)
             .filter { $0.state == .ended }
             .map { _ in .tapSecondView }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
         onboardingQuestionView.nextButton.rx.tap
-            .map { .tapNextButton }
-            .bind(to: reactor.action)
+            .withUnretained(self)
+            .bind { this, action in
+                if let isActive = this.reactor?.currentState.isActive {
+                    if isActive {
+                        this.reactor?.action.onNext(.tapNextButton)
+                        this.willPushOnboardingQuestionPlanViewController()
+                    }
+                }
+            }
             .disposed(by: disposeBag)
         
         reactor.state
             .map { $0.stateFirstView }
             .bind { [weak self] state in
-                self?.onboardingQuestionView.onboardingCardViewA.state = state
+                self?.onboardingQuestionView.firstView.state = state
             }
             .disposed(by: disposeBag)
         
         reactor.state
             .map { $0.stateSecondView }
             .bind { [weak self] state in
-                self?.onboardingQuestionView.onboardingCardViewB.state = state
+                self?.onboardingQuestionView.secondView.state = state
             }
             .disposed(by: disposeBag)
         
         reactor.state
-            .map { $0.isActiveNextButton }
+            .map { $0.isActive }
             .bind { [weak self] bool in
                 self?.onboardingQuestionView.nextButton.isEnabled = bool
             }
             .disposed(by: disposeBag)
-        
-        reactor.state
-            .compactMap(\.onboardingQuestionReactor)
-            .withUnretained(self)
-            .bind { this, reactor in
-                let onboardingQuestionPlanViewController = OnboardingQuestionPlanViewController(reactor: reactor)
-                
-                this.navigationController?.pushViewController(onboardingQuestionPlanViewController, animated: true)
-            }
-            .disposed(by: disposeBag)
+    }
+}
+
+extension OnboardingQuestionPlaceViewController {
+    func willPushOnboardingQuestionPlanViewController() {
+        let viewController = pushOnboardingQuestionPlanScreen()
+        self.navigationController?.pushViewController(viewController, animated: true)
     }
 }

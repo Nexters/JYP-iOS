@@ -10,8 +10,8 @@ import Foundation
 import Moya
 
 enum AuthAPI {
-    case apple
-    case kakao
+    case apple(token: String)
+    case kakao(token: String)
 }
 
 extension AuthAPI: BaseAPI {
@@ -42,5 +42,21 @@ extension AuthAPI: BaseAPI {
             return .requestPlain
         }
         
+    }
+    
+    var headers: [String : String]? {
+        switch self {
+        case let .apple(token):
+            return [
+                "Authorization": "Bearer \(token)",
+                "Content-Type": "application/json",
+            ]
+            
+        case let .kakao(token):
+            return [
+                "Authorization": "Bearer \(token)",
+                "Content-Type": "application/json",
+            ]
+        }
     }
 }

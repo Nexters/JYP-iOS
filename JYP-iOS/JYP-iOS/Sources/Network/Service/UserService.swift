@@ -53,7 +53,7 @@ class UserService: BaseService, UserServiceType {
         .disposed(by: disposeBag)
     }
     
-    func createUser(request: CreateUserRequest){
+    func createUser(request: CreateUserRequest) {
         let target = UserAPI.createUser(request: request)
         
         let request = APIService.request(target: target)

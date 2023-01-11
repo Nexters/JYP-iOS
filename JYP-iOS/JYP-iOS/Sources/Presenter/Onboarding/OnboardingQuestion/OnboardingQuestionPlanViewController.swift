@@ -47,13 +47,13 @@ class OnboardingQuestionPlanViewController: NavigationBarViewController, View {
     }
     
     func bind(reactor: OnboardingQuestionReactor) {
-        onboardingQuestionView.onboardingCardViewA.rx.tapGesture()
+        onboardingQuestionView.firstView.rx.tapGesture()
             .filter { $0.state == .ended }
             .map { _ in .tapFirstView }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
-        onboardingQuestionView.onboardingCardViewB.rx.tapGesture()
+        onboardingQuestionView.secondView.rx.tapGesture()
             .filter { $0.state == .ended }
             .map { _ in .tapSecondView }
             .bind(to: reactor.action)
@@ -67,32 +67,15 @@ class OnboardingQuestionPlanViewController: NavigationBarViewController, View {
         reactor.state
             .map { $0.stateFirstView }
             .bind { [weak self] state in
-                self?.onboardingQuestionView.onboardingCardViewA.state = state
+                self?.onboardingQuestionView.firstView.state = state
             }
             .disposed(by: disposeBag)
         
         reactor.state
             .map { $0.stateSecondView }
             .bind { [weak self] state in
-                self?.onboardingQuestionView.onboardingCardViewB.state = state
+                self?.onboardingQuestionView.secondView.state = state
             }
             .disposed(by: disposeBag)
-        
-        reactor.state
-            .map { $0.isActiveNextButton }
-            .bind { [weak self] bool in
-                self?.onboardingQuestionView.nextButton.isEnabled = bool
-            }
-            .disposed(by: disposeBag)
-        
-//        reactor.state
-//            .compactMap(\.myPlannerReactor)
-//            .withUnretained(self)
-//            .bind { this, reactor in
-//                let myPlannerViewController = MyPlannerViewController(reactor: reactor, p)
-//
-//                this.navigationController?.pushViewController(myPlannerViewController, animated: true)
-//            }
-//            .disposed(by: disposeBag)
     }
 }

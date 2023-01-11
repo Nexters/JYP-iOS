@@ -17,10 +17,14 @@ extension BaseAPI {
     }
 
     var headers: [String: String]? {
-        [
-            "Authorization": "Bearer \(Environment.accessToken)",
-            "Content-Type": "application/json",
-        ]
+        if let token = KeychainAccess.get(key: .accessToken) {
+            return [
+                "Authorization": "Bearer \(token)",
+                "Content-Type": "application/json",
+            ]
+        } else {
+            return nil
+        }
     }
 
     var sampleData: Data {

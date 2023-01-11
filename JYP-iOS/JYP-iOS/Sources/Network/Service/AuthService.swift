@@ -9,22 +9,22 @@
 import RxSwift
 
 enum AuthEvent {
-    case appleLogin(AppleLoginResponse)
-    case kakaoLogin(KakaoLoginResponse)
+    case apple(AppleLoginResponse)
+    case kakao(KakaoLoginResponse)
 }
 
 protocol AuthServiceType {
     var event: PublishSubject<AuthEvent> { get }
 
-    func appleLogin()
-    func kakaoLogin()
+    func apple(token: String)
+    func kakao(token: String)
 }
 
 final class AuthService: GlobalService, AuthServiceType {
     let event = PublishSubject<AuthEvent>()
     
-    func appleLogin() {
-        let target = AuthAPI.apple
+    func apple(token: String) {
+        let target = AuthAPI.apple(token: token)
         
         let request = APIService.request(target: target)
             .map(BaseModel<AppleLoginResponse>.self)
@@ -32,13 +32,13 @@ final class AuthService: GlobalService, AuthServiceType {
             .asObservable()
 
         request.subscribe { [weak self] res in
-            self?.event.onNext(.appleLogin(res))
+            self?.event.onNext(.apple(res))
         }
         .disposed(by: disposeBag)
     }
     
-    func kakaoLogin() {
-        let target = AuthAPI.kakao
+    func kakao(token: String) {
+        let target = AuthAPI.kakao(token: token)
         
         let request = APIService.request(target: target)
             .map(BaseModel<KakaoLoginResponse>.self)
@@ -46,7 +46,7 @@ final class AuthService: GlobalService, AuthServiceType {
             .asObservable()
 
         request.subscribe { [weak self] res in
-            self?.event.onNext(.kakaoLogin(res))
+            self?.event.onNext(.kakao(res))
         }
         .disposed(by: disposeBag)
     }
