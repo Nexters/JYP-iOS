@@ -14,24 +14,14 @@ enum PersonalityID: String, Codable {
     case RT = "낭만적인 여행자"
     case FW = "자유로운 방랑자"
     
-    static func intsToPersonalityID(data: [Int]) -> PersonalityID {
-        var sum: Int = 0
-        
-        for (i, int) in data.enumerated() {
-            sum += Int(pow(Double(2), Double(i))) * int
-        }
-        
-        switch sum {
-        case 0, 1:
+    static func toSelf(journey: Bool, place: Bool, plan: Bool) -> PersonalityID {
+        if (journey && place && plan) || ((journey == false && place && plan)) {
             return .ME
-            
-        case 2, 4:
+        } else if (journey && place == false && plan) || ((journey && place && plan == false)) {
             return .PE
-            
-        case 3, 5:
+        } else if (journey == false && place == false && plan) || ((journey == false && place && plan == false)) {
             return .RT
-            
-        default:
+        } else {
             return .FW
         }
     }

@@ -37,11 +37,15 @@ class OnboardingQuestionReactor: Reactor {
     
     let mode: Mode
     let provider: ServiceProviderType = ServiceProvider.shared
+    let userService: UserServiceType
     let onboardingService: OnboardingServiceType
     
-    init(mode: Mode, onboardingService: OnboardingServiceType) {
+    init(mode: Mode,
+         onboardingService: OnboardingServiceType,
+         userService: UserServiceType) {
         self.mode = mode
         self.onboardingService = onboardingService
+        self.userService = userService
         self.initialState = State()
     }
     
@@ -50,6 +54,8 @@ class OnboardingQuestionReactor: Reactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .tapFirstView:
+            onboardingService.updateIsQuestion(mode: mode, value: true)
+            
             return .concat([
                 .just(.setFirstViewState(.active)),
                 .just(.setSecondViewState(.inactive)),
@@ -57,6 +63,8 @@ class OnboardingQuestionReactor: Reactor {
             ])
             
         case .tapSecondView:
+            onboardingService.updateIsQuestion(mode: mode, value: false)
+            
             return .concat([
                 .just(.setFirstViewState(.inactive)),
                 .just(.setSecondViewState(.active)),
@@ -64,13 +72,19 @@ class OnboardingQuestionReactor: Reactor {
             ])
             
         case .tapNextButton:
-            if mode == .plan {
+            switch mode {
+            case .joruney, .place:
+                return .empty()
                 
+            case .plan:
+                let name = KeychainAccess.get(key: .nickname) ?? ""
+                let profileImagePath = KeychainAccess.get(key: .profileImagePath) ?? ""
+                
+                userService.createUser(request: .init(name: name, profileImagePath: profileImagePath, personalityID: onboardingService.getPersonalityID()))
+                return .empty()
             }
-            return .empty()
         }
     }
-    
     
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state

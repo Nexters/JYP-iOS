@@ -16,6 +16,7 @@ enum OnboardingEvent {
 protocol OnboardingServiceType {
     var event: PublishSubject<OnboardingEvent> { get }
     
+    func getPersonalityID() -> PersonalityID
     func updateIsQuestion(mode: OnboardingQuestionReactor.Mode, value: Bool)
 }
 
@@ -25,6 +26,10 @@ class OnboardingService: LocalService, OnboardingServiceType {
     private var isJourneyQuestion: Bool = false
     private var isPlaceQuestion: Bool = false
     private var isPlanQuestion: Bool = false
+    
+    func getPersonalityID() -> PersonalityID {
+        return PersonalityID.toSelf(journey: isJourneyQuestion, place: isPlaceQuestion, plan: isPlanQuestion)
+    }
     
     func updateIsQuestion(mode: OnboardingQuestionReactor.Mode, value: Bool) {
         switch mode {

@@ -69,7 +69,7 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
         loginLabel.text = "SNS 계정으로 회원가입 및 로그인"
         loginLabel.font = JYPIOSFontFamily.Pretendard.regular.font(size: 14)
         loginLabel.textColor = JYPIOSAsset.textB40.color
-
+        
         kakaoLoginButton.setBackgroundImage(JYPIOSAsset.kakaoLogin.image, for: .normal)
         
         appleLoginButton.cornerRound(radius: 6)
@@ -122,8 +122,8 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
     func bind(reactor: OnboardingSignUpReactor) {
         kakaoLoginButton.rx.tap
             .bind { [weak self] _ in
-                self?.willPresentKakaoLoginScreen { token in
-                    self?.reactor?.action.onNext(.login(.kakao, token))
+                self?.willPresentKakaoLoginScreen { token, name, profileImagePath in
+                    self?.reactor?.action.onNext(.login(authVendor: .kakao, token: token, name: name, profileImagePath: profileImagePath))
                 }
             }
             .disposed(by: disposeBag)
@@ -141,13 +141,22 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
 // MARK: Sign Up Methods
 
 extension OnboardingSignUpViewController: ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
-    private func willPresentKakaoLoginScreen(completion: @escaping (String) -> Void) {
+    private func willPresentKakaoLoginScreen(completion: @escaping (String, String?, String?) -> Void) {
         if UserApi.isKakaoTalkLoginAvailable() {
             UserApi.shared.loginWithKakaoTalk {(oauthToken, error) in
                 if let error = error {
                     print(error)
                 } else if let token = oauthToken?.accessToken {
-                    completion(token)
+                    UserApi.shared.me { (user, _) in
+                        if let error = error {
+                            print(error)
+                        } else {
+                            let name = user?.properties?["nickname"]
+                            let profileImagePath = user?.properties?["profile_image"]
+                            
+                            completion(token, name, profileImagePath)
+                        }
+                    }
                 }
             }
         } else {
@@ -155,7 +164,16 @@ extension OnboardingSignUpViewController: ASAuthorizationControllerDelegate, ASA
                 if let error = error {
                     print(error)
                 } else if let token = oauthToken?.accessToken {
-                    completion(token)
+                    UserApi.shared.me { (user, _) in
+                        if let error = error {
+                            print(error)
+                        } else {
+                            let name = user?.properties?["nickname"]
+                            let profileImagePath = user?.properties?["profile_image"]
+                            
+                            completion(token, name, profileImagePath)
+                        }
+                    }
                 }
             }
         }
@@ -179,9 +197,12 @@ extension OnboardingSignUpViewController: ASAuthorizationControllerDelegate, ASA
     func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
         switch authorization.credential {
         case let appleIDCredential as ASAuthorizationAppleIDCredential:
+            let fullName = appleIDCredential.fullName
+            let name = (fullName?.givenName ?? "") + (fullName?.familyName ?? "")
+            
             if let identityToken = appleIDCredential.identityToken,
                let token = String(data: identityToken, encoding: .utf8) {
-                reactor?.action.onNext(.login(.apple, token))
+                reactor?.action.onNext(.login(authVendor: .apple, token: token, name: name, profileImagePath: nil))
             }
             
         default:

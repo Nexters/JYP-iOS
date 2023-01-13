@@ -22,7 +22,7 @@ protocol UserServiceType {
     func createUser(request: CreateUserRequest)
 }
 
-class UserService: BaseService, UserServiceType {
+class UserService: GlobalService, UserServiceType {
     var event = PublishSubject<UserEvent>()
     
     func fetchUser(id: String) {

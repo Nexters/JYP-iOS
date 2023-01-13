@@ -10,7 +10,7 @@ import ReactorKit
 
 class OnboardingSignUpReactor: Reactor {
     enum Action {
-        case login(AuthVendor, String)
+        case login(authVendor: AuthVendor, token: String, name: String?, profileImagePath: String?)
     }
     
     enum Mutation {
@@ -32,8 +32,20 @@ class OnboardingSignUpReactor: Reactor {
 extension OnboardingSignUpReactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        case let .login(vendor, token):
-            switch vendor {
+        case let .login(authVendor, token, name, profileImagePath):
+            if let name = name {
+                if name.isEmpty == false {
+                    try? KeychainAccess.set(key: .nickname, value: name)
+                }
+            }
+            
+            if let profileImagePath = profileImagePath {
+                if profileImagePath.isEmpty == false {
+                    try? KeychainAccess.set(key: .profileImagePath, value: profileImagePath)
+                }
+            }
+            
+            switch authVendor {
             case .apple:
                 authService.apple(token: token)
                 

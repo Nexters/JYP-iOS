@@ -20,11 +20,13 @@ final class CompositionRoot {
         window.makeKeyAndVisible()
         
         let authService: AuthServiceType = AuthService()
+        let userService: UserServiceType = UserService()
         let onboardingService: OnboardingServiceType = OnboardingService()
          
-        if let token = KeychainAccess.get(key: .accessToken) {
+        if let _ = KeychainAccess.get(key: .accessToken) {
             let onboardingScreen = makeOnboardingScreen(onboardingService: onboardingService,
-                                                        authService: authService)
+                                                        authService: authService,
+                                                        userService: userService)
             window.rootViewController = onboardingScreen.navigationWrap()
         } else {
             window.rootViewController = makeTabBarScreen()
@@ -55,10 +57,12 @@ extension CompositionRoot {
     }
     
     static func makeOnboardingScreen(onboardingService: OnboardingServiceType,
-                                     authService: AuthServiceType) -> OnboardingOneViewController {
+                                     authService: AuthServiceType,
+                                     userService: UserServiceType) -> OnboardingOneViewController {
         let pushOnboardingQuestionPlanScreen: () -> OnboardingQuestionPlanViewController = {
             let reactor = OnboardingQuestionReactor(mode: .plan,
-                                                    onboardingService: onboardingService)
+                                                    onboardingService: onboardingService,
+                                                    userService: userService)
             let viewController = OnboardingQuestionPlanViewController(reactor: reactor)
             
             return viewController
@@ -66,7 +70,8 @@ extension CompositionRoot {
         
         let pushOnboardingQuestionPlaceScreen: () -> OnboardingQuestionPlaceViewController = {
             let reactor = OnboardingQuestionReactor(mode: .place,
-                                                    onboardingService: onboardingService)
+                                                    onboardingService: onboardingService,
+                                                    userService: userService)
             let viewController = OnboardingQuestionPlaceViewController(reactor: reactor, pushOnboardingQuestionPlanScreen: pushOnboardingQuestionPlanScreen)
             
             return viewController
@@ -74,7 +79,8 @@ extension CompositionRoot {
         
         let pushOnboardingQuestionJourneyScreen: () -> OnboardingQuestionJourneyViewController = {
             let reactor = OnboardingQuestionReactor(mode: .joruney,
-                                                    onboardingService: onboardingService)
+                                                    onboardingService: onboardingService,
+                                                    userService: userService)
             let viewController = OnboardingQuestionJourneyViewController(reactor: reactor,
                                                                          pushOnboardingQuestionPlaceScreen: pushOnboardingQuestionPlaceScreen)
             
