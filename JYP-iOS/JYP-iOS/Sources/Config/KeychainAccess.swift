@@ -25,11 +25,19 @@ final class KeychainAccess {
         return self.keychain[key.rawValue]
     }
     
-    static func set(key: KeychainAccessKey, value: String) throws {
-        try self.keychain.set(value, key: key.rawValue)
+    static func set(key: KeychainAccessKey, value: String) {
+        do {
+            try self.keychain.set(value, key: key.rawValue)
+        } catch {
+            print(error)
+        }
     }
     
-    static func remove(key: KeychainAccessKey) throws {
-        try self.keychain.remove(key.rawValue)
+    static func remove(key: KeychainAccessKey) {
+        do {
+            try self.keychain.remove(key.rawValue)
+        } catch {
+            print(error)
+        }
     }
 }

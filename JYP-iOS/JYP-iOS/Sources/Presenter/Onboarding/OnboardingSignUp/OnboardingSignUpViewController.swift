@@ -135,6 +135,14 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
                 self?.willPresentAppleLoginScreen()
             }
             .disposed(by: disposeBag)
+        
+        reactor.state
+            .map(\.didLogin)
+            .filter { $0 }
+            .bind { [weak self] _ in
+                self?.willPushOnboardingQuestionJourneyViewController()
+            }
+            .disposed(by: disposeBag)
     }
 }
 

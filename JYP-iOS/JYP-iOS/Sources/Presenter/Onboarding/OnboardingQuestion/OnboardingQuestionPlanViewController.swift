@@ -64,6 +64,18 @@ class OnboardingQuestionPlanViewController: NavigationBarViewController, View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
+        onboardingQuestionView.nextButton.rx.tap
+            .withUnretained(self)
+            .bind { this, action in
+                if let isActive = this.reactor?.currentState.isActive {
+                    if isActive {
+                        this.reactor?.action.onNext(.tapNextButton)
+                        // TODO: 탭바로 이동
+                    }
+                }
+            }
+            .disposed(by: disposeBag)
+        
         reactor.state
             .map { $0.stateFirstView }
             .bind { [weak self] state in
@@ -75,6 +87,13 @@ class OnboardingQuestionPlanViewController: NavigationBarViewController, View {
             .map { $0.stateSecondView }
             .bind { [weak self] state in
                 self?.onboardingQuestionView.secondView.state = state
+            }
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .map { $0.isActive }
+            .bind { [weak self] bool in
+                self?.onboardingQuestionView.nextButton.isEnabled = bool
             }
             .disposed(by: disposeBag)
     }

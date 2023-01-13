@@ -24,12 +24,12 @@ final class CompositionRoot {
         let onboardingService: OnboardingServiceType = OnboardingService()
          
         if let _ = KeychainAccess.get(key: .accessToken) {
+            window.rootViewController = makeTabBarScreen()
+        } else {
             let onboardingScreen = makeOnboardingScreen(onboardingService: onboardingService,
                                                         authService: authService,
                                                         userService: userService)
             window.rootViewController = onboardingScreen.navigationWrap()
-        } else {
-            window.rootViewController = makeTabBarScreen()
         }
           
         return AppDependency(window: window,
@@ -172,7 +172,9 @@ extension CompositionRoot {
     }
     
     static func makeMyPageScreen() -> MyPageViewController {
-        let viewController = MyPageViewController()
+        let reactor = MyPageReactor()
+        let viewController = MyPageViewController(reactor: reactor)
+        
         let tabBarItem = UITabBarItem(title: nil,
                                       image: JYPIOSAsset.myPageInactive.image.withRenderingMode(.alwaysOriginal),
                                       selectedImage: JYPIOSAsset.myPageActive.image.withRenderingMode(.alwaysOriginal))

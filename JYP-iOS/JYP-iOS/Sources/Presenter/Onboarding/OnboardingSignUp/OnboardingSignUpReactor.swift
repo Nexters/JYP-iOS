@@ -14,9 +14,11 @@ class OnboardingSignUpReactor: Reactor {
     }
     
     enum Mutation {
+        case setDidLogin(Bool)
     }
     
     struct State {
+        var didLogin: Bool = false
     }
     
     let initialState: State
@@ -30,18 +32,42 @@ class OnboardingSignUpReactor: Reactor {
 }
 
 extension OnboardingSignUpReactor {
+    func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
+        let APIMutation = authService.event.withUnretained(self).flatMap { (_, event) -> Observable<Mutation> in
+            switch event {
+            case let .apple(response):
+                KeychainAccess.set(key: .accessToken, value: response.token)
+                
+                return .concat([
+                    .just(.setDidLogin(true)),
+                    .just(.setDidLogin(false))
+                ])
+                
+            case let .kakao(response):
+                KeychainAccess.set(key: .accessToken, value: response.token)
+                
+                return .concat([
+                    .just(.setDidLogin(true)),
+                    .just(.setDidLogin(false))
+                ])
+            }
+        }
+        
+        return Observable.merge(APIMutation, mutation)
+    }
+    
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case let .login(authVendor, token, name, profileImagePath):
             if let name = name {
                 if name.isEmpty == false {
-                    try? KeychainAccess.set(key: .nickname, value: name)
+                    KeychainAccess.set(key: .nickname, value: name)
                 }
             }
             
             if let profileImagePath = profileImagePath {
                 if profileImagePath.isEmpty == false {
-                    try? KeychainAccess.set(key: .profileImagePath, value: profileImagePath)
+                    KeychainAccess.set(key: .profileImagePath, value: profileImagePath)
                 }
             }
             
@@ -55,5 +81,16 @@ extension OnboardingSignUpReactor {
             
             return .empty()
         }
+    }
+    
+    func reduce(state: State, mutation: Mutation) -> State {
+        var newState = state
+        
+        switch mutation {
+        case let .setDidLogin(bool):
+            newState.didLogin = bool
+        }
+        
+        return newState
     }
 }

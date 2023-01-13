@@ -10,5 +10,4 @@ import Foundation
 
 struct KakaoLoginResponse: Codable {
     let token: String
-    let id: String
 }

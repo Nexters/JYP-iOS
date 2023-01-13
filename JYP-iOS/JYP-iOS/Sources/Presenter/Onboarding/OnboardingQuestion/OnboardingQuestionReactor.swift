@@ -80,7 +80,7 @@ class OnboardingQuestionReactor: Reactor {
                 let name = KeychainAccess.get(key: .nickname) ?? ""
                 let profileImagePath = KeychainAccess.get(key: .profileImagePath) ?? ""
                 
-                userService.createUser(request: .init(name: name, profileImagePath: profileImagePath, personalityID: onboardingService.getPersonalityID()))
+                userService.createUser(request: .init(name: name, profileImagePath: profileImagePath, personalityId: onboardingService.getPersonalityID()))
                 return .empty()
             }
         }

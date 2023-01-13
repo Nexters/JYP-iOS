@@ -10,10 +10,5 @@ import Foundation
 
 struct CreateUserRequest: Codable {
     var name, profileImagePath: String
-    var personalityID: PersonalityID
-
-    enum CodingKeys: String, CodingKey {
-        case name, profileImagePath
-        case personalityID = "personalityId"
-    }
+    var personalityId: PersonalityID
 }
