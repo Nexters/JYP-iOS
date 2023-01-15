@@ -19,7 +19,7 @@ final class CompositionRoot {
         window.backgroundColor = .white
         window.makeKeyAndVisible()
         
-        window.rootViewController = makeTabBarScreen()
+        window.rootViewController = UINavigationController(rootViewController: makeTabBarScreen())
         
         return AppDependency(window: window,
                              configureAppearance: self.configureAppearance)
@@ -71,10 +71,25 @@ extension CompositionRoot {
             return controller
         }
         
+        let pushJoinPlannerTagScreen: (_ id: String) -> CreatePlannerTagViewController = { id in
+            let reactor = CreatePlannerTagReactor(
+                provider: ServiceProvider.shared,
+                journey: .init(id: id, name: "", startDate: 0.0, endDate: 0.0, themePath: .default, users: []),
+                viewMode: .join
+            )
+            let viewController = CreatePlannerTagViewController(
+                reactor: reactor,
+                pushPlannerScreen: pushPlannerScreen
+            )
+            return viewController
+        }
+        
         let pushInputPlannerCodeBottomSheetScreen: () -> InputPlannerCodeBottomSheetViewController = {
             let reactor = InputPlannerCodeBottomSheetReactor()
-            let controller = InputPlannerCodeBottomSheetViewController(reactor: reactor,
-                                                                       pushPlannerInviteScreen: pushPlannerInviteScreen)
+            let controller = InputPlannerCodeBottomSheetViewController(
+                reactor: reactor,
+                pushJoinPlannerTagScreen: pushJoinPlannerTagScreen
+            )
             
             return controller
         }

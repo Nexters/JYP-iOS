@@ -135,6 +135,10 @@ extension CreatePlannerDateReactor {
     }
 
     func makeCreateTagReactor() -> CreatePlannerTagReactor {
-        .init(provider: ServiceProvider.shared, journey: currentState.journey)
+        .init(
+            provider: ServiceProvider.shared,
+            journey: currentState.journey,
+            viewMode: .create
+        )
     }
 }

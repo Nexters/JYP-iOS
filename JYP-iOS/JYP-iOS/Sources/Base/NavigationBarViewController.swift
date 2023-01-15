@@ -12,6 +12,7 @@ class NavigationBar: UIView {
     var backButton = UIButton()
     var title = UILabel()
     var subTitle = UILabel()
+    var closeButton = UIButton()
 }
 
 protocol BaseNavigationBarViewControllerProtocol: AnyObject {
@@ -24,6 +25,7 @@ protocol BaseNavigationBarViewControllerProtocol: AnyObject {
     func setNavigationBarHidden(_ hidden: Bool)
     func setNavigationBarBackButtonHidden(_ hidden: Bool)
     func setNavigationBarBackButtonTintColor(_ color: UIColor)
+    func setNavigationBarCloseButtonHidden(_ hidden: Bool)
     func setNavigationBarTitleText(_ text: String?)
     func setNavigationBarTitleFont(_ font: UIFont?)
     func setNavigationBarTitleTextColor(_ color: UIColor?)
@@ -65,8 +67,10 @@ class NavigationBarViewController: BaseViewController, BaseNavigationBarViewCont
         setNavigationBarTitleTextColor(titleTextColor)
         setNavigationBarSubTitleFont(subTitleFont)
         setNavigationBarSubTitleTextColor(subTitleTextColor)
+        setNavigationBarCloseButtonHidden(true)
         navigationBar.backButton.setImage(JYPIOSAsset.iconBack.image, for: .normal)
         navigationBar.backButton.tintColor = JYPIOSAsset.subBlack.color
+        navigationBar.closeButton.setImage(JYPIOSAsset.iconXDelete.image, for: .normal)
     }
     
     override func setupHierarchy() {
@@ -74,7 +78,7 @@ class NavigationBarViewController: BaseViewController, BaseNavigationBarViewCont
         
         view.addSubviews([statusBar, navigationBar, contentView])
       
-        navigationBar.addSubviews([navigationBar.title, navigationBar.backButton, navigationBar.subTitle])
+        navigationBar.addSubviews([navigationBar.title, navigationBar.backButton, navigationBar.subTitle, navigationBar.closeButton])
     }
     
     override func setupLayout() {
@@ -107,6 +111,12 @@ class NavigationBarViewController: BaseViewController, BaseNavigationBarViewCont
             $0.centerY.equalToSuperview()
         }
         
+        navigationBar.closeButton.snp.makeConstraints {
+            $0.trailing.equalToSuperview().inset(20)
+            $0.centerY.equalToSuperview()
+            $0.width.height.equalTo(24)
+        }
+        
         contentView.snp.makeConstraints {
             $0.top.equalTo(statusBar.snp.bottom).offset(60)
             $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
@@ -118,6 +128,12 @@ class NavigationBarViewController: BaseViewController, BaseNavigationBarViewCont
         navigationBar.backButton.rx.tap
             .bind { [weak self] _ in
                 self?.navigationController?.popViewController(animated: true)
+            }
+            .disposed(by: disposeBag)
+        
+        navigationBar.closeButton.rx.tap
+            .bind { [weak self] _ in
+                self?.dismiss(animated: true)
             }
             .disposed(by: disposeBag)
     }
@@ -149,6 +165,10 @@ class NavigationBarViewController: BaseViewController, BaseNavigationBarViewCont
     
     func setNavigationBarBackButtonTintColor(_ color: UIColor) {
         navigationBar.backButton.setImage(JYPIOSAsset.iconBack.image.withTintColor(color), for: .normal)
+    }
+    
+    func setNavigationBarCloseButtonHidden(_ hidden: Bool) {
+        navigationBar.closeButton.isHidden = hidden
     }
     
     func setNavigationBarTitleText(_ text: String?) {

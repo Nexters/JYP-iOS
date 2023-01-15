@@ -11,9 +11,9 @@ import UIKit
 
 class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View {
     typealias Reactor = InputPlannerCodeBottomSheetReactor
-    
-    private let pushPlannerInviteScreen: (_ id: String) -> PlannerInviteViewController
-    
+
+    private let pushJoinPlannerTagScreen: (_ id: String) -> CreatePlannerTagViewController
+
     // MARK: - Properties
 
     private let containerView: UIView = .init()
@@ -26,7 +26,7 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
 
     private let textField: JYPSearchTextField = .init(type: .tag)
 
-    private let plannerJoinButton: JYPButton = .init(type: .plannerJoin)
+    private let plannerJoinButton: JYPButton = .init(type: .next)
 
     private let joinCodeButton: UIButton = .init()
 
@@ -36,9 +36,11 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
 
     // MARK: - Initializer
 
-    init(reactor: Reactor,
-         pushPlannerInviteScreen: @escaping (_ id: String) -> PlannerInviteViewController) {
-        self.pushPlannerInviteScreen = pushPlannerInviteScreen
+    init(
+        reactor: Reactor,
+        pushJoinPlannerTagScreen: @escaping (_ id: String) -> CreatePlannerTagViewController
+    ) {
+        self.pushJoinPlannerTagScreen = pushJoinPlannerTagScreen
         super.init(mode: .drag)
         self.reactor = reactor
     }
@@ -74,6 +76,7 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
 
         guideLabel.font = JYPIOSFontFamily.Pretendard.regular.font(size: 12)
         guideLabel.textColor = JYPIOSAsset.mainPink.color
+        guideLabel.textAlignment = .right
 
         textField.textField.leftView = UIView()
         textField.setupToolBar()
@@ -121,6 +124,7 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
 
         guideLabel.snp.makeConstraints { make in
             make.centerY.equalTo(plannerCodeLabel.snp.centerY)
+            make.leading.equalTo(plannerCodeLabel.snp.trailing).offset(5)
             make.trailing.equalTo(cancelButton.snp.trailing)
         }
 
@@ -157,8 +161,19 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
             .disposed(by: disposeBag)
 
         plannerJoinButton.rx.tap
-            .map { Reactor.Action.didTapJoinCodeButton }
-            .bind(to: reactor.action)
+            .subscribe(onNext: { [weak self] in
+                guard let self,
+                      let tabBarController = self.presentingViewController as? UITabBarController,
+                      let id = reactor.currentState.plannerCode
+                else { return }
+
+                let viewController = self.pushJoinPlannerTagScreen(id)
+                viewController.modalPresentationStyle = .fullScreen
+
+                self.dismiss(animated: true) {
+                    tabBarController.present(viewController, animated: true)
+                }
+            })
             .disposed(by: disposeBag)
 
         textField.textField.rx.text
@@ -174,19 +189,10 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
             .disposed(by: disposeBag)
 
         reactor.state
-            .map(\.isPushMyPlannerView)
+            .map(\.guideLabel)
+            .asObservable()
             .distinctUntilChanged()
-            .filter { $0 }
-            .subscribe(onNext: { [weak self] _ in
-                guard let self, let presentingViewContoller = self.presentingViewController as? UINavigationController else { return }
-                let plannerViewController = self.pushPlannerInviteScreen("1")
-                self.dismiss(animated: true, completion: {
-                    presentingViewContoller.pushViewController(
-                        plannerViewController,
-                        animated: true
-                    )
-                })
-            })
+            .bind(to: guideLabel.rx.text)
             .disposed(by: disposeBag)
     }
 
