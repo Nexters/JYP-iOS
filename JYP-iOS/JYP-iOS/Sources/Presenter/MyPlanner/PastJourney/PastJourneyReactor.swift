@@ -38,7 +38,7 @@ final class PastJourneyReactor: Reactor {
             case let .fetchJourneyList(response):
                 let currentTime = DateManager.currentTimeInterval
                 let pastJourneys = response
-                    .filter { $0.startDate < currentTime }
+                    .filter { $0.endDate < currentTime }
                 guard !pastJourneys.isEmpty
                 else { return .just(.updateSectionItem([JourneyCardItem.empty])) }
 
