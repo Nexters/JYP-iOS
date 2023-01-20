@@ -42,10 +42,10 @@ class CalendarService: CalendarServiceProtocol {
 
     func calcJourneyDays() -> String {
         guard let startDate = startDate,
-              let endDate = endDate else { return "" }
+              let endDate = endDate,
+              let days = DateManager.calcDays(from: startDate.timeIntervalSince1970, to: endDate)
+        else { return "" }
 
-        let interval = Int(endDate.timeIntervalSince(startDate) / (60 * 60 * 24))
-
-        return "\(interval)박 \(interval + 1)일"
+        return "\(days)박 \(days + 1)일"
     }
 }
