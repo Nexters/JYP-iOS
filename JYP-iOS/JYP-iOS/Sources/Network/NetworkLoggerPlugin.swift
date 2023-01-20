@@ -28,7 +28,7 @@ final class NetworkLoggerPlugin: PluginType {
         switch result {
         case let .success(response):
             print("[Logger - ✅ result] ⭕️ SUCCESS")
-            guard let json = try? response.mapJSON() else { return }
+            guard let json = try? response.mapJSON() as? [String: Any] else { return }
             print(json)
         case let .failure(error):
             print("[Logger - ✅ result] ❌ FAILURE")
