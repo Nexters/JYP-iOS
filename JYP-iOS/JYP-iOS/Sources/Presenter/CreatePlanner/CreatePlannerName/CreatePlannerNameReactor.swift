@@ -70,9 +70,12 @@ final class CreatePlannerNameReactor: Reactor {
             guard !text.isEmpty else { return .just(.changeValidation(.emptyCharacters)) }
             let isValid = text.count <= Self.MAX_NAME_LENGTH
 
-            let mutation: Observable<Mutation> = isValid ?
-                .just(.changeValidation(.valid)) : .just(.changeValidation(.exceededCharacters))
-            return mutation
+            return isValid ?
+                .merge([
+                    .just(.changeValidation(.valid)),
+                    .just(.changeTextField(text))
+                ])
+                : .just(.changeValidation(.exceededCharacters))
         case let .didTapNameTag(tag):
             return .just(.changeTextField(tag.rawValue))
         }
