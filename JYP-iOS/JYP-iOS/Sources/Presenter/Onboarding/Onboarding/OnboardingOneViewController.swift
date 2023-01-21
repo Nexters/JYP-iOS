@@ -9,21 +9,25 @@
 import UIKit
 import ReactorKit
 
-class OnboardingOneViewController: NavigationBarViewController, View {
-    typealias Reactor = OnboardingReactor
+final class OnboardingOneViewController: NavigationBarViewController {
+    // MARK: - Properties
+    
+    private let pushOnboardingTwoScreen: () -> OnboardingTwoViewController
     
     // MARK: - UI Components
     
     var onboardingView = OnboardingView(type: .one)
     
-    required init?(coder: NSCoder) {
-        fatalError("not supported")
+    // MARK: - Initializer
+    
+    init(pushOnboardingTwoScreen: @escaping () -> OnboardingTwoViewController) {
+        self.pushOnboardingTwoScreen = pushOnboardingTwoScreen
+        
+        super.init(nibName: nil, bundle: nil)
     }
     
-    init(reactor: OnboardingReactor) {
-        super.init(nibName: nil, bundle: nil)
-        
-        self.reactor = reactor
+    required init?(coder: NSCoder) {
+        fatalError("not supported")
     }
      
     // MARK: - Setup Methods
@@ -54,19 +58,20 @@ class OnboardingOneViewController: NavigationBarViewController, View {
     
     // MARK: - Binding
     
-    func bind(reactor: OnboardingReactor) {
-        onboardingView.nextButton.rx.tap
-            .map { .didTapNextButton }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
+    override func setupBind() {
+        super.setupBind()
         
-        reactor.state
-            .map { $0.isPresentNextViewController }
-            .filter { $0 }
+        onboardingView.nextButton.rx.tap
             .bind { [weak self] _ in
-                let onboardingTwoViewController = OnboardingTwoViewController(reactor: OnboardingReactor())
-                self?.navigationController?.pushViewController(onboardingTwoViewController, animated: true)  
+                self?.willPushOnboardingTwoViewController()
             }
             .disposed(by: disposeBag)
+    }
+}
+
+extension OnboardingOneViewController {
+    func willPushOnboardingTwoViewController() {
+        let viewController = self.pushOnboardingTwoScreen()
+        self.navigationController?.pushViewController(viewController, animated: true)
     }
 }

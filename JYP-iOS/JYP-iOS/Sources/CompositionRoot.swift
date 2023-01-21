@@ -19,6 +19,19 @@ final class CompositionRoot {
         window.backgroundColor = .white
         window.makeKeyAndVisible()
         
+        let authService: AuthServiceType = AuthService()
+        let userService: UserServiceType = UserService()
+        let onboardingService: OnboardingServiceType = OnboardingService()
+         
+        if KeychainAccess.get(key: .accessToken) != nil {
+            window.rootViewController = makeTabBarScreen()
+        } else {
+            let onboardingScreen = makeOnboardingScreen(onboardingService: onboardingService,
+                                                        authService: authService,
+                                                        userService: userService)
+            window.rootViewController = onboardingScreen.navigationWrap()
+        }
+        
         window.rootViewController = UINavigationController(rootViewController: makeTabBarScreen())
         
         return AppDependency(window: window,
@@ -37,11 +50,59 @@ extension CompositionRoot {
         let myPageViewController = makeMyPageScreen()
         
         viewController.viewControllers = [
-            UINavigationController(rootViewController: myPlannerViewController),
-            UINavigationController(rootViewController: anotherJourneyViewController),
-            UINavigationController(rootViewController: myPageViewController)
+            myPlannerViewController.navigationWrap(),
+            anotherJourneyViewController.navigationWrap(),
+            myPageViewController.navigationWrap()
         ]
 
+        return viewController
+    }
+    
+    static func makeOnboardingScreen(onboardingService: OnboardingServiceType,
+                                     authService: AuthServiceType,
+                                     userService: UserServiceType) -> OnboardingOneViewController {
+        let pushOnboardingQuestionPlanScreen: () -> OnboardingQuestionPlanViewController = {
+            let reactor = OnboardingQuestionReactor(mode: .plan,
+                                                    onboardingService: onboardingService,
+                                                    userService: userService)
+            let viewController = OnboardingQuestionPlanViewController(reactor: reactor)
+            
+            return viewController
+        }
+        
+        let pushOnboardingQuestionPlaceScreen: () -> OnboardingQuestionPlaceViewController = {
+            let reactor = OnboardingQuestionReactor(mode: .place,
+                                                    onboardingService: onboardingService,
+                                                    userService: userService)
+            let viewController = OnboardingQuestionPlaceViewController(reactor: reactor, pushOnboardingQuestionPlanScreen: pushOnboardingQuestionPlanScreen)
+            
+            return viewController
+        }
+        
+        let pushOnboardingQuestionJourneyScreen: () -> OnboardingQuestionJourneyViewController = {
+            let reactor = OnboardingQuestionReactor(mode: .joruney,
+                                                    onboardingService: onboardingService,
+                                                    userService: userService)
+            let viewController = OnboardingQuestionJourneyViewController(reactor: reactor,
+                                                                         pushOnboardingQuestionPlaceScreen: pushOnboardingQuestionPlaceScreen)
+            
+            return viewController
+        }
+        
+        let pushOnboardingSignUpScreen: () -> OnboardingSignUpViewController = {
+            let reactor = OnboardingSignUpReactor(authService: authService)
+            let viewController = OnboardingSignUpViewController(reactor: reactor, pushOnboardingQuestionJourneyScreen: pushOnboardingQuestionJourneyScreen)
+            
+            return viewController
+        }
+        
+        let pushOnboardingTwoScreen: () -> OnboardingTwoViewController = {
+            let viewController = OnboardingTwoViewController(pushOnboardingSignUpScreen: pushOnboardingSignUpScreen)
+            return viewController
+        }
+        
+        let viewController = OnboardingOneViewController(pushOnboardingTwoScreen: pushOnboardingTwoScreen)
+        
         return viewController
     }
     
@@ -128,7 +189,9 @@ extension CompositionRoot {
     }
     
     static func makeMyPageScreen() -> MyPageViewController {
-        let viewController = MyPageViewController()
+        let reactor = MyPageReactor()
+        let viewController = MyPageViewController(reactor: reactor)
+        
         let tabBarItem = UITabBarItem(title: nil,
                                       image: JYPIOSAsset.myPageInactive.image.withRenderingMode(.alwaysOriginal),
                                       selectedImage: JYPIOSAsset.myPageActive.image.withRenderingMode(.alwaysOriginal))

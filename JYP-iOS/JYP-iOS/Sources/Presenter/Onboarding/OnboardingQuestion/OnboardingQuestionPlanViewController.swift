@@ -47,52 +47,54 @@ class OnboardingQuestionPlanViewController: NavigationBarViewController, View {
     }
     
     func bind(reactor: OnboardingQuestionReactor) {
-        onboardingQuestionView.onboardingCardViewA.rx.tapGesture()
+        onboardingQuestionView.firstView.rx.tapGesture()
             .filter { $0.state == .ended }
-            .map { _ in .didTapCardViewA }
+            .map { _ in .tapFirstView }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
-        onboardingQuestionView.onboardingCardViewB.rx.tapGesture()
+        onboardingQuestionView.secondView.rx.tapGesture()
             .filter { $0.state == .ended }
-            .map { _ in .didTapCardViewB }
+            .map { _ in .tapSecondView }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
         onboardingQuestionView.nextButton.rx.tap
-            .map { .didTapNextButton }
+            .map { .tapNextButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
-        reactor.state
-            .map { $0.stateCardViewA }
-            .bind { [weak self] state in
-                self?.onboardingQuestionView.onboardingCardViewA.state = state
+        onboardingQuestionView.nextButton.rx.tap
+            .withUnretained(self)
+            .bind { this, action in
+                if let isActive = this.reactor?.currentState.isActive {
+                    if isActive {
+                        this.reactor?.action.onNext(.tapNextButton)
+                        // TODO: 탭바로 이동
+                    }
+                }
             }
             .disposed(by: disposeBag)
         
         reactor.state
-            .map { $0.stateCardViewB }
+            .map { $0.stateFirstView }
             .bind { [weak self] state in
-                self?.onboardingQuestionView.onboardingCardViewB.state = state
+                self?.onboardingQuestionView.firstView.state = state
             }
             .disposed(by: disposeBag)
         
         reactor.state
-            .map { $0.isActiveNextButton }
+            .map { $0.stateSecondView }
+            .bind { [weak self] state in
+                self?.onboardingQuestionView.secondView.state = state
+            }
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .map { $0.isActive }
             .bind { [weak self] bool in
                 self?.onboardingQuestionView.nextButton.isEnabled = bool
             }
             .disposed(by: disposeBag)
-        
-//        reactor.state
-//            .compactMap(\.myPlannerReactor)
-//            .withUnretained(self)
-//            .bind { this, reactor in
-//                let myPlannerViewController = MyPlannerViewController(reactor: reactor, p)
-//
-//                this.navigationController?.pushViewController(myPlannerViewController, animated: true)
-//            }
-//            .disposed(by: disposeBag)
     }
 }

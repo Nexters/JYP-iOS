@@ -34,7 +34,7 @@ protocol KeychainServiceType: AnyObject {
     func removeImagePath() throws
 }
 
-final class KeychainService: BaseService, KeychainServiceType {
+final class KeychainService: GlobalService, KeychainServiceType {
     private var keychain: Keychain {
         return Keychain(service: "jyp.journeypiki")
     }

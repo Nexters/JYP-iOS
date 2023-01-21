@@ -9,43 +9,61 @@
 import RxSwift
 
 enum UserEvent {
-    case user(id: String)
-    case editUser(id: String, request: EditUserRequest)
-    case createUser(request: CreateUserRequest)
+    case fetchUser(User)
+    case updateUser(User)
+    case createUser(User)
 }
 
 protocol UserServiceType {
     var event: PublishSubject<UserEvent> { get }
     
-    func user(id: String) -> Observable<BaseModel<User>>
-    func editUser(id: String, request: EditUserRequest) -> Observable<BaseModel<User>>
-    func createUser(request: CreateUserRequest) -> Observable<BaseModel<User>>
+    func fetchUser(id: String)
+    func updateUser(id: String, request: UpdateUserRequest)
+    func createUser(request: CreateUserRequest)
 }
 
-class UserService: BaseService, UserServiceType {
+class UserService: GlobalService, UserServiceType {
     var event = PublishSubject<UserEvent>()
     
-    func user(id: String) -> Observable<BaseModel<User>> {
+    func fetchUser(id: String) {
         let target = UserAPI.fetchUser(id: id)
         
-        return APIService.request(target: target)
+        let request = APIService.request(target: target)
             .map(BaseModel<User>.self)
+            .map { $0.data }
             .asObservable()
-    }
-    
-    func editUser(id: String, request: EditUserRequest) -> Observable<BaseModel<User>> {
-        let target = UserAPI.updateUser(id: id, request: request)
         
-        return APIService.request(target: target)
-            .map(BaseModel<User>.self)
-            .asObservable()
+        request.bind { [weak self] user in
+            self?.event.onNext(.fetchUser(user))
+        }
+        .disposed(by: disposeBag)
     }
     
-    func createUser(request: CreateUserRequest) -> Observable<BaseModel<User>> {
+    func updateUser(id: String, request: UpdateUserRequest) {
+        let target = UserAPI.updateUser(id: id, request: request)
+
+        let request = APIService.request(target: target)
+            .map(BaseModel<User>.self)
+            .map { $0.data }
+            .asObservable()
+        
+        request.bind { [weak self] user in
+            self?.event.onNext(.updateUser(user))
+        }
+        .disposed(by: disposeBag)
+    }
+    
+    func createUser(request: CreateUserRequest) {
         let target = UserAPI.createUser(request: request)
         
-        return APIService.request(target: target)
+        let request = APIService.request(target: target)
             .map(BaseModel<User>.self)
+            .map { $0.data }
             .asObservable()
+        
+        request.bind { [weak self] user in
+            self?.event.onNext(.createUser(user))
+        }
+        .disposed(by: disposeBag)
     }
 }

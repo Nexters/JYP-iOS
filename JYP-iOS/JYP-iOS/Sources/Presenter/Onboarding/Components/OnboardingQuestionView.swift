@@ -27,22 +27,22 @@ enum OnboardingQuestionViewType {
     var cardViewTypeA: OnboardingCardViewType {
         switch self {
         case .journey:
-            return .journeyA
+            return .journeyFirst
         case .place:
-            return .placeA
+            return .placeFirst
         case .plan:
-            return .planA
+            return .planFirst
         }
     }
     
     var cardViewTypeB: OnboardingCardViewType {
         switch self {
         case .journey:
-            return .journeyB
+            return .journeySecond
         case .place:
-            return .placeB
+            return .placeSecond
         case .plan:
-            return .planB
+            return .planSecond
         }
     }
 }
@@ -52,8 +52,8 @@ class OnboardingQuestionView: BaseView {
     
     let questionIcon = UIImageView()
     let titleLabel = UILabel()
-    lazy var onboardingCardViewA = OnboardingCardView(type: type.cardViewTypeA)
-    lazy var onboardingCardViewB = OnboardingCardView(type: type.cardViewTypeB)
+    lazy var firstView = OnboardingCardView(type: type.cardViewTypeA)
+    lazy var secondView = OnboardingCardView(type: type.cardViewTypeB)
     let nextButton = JYPButton(type: .next)
     
     required init?(coder: NSCoder) {
@@ -81,7 +81,7 @@ class OnboardingQuestionView: BaseView {
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        addSubviews([questionIcon, titleLabel, onboardingCardViewA, onboardingCardViewB, nextButton])
+        addSubviews([questionIcon, titleLabel, firstView, secondView, nextButton])
     }
     
     override func setupLayout() {
@@ -98,13 +98,13 @@ class OnboardingQuestionView: BaseView {
             $0.leading.equalTo(questionIcon)
         }
         
-        onboardingCardViewA.snp.makeConstraints {
+        firstView.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview().inset(24)
-            $0.bottom.equalTo(onboardingCardViewB.snp.top).offset(-12)
+            $0.bottom.equalTo(secondView.snp.top).offset(-12)
             $0.height.equalTo(180)
         }
         
-        onboardingCardViewB.snp.makeConstraints {
+        secondView.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview().inset(24)
             $0.bottom.equalTo(nextButton.snp.top).offset(-74)
             $0.height.equalTo(180)

@@ -7,8 +7,12 @@
 //
 
 import UIKit
+import ReactorKit
 
-class MyPageViewController: NavigationBarViewController {
+class MyPageViewController: NavigationBarViewController, View {
+    // MARK: - Properties
+    typealias Reactor = MyPageReactor
+    
     // MARK: - UI Components
 
     let headerView: UIView = .init()
@@ -24,6 +28,17 @@ class MyPageViewController: NavigationBarViewController {
 
     // MARK: - Initializer
 
+    init(reactor: Reactor) {
+        super.init(nibName: nil, bundle: nil)
+        
+        self.reactor = reactor
+    }
+    
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     // MARK: - Setup Methods
 
     override func setupNavigationBar() {
@@ -103,5 +118,12 @@ class MyPageViewController: NavigationBarViewController {
             make.top.equalTo(headerView.snp.bottom).offset(28)
             make.leading.trailing.equalToSuperview().inset(24)
         }
+    }
+    
+    func bind(reactor: Reactor) {
+        logoutButton.rx.tap
+            .map { .logout }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
     }
 }

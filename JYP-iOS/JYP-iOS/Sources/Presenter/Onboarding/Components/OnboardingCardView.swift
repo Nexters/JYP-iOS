@@ -9,26 +9,26 @@
 import UIKit
 
 enum OnboardingCardViewType {
-    case journeyA
-    case journeyB
-    case placeA
-    case placeB
-    case planA
-    case planB
+    case journeyFirst
+    case journeySecond
+    case placeFirst
+    case placeSecond
+    case planFirst
+    case planSecond
     
     var config: OnboardingCardViewConfig {
         switch self {
-        case .journeyA:
+        case .journeyFirst:
             return .init(titleText: "새롭고 많은 것들을\n경험하는 것이라고 생각해요", image: JYPIOSAsset.onboardingQuestionJourneyA.image)
-        case .journeyB:
+        case .journeySecond:
             return .init(titleText: "여유롭게 휴식하는 것이라고\n생각해요", image: JYPIOSAsset.onboardingQuestionJourneyB.image)
-        case .placeA:
+        case .placeFirst:
             return .init(titleText: "미리 세운 계획에\n영향이 간다면 방문하지 않아요", image: JYPIOSAsset.onboardingQuestionPlaceA.image)
-        case .placeB:
+        case .placeSecond:
             return .init(titleText: "궁금증을 참지 못하고\n무조건 방문해요", image: JYPIOSAsset.onboardingQuestionPlaceB.image)
-        case .planA:
+        case .planFirst:
             return .init(titleText: "시간 단위로 꼼꼼하게\n계획해요", image: JYPIOSAsset.onboardingQuestionPlanA.image)
-        case .planB:
+        case .planSecond:
             return .init(titleText: "방문할 지역만 대략 생각하고,\n나의 직관을 믿어요", image: JYPIOSAsset.onboardingQuestionPlanB.image)
         }
     }

@@ -14,7 +14,11 @@ import KakaoSDKAuth
 import KakaoSDKUser
 
 class OnboardingSignUpViewController: NavigationBarViewController, View {
+    // MARK: - Properties
+    
     typealias Reactor = OnboardingSignUpReactor
+    
+    private let pushOnboardingQuestionJourneyScreen: () -> OnboardingQuestionJourneyViewController
     
     // MARK: - UI Components
     
@@ -25,14 +29,19 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
     let kakaoLoginButton = UIButton()
     let appleLoginButton = ASAuthorizationAppleIDButton()
     
-    required init?(coder: NSCoder) {
-        fatalError("not supported")
-    }
+    // MARK: - Initializer
     
-    init(reactor: OnboardingSignUpReactor) {
+    init(reactor: OnboardingSignUpReactor,
+         pushOnboardingQuestionJourneyScreen: @escaping () -> OnboardingQuestionJourneyViewController) {
+        self.pushOnboardingQuestionJourneyScreen = pushOnboardingQuestionJourneyScreen
         super.init(nibName: nil, bundle: nil)
         
         self.reactor = reactor
+    }
+    
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     // MARK: - Setup Methods
@@ -60,7 +69,7 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
         loginLabel.text = "SNS 계정으로 회원가입 및 로그인"
         loginLabel.font = JYPIOSFontFamily.Pretendard.regular.font(size: 14)
         loginLabel.textColor = JYPIOSAsset.textB40.color
-
+        
         kakaoLoginButton.setBackgroundImage(JYPIOSAsset.kakaoLogin.image, for: .normal)
         
         appleLoginButton.cornerRound(radius: 6)
@@ -112,39 +121,26 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
     
     func bind(reactor: OnboardingSignUpReactor) {
         kakaoLoginButton.rx.tap
-            .map { .didTapKakaoLoginButton }
-            .bind(to: reactor.action)
+            .bind { [weak self] _ in
+                self?.willPresentKakaoLoginScreen { token, name, profileImagePath in
+                    self?.reactor?.action.onNext(.login(authVendor: .kakao, token: token, name: name, profileImagePath: profileImagePath))
+                }
+            }
             .disposed(by: disposeBag)
         
         appleLoginButton.rx.tapGesture()
+            .when(.recognized)
             .filter { $0.state == .ended }
-            .map { _ in .didTapAppleLoginButton }
-            .bind(to: reactor.action)
+            .bind { [weak self] _ in
+                self?.willPresentAppleLoginScreen()
+            }
             .disposed(by: disposeBag)
         
         reactor.state
-            .map { $0.isOpenKakaoLogin }
-            .distinctUntilChanged()
+            .map(\.didLogin)
             .filter { $0 }
-            .map { _ in }
-            .bind(onNext: openKakaoLogin)
-            .disposed(by: disposeBag)
-        
-        reactor.state
-            .map { $0.isOpenAppleLogin }
-            .distinctUntilChanged()
-            .filter { $0 }
-            .map { _ in }
-            .bind(onNext: openAppleLogin)
-            .disposed(by: disposeBag)
-        
-        reactor.state
-            .compactMap(\.onboardingQuestionReactor)
-            .withUnretained(self)
-            .bind { this, reactor in
-                let onboardingQuestionJourneyViewController = OnboardingQuestionJourneyViewController(reactor: reactor)
-                
-                this.navigationController?.pushViewController(onboardingQuestionJourneyViewController, animated: true)
+            .bind { [weak self] _ in
+                self?.willPushOnboardingQuestionJourneyViewController()
             }
             .disposed(by: disposeBag)
     }
@@ -153,37 +149,37 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
 // MARK: Sign Up Methods
 
 extension OnboardingSignUpViewController: ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
-    private func openKakaoLogin() {
+    private func willPresentKakaoLoginScreen(completion: @escaping (String, String?, String?) -> Void) {
         if UserApi.isKakaoTalkLoginAvailable() {
-            // 카카오톡으로 로그인
             UserApi.shared.loginWithKakaoTalk {(oauthToken, error) in
                 if let error = error {
                     print(error)
-                } else {
-                    print("loginWithKakaoTalk() success.")
-                    
+                } else if let token = oauthToken?.accessToken {
                     UserApi.shared.me { (user, _) in
                         if let error = error {
                             print(error)
                         } else {
-                            self.reactor?.action.onNext(.didLogin(authVendor: .kakao, authId: oauthToken?.accessToken ?? "", name: user?.properties?["nickname"] ?? "", profileImagePath: user?.properties?["profile_image"] ?? ""))
+                            let name = user?.properties?["nickname"]
+                            let profileImagePath = user?.properties?["profile_image"]
+                            
+                            completion(token, name, profileImagePath)
                         }
                     }
                 }
             }
         } else {
-            // 카카오 계정으로 로그인
             UserApi.shared.loginWithKakaoAccount {(oauthToken, error) in
                 if let error = error {
                     print(error)
-                } else {
-                    print("loginWithKakaoAccount() success.")
-                    
+                } else if let token = oauthToken?.accessToken {
                     UserApi.shared.me { (user, _) in
                         if let error = error {
                             print(error)
                         } else {
-                            self.reactor?.action.onNext(.didLogin(authVendor: .kakao, authId: oauthToken?.accessToken ?? "", name: user?.properties?["nickname"] ?? "", profileImagePath: user?.properties?["profile_image"] ?? ""))
+                            let name = user?.properties?["nickname"]
+                            let profileImagePath = user?.properties?["profile_image"]
+                            
+                            completion(token, name, profileImagePath)
                         }
                     }
                 }
@@ -191,7 +187,7 @@ extension OnboardingSignUpViewController: ASAuthorizationControllerDelegate, ASA
         }
     }
     
-    private func openAppleLogin() {
+    private func willPresentAppleLoginScreen() {
         let appleIDProvider = ASAuthorizationAppleIDProvider()
         let request = appleIDProvider.createRequest()
         request.requestedScopes = [.fullName, .email]
@@ -210,10 +206,11 @@ extension OnboardingSignUpViewController: ASAuthorizationControllerDelegate, ASA
         switch authorization.credential {
         case let appleIDCredential as ASAuthorizationAppleIDCredential:
             let fullName = appleIDCredential.fullName
+            let name = (fullName?.givenName ?? "") + (fullName?.familyName ?? "")
             
             if let identityToken = appleIDCredential.identityToken,
-                let tokenString = String(data: identityToken, encoding: .utf8) {
-                self.reactor?.action.onNext(.didLogin(authVendor: .apple, authId: tokenString, name: String(describing: fullName), profileImagePath: ""))
+               let token = String(data: identityToken, encoding: .utf8) {
+                reactor?.action.onNext(.login(authVendor: .apple, token: token, name: name, profileImagePath: nil))
             }
             
         default:
@@ -223,5 +220,12 @@ extension OnboardingSignUpViewController: ASAuthorizationControllerDelegate, ASA
     
     func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
         print(error)
+    }
+}
+
+extension OnboardingSignUpViewController {
+    func willPushOnboardingQuestionJourneyViewController() {
+        let viewController = pushOnboardingQuestionJourneyScreen()
+        self.navigationController?.pushViewController(viewController, animated: true)
     }
 }

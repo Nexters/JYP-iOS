@@ -16,3 +16,11 @@ class BaseService {
         self.provider = provider
     }
 }
+
+class GlobalService {
+    var disposeBag = DisposeBag()
+}
+
+class LocalService {
+    var disposeBag = DisposeBag()
+}

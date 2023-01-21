@@ -9,8 +9,10 @@
 import UIKit
 import ReactorKit
 
-class OnboardingTwoViewController: NavigationBarViewController, View {
-    typealias Reactor = OnboardingReactor
+final class OnboardingTwoViewController: NavigationBarViewController {
+    // MARK: - Properties
+    
+    private let pushOnboardingSignUpScreen: () -> OnboardingSignUpViewController
     
     // MARK: - UI Components
     
@@ -18,15 +20,14 @@ class OnboardingTwoViewController: NavigationBarViewController, View {
     
     // MARK: - Setup Methods
     
+    init(pushOnboardingSignUpScreen: @escaping () -> OnboardingSignUpViewController) {
+        self.pushOnboardingSignUpScreen = pushOnboardingSignUpScreen
+        super.init(nibName: nil, bundle: nil)
+    }
+    
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    init(reactor: OnboardingReactor) {
-        super.init(nibName: nil, bundle: nil)
-        
-        self.reactor = reactor
     }
     
     override func setupNavigationBar() {
@@ -55,19 +56,20 @@ class OnboardingTwoViewController: NavigationBarViewController, View {
     
     // MARK: Binding
     
-    func bind(reactor: OnboardingReactor) {
-        onboardingView.nextButton.rx.tap
-            .map { .didTapNextButton }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
+    override func setupBind() {
+        super.setupBind()
         
-        reactor.state
-            .map { $0.isPresentNextViewController }
-            .filter { $0 }
+        onboardingView.nextButton.rx.tap
             .bind { [weak self] _ in
-                let onboardingSignUpViewController = OnboardingSignUpViewController(reactor: OnboardingSignUpReactor())
-                self?.navigationController?.pushViewController(onboardingSignUpViewController, animated: true)
+                self?.willPushOnboardingSignUpViewController()
             }
             .disposed(by: disposeBag)
+    }
+}
+
+extension OnboardingTwoViewController {
+    func willPushOnboardingSignUpViewController() {
+        let viewController = pushOnboardingSignUpScreen()
+        self.navigationController?.pushViewController(viewController, animated: true)
     }
 }
