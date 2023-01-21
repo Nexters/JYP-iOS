@@ -10,7 +10,7 @@ import UIKit
 
 class SelectionPlannerJoinBottomViewController: BottomSheetViewController {
     private let pushInputPlannerCodeBottomSheetScreen: () -> InputPlannerCodeBottomSheetViewController
-    
+
     // MARK: - UI Components
 
     private let containerView: UIView = .init()
@@ -24,13 +24,13 @@ class SelectionPlannerJoinBottomViewController: BottomSheetViewController {
     private let joinPlannerView: UIView = .init()
     private let joinPlannerIcon: UIImageView = .init()
     private let joinPlannerLabel: UILabel = .init()
-    
+
     init(mode: BottomSheetViewController.Mode,
          pushInputPlannerCodeBottomSheetScreen: @escaping () -> InputPlannerCodeBottomSheetViewController) {
         self.pushInputPlannerCodeBottomSheetScreen = pushInputPlannerCodeBottomSheetScreen
         super.init(mode: mode)
     }
-    
+
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -110,52 +110,31 @@ class SelectionPlannerJoinBottomViewController: BottomSheetViewController {
         createPlannerView.rx.tapGesture()
             .when(.recognized)
             .subscribe(onNext: { [weak self] _ in
-                self?.dismiss(animated: true, completion: {
+                guard let self,
+                      let tabBarController = self.presentingViewController as? UITabBarController
+                else { return }
+
+                self.dismiss(animated: true, completion: {
                     let createPlannerViewController = CreatePlannerNameViewController(reactor: .init())
                     createPlannerViewController.hidesBottomBarWhenPushed = true
 
-                    let keyWindow = UIApplication.shared.connectedScenes
-                        .filter { $0.activationState == .foregroundActive }
-                        .map { $0 as? UIWindowScene }
-                        .compactMap { $0 }
-                        .first?.windows
-                        .filter { $0.isKeyWindow }.first
-                    
-                    if let navigationController = keyWindow?.rootViewController?.children.first
-                        as? UINavigationController {
-                        navigationController.pushViewController(
-                            createPlannerViewController,
-                            animated: true)
-                    }
+                    tabBarController.navigationController?.pushViewController(createPlannerViewController, animated: true)
                 })
             })
             .disposed(by: disposeBag)
-        
+
         joinPlannerView.rx.tapGesture()
             .when(.recognized)
             .subscribe(onNext: { [weak self] _ in
-                self?.dismiss(animated: true, completion: {
-                    self?.willPresentInputPlannerCodeBottomSheetViewController()
+                guard let self,
+                      let tabBarController = self.presentingViewController as? UITabBarController
+                else { return }
+
+                self.dismiss(animated: true, completion: {
+                    let viewController = self.pushInputPlannerCodeBottomSheetScreen()
+                    tabBarController.present(viewController, animated: true)
                 })
             })
             .disposed(by: disposeBag)
-    }
-}
-
-extension SelectionPlannerJoinBottomViewController {
-    func willPresentInputPlannerCodeBottomSheetViewController() {
-        let viewController = pushInputPlannerCodeBottomSheetScreen()
-        
-        let keyWindow = UIApplication.shared.connectedScenes
-            .filter { $0.activationState == .foregroundActive }
-            .map { $0 as? UIWindowScene }
-            .compactMap { $0 }
-            .first?.windows
-            .filter { $0.isKeyWindow }.first
-
-        keyWindow?.rootViewController?.present(
-            viewController,
-            animated: true
-        )
     }
 }

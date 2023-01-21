@@ -11,30 +11,29 @@ import ReactorKit
 final class InputPlannerCodeBottomSheetReactor: Reactor {
     enum Action {
         case didChangedTextField(String)
-        case didTapJoinCodeButton
     }
 
     enum Mutation {
+        case changePlannerCode(String)
         case changeActivePlannerJoinButton(Bool)
-        case pushMyPlanner(Bool)
     }
 
     struct State {
+        var plannerCode: String?
         var isActivePlannerJoinButton: Bool = false
-        var isPushMyPlannerView: Bool = false
+        var guideLabel: String?
     }
 
     var initialState: State = .init()
+    private let provider = ServiceProvider.shared.journeyService
 
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case let .didChangedTextField(str):
-            return .just(.changeActivePlannerJoinButton(!str.isEmpty))
-        case .didTapJoinCodeButton:
-            return .concat(
-                .just(.pushMyPlanner(true)),
-                .just(.pushMyPlanner(false))
-            )
+            return .concat([
+                .just(.changeActivePlannerJoinButton(!str.isEmpty)),
+                .just(.changePlannerCode(str))
+            ])
         }
     }
 
@@ -42,10 +41,11 @@ final class InputPlannerCodeBottomSheetReactor: Reactor {
         var newState = state
 
         switch mutation {
+        case let .changePlannerCode(code):
+            newState.plannerCode = code
         case let .changeActivePlannerJoinButton(isActive):
+            newState.guideLabel = nil
             newState.isActivePlannerJoinButton = isActive
-        case let .pushMyPlanner(isPush):
-            newState.isPushMyPlannerView = isPush
         }
 
         return newState
