@@ -14,7 +14,7 @@ class JYPMemberStackView: UIStackView {
 
     // MARK: - Properties
 
-    var profiles: [User] = [] {
+    var users: [User] = [] {
         didSet {
             setupLayout()
         }
@@ -45,24 +45,20 @@ class JYPMemberStackView: UIStackView {
     }
 
     func setupLayout() {
-        // TODO: - User Model 정의 후 변경
         arrangedSubviews.forEach { $0.removeFromSuperview() }
 
-        profiles
+        users
             .prefix(Self.MAX_MEMBER)
-            .forEach { _ in
+            .map { $0.profileImagePath }
+            .forEach { url in
                 let profile = JYPProfileImageView()
-                profile.image = [
-                    JYPIOSAsset.profile01.image,
-                    JYPIOSAsset.profile02.image,
-                    JYPIOSAsset.profile03.image
-                ].randomElement()
+                profile.kf.setImage(with: URL(string: url))
 
                 addArrangedSubview(profile)
             }
 
-        if profiles.count > Self.MAX_MEMBER {
-            let overMember = JYPOverProfileView(count: profiles.count)
+        if users.count > Self.MAX_MEMBER {
+            let overMember = JYPOverProfileView(count: users.count)
 
             addArrangedSubview(overMember)
         }
