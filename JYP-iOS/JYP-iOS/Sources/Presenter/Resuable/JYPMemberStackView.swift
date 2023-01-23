@@ -20,6 +20,12 @@ class JYPMemberStackView: UIStackView {
         }
     }
 
+    var borderColor: UIColor = .clear {
+        didSet {
+            arrangedSubviews.forEach { $0.layer.borderColor = borderColor.cgColor }
+        }
+    }
+
     // MARK: - Initializer
 
     init() {
@@ -49,7 +55,7 @@ class JYPMemberStackView: UIStackView {
 
         users
             .prefix(Self.MAX_MEMBER)
-            .map { $0.profileImagePath }
+            .map(\.profileImagePath)
             .forEach { url in
                 let profile = JYPProfileImageView()
                 profile.kf.setImage(with: URL(string: url))

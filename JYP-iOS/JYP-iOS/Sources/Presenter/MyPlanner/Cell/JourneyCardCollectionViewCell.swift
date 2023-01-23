@@ -115,84 +115,39 @@ class JourneyCardCollectionViewCell: BaseCollectionViewCell, View {
     }
 
     func bind(reactor: JourneyCardCollectionViewCellReactor) {
-        reactor.state
-            .map(\.journey.themePath.image)
-            .bind(to: coverImage.rx.image)
-            .disposed(by: disposeBag)
+        let journey = reactor.currentState.journey
 
-        reactor.state
-            .map(\.journey.users)
-            .bind(to: memberStackView.rx.profiles)
-            .disposed(by: disposeBag)
+        coverImage.image = journey.themePath.image
+        backgroundColor = journey.themePath.cardColor
+        if journey.themePath.isActiveShadow {
+            setShadow(radius: 40, offset: .init(width: 4, height: 10), opacity: 0.06)
+        } else {
+            layer.shadowColor = nil
+        }
 
-        reactor.state
-            .map(\.journey.themePath.isActiveShadow)
-            .bind(to: rx.isActiveShadow)
-            .disposed(by: disposeBag)
+        moreButton.setImage(
+            JYPIOSAsset.iconMenu.image.withTintColor(journey.themePath.textColor, renderingMode: .alwaysOriginal),
+            for: .normal
+        )
+        titleLabel.text = journey.name
+        titleLabel.textColor = journey.themePath.textColor
+        startDateLabel.text = DateManager.doubleToDateString(format: "M월 d일", double: journey.startDate)
+        startDateLabel.textColor = journey.themePath.textColor
+        endDateLabel.text = "- \(DateManager.doubleToDateString(format: "M월 d일", double: reactor.currentState.journey.endDate))"
+        endDateLabel.textColor = journey.themePath.textColor
 
-        reactor.state
-            .map(\.journey.themePath.cardColor)
-            .bind(to: rx.backgroundColor)
-            .disposed(by: disposeBag)
+        memberStackView.users = journey.users
+        memberStackView.borderColor = journey.themePath.borderColor
 
-        reactor.state
-            .map(\.journey.themePath.borderColor)
-            .bind(to: memberStackView.rx.borderColor)
-            .disposed(by: disposeBag)
-
-        reactor.state
-            .map(\.journey.themePath.textColor)
-            .bind(to: titleLabel.rx.textColor)
-            .disposed(by: disposeBag)
-
-        reactor.state
-            .map(\.journey.themePath.textColor)
-            .bind(to: startDateLabel.rx.textColor)
-            .disposed(by: disposeBag)
-
-        reactor.state
-            .map(\.journey.themePath.textColor)
-            .bind(to: endDateLabel.rx.textColor)
-            .disposed(by: disposeBag)
-
-        reactor.state
-            .map(\.journey.themePath.textColor)
-            .map { JYPIOSAsset.iconMenu.image.withTintColor($0, renderingMode: .alwaysOriginal) }
-            .bind(to: moreButton.rx.image(for: .normal))
-            .disposed(by: disposeBag)
-
-        reactor.state
-            .map(\.journey.name)
-            .bind(to: titleLabel.rx.text)
-            .disposed(by: disposeBag)
-
-        reactor.state
-            .map(\.journey.startDate)
-            .map { DateManager.doubleToDateString(format: "M월 d일", double: $0) }
-            .bind(to: startDateLabel.rx.text)
-            .disposed(by: disposeBag)
-
-        reactor.state
-            .map(\.journey.startDate)
-            .compactMap { DateManager.calcDays(from: $0) }
-            .map { day in
-                var tag = String(day)
-
-                if day == 0 {
-                    tag = "-day"
-                } else if day > 0 {
-                     tag = "+\(day)"
-                }
-                return "D\(tag)"
+        if let day = DateManager.calcDays(from: journey.startDate) {
+            var daysText = "\(day)"
+            if day == 0 {
+                daysText = "-day"
+            } else if day > 0 {
+                daysText = "+\(day)"
             }
-            .bind(to: daysTag.rx.title())
-            .disposed(by: disposeBag)
-
-        reactor.state
-            .map(\.journey.endDate)
-            .map { "- \(DateManager.doubleToDateString(format: "M월 d일", double: $0))" }
-            .bind(to: endDateLabel.rx.text)
-            .disposed(by: disposeBag)
+            daysTag.setTitle("D\(daysText)", for: .normal)
+        }
     }
 
     func hideDaysTag() {
@@ -202,18 +157,6 @@ class JourneyCardCollectionViewCell: BaseCollectionViewCell, View {
 
         titleLabel.snp.updateConstraints { make in
             make.top.equalTo(daysTag.snp.bottom).offset(0)
-        }
-    }
-}
-
-extension Reactive where Base: JourneyCardCollectionViewCell {
-    var isActiveShadow: Binder<Bool> {
-        Binder(base) { view, isActive in
-            if isActive {
-                view.setShadow(radius: 40, offset: .init(width: 4, height: 10), opacity: 0.06)
-            } else {
-                view.layer.shadowColor = nil
-            }
         }
     }
 }
