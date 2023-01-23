@@ -37,7 +37,7 @@ final class ScheduledJourneyReactor: Reactor {
             switch event {
             case let .fetchJourneyList(response):
                 let currentTime = DateManager.currentTimeInterval
-                let scheduledJourneys = response.filter { $0.startDate > currentTime }
+                let scheduledJourneys = response.filter { $0.endDate > currentTime }
                 guard !scheduledJourneys.isEmpty
                 else { return .just(.updateSectionItem([JourneyCardItem.empty])) }
 
