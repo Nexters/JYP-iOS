@@ -16,7 +16,7 @@ class CalendarViewController: BottomSheetViewController, View {
 
     private lazy var datePicker: UIDatePicker = {
         let picker = UIDatePicker(frame: .zero)
-        picker.preferredDatePickerStyle = .wheels
+        picker.preferredDatePickerStyle = .inline
         picker.datePickerMode = .date
         picker.locale = Locale(identifier: "ko-KR")
         picker.timeZone = .autoupdatingCurrent
@@ -42,6 +42,9 @@ class CalendarViewController: BottomSheetViewController, View {
         super.setupLayout()
 
         addContentView(view: datePicker)
+        datePicker.snp.makeConstraints { make in
+            make.height.equalTo(380)
+        }
     }
 
     func bind(reactor: CalendarReactor) {

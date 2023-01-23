@@ -43,12 +43,15 @@ struct DateManager {
     /// 입력받은 timeInterval로 부터 남은 날짜를 계산한다
     /// - Parameter timeInterval: 계산하고자 하는 날짜의 timeInterval
     /// - Returns: 남은 날짜 (D-Day)를 반환한다
-    static func calcDays(from timeInterval: Double) -> Int? {
+    static func calcDays(
+        from timeInterval: Double,
+        to target: Date = Date()
+    ) -> Int? {
         let calendar = Calendar.current
         guard let date = calendar.dateComponents(
             [.day],
             from: calendar.startOfDay(for: Date(timeIntervalSince1970: timeInterval)),
-            to: calendar.startOfDay(for: Date())
+            to: calendar.startOfDay(for: target)
         ).day
         else { return nil }
 
