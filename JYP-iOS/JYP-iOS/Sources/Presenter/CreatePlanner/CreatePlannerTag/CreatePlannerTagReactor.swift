@@ -35,6 +35,7 @@ final class CreatePlannerTagReactor: Reactor {
         case activeStartButton
         case pushPlannerView(String)
         case finishedJoinPlanner(String)
+        case willPresentErrorBottomSheet(JYPNetworkError)
     }
 
     struct State {
@@ -48,6 +49,7 @@ final class CreatePlannerTagReactor: Reactor {
         var isEnabledStartButton: Bool = false
         var createdPlannerID: String?
         var joinedPlannerID: String?
+        var joinError: JYPNetworkError?
     }
 
     let initialState: State
@@ -104,6 +106,12 @@ final class CreatePlannerTagReactor: Reactor {
                     )
                     .map { [weak self] _ in
                         .finishedJoinPlanner(self?.currentState.journey.id ?? "0")
+                    }
+                    .catch { error in
+                        guard let error = error as? JYPNetworkError
+                        else { return .empty() }
+
+                        return .just(.willPresentErrorBottomSheet(error))
                     }
             }
         case let .successCreatePlanner(id):
@@ -165,6 +173,8 @@ final class CreatePlannerTagReactor: Reactor {
             newState.createdPlannerID = id
         case let .finishedJoinPlanner(id):
             newState.joinedPlannerID = id
+        case let .willPresentErrorBottomSheet(error):
+            newState.joinError = error
         }
 
         return newState
