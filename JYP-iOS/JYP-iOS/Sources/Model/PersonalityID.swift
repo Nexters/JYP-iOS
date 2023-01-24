@@ -13,7 +13,11 @@ enum PersonalityID: String, Codable {
     case PE
     case RT
     case FW
-    
+
+    init(from decoder: Decoder) throws {
+        self = try Self(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .FW
+    }
+
     var title: String {
         switch self {
         case .ME:
@@ -26,13 +30,13 @@ enum PersonalityID: String, Codable {
             return "자유로운 방랑자"
         }
     }
-    
+
     static func toSelf(journey: Bool, place: Bool, plan: Bool) -> PersonalityID {
-        if (journey && place && plan) || ((journey == false && place && plan)) {
+        if (journey && place && plan) || (!journey && place && plan) {
             return .ME
-        } else if (journey && place == false && plan) || ((journey && place && plan == false)) {
+        } else if (journey && !place && plan) || (journey && place && !plan) {
             return .PE
-        } else if (journey == false && place == false && plan) || ((journey == false && place && plan == false)) {
+        } else if (!journey && !place && plan) || (!journey && place && !plan) {
             return .RT
         } else {
             return .FW
