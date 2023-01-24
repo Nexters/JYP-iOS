@@ -84,6 +84,8 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
         joinCodeButton.backgroundColor = JYPIOSAsset.tagWhiteBlue100.color
         joinCodeButton.setTitleColor(JYPIOSAsset.subBlue300.color, for: .normal)
         joinCodeButton.titleLabel?.lineBreakMode = .byTruncatingTail
+        joinCodeButton.titleLabel?.numberOfLines = 1
+        joinCodeButton.titleEdgeInsets = .init(top: 4, left: 8, bottom: 4, right: 8)
         joinCodeButton.cornerRound(radius: 8)
         joinCodeButton.isHidden = true
 
@@ -137,7 +139,7 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
         joinCodeButton.snp.makeConstraints { make in
             make.top.equalTo(textField.snp.bottom).offset(16)
             make.leading.equalToSuperview()
-            make.width.equalTo(104)
+            make.size.equalTo(CGSize(width: 104, height: 32))
         }
 
         plannerJoinButton.snp.makeConstraints { make in
@@ -205,7 +207,7 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
     }
 
     @objc
-    func changedClipboardString(_ sender: Notification) {
+    private func changedClipboardString(_ sender: Notification) {
         guard let clipboardString: String = sender.object as? String else { return }
 
         setJoinCodeButton(clipboardString)
