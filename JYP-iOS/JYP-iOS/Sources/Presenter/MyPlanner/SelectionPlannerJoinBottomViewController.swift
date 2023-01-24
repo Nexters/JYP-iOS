@@ -25,8 +25,10 @@ class SelectionPlannerJoinBottomViewController: BottomSheetViewController {
     private let joinPlannerIcon: UIImageView = .init()
     private let joinPlannerLabel: UILabel = .init()
 
-    init(mode: BottomSheetViewController.Mode,
-         pushInputPlannerCodeBottomSheetScreen: @escaping () -> InputPlannerCodeBottomSheetViewController) {
+    init(
+        mode: BottomSheetViewController.Mode,
+        pushInputPlannerCodeBottomSheetScreen: @escaping () -> InputPlannerCodeBottomSheetViewController
+    ) {
         self.pushInputPlannerCodeBottomSheetScreen = pushInputPlannerCodeBottomSheetScreen
         super.init(mode: mode)
     }
@@ -111,14 +113,15 @@ class SelectionPlannerJoinBottomViewController: BottomSheetViewController {
             .when(.recognized)
             .subscribe(onNext: { [weak self] _ in
                 guard let self,
-                      let tabBarController = self.presentingViewController as? UITabBarController
+                      let tabBarController = self.presentingViewController as? UITabBarController,
+                      let firstViewController = tabBarController.children.first as? UINavigationController
                 else { return }
 
                 self.dismiss(animated: true, completion: {
                     let createPlannerViewController = CreatePlannerNameViewController(reactor: .init())
                     createPlannerViewController.hidesBottomBarWhenPushed = true
 
-                    tabBarController.navigationController?.pushViewController(createPlannerViewController, animated: true)
+                    firstViewController.pushViewController(createPlannerViewController, animated: true)
                 })
             })
             .disposed(by: disposeBag)

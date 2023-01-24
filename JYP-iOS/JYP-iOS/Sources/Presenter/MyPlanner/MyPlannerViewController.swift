@@ -38,7 +38,8 @@ class MyPlannerViewController: NavigationBarViewController, View {
 
     init(reactor: Reactor,
          pushSelectionPlannerJoinBottomScreen: @escaping () -> SelectionPlannerJoinBottomViewController,
-         pushPlannerScreen: @escaping (_ id: String) -> PlannerViewController) {
+         pushPlannerScreen: @escaping (_ id: String) -> PlannerViewController
+    ) {
         self.pushSelectionPlannerJoinBottomScreen = pushSelectionPlannerJoinBottomScreen
         self.pushPlannerScreen = pushPlannerScreen
         super.init(nibName: nil, bundle: nil)
@@ -204,7 +205,7 @@ class MyPlannerViewController: NavigationBarViewController, View {
 extension MyPlannerViewController {
     func willPushSelectionPlannerJoinBottomViewController() {
         let viewController = pushSelectionPlannerJoinBottomScreen()
-        
+
         self.tabBarController?.present(viewController, animated: true)
     }
     
