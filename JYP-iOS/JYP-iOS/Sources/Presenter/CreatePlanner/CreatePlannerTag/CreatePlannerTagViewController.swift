@@ -197,6 +197,18 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
                 }
             })
             .disposed(by: disposeBag)
+
+        reactor.state
+            .compactMap(\.joinError)
+            .subscribe(onNext: { [weak self] error in
+                guard let presentingViewController = self?.presentingViewController else { return }
+
+                self?.dismiss(animated: true) {
+                    let errorBottomSheet = JoinErrorBottomSheetViewController(error: error)
+                    presentingViewController.present(errorBottomSheet, animated: true)
+                }
+            })
+            .disposed(by: disposeBag)
     }
 }
 

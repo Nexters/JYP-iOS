@@ -14,7 +14,6 @@ final class JoinErrorBottomSheetViewController: BottomSheetViewController {
         let label = UILabel()
         label.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 20)
         label.textColor = JYPIOSAsset.textB80.color
-        label.text = "잘못된 참여코드에요!"
         return label
     }()
 
@@ -22,11 +21,21 @@ final class JoinErrorBottomSheetViewController: BottomSheetViewController {
         let label = UILabel()
         label.font = JYPIOSFontFamily.Pretendard.regular.font(size: 16)
         label.textColor = JYPIOSAsset.textB75.color
-        label.text = "정확한 코드를 다시 입력해주세요."
+        label.numberOfLines = 0
         return label
     }()
 
     private let confirmButton = JYPButton(type: .confirm)
+
+    init(error: JYPNetworkError) {
+        super.init(mode: .drag)
+        configureError(error: error)
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
     override func viewDidLoad() {
         bind()
@@ -48,7 +57,7 @@ final class JoinErrorBottomSheetViewController: BottomSheetViewController {
 
         subTitleLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(8)
-            make.leading.equalTo(titleLabel)
+            make.leading.trailing.equalToSuperview()
         }
 
         confirmButton.snp.makeConstraints { make in
@@ -58,11 +67,28 @@ final class JoinErrorBottomSheetViewController: BottomSheetViewController {
         }
     }
 
-    func bind() {
+    private func bind() {
         confirmButton.rx.tap
             .subscribe(onNext: { [weak self] in
                 self?.dismiss(animated: true)
             })
             .disposed(by: disposeBag)
+    }
+
+    private func configureError(error: JYPNetworkError) {
+        switch error {
+        case let .invalidCode(msg):
+            titleLabel.text = "잘못된 참여코드에요"
+            subTitleLabel.text = msg
+        case let .exceededUser(msg), let .notExistJourney(msg):
+            titleLabel.text = "이미 참여 중인 플래너에요!"
+            subTitleLabel.text = msg
+        case let .alreadyJoinedJourney(msg):
+            titleLabel.text = "아쉽지만 다음에 함께해요!"
+            subTitleLabel.text = msg
+        case let .serverError(msg):
+            titleLabel.text = "서버 에러가 발생했어요"
+            subTitleLabel.text = msg
+        }
     }
 }

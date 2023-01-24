@@ -131,15 +131,15 @@ final class JourneyService: BaseService, JourneyServiceType {
         }
         .disposed(by: disposeBag)
     }
-    
+
     func updatePikis(journeyId: String, request: UpdatePikisRequest) {
         let target = JourneyAPI.updatePikis(journeyId: journeyId, request: request)
-        
+
         let request = APIService.request(target: target)
             .map(BaseModel<UpdatePikisResponse>.self)
             .map(\.data.ids)
             .asObservable()
-        
+
         request.bind { [weak self] ids in
             self?.event.onNext(.updatePikis(ids: ids))
         }
@@ -162,6 +162,21 @@ final class JourneyService: BaseService, JourneyServiceType {
 
         return APIService.request(target: target)
             .map(EmptyModel.self)
+            .flatMap { model in
+                .create { observer in
+                    switch model.code {
+                    case "20000": observer(.success(model))
+                    case "40001": observer(.failure(JYPNetworkError.invalidCode(model.message)))
+                    case "40002": observer(.failure(JYPNetworkError.exceededUser(model.message)))
+                    case "40003": observer(.failure(JYPNetworkError.notExistJourney(model.message)))
+                    case "40005": observer(.failure(JYPNetworkError.alreadyJoinedJourney(model.message)))
+                    default:
+                        observer(.failure(JYPNetworkError.serverError(model.message)))
+                    }
+
+                    return Disposables.create()
+                }
+            }
             .asObservable()
     }
 
