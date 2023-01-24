@@ -152,7 +152,8 @@ class CreatePlannerDateViewController: NavigationBarViewController, View {
             .subscribe(onNext: { [weak self] _ in
                 let createTag = CreatePlannerTagViewController(
                     reactor: reactor.makeCreateTagReactor(),
-                    pushPlannerScreen: nil
+                    pushPlannerScreen: nil,
+                    presentJoinErrorBottomSheet: nil
                 )
 
                 self?.navigationController?.pushViewController(createTag, animated: true)

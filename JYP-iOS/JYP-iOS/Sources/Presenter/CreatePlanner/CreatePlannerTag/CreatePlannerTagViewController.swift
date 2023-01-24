@@ -15,6 +15,7 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
     typealias CreateTagDataSource = RxCollectionViewSectionedReloadDataSource<TagSectionModel>
 
     private let pushPlannerScreen: ((_ id: String) -> PlannerViewController)?
+    private let presentJoinErrorBottomSheet: ((_ error: JYPNetworkError) -> JoinErrorBottomSheetViewController)?
 
     // MARK: - UI Components
 
@@ -65,9 +66,11 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
 
     init(
         reactor: Reactor,
-        pushPlannerScreen: ((_ id: String) -> PlannerViewController)?
+        pushPlannerScreen: ((_ id: String) -> PlannerViewController)?,
+        presentJoinErrorBottomSheet:  ((_ error: JYPNetworkError) -> JoinErrorBottomSheetViewController)?
     ) {
         self.pushPlannerScreen = pushPlannerScreen
+        self.presentJoinErrorBottomSheet = presentJoinErrorBottomSheet
         super.init(nibName: nil, bundle: nil)
         self.reactor = reactor
     }
@@ -201,10 +204,13 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
         reactor.state
             .compactMap(\.joinError)
             .subscribe(onNext: { [weak self] error in
-                guard let presentingViewController = self?.presentingViewController else { return }
+                guard let self,
+                      let presentingViewController = self.presentingViewController,
+                      let joinErrorBottomSheet = self.presentJoinErrorBottomSheet
+                else { return }
 
-                self?.dismiss(animated: true) {
-                    let errorBottomSheet = JoinErrorBottomSheetViewController(error: error)
+                self.dismiss(animated: true) {
+                    let errorBottomSheet = joinErrorBottomSheet(error)
                     presentingViewController.present(errorBottomSheet, animated: true)
                 }
             })
