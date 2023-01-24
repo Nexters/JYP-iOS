@@ -18,24 +18,26 @@ final class CompositionRoot {
         let window = UIWindow(windowScene: windowScene)
         window.backgroundColor = .white
         window.makeKeyAndVisible()
-        
-        let authService: AuthServiceType = AuthService()
-        let userService: UserServiceType = UserService()
-        let onboardingService: OnboardingServiceType = OnboardingService()
-         
-        if KeychainAccess.get(key: .accessToken) != nil {
-            window.rootViewController = makeTabBarScreen()
-        } else {
-            let onboardingScreen = makeOnboardingScreen(onboardingService: onboardingService,
-                                                        authService: authService,
-                                                        userService: userService)
-            window.rootViewController = onboardingScreen.navigationWrap()
-        }
-        
-        window.rootViewController = UINavigationController(rootViewController: makeTabBarScreen())
-        
-        return AppDependency(window: window,
-                             configureAppearance: self.configureAppearance)
+
+        // MARK: - Auth 로직 완성 후 주석 해제
+//        let authService: AuthServiceType = AuthService()
+//        let userService: UserServiceType = UserService()
+//        let onboardingService: OnboardingServiceType = OnboardingService()
+
+//        if KeychainAccess.get(key: .accessToken) != nil {
+//            window.rootViewController = makeTabBarScreen()
+//        } else {
+//            let onboardingScreen = makeOnboardingScreen(onboardingService: onboardingService,
+//                                                        authService: authService,
+//                                                        userService: userService)
+//            window.rootViewController = onboardingScreen.navigationWrap()
+//        }
+        window.rootViewController = makeTabBarScreen()
+
+        return AppDependency(
+            window: window,
+            configureAppearance: self.configureAppearance
+        )
     }
      
     static func configureAppearance() { }
