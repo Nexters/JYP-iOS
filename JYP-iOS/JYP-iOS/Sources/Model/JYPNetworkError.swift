@@ -20,3 +20,33 @@ enum JYPNetworkError: Error {
     /// 정의되지 않은 모든 에러 (Internal Server Error 포함)
     case serverError(String)
 }
+
+extension JYPNetworkError: LocalizedError {
+    var errorDescription: String? {
+        switch self {
+        case .invalidCode:
+            return "잘못된 참여코드에요!"
+        case .exceededUser, .notExistJourney:
+            return "이미 참여 중인 플래너에요!"
+        case .alreadyJoinedJourney:
+            return "아쉽지만 다음에 함께해요!"
+        case .serverError:
+            return "서버 에러가 발생했어요"
+        }
+    }
+
+    var associatedValue: String {
+        switch self {
+        case let .serverError(msg):
+            return msg
+        case let .invalidCode(msg):
+            return msg
+        case let .exceededUser(msg):
+            return msg
+        case let .notExistJourney(msg):
+            return msg
+        case let .alreadyJoinedJourney(msg):
+            return msg
+        }
+    }
+}

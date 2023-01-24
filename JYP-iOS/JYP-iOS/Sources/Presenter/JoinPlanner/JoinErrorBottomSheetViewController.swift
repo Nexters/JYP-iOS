@@ -25,7 +25,7 @@ final class JoinErrorBottomSheetViewController: BottomSheetViewController {
         return label
     }()
 
-    private let confirmButton = JYPButton(type: .confirm)
+    private var confirmButton: JYPButton!
 
     init(error: JYPNetworkError) {
         super.init(mode: .drag)
@@ -76,19 +76,14 @@ final class JoinErrorBottomSheetViewController: BottomSheetViewController {
     }
 
     private func configureError(error: JYPNetworkError) {
+        titleLabel.text = error.errorDescription
+        subTitleLabel.text = error.associatedValue
+
         switch error {
-        case let .invalidCode(msg):
-            titleLabel.text = "잘못된 참여코드에요"
-            subTitleLabel.text = msg
-        case let .exceededUser(msg), let .notExistJourney(msg):
-            titleLabel.text = "이미 참여 중인 플래너에요!"
-            subTitleLabel.text = msg
-        case let .alreadyJoinedJourney(msg):
-            titleLabel.text = "아쉽지만 다음에 함께해요!"
-            subTitleLabel.text = msg
-        case let .serverError(msg):
-            titleLabel.text = "서버 에러가 발생했어요"
-            subTitleLabel.text = msg
+        case .exceededUser, .notExistJourney:
+            confirmButton = .init(type: .nextTime)
+        default:
+            confirmButton = .init(type: .confirm)
         }
     }
 }
