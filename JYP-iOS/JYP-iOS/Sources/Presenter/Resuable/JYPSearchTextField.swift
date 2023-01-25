@@ -54,10 +54,10 @@ struct JYPSeachTextFieldConfig {
 }
 
 final class JYPSearchTextField: BaseView {
-    let type: JYPSearchTextFieldType
-    let textField = UITextField()
-    let trailingButton = UIButton()
-    let bottomBorderLine = UIView()
+    private let type: JYPSearchTextFieldType
+    private(set) var textField = UITextField()
+    private let trailingButton = UIButton()
+    private let bottomBorderLine = UIView()
 
     private lazy var textfieldValueChangedEvent = Observable.merge(
         textField.rx.changedText.asObservable(),
