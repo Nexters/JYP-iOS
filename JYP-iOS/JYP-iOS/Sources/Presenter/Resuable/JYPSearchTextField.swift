@@ -135,7 +135,7 @@ final class JYPSearchTextField: BaseView {
 
         trailingButton.rx.tap
             .withUnretained(self)
-            .bind { this, _ in
+            .subscribe { this, _ in
                 if this.trailingButton.isSelected {
                     this.textField.text = ""
                     this.trailingButton.isSelected = false
