@@ -150,24 +150,25 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
 
 extension OnboardingSignUpViewController: ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
     private func willPresentKakaoLoginScreen(completion: @escaping (String, String?, String?) -> Void) {
-        if UserApi.isKakaoTalkLoginAvailable() {
-            UserApi.shared.loginWithKakaoTalk {(oauthToken, error) in
-                if let error = error {
-                    print(error)
-                } else if let token = oauthToken?.accessToken {
-                    UserApi.shared.me { (user, _) in
-                        if let error = error {
-                            print(error)
-                        } else {
-                            let name = user?.properties?["nickname"]
-                            let profileImagePath = user?.properties?["profile_image"]
-                            
-                            completion(token, name, profileImagePath)
-                        }
-                    }
-                }
-            }
-        } else {
+        //TODO: 카카오톡 로그인 해결 후 주석 제거
+//        if UserApi.isKakaoTalkLoginAvailable() {
+//            UserApi.shared.loginWithKakaoTalk {(oauthToken, error) in
+//                if let error = error {
+//                    print(error)
+//                } else if let token = oauthToken?.accessToken {
+//                    UserApi.shared.me { (user, _) in
+//                        if let error = error {
+//                            print(error)
+//                        } else {
+//                            let name = user?.properties?["nickname"]
+//                            let profileImagePath = user?.properties?["profile_image"]
+//
+//                            completion(token, name, profileImagePath)
+//                        }
+//                    }
+//                }
+//            }
+//        } else {
             UserApi.shared.loginWithKakaoAccount {(oauthToken, error) in
                 if let error = error {
                     print(error)
@@ -184,7 +185,7 @@ extension OnboardingSignUpViewController: ASAuthorizationControllerDelegate, ASA
                     }
                 }
             }
-        }
+//        }
     }
     
     private func willPresentAppleLoginScreen() {
