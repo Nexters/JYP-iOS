@@ -29,6 +29,6 @@ class TagCollectionViewCell: BaseCollectionViewCell, View {
     
     func bind(reactor: Reactor) {
         jypTag.type = reactor.currentState.orientation
-        jypTag.titleLabel.text = reactor.currentState.topic
+        jypTag.titleLabel.text = reactor.currentState.text
     }
 }

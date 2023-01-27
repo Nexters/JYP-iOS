@@ -13,13 +13,21 @@ struct Tag: Codable, Equatable {
     let orientation: JYPTagType
     var users: [User] = []
     var isSelected: Bool = false
-
+    
+    var text: String {
+        if users.isEmpty {
+            return topic
+        } else {
+            return String(describing: topic + " " + "\(users.count)")
+        }
+    }
+    
     init(topic: String, orientation: JYPTagType, users: [User]) {
         self.topic = topic
         self.orientation = orientation
         self.users = users
     }
-
+    
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         topic = try container.decode(String.self, forKey: .topic)
@@ -27,7 +35,7 @@ struct Tag: Codable, Equatable {
         users = (try? container.decode([User].self, forKey: .users)) ?? []
         isSelected = (try? container.decode(Bool.self, forKey: .users)) ?? false
     }
-
+    
     static func == (lhs: Tag, rhs: Tag) -> Bool {
         (lhs.topic == rhs.topic) && (lhs.orientation == rhs.orientation)
     }

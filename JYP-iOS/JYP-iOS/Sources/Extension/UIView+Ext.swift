@@ -28,6 +28,23 @@ extension UIView {
         layer.maskedCorners = direct
         layer.masksToBounds = true
     }
+    
+    /// 특정  모서리에 round를 줄 수 있는 함수
+    /// - Parameters:
+    ///   - topLeft: 왼쪽 위 radius 정도
+    ///   - topRight: 오른쪽 위 radius 정도
+    ///   - bottomLeft: 왼쪽 아래 radius 정도
+    ///   - bottomRight: 오른쪽 아래 radius 정도
+    func cornerRound(topLeft: CGFloat = 0, topRight: CGFloat = 0, bottomLeft: CGFloat = 0, bottomRight: CGFloat = 0) {
+        let topLeftRadius = CGSize(width: topLeft, height: topLeft)
+        let topRightRadius = CGSize(width: topRight, height: topRight)
+        let bottomLeftRadius = CGSize(width: bottomLeft, height: bottomLeft)
+        let bottomRightRadius = CGSize(width: bottomRight, height: bottomRight)
+        let maskPath = UIBezierPath(shouldRoundRect: bounds, topLeftRadius: topLeftRadius, topRightRadius: topRightRadius, bottomLeftRadius: bottomLeftRadius, bottomRightRadius: bottomRightRadius)
+        let shape = CAShapeLayer()
+        shape.path = maskPath.cgPath
+        layer.mask = shape
+    }
 
     /// 그림자 적용 함수
     /// - Parameters:
