@@ -122,17 +122,6 @@ extension JourneyPlanReactor {
             
             sections.append(.init(model: .journey(journeyPlanItems), items: journeyPlanItems))
         }
-        print("[D] \(sections)")
         return sections
     }
-    
-//    private func makeReactor(from reactor: PlanCollectionViewCellReactor, pikis: [Pik], pikmis: [Pik]) -> PlannerRouteReactor {
-//        let state = reactor.currentState
-//        return .init(state: .init(id: currentState.id, order: state.order, date: state.date, pikis: pikis, pikmis: pikmis))
-//    }
-    
-//    private func makeReactor(from reactor: EmptyPlanCollectionViewCellReactor, pikis: [Pik], pikmis: [Pik]) -> PlannerRouteReactor {
-//        let state = reactor.currentState
-//        return .init(state: .init(id: currentState.id, order: state.order, date: state.date, pikis: pikis, pikmis: pikmis))
-//    }
 }

@@ -24,7 +24,7 @@ final class CompositionRoot {
         let userService: UserServiceType = UserService()
         let onboardingService: OnboardingServiceType = OnboardingService()
         
-        if KeychainAccess.get(key: .accessToken) != nil {
+        if KeychainAccess.get(key: .accessToken) != nil && UserDefaultsAccess.get(key: .userID) != nil {
             window.rootViewController = makeTabBarScreen()
         } else {
             let onboardingScreen = makeOnboardingScreen(onboardingService: onboardingService,

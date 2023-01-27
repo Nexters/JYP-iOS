@@ -49,7 +49,6 @@ class JourneyPlanView: BaseView, View {
         guard let reactor = self?.reactor else { return .init() }
         switch dataSource[indexPath.section].model {
         case let .journey(items):
-            print("[D] \(indexPath)")
             guard case let .plan(cellReactor) = items[indexPath.item] else { return .init() }
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: PikiCollectionReusableView.self), for: indexPath) as? PikiCollectionReusableView else { return .init() }
             

@@ -14,6 +14,8 @@ enum JourneyEvent {
     case create(Journey)
     case createPikmi(id: String)
     case updatePikis(ids: [String])
+    case createPikmiLike
+    case deletePikmiLike
 
     /// local
     case changeJourneyData(_ journey: Journey)
@@ -33,8 +35,8 @@ protocol JourneyServiceType {
     func editTags(journeyId: String, request: UpdateTagsRequest) -> Observable<EmptyModel>
     func joinPlanner(journeyId: String, request: CreateJourneyUserRequest) -> Observable<EmptyModel>
     func deleteJourneyUser(journeyId: String) -> Observable<EmptyModel>
-    func addPikmiLike(journeyId: String, pikmiId: String) -> Observable<EmptyModel>
-    func deletePikmiLike(journeyId: String, pikmiId: String) -> Observable<EmptyModel>
+    func createPikmiLike(journeyId: String, pikmiId: String)
+    func deletePikmiLike(journeyId: String, pikmiId: String)
 
     /// local
     func changeJourneyData(_ journey: Journey?)
@@ -195,19 +197,33 @@ final class JourneyService: BaseService, JourneyServiceType {
             .asObservable()
     }
 
-    func addPikmiLike(journeyId: String, pikmiId: String) -> RxSwift.Observable<EmptyModel> {
+    func createPikmiLike(journeyId: String, pikmiId: String) {
         let target = JourneyAPI.createPikmiLike(journeyId: journeyId, pikmiId: pikmiId)
-
-        return APIService.request(target: target)
+        
+        let request = APIService.request(target: target)
             .map(EmptyModel.self)
             .asObservable()
+        
+        request
+            .filter({ $0.code == "20000" })
+            .bind { [weak self] _ in
+                self?.event.onNext(.createPikmiLike)
+            }
+            .disposed(by: disposeBag)
     }
 
-    func deletePikmiLike(journeyId: String, pikmiId: String) -> RxSwift.Observable<EmptyModel> {
+    func deletePikmiLike(journeyId: String, pikmiId: String) {
         let target = JourneyAPI.deletePikmiLike(journeyId: journeyId, pikmiId: pikmiId)
 
-        return APIService.request(target: target)
+        let request = APIService.request(target: target)
             .map(EmptyModel.self)
             .asObservable()
+        
+        request
+            .filter({ $0.code == "20000" })
+            .bind { [weak self] _ in
+                self?.event.onNext(.deletePikmiLike)
+            }
+            .disposed(by: disposeBag)
     }
 }

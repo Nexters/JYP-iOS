@@ -66,10 +66,10 @@ extension JourneyAPI: BaseAPI {
             return "/\(id)/drop"
             
         case let .createPikmiLike(journeyId, pikmiId):
-            return "/\(journeyId)/pikmis/\(pikmiId)/likes"
+            return "\(journeyId)/pikmis/\(pikmiId)/likes"
             
         case let .deletePikmiLike(journeyId, pikmiId):
-            return "/journeys/\(journeyId)/pikmis/\(pikmiId)/unlikes"
+            return "\(journeyId)/pikmis/\(pikmiId)/undoLikes"
         }
     }
 
@@ -111,10 +111,11 @@ extension JourneyAPI: BaseAPI {
         }
     }
 
-    var headers: [String: String]? {
-        [
-            "jyp-jwt-master-key": Environment.jwtKey,
-            "jyp-override-id": "1"
-        ]
-    }
+//    var headers: [String: String]? {
+        //TODO: API 적용 후 완전히 주석 제거
+//        [
+//            "jyp-jwt-master-key": Environment.jwtKey,
+//            "jyp-override-id": "1"
+//        ]
+//    }
 }
