@@ -20,9 +20,9 @@ final class CompositionRoot {
         window.makeKeyAndVisible()
 
         // MARK: - Auth 로직 완성 후 주석 해제
-        let authService: AuthServiceType = AuthService()
-        let userService: UserServiceType = UserService()
-        let onboardingService: OnboardingServiceType = OnboardingService()
+//        let authService: AuthServiceType = AuthService()
+//        let userService: UserServiceType = UserService()
+//        let onboardingService: OnboardingServiceType = OnboardingService()
 
 //        if KeychainAccess.get(key: .accessToken) != nil {
 //            window.rootViewController = makeTabBarScreen()
@@ -32,11 +32,7 @@ final class CompositionRoot {
 //                                                        userService: userService)
 //            window.rootViewController = onboardingScreen.navigationWrap()
 //        }
-        let onboardingScreen = makeOnboardingScreen(onboardingService: onboardingService,
-                                                    authService: authService,
-                                                    userService: userService)
-        window.rootViewController = onboardingScreen.navigationWrap()
-//        window.rootViewController = makeTabBarScreen()
+        window.rootViewController = makeTabBarScreen()
 
         return AppDependency(
             window: window,
