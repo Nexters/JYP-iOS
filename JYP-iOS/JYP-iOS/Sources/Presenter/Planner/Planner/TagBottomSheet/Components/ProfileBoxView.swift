@@ -37,6 +37,7 @@ class ProfileBox: BaseView {
         super.setupProperty()
         
         imageView.cornerRound(radius: 12)
+        titleLabel.textAlignment = .center
     }
     
     override func setupHierarchy() {
