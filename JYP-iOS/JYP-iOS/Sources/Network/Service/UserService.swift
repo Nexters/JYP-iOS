@@ -33,7 +33,9 @@ class UserService: GlobalService, UserServiceType {
             .map { $0.data }
             .asObservable()
         
-        request.bind { [weak self] user in
+        request
+            .compactMap { $0 }
+            .bind { [weak self] user in
             self?.event.onNext(.fetchUser(user))
         }
         .disposed(by: disposeBag)
@@ -47,10 +49,12 @@ class UserService: GlobalService, UserServiceType {
             .map { $0.data }
             .asObservable()
         
-        request.bind { [weak self] user in
-            self?.event.onNext(.updateUser(user))
-        }
-        .disposed(by: disposeBag)
+        request
+            .compactMap { $0 }
+            .bind { [weak self] user in
+                self?.event.onNext(.updateUser(user))
+            }
+            .disposed(by: disposeBag)
     }
     
     func createUser(request: CreateUserRequest) {
@@ -61,9 +65,12 @@ class UserService: GlobalService, UserServiceType {
             .map { $0.data }
             .asObservable()
         
-        request.bind { [weak self] user in
-            self?.event.onNext(.createUser(user))
-        }
-        .disposed(by: disposeBag)
+        request
+            .compactMap { $0 }
+            .bind { [weak self] user in
+                UserDefaultsAccess.set(key: .userID, value: user.id)
+                self?.event.onNext(.createUser(user))
+            }
+            .disposed(by: disposeBag)
     }
 }

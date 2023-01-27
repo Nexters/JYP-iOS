@@ -58,7 +58,8 @@ final class JourneyService: BaseService, JourneyServiceType {
 
         let request = APIService.request(target: target)
             .map(BaseModel<FetchJourneysResponse>.self)
-            .map { $0.data.toDomain() }
+            .compactMap(\.data)
+            .map { $0.toDomain() }
             .asObservable()
 
         request.subscribe { [weak self] journeyList in
@@ -72,7 +73,8 @@ final class JourneyService: BaseService, JourneyServiceType {
 
         let request = APIService.request(target: target)
             .map(BaseModel<FetchJourneyDetailResponse>.self)
-            .map { $0.data.toDomain() }
+            .compactMap(\.data)
+            .map { $0.toDomain() }
             .asObservable()
 
         request.bind { [weak self] journey in
@@ -89,7 +91,8 @@ final class JourneyService: BaseService, JourneyServiceType {
 
         return APIService.request(target: target)
             .map(BaseModel<FetchTagsResponse>.self)
-            .map(\.data.tags)
+            .compactMap(\.data)
+            .map(\.tags)
             .asObservable()
     }
 
@@ -98,7 +101,8 @@ final class JourneyService: BaseService, JourneyServiceType {
 
         return APIService.request(target: target)
             .map(BaseModel<FetchTagsResponse>.self)
-            .map(\.data.tags)
+            .compactMap(\.data)
+            .map(\.tags)
             .asObservable()
     }
 
@@ -114,7 +118,8 @@ final class JourneyService: BaseService, JourneyServiceType {
 
         return APIService.request(target: target)
             .map(BaseModel<CreateJourneyResponse>.self)
-            .map(\.data.id)
+            .compactMap(\.data)
+            .map(\.id)
             .asObservable()
     }
 
@@ -123,7 +128,8 @@ final class JourneyService: BaseService, JourneyServiceType {
 
         let request = APIService.request(target: target)
             .map(BaseModel<CreatePikmiResponse>.self)
-            .map(\.data.id)
+            .compactMap(\.data)
+            .map(\.id)
             .asObservable()
 
         request.bind { [weak self] id in
@@ -137,7 +143,8 @@ final class JourneyService: BaseService, JourneyServiceType {
 
         let request = APIService.request(target: target)
             .map(BaseModel<UpdatePikisResponse>.self)
-            .map(\.data.ids)
+            .compactMap(\.data)
+            .map(\.ids)
             .asObservable()
 
         request.bind { [weak self] ids in
