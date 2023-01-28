@@ -41,7 +41,12 @@ class BaseProjectFactory: ProjectFactory {
         "SERVER_HOST": "$(SERVER_HOST)",
         "SERVER_JWT_MASTER_KEY": "$(SERVER_JWT_MASTER_KEY)",
         "GOOGLE_API_KEY": "$(GOOGLE_API_KEY)",
-        "CFBundleURLTypes": ["CFBundleURLSchemes": ["kakao$(KAKAO_APP_KEY)"]],
+        "CFBundleURLTypes": [
+            [
+                "CFBundleTypeRole": "Editor",
+                "CFBundleURLSchemes": ["kakao$(KAKAO_APP_KEY)"]
+            ]
+        ],
         "UIApplicationSceneManifest": [
             "UIApplicationSupportsMultipleScenes": false,
             "UISceneConfigurations": [
