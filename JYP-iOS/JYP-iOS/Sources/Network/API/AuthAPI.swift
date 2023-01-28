@@ -48,7 +48,7 @@ extension AuthAPI: BaseAPI {
         switch self {
         case let .apple(token):
             return [
-                "Authorization": "Bearer \(token)",
+                "Authorization": "\(token)",
                 "Content-Type": "application/json",
             ]
             

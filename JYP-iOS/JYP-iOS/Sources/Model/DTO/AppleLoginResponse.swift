@@ -10,5 +10,4 @@ import Foundation
 
 struct AppleLoginResponse: Codable {
     let token: String
-    let id: String
 }
