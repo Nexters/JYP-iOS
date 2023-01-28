@@ -62,7 +62,7 @@ class RouteCollectionViewCell: BaseCollectionViewCell, View {
         
         titleLabel.snp.makeConstraints {
             $0.top.equalTo(subLabel.snp.bottom).offset(4)
-            $0.leading.equalToSuperview().inset(16)
+            $0.leading.trailing.equalToSuperview().inset(16)
         }
         
         deleteButton.snp.makeConstraints {

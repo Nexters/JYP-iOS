@@ -242,20 +242,19 @@ extension PlannerRouteViewController {
         sectionItems.forEach({ sectionItem in
             switch sectionItem {
             case .route:
-                let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .absolute(136), heightDimension: .absolute(78)))
-                
-                item.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 16)
+                let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .estimated(136), heightDimension: .estimated(78)))
+
                 items.append(item)
             }
         })
         
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .estimated(300), heightDimension: .estimated(300)), subitems: items)
-        
+        group.edgeSpacing = .init(leading: .fixed(0), top: .fixed(0), trailing: .fixed(8), bottom: .fixed(0))
         let section = NSCollectionLayoutSection(group: group)
         
         section.orthogonalScrollingBehavior = .continuousGroupLeadingBoundary
         section.contentInsets = .init(top: 31, leading: 24, bottom: 31, trailing: 24)
-        
+
         return section
     }
     
