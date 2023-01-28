@@ -123,11 +123,15 @@ class JYPTag: BaseView {
 
     let imageView = UIImageView()
     let titleLabel = UILabel()
+    
+    override func draw(_ rect: CGRect) {
+        super.draw(rect)
+        
+        cornerRound(topLeft: 15, topRight: 10, bottomLeft: 15, bottomRight: 10)
+    }
 
     override func setupProperty() {
         super.setupProperty()
-
-        cornerRound(radius: 15)
 
         titleLabel.font = JYPIOSFontFamily.Pretendard.medium.font(size: 16)
     }

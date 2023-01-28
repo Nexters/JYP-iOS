@@ -169,7 +169,7 @@ extension DiscussionView: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         switch dataSource[indexPath.section].items[indexPath.row] {
         case let .tag(reactor):
-            return CGSize(width: reactor.currentState.topic.size(withAttributes: [NSAttributedString.Key.font: JYPIOSFontFamily.Pretendard.medium.font(size: 16)]).width + 50, height: UI.tagCellHeight)
+            return CGSize(width: reactor.currentState.text.size(withAttributes: [NSAttributedString.Key.font: JYPIOSFontFamily.Pretendard.medium.font(size: 16)]).width + 50, height: UI.tagCellHeight)
         case .emptyTag:
             return CGSize(width: 0, height: 0)
         case .pikmi:
