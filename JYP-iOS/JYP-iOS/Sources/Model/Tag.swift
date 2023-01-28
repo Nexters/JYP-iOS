@@ -15,10 +15,10 @@ struct Tag: Codable, Equatable {
     var isSelected: Bool = false
     
     var text: String {
-        if users.isEmpty {
-            return topic
+        if users.count > 1 {
+            return String(describing: "\(topic) \(users.count)")
         } else {
-            return String(describing: topic + " " + "\(users.count)")
+            return topic
         }
     }
     
