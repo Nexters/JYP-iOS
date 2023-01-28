@@ -79,11 +79,15 @@ class PlannerReactor: Reactor {
     }
 
     func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
-        let APIMutation = provider.journeyService.event.withUnretained(self).flatMap { (_, event) -> Observable<Mutation> in
+        let APIMutation = provider.journeyService.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
             switch event {
             case let .fetchJourney(journey):
                 return .just(.setJourney(journey))
-
+            
+            case .createPikmiLike, .deletePikmiLike:
+                this.provider.plannerService.refresh()
+                return .empty()
+                
             default:
                 return .empty()
             }
@@ -100,12 +104,6 @@ class PlannerReactor: Reactor {
 
             case let .presentPlannerSearchPlace(reactor):
                 return .just(.setPlannerSearchPlaceReactor(reactor))
-
-//            case let .presentPlannerRoute(reactor):
-//                return .concat([
-//                    .just(.setPlannerRouteReactor(reactor)),
-//                    .just(.setPlannerRouteReactor(nil))
-//                ])
 
             case let .presentWeb(reactor):
                 return .just(.setWebReactor(reactor))
@@ -134,17 +132,11 @@ class PlannerReactor: Reactor {
         case let .setIsShowJourneyPlan(bool):
             newState.isShowJourneyPlan = bool
 
-//        case let .setPlannerInviteReactor(reactor):
-//            newState.plannerInviteReactor = reactor
-
         case let .setTagBottomSheetReactor(reactor):
             newState.tagBottomSheetReactor = reactor
 
         case let .setPlannerSearchPlaceReactor(reactor):
             newState.plannerSearchPlaceReactor = reactor
-
-//        case let .setPlannerRouteReactor(reactor):
-//            newState.plannerRouteReactor = reactor
 
         case let .setWebReactor(reactor):
             newState.webReactor = reactor

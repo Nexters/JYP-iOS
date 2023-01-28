@@ -31,10 +31,12 @@ final class AuthService: GlobalService, AuthServiceType {
             .map(\.data)
             .asObservable()
 
-        request.subscribe { [weak self] res in
-            self?.event.onNext(.apple(res))
-        }
-        .disposed(by: disposeBag)
+        request
+            .compactMap { $0 }
+            .subscribe { [weak self] res in
+                self?.event.onNext(.apple(res))
+            }
+            .disposed(by: disposeBag)
     }
     
     func kakao(token: String) {
@@ -45,9 +47,11 @@ final class AuthService: GlobalService, AuthServiceType {
             .map(\.data)
             .asObservable()
 
-        request.subscribe { [weak self] res in
-            self?.event.onNext(.kakao(res))
-        }
-        .disposed(by: disposeBag)
+        request
+            .compactMap { $0 }
+            .subscribe { [weak self] res in
+                self?.event.onNext(.kakao(res))
+            }
+            .disposed(by: disposeBag)
     }
 }

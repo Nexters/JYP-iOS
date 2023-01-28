@@ -22,12 +22,13 @@ class DiscussionReactor: Reactor {
         case tapPlusButton
         case tapCreatePikmiCellButton(IndexPath)
         case tapPikmiCellInfoButton(IndexPath)
-        case tapPikmiCellLikeButton(IndexPath)
+        case tapPikmiCellLikeButton(IndexPath, PikmiCollectionViewCellReactor.State)
     }
     
     enum Mutation {
         case setJourney(Journey)
         case setSections([DiscussionSectionModel])
+        case updateSectionItem(IndexPath, DiscussionItem)
         case updateIsToggleOn(Bool)
     }
     
@@ -69,8 +70,8 @@ extension DiscussionReactor {
         case let .tapPikmiCellInfoButton(indexPath):
             return tapPikmiCellInfoButtonMutation(indexPath)
             
-        case let .tapPikmiCellLikeButton(indexPath):
-            return tapPikmiCellLikeButtonMutation(indexPath)
+        case let .tapPikmiCellLikeButton(indexPath, state):
+            return tapPikmiCellLikeButtonMutation(indexPath, state)
         }
     }
     
@@ -98,6 +99,9 @@ extension DiscussionReactor {
             
         case let .setSections(sections):
             newState.sections = sections
+            
+        case let .updateSectionItem(indexPath, item):
+            newState.sections[indexPath.section].items[indexPath.item] = item
             
         case let .updateIsToggleOn(bool):
             newState.isToggleOn = bool
@@ -153,8 +157,12 @@ extension DiscussionReactor {
         return .empty()
     }
     
-    private func tapPikmiCellLikeButtonMutation(_ indexPath: IndexPath) -> Observable<Mutation> {
-        guard case .pikmi = currentState.sections[indexPath.section].items[indexPath.item] else { return .empty() }
+    private func tapPikmiCellLikeButtonMutation(_ indexPath: IndexPath, _ state: PikmiCollectionViewCellReactor.State) -> Observable<Mutation> {
+        if let likeBy = state.pik.likeBy, likeBy.contains(where: { $0.id == UserDefaultsAccess.get(key: .userID) }) {
+            provider.journeyService.deletePikmiLike(journeyId: currentState.id, pikmiId: state.pik.id)
+        } else {
+            provider.journeyService.createPikmiLike(journeyId: currentState.id, pikmiId: state.pik.id)
+        }
         return .empty()
     }
     
@@ -171,8 +179,12 @@ extension DiscussionReactor {
             }
         }()
         
-        var pikmiItems: [DiscussionItem] = journey.pikmis.enumerated().map { (index, pik) -> DiscussionItem in
-            return .pikmi(.init(state: .init(pik: pik, rank: index)))
+        var pikmiItems: [DiscussionItem] = journey.pikmis.sorted(by: { $0.likeBy?.count ?? 0 > $1.likeBy?.count ?? 0 }).enumerated().map { (index, pik) -> DiscussionItem in
+            if let likeBy = pik.likeBy, likeBy.contains(where: { $0.id == UserDefaultsAccess.get(key: .userID) }) {
+                return .pikmi(.init(state: .init(pik: pik, rank: index, isSelectedLikeButton: true, isReadyAnimate: true)))
+            } else {
+                return .pikmi(.init(state: .init(pik: pik, rank: index)))
+            }
         }
         
         if pikmiItems.isEmpty {

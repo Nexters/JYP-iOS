@@ -44,11 +44,19 @@ class DiscussionView: BaseView, View {
             
         case let .pikmi(reactor):
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: PikmiCollectionViewCell.self), for: indexPath) as? PikmiCollectionViewCell else { return .init() }
+            
             cell.reactor = reactor
+            
             cell.infoButton.rx.tap
                 .map { .tapPikmiCellInfoButton(indexPath) }
                 .bind(to: thisReactor.action)
                 .disposed(by: cell.disposeBag)
+            
+            cell.likeButton.rx.tap
+                .map { .tapPikmiCellLikeButton(indexPath, reactor.currentState) }
+                .bind(to: thisReactor.action)
+                .disposed(by: cell.disposeBag)
+            
             return cell
             
         case let .createPikmi(reactor):

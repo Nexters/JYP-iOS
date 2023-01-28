@@ -14,6 +14,8 @@ enum JourneyEvent {
     case create(Journey)
     case createPikmi(id: String)
     case updatePikis(ids: [String])
+    case createPikmiLike
+    case deletePikmiLike
 
     /// local
     case changeJourneyData(_ journey: Journey)
@@ -33,8 +35,8 @@ protocol JourneyServiceType {
     func editTags(journeyId: String, request: UpdateTagsRequest) -> Observable<EmptyModel>
     func joinPlanner(journeyId: String, request: CreateJourneyUserRequest) -> Observable<EmptyModel>
     func deleteJourneyUser(journeyId: String) -> Observable<EmptyModel>
-    func addPikmiLike(journeyId: String, pikmiId: String) -> Observable<EmptyModel>
-    func deletePikmiLike(journeyId: String, pikmiId: String) -> Observable<EmptyModel>
+    func createPikmiLike(journeyId: String, pikmiId: String)
+    func deletePikmiLike(journeyId: String, pikmiId: String)
 
     /// local
     func changeJourneyData(_ journey: Journey?)
@@ -58,7 +60,8 @@ final class JourneyService: BaseService, JourneyServiceType {
 
         let request = APIService.request(target: target)
             .map(BaseModel<FetchJourneysResponse>.self)
-            .map { $0.data.toDomain() }
+            .compactMap(\.data)
+            .map { $0.toDomain() }
             .asObservable()
 
         request.subscribe { [weak self] journeyList in
@@ -72,7 +75,8 @@ final class JourneyService: BaseService, JourneyServiceType {
 
         let request = APIService.request(target: target)
             .map(BaseModel<FetchJourneyDetailResponse>.self)
-            .map { $0.data.toDomain() }
+            .compactMap(\.data)
+            .map { $0.toDomain() }
             .asObservable()
 
         request.bind { [weak self] journey in
@@ -89,7 +93,8 @@ final class JourneyService: BaseService, JourneyServiceType {
 
         return APIService.request(target: target)
             .map(BaseModel<FetchTagsResponse>.self)
-            .map(\.data.tags)
+            .compactMap(\.data)
+            .map(\.tags)
             .asObservable()
     }
 
@@ -98,7 +103,8 @@ final class JourneyService: BaseService, JourneyServiceType {
 
         return APIService.request(target: target)
             .map(BaseModel<FetchTagsResponse>.self)
-            .map(\.data.tags)
+            .compactMap(\.data)
+            .map(\.tags)
             .asObservable()
     }
 
@@ -114,7 +120,8 @@ final class JourneyService: BaseService, JourneyServiceType {
 
         return APIService.request(target: target)
             .map(BaseModel<CreateJourneyResponse>.self)
-            .map(\.data.id)
+            .compactMap(\.data)
+            .map(\.id)
             .asObservable()
     }
 
@@ -123,7 +130,8 @@ final class JourneyService: BaseService, JourneyServiceType {
 
         let request = APIService.request(target: target)
             .map(BaseModel<CreatePikmiResponse>.self)
-            .map(\.data.id)
+            .compactMap(\.data)
+            .map(\.id)
             .asObservable()
 
         request.bind { [weak self] id in
@@ -137,7 +145,8 @@ final class JourneyService: BaseService, JourneyServiceType {
 
         let request = APIService.request(target: target)
             .map(BaseModel<UpdatePikisResponse>.self)
-            .map(\.data.ids)
+            .compactMap(\.data)
+            .map(\.ids)
             .asObservable()
 
         request.bind { [weak self] ids in
@@ -188,19 +197,33 @@ final class JourneyService: BaseService, JourneyServiceType {
             .asObservable()
     }
 
-    func addPikmiLike(journeyId: String, pikmiId: String) -> RxSwift.Observable<EmptyModel> {
+    func createPikmiLike(journeyId: String, pikmiId: String) {
         let target = JourneyAPI.createPikmiLike(journeyId: journeyId, pikmiId: pikmiId)
-
-        return APIService.request(target: target)
+        
+        let request = APIService.request(target: target)
             .map(EmptyModel.self)
             .asObservable()
+        
+        request
+            .filter({ $0.code == "20000" })
+            .bind { [weak self] _ in
+                self?.event.onNext(.createPikmiLike)
+            }
+            .disposed(by: disposeBag)
     }
 
-    func deletePikmiLike(journeyId: String, pikmiId: String) -> RxSwift.Observable<EmptyModel> {
+    func deletePikmiLike(journeyId: String, pikmiId: String) {
         let target = JourneyAPI.deletePikmiLike(journeyId: journeyId, pikmiId: pikmiId)
 
-        return APIService.request(target: target)
+        let request = APIService.request(target: target)
             .map(EmptyModel.self)
             .asObservable()
+        
+        request
+            .filter({ $0.code == "20000" })
+            .bind { [weak self] _ in
+                self?.event.onNext(.deletePikmiLike)
+            }
+            .disposed(by: disposeBag)
     }
 }

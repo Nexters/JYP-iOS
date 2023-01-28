@@ -22,10 +22,10 @@ extension AuthAPI: BaseAPI {
     var path: String {
         switch self {
         case .apple:
-            return "/apple/login"
+            return "apple/login"
             
         case .kakao:
-            return "/kakao/login"
+            return "kakao/login"
         }
     }
     
