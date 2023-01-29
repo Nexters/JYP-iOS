@@ -41,7 +41,7 @@ final class RemovePlannerBottomSheetViewController: BottomSheetViewController, V
 
     private let noButton: JYPButton = {
         let button = JYPButton(type: .no)
-        button.isEnabled = false
+        button.isEnabled = true
         return button
     }()
 
@@ -85,8 +85,20 @@ final class RemovePlannerBottomSheetViewController: BottomSheetViewController, V
     func bind(reactor: RemovePlannerBottomSheetReactor) {
         reactor.state
             .map(\.journey.name)
-            .map { "\($0)를\n정말 나가시나요?" }
+            .map { "\($0)에서 \n정말 나가시나요?" }
             .bind(to: titleLabel.rx.text)
+            .disposed(by: disposeBag)
+
+        reactor.state
+            .filter(\.dismiss)
+            .subscribe { [weak self] _ in
+                self?.dismiss(animated: true)
+            }
+            .disposed(by: disposeBag)
+
+        noButton.rx.tap
+            .map { Reactor.Action.didTapNoButton }
+            .bind(to: reactor.action)
             .disposed(by: disposeBag)
     }
 }
