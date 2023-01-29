@@ -100,5 +100,10 @@ final class RemovePlannerBottomSheetViewController: BottomSheetViewController, V
             .map { Reactor.Action.didTapNoButton }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
+
+        yesButton.rx.tap
+            .map { Reactor.Action.didTapYesButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
     }
 }

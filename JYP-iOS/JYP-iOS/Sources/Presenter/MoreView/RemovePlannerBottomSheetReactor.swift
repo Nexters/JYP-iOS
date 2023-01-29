@@ -36,7 +36,9 @@ final class RemovePlannerBottomSheetReactor: Reactor {
         switch action {
         case .didTapNoButton:
             return .just(.dismiss)
-        default: return .empty()
+        case .didTapYesButton:
+            return journeyService.deleteJourneyUser(journeyId: currentState.journey.id)
+                .map { _ in .dismiss }
         }
     }
 
