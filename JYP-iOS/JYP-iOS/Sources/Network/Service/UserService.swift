@@ -88,22 +88,5 @@ class UserService: GlobalService, UserServiceType {
                 }
             })
             .disposed(by: disposeBag)
-//            .bind { [weak self] res in
-//                switch res.code {
-//                case "2000":
-//                    if let user = res.data {
-//                        UserDefaultsAccess.set(key: .userID, value: user.id)
-//                        self?.event.onNext(.createUser(user))
-//                    }
-//                case "5000":
-//                    //TODO: User 조회 API 가 만들어지면 수정
-//                    let sIndx = res.message.firstRange(of: "_id:").endIndex
-//                    let lIndx = res.message.ranges(of: "}\"").startIndex
-//                    let userID = res.message[safe: sIndx...lIndx]
-//                    print("[D] user id: \(userID)")
-//                default:
-//                    break
-//                }
-//            }
     }
 }
