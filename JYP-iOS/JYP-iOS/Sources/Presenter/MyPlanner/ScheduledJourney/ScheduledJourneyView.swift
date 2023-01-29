@@ -63,6 +63,10 @@ final class ScheduledJourneyView: BaseView, View {
                     else { return }
 
                     print(cellReactor.currentState.journey.id)
+                    parentView.tabBarController?.present(
+                        PlannerMoreButtomSheetViewController(journey: cellReactor.currentState.journey),
+                        animated: true
+                    )
                 })
                 .disposed(by: cell.disposeBag)
 
