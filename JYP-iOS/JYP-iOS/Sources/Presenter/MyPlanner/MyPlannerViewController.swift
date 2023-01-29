@@ -34,7 +34,11 @@ class MyPlannerViewController: NavigationBarViewController, View {
         pushSelectionPlannerJoinBottomScreen: pushSelectionPlannerJoinBottomScreen,
         presentPlannerMoreScreen: presentPlannerMoreScreen
     )
-    lazy var pastJourneyView: PastJourneyView = .init(reactor: PastJourneyReactor(parent: self), pushPlannerScreen: pushPlannerScreen)
+    lazy var pastJourneyView: PastJourneyView = .init(
+        reactor: PastJourneyReactor(parent: self),
+        pushPlannerScreen: pushPlannerScreen,
+        presentPlannerMoreScreen: presentPlannerMoreScreen
+    )
 
     // MARK: - Initializer
 
