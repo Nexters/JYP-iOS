@@ -8,7 +8,6 @@
 
 import UIKit
 import ReactorKit
-import RxRelay
 
 class MyPageViewController: NavigationBarViewController, View {
     // MARK: - Properties
