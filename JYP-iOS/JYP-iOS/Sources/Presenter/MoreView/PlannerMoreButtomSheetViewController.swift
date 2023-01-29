@@ -52,6 +52,11 @@ final class PlannerMoreButtomSheetViewController: BottomSheetViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        bind()
+    }
+
     override func setupProperty() {
         super.setupProperty()
 
@@ -84,5 +89,17 @@ final class PlannerMoreButtomSheetViewController: BottomSheetViewController {
             make.height.equalTo(44)
             make.bottom.equalToSuperview().inset(24)
         }
+    }
+
+    private func bind() {
+        deleteButton.rx.tap
+            .subscribe { _ in
+                guard let presentingViewController = self.presentingViewController
+                else { return }
+
+                self.dismiss(animated: true) {
+                    presentingViewController.present(RemovePlannerBottomSheetViewController(), animated: true)
+                }
+            }
     }
 }

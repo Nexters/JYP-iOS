@@ -62,7 +62,6 @@ final class ScheduledJourneyView: BaseView, View {
                           let parentView = self.reactor?.currentState.parentView
                     else { return }
 
-                    print(cellReactor.currentState.journey.id)
                     parentView.tabBarController?.present(
                         PlannerMoreButtomSheetViewController(journey: cellReactor.currentState.journey),
                         animated: true
