@@ -16,7 +16,7 @@ class JourneyCardCollectionViewCell: BaseCollectionViewCell, View {
 
     private let coverImage: UIImageView = .init()
     private let daysTag: UIButton = .init()
-    private let moreButton: UIButton = .init()
+    private(set) var moreButton: UIButton = .init()
     private let titleLabel: UILabel = .init()
     private let startDateLabel: UILabel = .init()
     private let endDateLabel: UILabel = .init()

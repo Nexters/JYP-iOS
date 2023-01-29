@@ -27,7 +27,12 @@ final class ScheduledJourneyView: BaseView, View {
     private lazy var dataSource = DataSource { _, collectionView, indexPath, item -> UICollectionViewCell in
         switch item {
         case .empty:
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: EmptyJourneyCardCollectionViewCell.self), for: indexPath) as? EmptyJourneyCardCollectionViewCell else { return .init() }
+            guard let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: String(describing: EmptyJourneyCardCollectionViewCell.self),
+                for: indexPath
+            ) as? EmptyJourneyCardCollectionViewCell
+            else { return .init() }
+
             cell.makeButton.rx.tap
                 .subscribe(onNext: { [weak self] in
                     guard let self,
@@ -43,9 +48,23 @@ final class ScheduledJourneyView: BaseView, View {
                 .disposed(by: cell.disposeBag)
 
             return cell
-        case let .journey(reactor):
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: JourneyCardCollectionViewCell.self), for: indexPath) as? JourneyCardCollectionViewCell else { return .init() }
-            cell.reactor = reactor
+        case let .journey(cellReactor):
+            guard let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: String(describing: JourneyCardCollectionViewCell.self),
+                for: indexPath
+            ) as? JourneyCardCollectionViewCell
+            else { return .init() }
+
+            cell.reactor = cellReactor
+            cell.moreButton.rx.tap
+                .subscribe(onNext: { [weak self] in
+                    guard let self,
+                          let parentView = self.reactor?.currentState.parentView
+                    else { return }
+
+                    print(cellReactor.currentState.journey.id)
+                })
+                .disposed(by: cell.disposeBag)
 
             return cell
         }
