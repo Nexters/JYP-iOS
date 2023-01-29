@@ -19,18 +19,25 @@ final class CompositionRoot {
         window.backgroundColor = .white
         window.makeKeyAndVisible()
 
-        // MARK: - Auth 로직 완성 후 주석 해제
         let authService: AuthServiceType = AuthService()
         let userService: UserServiceType = UserService()
         let onboardingService: OnboardingServiceType = OnboardingService()
         
+        lazy var pushOnboardingScreen: () -> OnboardingOneViewController = {
+            return makeOnboardingScreen(onboardingService: onboardingService,
+                                        authService: authService,
+                                        userService: userService,
+                                        pushTabBarScreen: pushTabBarScreen)
+        }
+        
+        lazy var pushTabBarScreen: () -> TabBarViewController = {
+            return makeTabBarScreen(pushOnboardingScreen: pushOnboardingScreen)
+        }
+        
         if KeychainAccess.get(key: .accessToken) != nil && UserDefaultsAccess.get(key: .userID) != nil {
-            window.rootViewController = makeTabBarScreen()
+            window.rootViewController = pushTabBarScreen()
         } else {
-            let onboardingScreen = makeOnboardingScreen(onboardingService: onboardingService,
-                                                        authService: authService,
-                                                        userService: userService)
-            window.rootViewController = onboardingScreen.navigationWrap()
+            window.rootViewController = pushOnboardingScreen().navigationWrap()
         }
 
         return AppDependency(
@@ -43,12 +50,13 @@ final class CompositionRoot {
 }
 
 extension CompositionRoot {
-    static func makeTabBarScreen() -> TabBarViewController {
+    static func makeTabBarScreen(pushOnboardingScreen: @escaping () -> OnboardingOneViewController) -> TabBarViewController {
         let viewController = TabBarViewController()
 
         let myPlannerViewController = makeMyPlannerScreen()
         let anotherJourneyViewController = makeAnotherJourneyScreen()
-        let myPageViewController = makeMyPageScreen()
+        
+        let myPageViewController = makeMyPageScreen(pushOnboardingScreen: pushOnboardingScreen)
 
         viewController.viewControllers = [
             myPlannerViewController.navigationWrap(),
@@ -61,12 +69,14 @@ extension CompositionRoot {
 
     static func makeOnboardingScreen(onboardingService: OnboardingServiceType,
                                      authService: AuthServiceType,
-                                     userService: UserServiceType) -> OnboardingOneViewController {
+                                     userService: UserServiceType,
+                                     pushTabBarScreen: @escaping () -> TabBarViewController) -> OnboardingOneViewController {
         let pushOnboardingQuestionPlanScreen: () -> OnboardingQuestionPlanViewController = {
             let reactor = OnboardingQuestionReactor(mode: .plan,
                                                     onboardingService: onboardingService,
                                                     userService: userService)
-            let viewController = OnboardingQuestionPlanViewController(reactor: reactor)
+            let viewController = OnboardingQuestionPlanViewController(reactor: reactor,
+                                                                      pushTabBarScreen: pushTabBarScreen)
 
             return viewController
         }
@@ -91,8 +101,11 @@ extension CompositionRoot {
         }
 
         let pushOnboardingSignUpScreen: () -> OnboardingSignUpViewController = {
-            let reactor = OnboardingSignUpReactor(authService: authService)
-            let viewController = OnboardingSignUpViewController(reactor: reactor, pushOnboardingQuestionJourneyScreen: pushOnboardingQuestionJourneyScreen)
+            let reactor = OnboardingSignUpReactor(authService: authService,
+                                                  userService: userService)
+            let viewController = OnboardingSignUpViewController(reactor: reactor,
+                                                                pushOnboardingQuestionJourneyScreen: pushOnboardingQuestionJourneyScreen,
+                                                                pushTabBarScreen: pushTabBarScreen)
 
             return viewController
         }
@@ -191,9 +204,10 @@ extension CompositionRoot {
         return viewController
     }
 
-    static func makeMyPageScreen() -> MyPageViewController {
+    static func makeMyPageScreen(pushOnboardingScreen: @escaping () -> OnboardingOneViewController) -> MyPageViewController {
         let reactor = MyPageReactor()
-        let viewController = MyPageViewController(reactor: reactor)
+        let viewController = MyPageViewController(reactor: reactor,
+                                                  pushOnboardingScreen: pushOnboardingScreen)
 
         let tabBarItem = UITabBarItem(title: nil,
                                       image: JYPIOSAsset.myPageInactive.image.withRenderingMode(.alwaysOriginal),

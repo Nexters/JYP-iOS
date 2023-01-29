@@ -11,7 +11,10 @@ import ReactorKit
 
 class MyPageViewController: NavigationBarViewController, View {
     // MARK: - Properties
+    
     typealias Reactor = MyPageReactor
+    
+    private let pushOnboardingScreen: (() -> OnboardingOneViewController)?
     
     // MARK: - UI Components
 
@@ -28,7 +31,9 @@ class MyPageViewController: NavigationBarViewController, View {
 
     // MARK: - Initializer
 
-    init(reactor: Reactor) {
+    init(reactor: Reactor,
+         pushOnboardingScreen: @escaping () -> OnboardingOneViewController) {
+        self.pushOnboardingScreen = pushOnboardingScreen
         super.init(nibName: nil, bundle: nil)
         
         self.reactor = reactor
@@ -122,8 +127,19 @@ class MyPageViewController: NavigationBarViewController, View {
     
     func bind(reactor: Reactor) {
         logoutButton.rx.tap
-            .map { .logout }
-            .bind(to: reactor.action)
+            .bind { [weak self] _ in
+                reactor.action.onNext(.logout)
+                self?.willPresentOnboardingOneViewController()
+            }
             .disposed(by: disposeBag)
+    }
+}
+
+extension MyPageViewController {
+    private func willPresentOnboardingOneViewController() {
+        if let viewController = pushOnboardingScreen?() {
+            viewController.modalPresentationStyle = .fullScreen
+            present(viewController, animated: true)
+        }
     }
 }

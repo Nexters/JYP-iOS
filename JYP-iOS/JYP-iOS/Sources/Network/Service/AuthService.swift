@@ -23,6 +23,21 @@ protocol AuthServiceType {
 final class AuthService: GlobalService, AuthServiceType {
     let event = PublishSubject<AuthEvent>()
     
+    override init() {
+        super.init()
+        
+        event.subscribe(onNext: { event in
+            switch event {
+            case let .apple(res):
+                KeychainAccess.set(key: .accessToken, value: res.token)
+                
+            case let .kakao(res):
+                KeychainAccess.set(key: .accessToken, value: res.token)
+            }
+        })
+        .disposed(by: disposeBag)
+    }
+    
     func apple(token: String) {
         let target = AuthAPI.apple(token: token)
         
