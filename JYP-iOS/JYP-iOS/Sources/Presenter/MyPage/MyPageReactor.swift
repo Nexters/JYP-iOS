@@ -28,6 +28,7 @@ extension MyPageReactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .logout:
+            UserDefaultsAccess.remove(key: .userID)
             KeychainAccess.remove(key: .accessToken)
             return .empty()
         }
