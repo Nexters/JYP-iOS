@@ -66,11 +66,6 @@ class OnboardingQuestionPlanViewController: NavigationBarViewController, View {
             .disposed(by: disposeBag)
         
         onboardingQuestionView.nextButton.rx.tap
-            .map { .tapNextButton }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
-        
-        onboardingQuestionView.nextButton.rx.tap
             .filter { reactor.currentState.isActive }
             .bind { [weak self] _ in
                 self?.willPresentTabBarViewController()

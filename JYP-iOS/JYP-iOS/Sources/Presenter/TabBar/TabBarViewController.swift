@@ -8,33 +8,55 @@
 
 import Foundation
 import UIKit
+import ReactorKit
 
-class TabBarViewController: UITabBarController {
+class TabBarViewController: UITabBarController, View {
+    // MARK: - Properties
+    
+    typealias Reactor = TabBarReactor
+    
+    private let pushCreateProfileBottomSheetScreen: () -> CreateProfileBottomSheetViewController
+    
+    var disposeBag = DisposeBag()
+    
+    // MARK: - Initializer
+    
+    init(reactor: Reactor,
+         pushCreateProfileBottomSheetScreen: @escaping () -> CreateProfileBottomSheetViewController) {
+        self.pushCreateProfileBottomSheetScreen = pushCreateProfileBottomSheetScreen
+        super.init(nibName: nil, bundle: nil)
+        self.reactor = reactor
+    }
+    
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    // MARK: - View Lifecylce
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         tabBar.backgroundColor = .white
         tabBar.isTranslucent = false
         tabBar.layer.borderWidth = 1.0
         tabBar.layer.borderColor = .init(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.1)
-//
-//        let myPlannerReactor = MyPlannerReactor()
-//        let myPlannerNavigationViewController = MyPlannerViewController(reactor: myPlannerReactor)
-//        let myPlannerTabBarItem = UITabBarItem(title: nil, image: JYPIOSAsset.myJourneyInactive.image.withRenderingMode(.alwaysOriginal), selectedImage: JYPIOSAsset.myJourneyActive.image.withRenderingMode(.alwaysOriginal))
-//        myPlannerTabBarItem.imageInsets = .init(top: 9, left: 0, bottom: -9, right: 0)
-//
-//        let anotherJourneyViewController = UINavigationController(rootViewController: AnotherJourneyViewController())
-//        let anotherJourneyTabBarItem = UITabBarItem(title: nil, image: JYPIOSAsset.anotherJourneyInactive.image.withRenderingMode(.alwaysOriginal), selectedImage: JYPIOSAsset.anotherJourneyActive.image.withRenderingMode(.alwaysOriginal))
-//        anotherJourneyTabBarItem.imageInsets = .init(top: 9, left: 0, bottom: -9, right: 0)
-//
-//        let myPageNavigationViewController = UINavigationController(rootViewController: MyPageViewController())
-//        let myPageTabBarItem = UITabBarItem(title: nil, image: JYPIOSAsset.myPageInactive.image.withRenderingMode(.alwaysOriginal), selectedImage: JYPIOSAsset.myPageActive.image.withRenderingMode(.alwaysOriginal))
-//        myPageTabBarItem.imageInsets = .init(top: 9, left: 0, bottom: -9, right: 0)
-//
-//        myPlannerNavigationViewController.tabBarItem = myPlannerTabBarItem
-//        anotherJourneyViewController.tabBarItem = anotherJourneyTabBarItem
-//        myPageNavigationViewController.tabBarItem = myPageTabBarItem
-//
-//        viewControllers = [myPlannerNavigationViewController, anotherJourneyViewController, myPageNavigationViewController]
-//        selectedIndex = 0
+    }
+
+    func bind(reactor: Reactor) {
+        rx.viewDidLoad
+            .filter { _ in UserDefaultsAccess.get(key: .userID) != nil }
+            .subscribe(onNext: { [weak self] _ in
+                self?.willPresentCreateProfileBottomSheetViewController()
+            })
+            .disposed(by: disposeBag)
+    }
+}
+extension TabBarViewController {
+    func willPresentCreateProfileBottomSheetViewController() {
+        let viewController = pushCreateProfileBottomSheetScreen()
+        
+        tabBarController?.present(viewController, animated: true)
     }
 }

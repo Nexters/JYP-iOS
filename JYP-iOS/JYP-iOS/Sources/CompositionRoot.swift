@@ -31,7 +31,15 @@ final class CompositionRoot {
         }
         
         lazy var pushTabBarScreen: () -> TabBarViewController = {
-            return makeTabBarScreen(pushOnboardingScreen: pushOnboardingScreen)
+            let pushCreateProfileBottomSheetScreen: () -> CreateProfileBottomSheetViewController = {
+                let reactor = CreateProfileBottomSheetReactor(onboardingService: onboardingService,
+                                                              userService: userService)
+                let viewController = CreateProfileBottomSheetViewController(reactor: reactor)
+                
+                return viewController
+            }
+            
+            return makeTabBarScreen(pushOnboardingScreen: pushOnboardingScreen, pushCreateProfileBottomSheetScreen: pushCreateProfileBottomSheetScreen)
         }
         
         if KeychainAccess.get(key: .accessToken) != nil && UserDefaultsAccess.get(key: .userID) != nil {
@@ -50,8 +58,10 @@ final class CompositionRoot {
 }
 
 extension CompositionRoot {
-    static func makeTabBarScreen(pushOnboardingScreen: @escaping () -> OnboardingOneViewController) -> TabBarViewController {
-        let viewController = TabBarViewController()
+    static func makeTabBarScreen(pushOnboardingScreen: @escaping () -> OnboardingOneViewController,
+                                 pushCreateProfileBottomSheetScreen: @escaping () -> CreateProfileBottomSheetViewController) -> TabBarViewController {
+        let reactor = TabBarReactor()
+        let viewController = TabBarViewController(reactor: reactor, pushCreateProfileBottomSheetScreen: pushCreateProfileBottomSheetScreen)
 
         let myPlannerViewController = makeMyPlannerScreen()
         let anotherJourneyViewController = makeAnotherJourneyScreen()

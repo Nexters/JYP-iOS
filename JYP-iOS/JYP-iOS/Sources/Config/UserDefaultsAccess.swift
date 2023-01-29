@@ -10,6 +10,9 @@ import Foundation
 
 enum UserDefaultsAccessKey: String {
     case userID
+    case nickname
+    case profileImagePath
+    case personality
 }
 
 final class UserDefaultsAccess {
