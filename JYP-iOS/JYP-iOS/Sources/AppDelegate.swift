@@ -7,7 +7,6 @@
 
 import UIKit
 import KakaoSDKCommon
-import KakaoSDKAuth
 #if targetEnvironment(simulator)
 #else
     import GoogleMaps
@@ -24,12 +23,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             GMSServices.provideAPIKey(Environment.googleAPIKey)
         #endif
         return true
-    }
-    
-    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-        if AuthApi.isKakaoTalkLoginUrl(url) {
-            return AuthController.handleOpenUrl(url: url)
-        }
-        return false
     }
 }
