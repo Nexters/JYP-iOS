@@ -67,8 +67,11 @@ class MyPlannerViewController: NavigationBarViewController, View {
         super.setupProperty()
 
         headerView.backgroundColor = JYPIOSAsset.backgroundWhite200.color
-
-        titleLabel.text = "자유로운 탐험가,\n다정님의 시작된 여행"
+        
+        if let personality = UserDefaultsAccess.get(key: .personality),
+           let nikcname = UserDefaultsAccess.get(key: .nickname) {
+            titleLabel.text = String(describing: "\(personality),\n\(nikcname)의 시작된 여행")
+        }
         titleLabel.numberOfLines = 0
         titleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 22)
         titleLabel.lineSpacing(lineHeight: 34.1)
