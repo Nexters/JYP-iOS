@@ -110,12 +110,4 @@ extension JourneyAPI: BaseAPI {
             return .requestJSONEncodable(request)
         }
     }
-
-//    var headers: [String: String]? {
-        //TODO: API 적용 후 완전히 주석 제거
-//        [
-//            "jyp-jwt-master-key": Environment.jwtKey,
-//            "jyp-override-id": "1"
-//        ]
-//    }
 }

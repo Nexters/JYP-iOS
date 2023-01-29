@@ -19,7 +19,6 @@ final class CompositionRoot {
         window.backgroundColor = .white
         window.makeKeyAndVisible()
 
-        // MARK: - Auth 로직 완성 후 주석 해제
         let authService: AuthServiceType = AuthService()
         let userService: UserServiceType = UserService()
         let onboardingService: OnboardingServiceType = OnboardingService()
@@ -38,11 +37,7 @@ final class CompositionRoot {
         if KeychainAccess.get(key: .accessToken) != nil && UserDefaultsAccess.get(key: .userID) != nil {
             window.rootViewController = pushTabBarScreen()
         } else {
-            let onboardingScreen = makeOnboardingScreen(onboardingService: onboardingService,
-                                                        authService: authService,
-                                                        userService: userService,
-                                                        pushTabBarScreen: pushTabBarScreen)
-            window.rootViewController = onboardingScreen.navigationWrap()
+            window.rootViewController = pushOnboardingScreen().navigationWrap()
         }
 
         return AppDependency(
@@ -76,7 +71,6 @@ extension CompositionRoot {
                                      authService: AuthServiceType,
                                      userService: UserServiceType,
                                      pushTabBarScreen: @escaping () -> TabBarViewController) -> OnboardingOneViewController {
-        
         let pushOnboardingQuestionPlanScreen: () -> OnboardingQuestionPlanViewController = {
             let reactor = OnboardingQuestionReactor(mode: .plan,
                                                     onboardingService: onboardingService,
