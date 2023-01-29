@@ -22,11 +22,12 @@ class CreateProfileBottomSheetReactor: Reactor {
     
     enum Mutation {
         case setProfileType(ProfileType)
+        case setDismiss(Bool)
     }
     
     struct State {
         var profileType: ProfileType?
-        var isActive: Bool = false
+        var dimiss: Bool = false
     }
     
     var initialState: State
@@ -54,7 +55,7 @@ extension CreateProfileBottomSheetReactor {
         case .tapButton:
             let nickname = UserDefaultsAccess.get(key: .nickname) ?? ""
             var profileImagePath: String
-            var personalityId = PersonalityID.toSelf(title: UserDefaultsAccess.get(key: .personality) ?? "")
+            let personalityId = PersonalityID.toSelf(title: UserDefaultsAccess.get(key: .personality) ?? "")
             
             switch currentState.profileType {
             case .my:
@@ -71,12 +72,32 @@ extension CreateProfileBottomSheetReactor {
         }
     }
     
+    func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
+        let userEventMutation = userService.event.flatMap { event -> Observable<Mutation> in
+            switch event {
+            case .createUser:
+                return .concat([
+                    .just(.setDismiss(true)),
+                    .just(.setDismiss(false))
+                ])
+                
+            default:
+                return .empty()
+            }
+        }
+        
+        return Observable.merge(userEventMutation, mutation)
+    }
+    
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
         
         switch mutation {
         case let .setProfileType(type):
             newState.profileType = type
+            
+        case let .setDismiss(bool):
+            newState.dimiss = bool
         }
         
         return newState

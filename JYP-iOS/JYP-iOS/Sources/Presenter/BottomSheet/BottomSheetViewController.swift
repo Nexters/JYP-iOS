@@ -28,11 +28,11 @@ class BottomSheetViewController: BaseViewController {
     private let mode: Mode
     
     private lazy var MAX_ALPHA: CGFloat = {
-        self.mode == .drag ? 0.75 : 0.0
+        self.mode == .drag ? 0.75 : 0.75
     }()
     
     private lazy var dimmedColor: UIColor = {
-        self.mode == .drag ? JYPIOSAsset.backgroundDim70.color : .clear
+        self.mode == .drag ? JYPIOSAsset.backgroundDim70.color : JYPIOSAsset.backgroundDim70.color
     }()
     
     // MARK: - Initializer

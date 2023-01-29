@@ -10,6 +10,13 @@ import UIKit
 import Kingfisher
 
 class ProfileBox: BaseView {
+    // MARK: - Sub Type
+    
+    enum ProfileBoxType {
+        case create
+        case tag
+    }
+    
     // MARK: - Properties
     
     var isSelected: Bool = false {
@@ -22,6 +29,8 @@ class ProfileBox: BaseView {
         }
     }
     
+    let type: ProfileBoxType
+    
     // MARK: - UI Components
     
     let imageView: UIImageView = .init()
@@ -30,7 +39,8 @@ class ProfileBox: BaseView {
     
     // MARK: - Initializer
     
-    init(imagePath: String? = nil, title: String? = nil) {
+    init(type: ProfileBoxType, imagePath: String? = nil, title: String? = nil) {
+        self.type = type
         super.init(frame: .zero)
         
         if let imagePath = imagePath {
@@ -71,10 +81,18 @@ class ProfileBox: BaseView {
     override func setupLayout() {
         super.setupLayout()
         
-        imageView.snp.makeConstraints {
-            $0.top.equalToSuperview()
-            $0.centerX.equalToSuperview()
-            $0.width.height.equalTo(44)
+        if type == .create {
+            imageView.snp.makeConstraints {
+                $0.top.equalToSuperview()
+                $0.centerX.equalToSuperview()
+                $0.width.height.equalTo(70)
+            }
+        } else {
+            imageView.snp.makeConstraints {
+                $0.top.equalToSuperview()
+                $0.centerX.equalToSuperview()
+                $0.width.height.equalTo(44)
+            }
         }
         
         titleLabel.snp.makeConstraints {

@@ -20,15 +20,15 @@ class CreateProfileBottomSheetViewController: BottomSheetViewController, View {
     let containerView: UIView = .init()
     let titleLabel: UILabel = .init()
     let subLabel: UILabel = .init()
-    let profileBox: ProfileBox = .init()
-    let defaultProfileBox: ProfileBox = .init()
+    let profileBox: ProfileBox = .init(type: .create)
+    let defaultProfileBox: ProfileBox = .init(type: .create)
     let stackView: UIStackView = .init()
     let button: JYPButton = .init(type: .start)
     
     // MARK: - Initializer
     
     init(reactor: Reactor) {
-        super.init(mode: .drag)
+        super.init(mode: .fixed)
         
         self.reactor = reactor
     }
@@ -107,9 +107,10 @@ class CreateProfileBottomSheetViewController: BottomSheetViewController, View {
             .withUnretained(self)
             .subscribe(onNext: { (this, arg) in
                 let (nickname, personality, profileImagePath) = arg
+                let personalityID = PersonalityID.toSelf(title: personality ?? "")
                 
-                if let nickname = nickname, let personality = personality {
-                    this.titleLabel.text = "\(nickname)님은\n\(personality)이시군요!"
+                if let nickname = nickname {
+                    this.titleLabel.text = "\(nickname)님은\n\(personalityID.title)이시군요!"
                 }
                 
                 this.stackView.removeArrangedSubviews()
@@ -119,6 +120,8 @@ class CreateProfileBottomSheetViewController: BottomSheetViewController, View {
                     
                     this.stackView.addArrangedSubview(this.profileBox)
                 }
+                
+                this.defaultProfileBox.update(imagePath: personalityID.defaultImagePath, title: nickname)
                 this.stackView.addArrangedSubview(this.defaultProfileBox)
             })
             .disposed(by: disposeBag)
@@ -138,8 +141,9 @@ class CreateProfileBottomSheetViewController: BottomSheetViewController, View {
             .disposed(by: disposeBag)
         
         button.rx.tap
-            .map { .tapButton }
-            .bind(to: reactor.action)
+            .subscribe(onNext: { [weak self] _ in
+                reactor.action.onNext(.tapButton)
+            })
             .disposed(by: disposeBag)
         
         reactor.state
@@ -156,6 +160,14 @@ class CreateProfileBottomSheetViewController: BottomSheetViewController, View {
                     self?.profileBox.isSelected = false
                     self?.defaultProfileBox.isSelected = true
                 }
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .map(\.dimiss)
+            .filter { $0 }
+            .subscribe(onNext: { [weak self] _ in
+                self?.dismiss(animated: true)
             })
             .disposed(by: disposeBag)
     }
