@@ -31,6 +31,7 @@ protocol ProjectFactory {
 
 class BaseProjectFactory: ProjectFactory {
     let projectName: String = "JYP-iOS"
+    let bundleName: String = "journeypiki"
 
     let infoPlist: [String: InfoPlist.Value] = [
         "CFBundleShortVersionString": "1.0",
@@ -97,7 +98,7 @@ class BaseProjectFactory: ProjectFactory {
                 name: projectName,
                 platform: .iOS,
                 product: .app,
-                bundleId: "com.jyp.\(projectName)",
+                bundleId: "com.jyp.\(bundleName)",
                 deploymentTarget: .iOS(targetVersion: "14.0", devices: [.iphone]),
                 infoPlist: .extendingDefault(with: infoPlist),
                 sources: ["\(projectName)/\(projectName)/Sources/**"],
@@ -114,7 +115,7 @@ class BaseProjectFactory: ProjectFactory {
                 bundleId: "com.jyp.\(projectName).Tests",
                 infoPlist: .default,
                 sources: ["\(projectName)/\(projectName)Tests/**"],
-                dependencies: [.target(name: "JYP-iOS")]
+                dependencies: [.target(name: "\(projectName)")]
             )
         ]
     }
