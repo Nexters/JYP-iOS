@@ -14,7 +14,7 @@ class OnboardingQuestionPlanViewController: NavigationBarViewController, View {
     
     typealias Reactor = OnboardingQuestionReactor
     
-    private let pushTabBarScreen: () -> TabBarViewController
+    private let pushTabBarScreen: (() -> TabBarViewController)?
     
     // MARK: - UI Components
     
@@ -102,8 +102,8 @@ class OnboardingQuestionPlanViewController: NavigationBarViewController, View {
 
 extension OnboardingQuestionPlanViewController {
     private func willPresentTabBarViewController() {
-        let viewController = pushTabBarScreen()
-        
-        present(viewController, animated: true)
+        if let viewController = pushTabBarScreen?() {
+            navigationController?.pushViewController(viewController, animated: true)
+        }
     }
 }
