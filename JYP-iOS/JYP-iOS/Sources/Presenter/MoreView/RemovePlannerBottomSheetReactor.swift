@@ -38,7 +38,10 @@ final class RemovePlannerBottomSheetReactor: Reactor {
             return .just(.dismiss)
         case .didTapYesButton:
             return journeyService.deleteJourneyUser(journeyId: currentState.journey.id)
-                .map { _ in .dismiss }
+                .map { [weak self] _ in
+                    self?.journeyService.requestRefreshJourneys()
+                    return .dismiss
+                }
         }
     }
 

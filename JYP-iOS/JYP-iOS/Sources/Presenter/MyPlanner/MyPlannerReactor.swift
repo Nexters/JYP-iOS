@@ -32,15 +32,17 @@ final class MyPlannerReactor: Reactor {
         var didCreatedPlannerID: String?
     }
 
-    private let provider = ServiceProvider.shared.journeyService
+    private let journeyService: JourneyServiceType
     let initialState = State()
 
-    init() {}
+    init(journeyService: JourneyServiceType) {
+        self.journeyService = journeyService
+    }
 
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .fetchJourneyList:
-            provider.fetchJornenys()
+            journeyService.fetchJornenys()
             return .empty()
         case .didTapScheduledJourneyMenu:
             return .concat(
@@ -61,7 +63,7 @@ final class MyPlannerReactor: Reactor {
     }
 
     func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
-        let newEvent = provider.event.flatMap { event -> Observable<Mutation> in
+        let newEvent = journeyService.event.flatMap { event -> Observable<Mutation> in
             switch event {
             case let .didFinishCreatePlanner(id):
                 return .just(.pushNewPlannerView(id))
@@ -70,6 +72,18 @@ final class MyPlannerReactor: Reactor {
         }
 
         return Observable.merge(mutation, newEvent)
+    }
+
+    func transform(action: Observable<Action>) -> Observable<Action> {
+        let newEvent = journeyService.event.flatMap { event -> Observable<Action> in
+            switch event {
+            case .requestRefreshJourneys:
+                return .just(.fetchJourneyList)
+            default: return .empty()
+            }
+        }
+
+        return Observable.merge(action, newEvent)
     }
 
     func reduce(state: State, mutation: Mutation) -> State {

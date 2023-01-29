@@ -121,7 +121,7 @@ extension CompositionRoot {
     }
 
     static func makeMyPlannerScreen() -> MyPlannerViewController {
-        let journeyService: JourneyServiceType = JourneyService(provider: ServiceProvider.shared)
+        let journeyService: JourneyServiceType = ServiceProvider.shared.journeyService
 
         let pushPlannerInviteScreen: (_ id: String) -> PlannerInviteViewController = { id in
             let reactor = PlannerInviteReactor(id: id)
@@ -194,7 +194,7 @@ extension CompositionRoot {
             )
         }
 
-        let reactor = MyPlannerReactor()
+        let reactor = MyPlannerReactor(journeyService: journeyService)
         let viewController = MyPlannerViewController(
             reactor: reactor,
             pushSelectionPlannerJoinBottomScreen: pushSelectionPlannerJoinBottomScreen,
