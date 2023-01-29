@@ -9,19 +9,23 @@
 import ReactorKit
 
 class CreateProfileBottomSheetReactor: Reactor {
+    enum ProfileType {
+        case `default`
+        case my
+    }
+    
     enum Action {
-        case refresh
+        case tapProfileBox
+        case tapDefaultProfileBox
         case tapButton
     }
     
     enum Mutation {
-        case setNickname(String)
-        case setPersonalityID(PersonalityID)
+        case setProfileType(ProfileType)
     }
     
     struct State {
-        var nickname: String?
-        var personalityID: PersonalityID?
+        var profileType: ProfileType?
         var isActive: Bool = false
     }
     
@@ -41,13 +45,28 @@ class CreateProfileBottomSheetReactor: Reactor {
 extension CreateProfileBottomSheetReactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        case .refresh:
-            return .concat([
-                .just(.setNickname(UserDefaultsAccess.get(key: .nickname) ?? "")),
-                .just(.setPersonalityID(PersonalityID.toSelf(title: UserDefaultsAccess.get(key: .personality) ?? "")))
-            ])
+        case .tapProfileBox:
+            return .just(.setProfileType(.my))
+            
+        case .tapDefaultProfileBox:
+            return .just(.setProfileType(.default))
             
         case .tapButton:
+            let nickname = UserDefaultsAccess.get(key: .nickname) ?? ""
+            var profileImagePath: String
+            var personalityId = PersonalityID.toSelf(title: UserDefaultsAccess.get(key: .personality) ?? "")
+            
+            switch currentState.profileType {
+            case .my:
+                profileImagePath = UserDefaultsAccess.get(key: .profileImagePath) ?? ""
+                
+            default:
+                profileImagePath = personalityId.defaultImagePath
+            }
+            
+            userService.createUser(request: .init(name: nickname,
+                                                  profileImagePath: profileImagePath,
+                                                  personalityId: personalityId))
             return .empty()
         }
     }
@@ -56,11 +75,8 @@ extension CreateProfileBottomSheetReactor {
         var newState = state
         
         switch mutation {
-        case let .setNickname(nickname):
-            newState.nickname = nickname
-            
-        case let .setPersonalityID(id):
-            newState.personalityID = id
+        case let .setProfileType(type):
+            newState.profileType = type
         }
         
         return newState

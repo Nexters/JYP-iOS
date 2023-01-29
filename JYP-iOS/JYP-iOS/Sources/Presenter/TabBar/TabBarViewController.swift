@@ -45,8 +45,8 @@ class TabBarViewController: UITabBarController, View {
     }
 
     func bind(reactor: Reactor) {
-        rx.viewDidLoad
-            .filter { _ in UserDefaultsAccess.get(key: .userID) != nil }
+        rx.viewWillAppear
+            .filter { _ in UserDefaultsAccess.get(key: .userID) == nil }
             .subscribe(onNext: { [weak self] _ in
                 self?.willPresentCreateProfileBottomSheetViewController()
             })
@@ -57,6 +57,6 @@ extension TabBarViewController {
     func willPresentCreateProfileBottomSheetViewController() {
         let viewController = pushCreateProfileBottomSheetScreen()
         
-        tabBarController?.present(viewController, animated: true)
+        present(viewController, animated: true)
     }
 }

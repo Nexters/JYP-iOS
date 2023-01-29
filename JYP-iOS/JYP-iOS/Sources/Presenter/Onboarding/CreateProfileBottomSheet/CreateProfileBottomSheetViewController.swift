@@ -19,9 +19,11 @@ class CreateProfileBottomSheetViewController: BottomSheetViewController, View {
     
     let containerView: UIView = .init()
     let titleLabel: UILabel = .init()
-    let button: UIButton = .init()
-    let scrollView: UIScrollView = .init()
+    let subLabel: UILabel = .init()
+    let profileBox: ProfileBox = .init()
+    let defaultProfileBox: ProfileBox = .init()
     let stackView: UIStackView = .init()
+    let button: JYPButton = .init(type: .start)
     
     // MARK: - Initializer
     
@@ -46,23 +48,27 @@ class CreateProfileBottomSheetViewController: BottomSheetViewController, View {
     
     override func setupProperty() {
         super.setupProperty()
-  
+        
         titleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 20)
+        titleLabel.numberOfLines = 0
         titleLabel.textColor = JYPIOSAsset.textB80.color
         
-        button.setTitle("확인", for: .normal)
-        button.setTitleColor(JYPIOSAsset.textB40.color, for: .normal)
-        button.titleLabel?.font = JYPIOSFontFamily.Pretendard.regular.font(size: 16)
+        subLabel.text = "사용할 프로필을 선택해주세요"
+        subLabel.font = JYPIOSFontFamily.Pretendard.regular.font(size: 16)
+        subLabel.textColor = JYPIOSAsset.textB40.color
         
         stackView.distribution = .equalSpacing
-        stackView.spacing = 12
+        stackView.spacing = 48
         stackView.alignment = .leading
+        
+        button.setTitleColor(JYPIOSAsset.textB40.color, for: .normal)
+        button.titleLabel?.font = JYPIOSFontFamily.Pretendard.regular.font(size: 16)
     }
     
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        containerView.addSubviews([titleLabel, button, stackView])
+        containerView.addSubviews([titleLabel, subLabel, button, stackView])
     }
     
     override func setupLayout() {
@@ -73,24 +79,84 @@ class CreateProfileBottomSheetViewController: BottomSheetViewController, View {
             $0.leading.equalToSuperview()
         }
         
-        button.snp.makeConstraints {
-            $0.trailing.equalToSuperview()
-            $0.centerY.equalTo(titleLabel)
+        subLabel.snp.makeConstraints {
+            $0.top.equalTo(titleLabel.snp.bottom).offset(8)
+            $0.leading.equalToSuperview()
         }
         
         stackView.snp.makeConstraints {
-            $0.top.leading.trailing.bottom.equalToSuperview()
-            $0.height.equalToSuperview()
+            $0.top.equalTo(subLabel.snp.bottom).offset(21)
+            $0.leading.trailing.equalToSuperview().inset(84)
+        }
+        
+        button.snp.makeConstraints {
+            $0.top.equalTo(stackView.snp.bottom).offset(36)
+            $0.leading.trailing.equalToSuperview().inset(24)
+            $0.bottom.equalToSuperview().inset(6)
+            $0.height.equalTo(52)
         }
     }
     
     func bind(reactor: Reactor) {
-        Observable.zip(
-            reactor.state.compactMap(\.nickname).asObservable(),
-            reactor.state.compactMap(\.personalityID).asObservable()
-        )
-        .map { String(describing: "\($0)님은\n\($1.title)이시군요!") }
-        .bind(to: titleLabel.rx.text)
-        .disposed(by: disposeBag)
+        rx.viewWillAppear
+            .map { _ in
+                (UserDefaultsAccess.get(key: .nickname),
+                 UserDefaultsAccess.get(key: .personality),
+                 UserDefaultsAccess.get(key: .profileImagePath))
+            }
+            .withUnretained(self)
+            .subscribe(onNext: { (this, arg) in
+                let (nickname, personality, profileImagePath) = arg
+                
+                if let nickname = nickname, let personality = personality {
+                    this.titleLabel.text = "\(nickname)님은\n\(personality)이시군요!"
+                }
+                
+                this.stackView.removeArrangedSubviews()
+                
+                if let nickname = nickname, let profileImagePath = profileImagePath {
+                    this.profileBox.update(imagePath: profileImagePath, title: nickname)
+                    
+                    this.stackView.addArrangedSubview(this.profileBox)
+                }
+                this.stackView.addArrangedSubview(this.defaultProfileBox)
+            })
+            .disposed(by: disposeBag)
+        
+        profileBox.rx.tapGesture()
+            .when(.recognized)
+            .filter { $0.state == .ended }
+            .map { _ in .tapProfileBox }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        defaultProfileBox.rx.tapGesture()
+            .when(.recognized)
+            .filter { $0.state == .ended }
+            .map { _ in .tapDefaultProfileBox }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        button.rx.tap
+            .map { .tapButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .compactMap(\.profileType)
+            .subscribe(onNext: { [weak self] type in
+                self?.button.isEnabled = true
+                
+                switch type {
+                case .my:
+                    self?.profileBox.isSelected = true
+                    self?.defaultProfileBox.isSelected = false
+                    
+                default:
+                    self?.profileBox.isSelected = false
+                    self?.defaultProfileBox.isSelected = true
+                }
+            })
+            .disposed(by: disposeBag)
     }
 }

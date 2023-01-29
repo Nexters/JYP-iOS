@@ -31,16 +31,16 @@ enum PersonalityID: String, Codable {
         }
     }
     
-    var image: UIImage? {
+    var defaultImagePath: String {
         switch self {
         case .ME:
-            return JYPIOSAsset.profile1.image
+            return "https://journeypiki.duckdns.org/static/profile_me.png"
         case .PE:
-            return JYPIOSAsset.profile2.image
+            return "https://journeypiki.duckdns.org/static/profile_pe.png"
         case .RT:
-            return JYPIOSAsset.profile3.image
+            return "https://journeypiki.duckdns.org/static/profile_rt.png"
         case .FW:
-            return JYPIOSAsset.profile4.image
+            return "https://journeypiki.duckdns.org/static/profile_fw.png"
         }
     }
     
