@@ -14,7 +14,8 @@ class MyPlannerViewController: NavigationBarViewController, View {
     
     private let pushSelectionPlannerJoinBottomScreen: () -> SelectionPlannerJoinBottomViewController
     private let pushPlannerScreen: (_ id: String) -> PlannerViewController
-    
+    private let presentPlannerMoreScreen: (_ journey: Journey) -> PlannerMoreButtomSheetViewController
+
     // MARK: - UI Components
 
     let headerView: UIView = .init()
@@ -30,7 +31,8 @@ class MyPlannerViewController: NavigationBarViewController, View {
     lazy var scheduledJourneyView: ScheduledJourneyView = .init(
         reactor: ScheduledJourneyReactor(parent: self),
         pushPlannerScreen: pushPlannerScreen,
-        pushSelectionPlannerJoinBottomScreen: pushSelectionPlannerJoinBottomScreen
+        pushSelectionPlannerJoinBottomScreen: pushSelectionPlannerJoinBottomScreen,
+        presentPlannerMoreScreen: presentPlannerMoreScreen
     )
     lazy var pastJourneyView: PastJourneyView = .init(reactor: PastJourneyReactor(parent: self), pushPlannerScreen: pushPlannerScreen)
 
@@ -38,10 +40,12 @@ class MyPlannerViewController: NavigationBarViewController, View {
 
     init(reactor: Reactor,
          pushSelectionPlannerJoinBottomScreen: @escaping () -> SelectionPlannerJoinBottomViewController,
-         pushPlannerScreen: @escaping (_ id: String) -> PlannerViewController
+         pushPlannerScreen: @escaping (_ id: String) -> PlannerViewController,
+         presentPlannerMoreScreen: @escaping (_ journey: Journey) -> PlannerMoreButtomSheetViewController
     ) {
         self.pushSelectionPlannerJoinBottomScreen = pushSelectionPlannerJoinBottomScreen
         self.pushPlannerScreen = pushPlannerScreen
+        self.presentPlannerMoreScreen = presentPlannerMoreScreen
         super.init(nibName: nil, bundle: nil)
         self.reactor = reactor
     }

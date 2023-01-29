@@ -41,9 +41,14 @@ final class PlannerMoreButtomSheetViewController: BottomSheetViewController {
     }()
 
     private let journey: Journey
+    private let presentRemovePlannerBottomSheetScreen: (_ journey: Journey) -> RemovePlannerBottomSheetViewController
 
-    init(journey: Journey) {
+    init(
+        journey: Journey,
+        presentRemovePlannerBottomSheetScreen: @escaping (_ journey: Journey) -> RemovePlannerBottomSheetViewController
+    ) {
         self.journey = journey
+        self.presentRemovePlannerBottomSheetScreen = presentRemovePlannerBottomSheetScreen
         super.init(mode: .drag)
     }
 
@@ -93,13 +98,16 @@ final class PlannerMoreButtomSheetViewController: BottomSheetViewController {
 
     private func bind() {
         deleteButton.rx.tap
-            .subscribe { _ in
-                guard let presentingViewController = self.presentingViewController
+            .subscribe { [weak self] _ in
+                guard let self,
+                      let presentingViewController = self.presentingViewController
                 else { return }
 
                 self.dismiss(animated: true) {
-                    presentingViewController.present(RemovePlannerBottomSheetViewController(), animated: true)
+                    let bottomSheet = self.presentRemovePlannerBottomSheetScreen(self.journey)
+                    presentingViewController.present(bottomSheet, animated: true)
                 }
             }
+            .disposed(by: disposeBag)
     }
 }

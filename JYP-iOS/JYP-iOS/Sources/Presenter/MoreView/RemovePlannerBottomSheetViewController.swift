@@ -6,12 +6,16 @@
 //  Copyright © 2023 JYP-iOS. All rights reserved.
 //
 
+import ReactorKit
 import UIKit
 
-final class RemovePlannerBottomSheetViewController: BottomSheetViewController {
+final class RemovePlannerBottomSheetViewController: BottomSheetViewController, View {
+    typealias Reactor = RemovePlannerBottomSheetReactor
+
     private let containerView = UIView()
     private let titleLabel: UILabel = {
         let label = UILabel()
+        label.numberOfLines = 0
         label.textAlignment = .left
         label.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 20)
         label.textColor = JYPIOSAsset.textB80.color
@@ -43,8 +47,9 @@ final class RemovePlannerBottomSheetViewController: BottomSheetViewController {
 
     private let yesButton = JYPButton(type: .yes)
 
-    init() {
+    init(reactor: Reactor) {
         super.init(mode: .drag)
+        self.reactor = reactor
     }
 
     @available(*, unavailable)
@@ -63,7 +68,7 @@ final class RemovePlannerBottomSheetViewController: BottomSheetViewController {
         super.setupLayout()
 
         titleLabel.snp.makeConstraints { make in
-            make.top.leading.equalToSuperview()
+            make.top.leading.trailing.equalToSuperview()
         }
         subTitleLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(8)
@@ -75,5 +80,13 @@ final class RemovePlannerBottomSheetViewController: BottomSheetViewController {
             make.height.equalTo(52)
             make.bottom.equalToSuperview()
         }
+    }
+
+    func bind(reactor: RemovePlannerBottomSheetReactor) {
+        reactor.state
+            .map(\.journey.name)
+            .map { "\($0)를\n정말 나가시나요?" }
+            .bind(to: titleLabel.rx.text)
+            .disposed(by: disposeBag)
     }
 }

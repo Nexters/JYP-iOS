@@ -22,7 +22,7 @@ final class CompositionRoot {
         let authService: AuthServiceType = AuthService()
         let userService: UserServiceType = UserService()
         let onboardingService: OnboardingServiceType = OnboardingService()
-        
+
         lazy var pushOnboardingScreen: () -> OnboardingOneViewController = {
             return makeOnboardingScreen(onboardingService: onboardingService,
                                         authService: authService,
@@ -178,10 +178,29 @@ extension CompositionRoot {
             return controller
         }
 
+        let presentRemovePlannerBottomSheetScreen: (_ journey: Journey) -> RemovePlannerBottomSheetViewController = { journey in
+            let reactor = RemovePlannerBottomSheetReactor(
+                journeyService: journeyService,
+                journey: journey
+            )
+
+            return RemovePlannerBottomSheetViewController(reactor: reactor)
+        }
+
+        let presentPlannerMoreScreen: (_ journey: Journey) -> PlannerMoreButtomSheetViewController = { journey in
+            return PlannerMoreButtomSheetViewController(
+                journey: journey,
+                presentRemovePlannerBottomSheetScreen: presentRemovePlannerBottomSheetScreen
+            )
+        }
+
         let reactor = MyPlannerReactor()
-        let viewController = MyPlannerViewController(reactor: reactor,
-                                                     pushSelectionPlannerJoinBottomScreen: pushSelectionPlannerJoinBottomScreen,
-                                                     pushPlannerScreen: pushPlannerScreen)
+        let viewController = MyPlannerViewController(
+            reactor: reactor,
+            pushSelectionPlannerJoinBottomScreen: pushSelectionPlannerJoinBottomScreen,
+            pushPlannerScreen: pushPlannerScreen,
+            presentPlannerMoreScreen: presentPlannerMoreScreen
+        )
         let tabBarItem = UITabBarItem(title: nil,
                                       image: JYPIOSAsset.myJourneyInactive.image.withRenderingMode(.alwaysOriginal),
                                       selectedImage: JYPIOSAsset.myJourneyActive.image.withRenderingMode(.alwaysOriginal))

@@ -16,6 +16,7 @@ final class ScheduledJourneyView: BaseView, View {
 
     private let pushPlannerScreen: (_ id: String) -> PlannerViewController
     private let pushSelectionPlannerJoinBottomScreen: () -> SelectionPlannerJoinBottomViewController
+    private let presentPlannerMoreScreen: (_ journey: Journey) -> PlannerMoreButtomSheetViewController
 
     // MARK: - UI Components
 
@@ -62,10 +63,8 @@ final class ScheduledJourneyView: BaseView, View {
                           let parentView = self.reactor?.currentState.parentView
                     else { return }
 
-                    parentView.tabBarController?.present(
-                        PlannerMoreButtomSheetViewController(journey: cellReactor.currentState.journey),
-                        animated: true
-                    )
+                    let bottomSheet = self.presentPlannerMoreScreen(cellReactor.currentState.journey)
+                    parentView.tabBarController?.present(bottomSheet, animated: true)
                 })
                 .disposed(by: cell.disposeBag)
 
@@ -78,10 +77,12 @@ final class ScheduledJourneyView: BaseView, View {
     init(
         reactor: Reactor,
         pushPlannerScreen: @escaping (_ id: String) -> PlannerViewController,
-        pushSelectionPlannerJoinBottomScreen: @escaping () -> SelectionPlannerJoinBottomViewController
+        pushSelectionPlannerJoinBottomScreen: @escaping () -> SelectionPlannerJoinBottomViewController,
+        presentPlannerMoreScreen: @escaping (_ journey: Journey) -> PlannerMoreButtomSheetViewController
     ) {
         self.pushPlannerScreen = pushPlannerScreen
         self.pushSelectionPlannerJoinBottomScreen = pushSelectionPlannerJoinBottomScreen
+        self.presentPlannerMoreScreen = presentPlannerMoreScreen
         super.init(frame: .zero)
         self.reactor = reactor
     }
