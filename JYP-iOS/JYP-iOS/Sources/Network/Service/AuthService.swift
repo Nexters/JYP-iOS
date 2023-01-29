@@ -34,6 +34,7 @@ final class AuthService: GlobalService, AuthServiceType {
         request
             .compactMap { $0 }
             .subscribe { [weak self] res in
+                KeychainAccess.set(key: .accessToken, value: res.token)
                 self?.event.onNext(.apple(res))
             }
             .disposed(by: disposeBag)
@@ -50,6 +51,7 @@ final class AuthService: GlobalService, AuthServiceType {
         request
             .compactMap { $0 }
             .subscribe { [weak self] res in
+                KeychainAccess.set(key: .accessToken, value: res.token)
                 self?.event.onNext(.kakao(res))
             }
             .disposed(by: disposeBag)

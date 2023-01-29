@@ -19,6 +19,7 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
     typealias Reactor = OnboardingSignUpReactor
 
     private let pushOnboardingQuestionJourneyScreen: () -> OnboardingQuestionJourneyViewController
+    private let pushTabBarScreen: (() -> TabBarViewController)?
 
     // MARK: - UI Components
 
@@ -33,9 +34,11 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
 
     init(
         reactor: OnboardingSignUpReactor,
-        pushOnboardingQuestionJourneyScreen: @escaping () -> OnboardingQuestionJourneyViewController
+        pushOnboardingQuestionJourneyScreen: @escaping () -> OnboardingQuestionJourneyViewController,
+        pushTabBarScreen: @escaping () -> TabBarViewController
     ) {
         self.pushOnboardingQuestionJourneyScreen = pushOnboardingQuestionJourneyScreen
+        self.pushTabBarScreen = pushTabBarScreen
         super.init(nibName: nil, bundle: nil)
 
         self.reactor = reactor
@@ -137,13 +140,18 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
                 self?.willPresentAppleLoginScreen()
             }
             .disposed(by: disposeBag)
-
+        
         reactor.state
-            .map(\.didLogin)
-            .filter { $0 }
-            .bind { [weak self] _ in
-                self?.willPushOnboardingQuestionJourneyViewController()
-            }
+            .compactMap(\.nextScreenType)
+            .subscribe(onNext: { [weak self] type in
+                switch type {
+                case .onboardingQuestionJourney:
+                    self?.willPushOnboardingQuestionJourneyViewController()
+                    
+                case .tabBar:
+                    self?.willPresentTabBarViewController()
+                }
+            })
             .disposed(by: disposeBag)
     }
 }
@@ -214,8 +222,14 @@ extension OnboardingSignUpViewController: ASAuthorizationControllerDelegate, ASA
 }
 
 extension OnboardingSignUpViewController {
-    func willPushOnboardingQuestionJourneyViewController() {
+    private func willPushOnboardingQuestionJourneyViewController() {
         let viewController = pushOnboardingQuestionJourneyScreen()
         navigationController?.pushViewController(viewController, animated: true)
+    }
+    
+    private func willPresentTabBarViewController() {
+        if let viewController = pushTabBarScreen?() {
+            navigationController?.pushViewController(viewController, animated: true)
+        }
     }
 }

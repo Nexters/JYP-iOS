@@ -101,8 +101,11 @@ extension CompositionRoot {
         }
 
         let pushOnboardingSignUpScreen: () -> OnboardingSignUpViewController = {
-            let reactor = OnboardingSignUpReactor(authService: authService)
-            let viewController = OnboardingSignUpViewController(reactor: reactor, pushOnboardingQuestionJourneyScreen: pushOnboardingQuestionJourneyScreen)
+            let reactor = OnboardingSignUpReactor(authService: authService,
+                                                  userService: userService)
+            let viewController = OnboardingSignUpViewController(reactor: reactor,
+                                                                pushOnboardingQuestionJourneyScreen: pushOnboardingQuestionJourneyScreen,
+                                                                pushTabBarScreen: pushTabBarScreen)
 
             return viewController
         }

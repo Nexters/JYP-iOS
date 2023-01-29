@@ -9,51 +9,66 @@
 import ReactorKit
 
 class OnboardingSignUpReactor: Reactor {
+    enum NextScreenType {
+        case onboardingQuestionJourney
+        case tabBar
+    }
+    
     enum Action {
         case login(authVendor: AuthVendor, token: String, name: String?, profileImagePath: String?)
     }
     
     enum Mutation {
-        case setDidLogin(Bool)
+        case setNextScreenType(NextScreenType?)
     }
     
     struct State {
-        var didLogin: Bool = false
+        var nextScreenType: NextScreenType?
     }
     
     let initialState: State
     
     let authService: AuthServiceType
+    let userService: UserServiceType
     
-    init(authService: AuthServiceType) {
+    init(authService: AuthServiceType,
+         userService: UserServiceType) {
         self.authService = authService
+        self.userService = userService
         self.initialState = .init()
     }
 }
 
 extension OnboardingSignUpReactor {
     func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
-        let APIMutation = authService.event.withUnretained(self).flatMap { (_, event) -> Observable<Mutation> in
+        let authEventMutation = authService.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
             switch event {
-            case let .apple(response):
-                KeychainAccess.set(key: .accessToken, value: response.token)
-                
+            case .apple, .kakao:
+                this.userService.fetchMe()
+            }
+            return .empty()
+        }
+        
+        let userEventMutation = userService.event.withUnretained(self).flatMap { (_, event) -> Observable<Mutation> in
+            switch event {
+            case .fetchMe:
                 return .concat([
-                    .just(.setDidLogin(true)),
-                    .just(.setDidLogin(false))
+                    .just(.setNextScreenType(.tabBar)),
+                    .just(.setNextScreenType(nil))
                 ])
                 
-            case let .kakao(response):
-                KeychainAccess.set(key: .accessToken, value: response.token)
-                
+            case .error:
                 return .concat([
-                    .just(.setDidLogin(true)),
-                    .just(.setDidLogin(false))
+                    .just(.setNextScreenType(.onboardingQuestionJourney)),
+                    .just(.setNextScreenType(nil))
                 ])
+                
+            default:
+                return .empty()
             }
         }
         
-        return Observable.merge(APIMutation, mutation)
+        return Observable.merge(authEventMutation, userEventMutation, mutation)
     }
     
     func mutate(action: Action) -> Observable<Mutation> {
@@ -87,8 +102,8 @@ extension OnboardingSignUpReactor {
         var newState = state
         
         switch mutation {
-        case let .setDidLogin(bool):
-            newState.didLogin = bool
+        case let .setNextScreenType(type):
+            newState.nextScreenType = type
         }
         
         return newState
