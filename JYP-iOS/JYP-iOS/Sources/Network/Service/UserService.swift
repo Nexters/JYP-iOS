@@ -106,6 +106,7 @@ class UserService: GlobalService, UserServiceType {
                     if let user = res.data {
                         self?.event.onNext(.createUser(user))
                     }
+                    
                 case "50000":
                     //TODO: User 조회 API 가 만들어지면 수정, 우선 User ID 만 넘김
                     let sIndx = res.message.endIndex(of: "_id:")
@@ -116,6 +117,7 @@ class UserService: GlobalService, UserServiceType {
                         userID = userID.trimmingCharacters(in: .whitespacesAndNewlines)
                         self?.event.onNext(.createUser(User(id: userID, nickname: "테스트 닉네임", profileImagePath: "없음", personality: .FW)))
                     }
+                    
                 default:
                     return
                 }
