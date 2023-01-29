@@ -10,7 +10,11 @@ import UIKit
 import ReactorKit
 
 class OnboardingQuestionPlanViewController: NavigationBarViewController, View {
+    // MARK: - Properties
+    
     typealias Reactor = OnboardingQuestionReactor
+    
+    private let pushTabBarScreen: () -> TabBarViewController
     
     // MARK: - UI Components
     
@@ -20,7 +24,9 @@ class OnboardingQuestionPlanViewController: NavigationBarViewController, View {
         fatalError("not supported")
     }
     
-    init(reactor: OnboardingQuestionReactor) {
+    init(reactor: OnboardingQuestionReactor,
+         pushTabBarScreen: @escaping () -> TabBarViewController) {
+        self.pushTabBarScreen = pushTabBarScreen
         super.init(nibName: nil, bundle: nil)
         
         self.reactor = reactor
@@ -65,14 +71,9 @@ class OnboardingQuestionPlanViewController: NavigationBarViewController, View {
             .disposed(by: disposeBag)
         
         onboardingQuestionView.nextButton.rx.tap
-            .withUnretained(self)
-            .bind { this, action in
-                if let isActive = this.reactor?.currentState.isActive {
-                    if isActive {
-                        this.reactor?.action.onNext(.tapNextButton)
-                        // TODO: 탭바로 이동
-                    }
-                }
+            .filter { reactor.currentState.isActive }
+            .bind { [weak self] _ in
+                self?.willPresentTabBarViewController()
             }
             .disposed(by: disposeBag)
         
@@ -96,5 +97,13 @@ class OnboardingQuestionPlanViewController: NavigationBarViewController, View {
                 self?.onboardingQuestionView.nextButton.isEnabled = bool
             }
             .disposed(by: disposeBag)
+    }
+}
+
+extension OnboardingQuestionPlanViewController {
+    private func willPresentTabBarViewController() {
+        let viewController = pushTabBarScreen()
+        
+        present(viewController, animated: true)
     }
 }

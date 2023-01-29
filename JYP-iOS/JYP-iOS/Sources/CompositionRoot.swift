@@ -24,12 +24,17 @@ final class CompositionRoot {
         let userService: UserServiceType = UserService()
         let onboardingService: OnboardingServiceType = OnboardingService()
         
+        let pushTabBarScreen: () -> TabBarViewController = {
+            return makeTabBarScreen()
+        }
+        
         if KeychainAccess.get(key: .accessToken) != nil && UserDefaultsAccess.get(key: .userID) != nil {
-            window.rootViewController = makeTabBarScreen()
+            window.rootViewController = pushTabBarScreen()
         } else {
             let onboardingScreen = makeOnboardingScreen(onboardingService: onboardingService,
                                                         authService: authService,
-                                                        userService: userService)
+                                                        userService: userService,
+                                                        pushTabBarScreen: pushTabBarScreen)
             window.rootViewController = onboardingScreen.navigationWrap()
         }
 
@@ -61,12 +66,14 @@ extension CompositionRoot {
 
     static func makeOnboardingScreen(onboardingService: OnboardingServiceType,
                                      authService: AuthServiceType,
-                                     userService: UserServiceType) -> OnboardingOneViewController {
+                                     userService: UserServiceType,
+                                     pushTabBarScreen: @escaping () -> TabBarViewController) -> OnboardingOneViewController {
         let pushOnboardingQuestionPlanScreen: () -> OnboardingQuestionPlanViewController = {
             let reactor = OnboardingQuestionReactor(mode: .plan,
                                                     onboardingService: onboardingService,
                                                     userService: userService)
-            let viewController = OnboardingQuestionPlanViewController(reactor: reactor)
+            let viewController = OnboardingQuestionPlanViewController(reactor: reactor,
+                                                                      pushTabBarScreen: pushTabBarScreen)
 
             return viewController
         }
