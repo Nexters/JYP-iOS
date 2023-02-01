@@ -12,8 +12,6 @@ import KeychainAccess
 
 enum KeychainAccessKey: String {
     case accessToken
-    case nickname
-    case profileImagePath
 }
 
 final class KeychainAccess {

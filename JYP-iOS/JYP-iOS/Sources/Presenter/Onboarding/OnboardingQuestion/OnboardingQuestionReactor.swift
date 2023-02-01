@@ -18,7 +18,6 @@ class OnboardingQuestionReactor: Reactor {
     enum Action {
         case tapFirstView
         case tapSecondView
-        case tapNextButton
     }
     
     enum Mutation {
@@ -71,18 +70,18 @@ class OnboardingQuestionReactor: Reactor {
                 .just(.setIsActive(true))
             ])
             
-        case .tapNextButton:
-            switch mode {
-            case .joruney, .place:
-                return .empty()
-                
-            case .plan:
-                let name = KeychainAccess.get(key: .nickname) ?? ""
-                let profileImagePath = KeychainAccess.get(key: .profileImagePath) ?? ""
-                
-                userService.createUser(request: .init(name: name, profileImagePath: profileImagePath, personalityId: onboardingService.getPersonalityID()))
-                return .empty()
-            }
+//        case .tapNextButton:
+//            switch mode {
+//            case .joruney, .place:
+//                return .empty()
+//                
+//            case .plan:
+//                let name = KeychainAccess.get(key: .nickname) ?? ""
+//                let profileImagePath = KeychainAccess.get(key: .profileImagePath) ?? ""
+//                
+//                userService.createUser(request: .init(name: name, profileImagePath: profileImagePath, personalityId: onboardingService.getPersonalityID()))
+//                return .empty()
+//            }
         }
     }
     

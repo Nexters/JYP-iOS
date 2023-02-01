@@ -74,16 +74,12 @@ extension OnboardingSignUpReactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case let .login(authVendor, token, name, profileImagePath):
-            if let name = name {
-                if name.isEmpty == false {
-                    KeychainAccess.set(key: .nickname, value: name)
-                }
+            if let name = name, !name.isEmpty {
+                UserDefaultsAccess.set(key: .nickname, value: name)
             }
             
-            if let profileImagePath = profileImagePath {
-                if profileImagePath.isEmpty == false {
-                    KeychainAccess.set(key: .profileImagePath, value: profileImagePath)
-                }
+            if let profileImagePath = profileImagePath, !profileImagePath.isEmpty {
+                UserDefaultsAccess.set(key: .profileImagePath, value: profileImagePath)
             }
             
             switch authVendor {

@@ -6,7 +6,7 @@
 //  Copyright © 2022 JYP-iOS. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 enum PersonalityID: String, Codable {
     case ME
@@ -28,6 +28,34 @@ enum PersonalityID: String, Codable {
             return "낭만적인 여행자"
         case .FW:
             return "자유로운 방랑자"
+        }
+    }
+    
+    var defaultImagePath: String {
+        switch self {
+        case .ME:
+            return "https://journeypiki.duckdns.org/static/profile_me.png"
+        case .PE:
+            return "https://journeypiki.duckdns.org/static/profile_pe.png"
+        case .RT:
+            return "https://journeypiki.duckdns.org/static/profile_rt.png"
+        case .FW:
+            return "https://journeypiki.duckdns.org/static/profile_fw.png"
+        }
+    }
+    
+    static func toSelf(title: String) -> PersonalityID {
+        switch title {
+        case PersonalityID.ME.title:
+            return .ME
+        case PersonalityID.PE.title:
+            return .PE
+        case PersonalityID.RT.title:
+            return .RT
+        case PersonalityID.FW.title:
+            return .FW
+        default:
+            return .ME
         }
     }
 
