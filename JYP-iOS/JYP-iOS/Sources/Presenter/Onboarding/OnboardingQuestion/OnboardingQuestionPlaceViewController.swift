@@ -68,14 +68,9 @@ class OnboardingQuestionPlaceViewController: NavigationBarViewController, View {
             .disposed(by: disposeBag)
         
         onboardingQuestionView.nextButton.rx.tap
-            .withUnretained(self)
-            .bind { this, action in
-                if let isActive = this.reactor?.currentState.isActive {
-                    if isActive {
-                        this.reactor?.action.onNext(.tapNextButton)
-                        this.willPushOnboardingQuestionPlanViewController()
-                    }
-                }
+            .filter { reactor.currentState.isActive }
+            .bind { [weak self] _ in
+                self?.willPushOnboardingQuestionPlanViewController()
             }
             .disposed(by: disposeBag)
         

@@ -117,7 +117,7 @@ enum JYPButtonType {
         case .yes:
             return nil
         case .no:
-            return nil
+            return .init(titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color, image: nil)
         case .invite:
             return nil
         case .kakaoInvite:

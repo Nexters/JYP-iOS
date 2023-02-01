@@ -22,7 +22,7 @@ final class CompositionRoot {
         let authService: AuthServiceType = AuthService()
         let userService: UserServiceType = UserService()
         let onboardingService: OnboardingServiceType = OnboardingService()
-        
+
         lazy var pushOnboardingScreen: () -> OnboardingOneViewController = {
             return makeOnboardingScreen(onboardingService: onboardingService,
                                         authService: authService,
@@ -31,7 +31,15 @@ final class CompositionRoot {
         }
         
         lazy var pushTabBarScreen: () -> TabBarViewController = {
-            return makeTabBarScreen(pushOnboardingScreen: pushOnboardingScreen)
+            let pushCreateProfileBottomSheetScreen: () -> CreateProfileBottomSheetViewController = {
+                let reactor = CreateProfileBottomSheetReactor(onboardingService: onboardingService,
+                                                              userService: userService)
+                let viewController = CreateProfileBottomSheetViewController(reactor: reactor)
+                
+                return viewController
+            }
+            
+            return makeTabBarScreen(pushOnboardingScreen: pushOnboardingScreen, pushCreateProfileBottomSheetScreen: pushCreateProfileBottomSheetScreen)
         }
         
         if KeychainAccess.get(key: .accessToken) != nil && UserDefaultsAccess.get(key: .userID) != nil {
@@ -50,8 +58,10 @@ final class CompositionRoot {
 }
 
 extension CompositionRoot {
-    static func makeTabBarScreen(pushOnboardingScreen: @escaping () -> OnboardingOneViewController) -> TabBarViewController {
-        let viewController = TabBarViewController()
+    static func makeTabBarScreen(pushOnboardingScreen: @escaping () -> OnboardingOneViewController,
+                                 pushCreateProfileBottomSheetScreen: @escaping () -> CreateProfileBottomSheetViewController) -> TabBarViewController {
+        let reactor = TabBarReactor()
+        let viewController = TabBarViewController(reactor: reactor, pushCreateProfileBottomSheetScreen: pushCreateProfileBottomSheetScreen)
 
         let myPlannerViewController = makeMyPlannerScreen()
         let anotherJourneyViewController = makeAnotherJourneyScreen()
@@ -121,7 +131,7 @@ extension CompositionRoot {
     }
 
     static func makeMyPlannerScreen() -> MyPlannerViewController {
-        let journeyService: JourneyServiceType = JourneyService(provider: ServiceProvider.shared)
+        let journeyService: JourneyServiceType = ServiceProvider.shared.journeyService
 
         let pushPlannerInviteScreen: (_ id: String) -> PlannerInviteViewController = { id in
             let reactor = PlannerInviteReactor(id: id)
@@ -178,10 +188,29 @@ extension CompositionRoot {
             return controller
         }
 
-        let reactor = MyPlannerReactor()
-        let viewController = MyPlannerViewController(reactor: reactor,
-                                                     pushSelectionPlannerJoinBottomScreen: pushSelectionPlannerJoinBottomScreen,
-                                                     pushPlannerScreen: pushPlannerScreen)
+        let presentRemovePlannerBottomSheetScreen: (_ journey: Journey) -> RemovePlannerBottomSheetViewController = { journey in
+            let reactor = RemovePlannerBottomSheetReactor(
+                journeyService: journeyService,
+                journey: journey
+            )
+
+            return RemovePlannerBottomSheetViewController(reactor: reactor)
+        }
+
+        let presentPlannerMoreScreen: (_ journey: Journey) -> PlannerMoreButtomSheetViewController = { journey in
+            return PlannerMoreButtomSheetViewController(
+                journey: journey,
+                presentRemovePlannerBottomSheetScreen: presentRemovePlannerBottomSheetScreen
+            )
+        }
+
+        let reactor = MyPlannerReactor(journeyService: journeyService)
+        let viewController = MyPlannerViewController(
+            reactor: reactor,
+            pushSelectionPlannerJoinBottomScreen: pushSelectionPlannerJoinBottomScreen,
+            pushPlannerScreen: pushPlannerScreen,
+            presentPlannerMoreScreen: presentPlannerMoreScreen
+        )
         let tabBarItem = UITabBarItem(title: nil,
                                       image: JYPIOSAsset.myJourneyInactive.image.withRenderingMode(.alwaysOriginal),
                                       selectedImage: JYPIOSAsset.myJourneyActive.image.withRenderingMode(.alwaysOriginal))

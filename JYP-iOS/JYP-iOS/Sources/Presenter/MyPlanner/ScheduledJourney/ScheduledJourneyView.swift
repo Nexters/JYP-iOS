@@ -16,6 +16,7 @@ final class ScheduledJourneyView: BaseView, View {
 
     private let pushPlannerScreen: (_ id: String) -> PlannerViewController
     private let pushSelectionPlannerJoinBottomScreen: () -> SelectionPlannerJoinBottomViewController
+    private let presentPlannerMoreScreen: (_ journey: Journey) -> PlannerMoreButtomSheetViewController
 
     // MARK: - UI Components
 
@@ -27,7 +28,12 @@ final class ScheduledJourneyView: BaseView, View {
     private lazy var dataSource = DataSource { _, collectionView, indexPath, item -> UICollectionViewCell in
         switch item {
         case .empty:
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: EmptyJourneyCardCollectionViewCell.self), for: indexPath) as? EmptyJourneyCardCollectionViewCell else { return .init() }
+            guard let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: String(describing: EmptyJourneyCardCollectionViewCell.self),
+                for: indexPath
+            ) as? EmptyJourneyCardCollectionViewCell
+            else { return .init() }
+
             cell.makeButton.rx.tap
                 .subscribe(onNext: { [weak self] in
                     guard let self,
@@ -43,9 +49,24 @@ final class ScheduledJourneyView: BaseView, View {
                 .disposed(by: cell.disposeBag)
 
             return cell
-        case let .journey(reactor):
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: JourneyCardCollectionViewCell.self), for: indexPath) as? JourneyCardCollectionViewCell else { return .init() }
-            cell.reactor = reactor
+        case let .journey(cellReactor):
+            guard let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: String(describing: JourneyCardCollectionViewCell.self),
+                for: indexPath
+            ) as? JourneyCardCollectionViewCell
+            else { return .init() }
+
+            cell.reactor = cellReactor
+            cell.moreButton.rx.tap
+                .subscribe(onNext: { [weak self] in
+                    guard let self,
+                          let parentView = self.reactor?.currentState.parentView
+                    else { return }
+
+                    let bottomSheet = self.presentPlannerMoreScreen(cellReactor.currentState.journey)
+                    parentView.tabBarController?.present(bottomSheet, animated: true)
+                })
+                .disposed(by: cell.disposeBag)
 
             return cell
         }
@@ -56,10 +77,12 @@ final class ScheduledJourneyView: BaseView, View {
     init(
         reactor: Reactor,
         pushPlannerScreen: @escaping (_ id: String) -> PlannerViewController,
-        pushSelectionPlannerJoinBottomScreen: @escaping () -> SelectionPlannerJoinBottomViewController
+        pushSelectionPlannerJoinBottomScreen: @escaping () -> SelectionPlannerJoinBottomViewController,
+        presentPlannerMoreScreen: @escaping (_ journey: Journey) -> PlannerMoreButtomSheetViewController
     ) {
         self.pushPlannerScreen = pushPlannerScreen
         self.pushSelectionPlannerJoinBottomScreen = pushSelectionPlannerJoinBottomScreen
+        self.presentPlannerMoreScreen = presentPlannerMoreScreen
         super.init(frame: .zero)
         self.reactor = reactor
     }
