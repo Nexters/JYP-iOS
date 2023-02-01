@@ -75,8 +75,7 @@ class MyPlannerViewController: NavigationBarViewController, View {
         super.setupProperty()
 
         headerView.backgroundColor = JYPIOSAsset.backgroundWhite200.color
-
-        titleLabel.text = "자유로운 탐험가,\n다정님의 시작된 여행"
+        
         titleLabel.numberOfLines = 0
         titleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 22)
         titleLabel.lineSpacing(lineHeight: 34.1)
@@ -147,6 +146,16 @@ class MyPlannerViewController: NavigationBarViewController, View {
     // MARK: - Bind Method
 
     func bind(reactor: MyPlannerReactor) {
+        rx.viewDidLoad
+            .map {
+                (UserDefaultsAccess.get(key: .personality),
+                 UserDefaultsAccess.get(key: .nickname))
+            }
+            .subscribe(onNext: { [weak self] (personality, nikcname) in
+                self?.titleLabel.text = String(describing: "\(personality ?? ""),\n\(nikcname ?? "")의 시작된 여행")
+            })
+            .disposed(by: disposeBag)
+        
         rx.viewWillAppear
             .map { _ in .fetchJourneyList }
             .bind(to: reactor.action)

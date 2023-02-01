@@ -35,6 +35,9 @@ class UserService: GlobalService, UserServiceType {
             switch event {
             case let .fetchMe(user), let .createUser(user):
                 UserDefaultsAccess.set(key: .userID, value: user.id)
+                UserDefaultsAccess.set(key: .nickname, value: user.nickname)
+                UserDefaultsAccess.set(key: .personality, value: user.personality.title)
+                
             default:
                 return
             }
