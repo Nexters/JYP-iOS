@@ -108,12 +108,9 @@ final class PastJourneyView: BaseView, View {
 
                 if case let JourneyCardItem.journey(cellReactor) = planner {
                     let id = cellReactor.currentState.journey.id
-//                    let plannerViewController = PlannerViewController(
-//                        reactor: PlannerReactor(id: id)
-//                    )
                     let plannerViewController = self.pushPlannerScreen(id)
-                    
-                    parent.tabBarController?.navigationController?.pushViewController(plannerViewController, animated: true)
+                    plannerViewController.hidesBottomBarWhenPushed = true
+                    parent.navigationController?.pushViewController(plannerViewController, animated: true)
                 }
             })
             .disposed(by: disposeBag)
