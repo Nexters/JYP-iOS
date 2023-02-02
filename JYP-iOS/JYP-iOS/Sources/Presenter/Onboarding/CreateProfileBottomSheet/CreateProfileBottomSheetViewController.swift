@@ -91,7 +91,7 @@ class CreateProfileBottomSheetViewController: BottomSheetViewController, View {
         
         button.snp.makeConstraints {
             $0.top.equalTo(stackView.snp.bottom).offset(36)
-            $0.leading.trailing.equalToSuperview().inset(24)
+            $0.leading.trailing.equalToSuperview()
             $0.bottom.equalToSuperview().inset(6)
             $0.height.equalTo(52)
         }
