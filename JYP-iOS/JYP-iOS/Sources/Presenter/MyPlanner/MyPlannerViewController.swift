@@ -172,8 +172,7 @@ class MyPlannerViewController: NavigationBarViewController, View {
         reactor.state
             .compactMap(\.user)
             .bind { [weak self] user in
-                
-                self?.titleLabel.text = String(describing: "user.personality.title,\n\(user.nickname)의 시작된 여행")
+                self?.titleLabel.text = String(describing: "\(user.personality.title),\n\(user.nickname)의 시작된 여행")
             }
             .disposed(by: disposeBag)
         
