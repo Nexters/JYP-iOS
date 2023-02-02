@@ -15,6 +15,15 @@ class ProfileBox: BaseView {
     enum ProfileBoxType {
         case create
         case tag
+        
+        var cornerRadius: Double {
+            switch self {
+            case .create:
+                return 20.0
+            case .tag:
+                return 12.0
+            }
+        }
     }
     
     // MARK: - Properties
@@ -65,7 +74,7 @@ class ProfileBox: BaseView {
     override func setupProperty() {
         super.setupProperty()
         
-        imageView.cornerRound(radius: 12)
+        imageView.cornerRound(radius: type.cornerRadius)
         
         titleLabel.textAlignment = .center
         
@@ -104,7 +113,7 @@ class ProfileBox: BaseView {
         
         checkImageView.snp.makeConstraints {
             $0.top.equalTo(imageView.snp.top).offset(-11)
-            $0.trailing.equalTo(imageView.snp.trailing).offset(-8)
+            $0.trailing.equalTo(imageView.snp.trailing).offset(10)
             $0.width.height.equalTo(40)
         }
     }
