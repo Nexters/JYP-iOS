@@ -146,19 +146,12 @@ class MyPlannerViewController: NavigationBarViewController, View {
     // MARK: - Bind Method
 
     func bind(reactor: MyPlannerReactor) {
-        rx.viewDidLoad
-            .map {
-                (UserDefaultsAccess.get(key: .personality),
-                 UserDefaultsAccess.get(key: .nickname))
-            }
-            .subscribe(onNext: { [weak self] (personality, nikcname) in
-                self?.titleLabel.text = String(describing: "\(personality ?? ""),\n\(nikcname ?? "")의 시작된 여행")
-            })
-            .disposed(by: disposeBag)
-        
         rx.viewWillAppear
-            .map { _ in .fetchJourneyList }
-            .bind(to: reactor.action)
+            .bind { [weak self] _ in
+                self?.titleLabel.text = String(describing: "\(PersonalityID.toSelf(title: UserDefaultsAccess.get(key: .personality) ?? "").title),\n\(UserDefaultsAccess.get(key: .nickname) ?? "")의 시작된 여행")
+                
+                reactor.action.onNext(.fetchJourneyList)
+            }
             .disposed(by: disposeBag)
 
         scheduledJourneyButton.rx.tap
@@ -176,6 +169,14 @@ class MyPlannerViewController: NavigationBarViewController, View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
+        reactor.state
+            .compactMap(\.user)
+            .bind { [weak self] user in
+                
+                self?.titleLabel.text = String(describing: "user.personality.title,\n\(user.nickname)의 시작된 여행")
+            }
+            .disposed(by: disposeBag)
+        
         reactor.state
             .map { !$0.isSelectedSchduledJourneyView }
             .distinctUntilChanged()

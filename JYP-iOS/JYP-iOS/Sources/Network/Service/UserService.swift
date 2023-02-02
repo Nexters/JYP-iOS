@@ -54,10 +54,14 @@ class UserService: GlobalService, UserServiceType {
         
         request
             .subscribe(onNext: { [weak self] model in
-                if let user = model.data {
-                    self?.event.onNext(.fetchMe(user))
-                } else {
-                    self?.event.onNext(.error(JYPNetworkError.serverError(model.message)))
+                switch model.code {
+                case "20000":
+                    if let user = model.data {
+                        self?.event.onNext(.fetchMe(user))
+                    }
+                    
+                default:
+                    self?.event.onNext(.error(.serverError(model.message)))
                 }
             })
             .disposed(by: disposeBag)
@@ -68,15 +72,14 @@ class UserService: GlobalService, UserServiceType {
         
         let request = APIService.request(target: target)
             .map(BaseModel<User>.self)
-            .map { $0.data }
             .asObservable()
         
         request
-            .compactMap { $0 }
-            .bind { [weak self] user in
-            self?.event.onNext(.fetchUser(user))
-        }
-        .disposed(by: disposeBag)
+            .compactMap(\.data)
+            .subscribe(onNext: { [weak self] user in
+                self?.event.onNext(.fetchUser(user))
+            })
+            .disposed(by: disposeBag)
     }
     
     func updateUser(id: String, request: UpdateUserRequest) {
@@ -84,14 +87,13 @@ class UserService: GlobalService, UserServiceType {
 
         let request = APIService.request(target: target)
             .map(BaseModel<User>.self)
-            .map { $0.data }
             .asObservable()
         
         request
-            .compactMap { $0 }
-            .bind { [weak self] user in
+            .compactMap(\.data)
+            .subscribe(onNext: { [weak self] user in
                 self?.event.onNext(.updateUser(user))
-            }
+            })
             .disposed(by: disposeBag)
     }
     
@@ -107,9 +109,9 @@ class UserService: GlobalService, UserServiceType {
                 switch res.code {
                 case "20000":
                     if let user = res.data {
+                        UserDefaultsAccess.set(key: .userID, value: user.id)
                         self?.event.onNext(.createUser(user))
                     }
-                    
                 case "50000":
                     //TODO: User 조회 API 가 만들어지면 수정, 우선 User ID 만 넘김
                     let sIndx = res.message.endIndex(of: "_id:")
@@ -118,9 +120,9 @@ class UserService: GlobalService, UserServiceType {
                         var userID = String(describing: res.message[sIndx..<eIndx])
                         userID = userID.replacingOccurrences(of: "\"", with: "")
                         userID = userID.trimmingCharacters(in: .whitespacesAndNewlines)
+                        UserDefaultsAccess.set(key: .userID, value: userID)
                         self?.event.onNext(.createUser(User(id: userID, nickname: "테스트 닉네임", profileImagePath: "없음", personality: .FW)))
                     }
-                    
                 default:
                     return
                 }

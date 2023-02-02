@@ -17,6 +17,7 @@ final class MyPlannerReactor: Reactor {
     }
 
     enum Mutation {
+        case setUser(User)
         case showScheduledJourney(Bool)
         case showPastJourney(Bool)
         case pushCreatePlannerView(Bool)
@@ -24,6 +25,7 @@ final class MyPlannerReactor: Reactor {
     }
 
     struct State {
+        var user: User?
         var journeys: [Journey] = []
         var pastJourneys: [Journey] = []
         var isSelectedSchduledJourneyView: Bool = true
@@ -33,10 +35,12 @@ final class MyPlannerReactor: Reactor {
     }
 
     private let journeyService: JourneyServiceType
+    private let userService: UserServiceType
     let initialState = State()
 
-    init(journeyService: JourneyServiceType) {
+    init(journeyService: JourneyServiceType, userService: UserServiceType) {
         self.journeyService = journeyService
+        self.userService = userService
     }
 
     func mutate(action: Action) -> Observable<Mutation> {
@@ -63,15 +67,23 @@ final class MyPlannerReactor: Reactor {
     }
 
     func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
-        let newEvent = journeyService.event.flatMap { event -> Observable<Mutation> in
+        let journeyEvent = journeyService.event.flatMap { event -> Observable<Mutation> in
             switch event {
             case let .didFinishCreatePlanner(id):
                 return .just(.pushNewPlannerView(id))
             default: return .empty()
             }
         }
+        
+        let userEvent = userService.event.flatMap { event -> Observable<Mutation> in
+            switch event {
+            case let .fetchMe(user), let .fetchUser(user), let .createUser(user):
+                return .just(.setUser(user))
+            default: return .empty()
+            }
+        }
 
-        return Observable.merge(mutation, newEvent)
+        return Observable.merge(mutation, journeyEvent, userEvent)
     }
 
     func transform(action: Observable<Action>) -> Observable<Action> {
@@ -90,6 +102,8 @@ final class MyPlannerReactor: Reactor {
         var newState = state
 
         switch mutation {
+        case let .setUser(user):
+            newState.user = user
         case let .showScheduledJourney(isSelected):
             newState.isSelectedSchduledJourneyView = isSelected
         case let .showPastJourney(isSelected):

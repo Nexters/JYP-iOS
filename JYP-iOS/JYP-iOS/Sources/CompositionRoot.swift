@@ -39,7 +39,9 @@ final class CompositionRoot {
                 return viewController
             }
             
-            return makeTabBarScreen(pushOnboardingScreen: pushOnboardingScreen, pushCreateProfileBottomSheetScreen: pushCreateProfileBottomSheetScreen)
+            return makeTabBarScreen(userService: userService,
+                                    pushOnboardingScreen: pushOnboardingScreen,
+                                    pushCreateProfileBottomSheetScreen: pushCreateProfileBottomSheetScreen)
         }
         
         if KeychainAccess.get(key: .accessToken) != nil && UserDefaultsAccess.get(key: .userID) != nil {
@@ -58,12 +60,13 @@ final class CompositionRoot {
 }
 
 extension CompositionRoot {
-    static func makeTabBarScreen(pushOnboardingScreen: @escaping () -> OnboardingOneViewController,
+    static func makeTabBarScreen(userService: UserServiceType,
+                                 pushOnboardingScreen: @escaping () -> OnboardingOneViewController,
                                  pushCreateProfileBottomSheetScreen: @escaping () -> CreateProfileBottomSheetViewController) -> TabBarViewController {
         let reactor = TabBarReactor()
         let viewController = TabBarViewController(reactor: reactor, pushCreateProfileBottomSheetScreen: pushCreateProfileBottomSheetScreen)
 
-        let myPlannerViewController = makeMyPlannerScreen()
+        let myPlannerViewController = makeMyPlannerScreen(userService: userService)
         let anotherJourneyViewController = makeAnotherJourneyScreen()
         
         let myPageViewController = makeMyPageScreen(pushOnboardingScreen: pushOnboardingScreen)
@@ -130,7 +133,7 @@ extension CompositionRoot {
         return viewController
     }
 
-    static func makeMyPlannerScreen() -> MyPlannerViewController {
+    static func makeMyPlannerScreen(userService: UserServiceType) -> MyPlannerViewController {
         let journeyService: JourneyServiceType = ServiceProvider.shared.journeyService
 
         let pushPlannerInviteScreen: (_ id: String) -> PlannerInviteViewController = { id in
@@ -204,7 +207,8 @@ extension CompositionRoot {
             )
         }
 
-        let reactor = MyPlannerReactor(journeyService: journeyService)
+        let reactor = MyPlannerReactor(journeyService: journeyService,
+                                       userService: userService)
         let viewController = MyPlannerViewController(
             reactor: reactor,
             pushSelectionPlannerJoinBottomScreen: pushSelectionPlannerJoinBottomScreen,
