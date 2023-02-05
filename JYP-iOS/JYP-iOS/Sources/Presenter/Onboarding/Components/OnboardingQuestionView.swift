@@ -50,11 +50,12 @@ enum OnboardingQuestionViewType {
 class OnboardingQuestionView: BaseView {
     let type: OnboardingQuestionViewType
     
-    let questionIcon = UIImageView()
-    let titleLabel = UILabel()
-    lazy var firstView = OnboardingCardView(type: type.cardViewTypeA)
-    lazy var secondView = OnboardingCardView(type: type.cardViewTypeB)
-    let nextButton = JYPButton(type: .next)
+    let questionIcon: UIImageView = .init()
+    let titleLabel: UILabel = .init()
+    let nextButton: JYPButton = .init(type: .next)
+    
+    lazy var firstView: OnboardingCardView = .init(type: type.cardViewTypeA)
+    lazy var secondView: OnboardingCardView = .init(type: type.cardViewTypeB)
     
     required init?(coder: NSCoder) {
         fatalError("not supported")
@@ -73,7 +74,8 @@ class OnboardingQuestionView: BaseView {
         titleLabel.textColor = JYPIOSAsset.textB90.color
         titleLabel.text = type.titleText
         titleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 24)
-        titleLabel.numberOfLines = 2
+        titleLabel.numberOfLines = 0
+        titleLabel.lineSpacing(lineHeight: 36)
         
         nextButton.isEnabled = false
     }
@@ -94,7 +96,7 @@ class OnboardingQuestionView: BaseView {
         }
         
         titleLabel.snp.makeConstraints {
-            $0.top.equalTo(questionIcon.snp.bottom).offset(4)
+            $0.top.equalTo(questionIcon.snp.bottom).offset(8)
             $0.leading.equalTo(questionIcon)
         }
         
