@@ -222,11 +222,11 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
 
 extension CreatePlannerTagViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_: UICollectionView, layout _: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let section = dataSource[indexPath.section].items[indexPath.row]
+        let section = dataSource[indexPath.section].items[indexPath.item]
 
         switch section {
         case let .tagCell(reactor):
-            return CGSize(width: reactor.currentState.topic.size(withAttributes: [NSAttributedString.Key.font: JYPIOSFontFamily.Pretendard.medium.font(size: 16)]).width + 50, height: 32)
+            return CGSize(width: reactor.currentState.text.size(withAttributes: [NSAttributedString.Key.font: JYPIOSFontFamily.Pretendard.medium.font(size: 16)]).width + 50, height: 32)
         }
     }
 

@@ -114,6 +114,12 @@ class JYPTag: BaseView {
     required init?(coder: NSCoder) {
         fatalError("not supported")
     }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        draw(bounds)
+    }
 
     init() {
         isSelected = false
