@@ -98,12 +98,13 @@ class OnboardingCardView: BaseView {
         titleLabel.textColor = JYPIOSAsset.textB80.color
         titleLabel.font = JYPIOSFontFamily.Pretendard.medium.font(size: 16)
         titleLabel.numberOfLines = 2
+        titleLabel.lineSpacing(lineHeight: 24)
         
         badgeImage.image = JYPIOSAsset.iconCheck.image
         badgeImage.isHidden = true
 
         circleImage.image = type.config.image
-        circleImage.cornerRound(radius: 45)
+        circleImage.cornerRound(radius: 50)
     }
     
     override func setupHierarchy() {
