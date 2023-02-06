@@ -123,7 +123,7 @@ class MyPlannerViewController: NavigationBarViewController, View {
         addButton.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(20)
             make.bottom.equalTo(menuDivider.snp.top).offset(-7)
-            make.size.equalTo(20)
+            make.size.equalTo(24)
         }
 
         menuDivider.snp.makeConstraints { make in
