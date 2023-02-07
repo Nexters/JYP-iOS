@@ -90,7 +90,7 @@ class JYPTag: BaseView {
                 imageView.image = type?.selectedConfig.image
                 titleLabel.textColor = type?.selectedConfig.textColor
                 backgroundColor = type?.selectedConfig.backgroundColor
-            } else {
+            } else if !isInactive {
                 imageView.image = type?.unselectedConfig.image
                 titleLabel.textColor = type?.unselectedConfig.textColor
                 backgroundColor = type?.unselectedConfig.backgroundColor
@@ -104,8 +104,6 @@ class JYPTag: BaseView {
                 imageView.image = type?.inactiveConfig.image
                 titleLabel.textColor = type?.inactiveConfig.textColor
                 backgroundColor = type?.inactiveConfig.backgroundColor
-            } else {
-                isSelected = Bool(isSelected)
             }
         }
     }

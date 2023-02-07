@@ -11,9 +11,14 @@ import ReactorKit
 class JYPTagCollectionViewCellReactor: Reactor {
     typealias Action = NoAction
 
-    let initialState: Tag
+    struct State {
+        var tag: Tag
+        var inActive: Bool
+    }
     
-    init(tag: Tag) {
-        initialState = tag
+    let initialState: State
+    
+    init(tag: Tag, inActive: Bool) {
+        initialState = .init(tag: tag, inActive: inActive)
     }
 }

@@ -41,7 +41,7 @@ class CreatePlannerDateView: BaseView {
         titleLabel.textColor = JYPIOSAsset.textB90.color
         titleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 24)
 
-        subTitleLabel.text = "시작 일을 알려주세요"
+        subTitleLabel.text = "시작일을 선택해주세요"
         subTitleLabel.font = JYPIOSFontFamily.Pretendard.regular.font(size: 16)
         subTitleLabel.textColor = JYPIOSAsset.textB40.color
 
@@ -86,7 +86,7 @@ class CreatePlannerDateView: BaseView {
         }
 
         subTitleLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(4)
+            make.top.equalTo(titleLabel.snp.bottom).offset(8)
             make.leading.equalTo(titleLabel.snp.leading)
         }
 
