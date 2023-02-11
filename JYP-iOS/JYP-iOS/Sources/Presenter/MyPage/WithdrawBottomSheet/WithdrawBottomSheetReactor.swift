@@ -1,5 +1,5 @@
 //
-//  LogoutBottomSheetReactor.swift
+//  WithdrawBottomSheetReactor.swift
 //  JYP-iOS
 //
 //  Created by 송영모 on 2023/02/11.
@@ -8,7 +8,7 @@
 
 import ReactorKit
 
-class LogoutBottomSheetReactor: Reactor {
+class WithdrawBottomSheetReactor: Reactor {
     enum Action {
         case tap
     }
@@ -31,11 +31,13 @@ class LogoutBottomSheetReactor: Reactor {
     }
 }
 
-extension LogoutBottomSheetReactor {
+extension WithdrawBottomSheetReactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .tap:
-            userService.logout()
+            if let id = UserDefaultsAccess.get(key: .userID) {
+                userService.deleteUser(id: id)
+            }
             return .empty()
         }
     }
@@ -43,7 +45,7 @@ extension LogoutBottomSheetReactor {
     func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
         let userEventMutation = userService.event.flatMap { event -> Observable<Mutation> in
             switch event {
-            case .logout:
+            case .withdraw:
                 return .just(.setDismiss(true))
                 
             default:

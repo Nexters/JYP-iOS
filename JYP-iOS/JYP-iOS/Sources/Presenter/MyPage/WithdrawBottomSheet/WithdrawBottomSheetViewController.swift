@@ -1,5 +1,5 @@
 //
-//  LogoutBottomSheetViewController.swift
+//  WithdrawBottomSheetViewController.swift
 //  JYP-iOS
 //
 //  Created by 송영모 on 2023/02/11.
@@ -12,8 +12,8 @@ import UIKit
 import ReactorKit
 import RxSwift
 
-class LogoutBottomSheetViewController: BottomSheetViewController, View {
-    typealias Reactor = LogoutBottomSheetReactor
+class WithdrawBottomSheetViewController: BottomSheetViewController, View {
+    typealias Reactor = WithdrawBottomSheetReactor
     
     // MARK: - UI Components
     
@@ -23,7 +23,7 @@ class LogoutBottomSheetViewController: BottomSheetViewController, View {
     
     let stackView: UIStackView = .init()
     let noButton: JYPButton = .init(type: .no)
-    let yesButton: JYPButton = .init(type: .yes)
+    let withdrawButton: JYPButton = .init(type: .yes)
     
     // MARK: - Initializer
     
@@ -49,19 +49,21 @@ class LogoutBottomSheetViewController: BottomSheetViewController, View {
     override func setupProperty() {
         super.setupProperty()
         
-        titleLabel.text = "로그아웃 하시나요?"
+        titleLabel.text = "정말 떠나시는 건가요?"
         titleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 20)
         titleLabel.textColor = JYPIOSAsset.textB80.color
         
-        subLabel.text = "다시 돌아올 때까지 기다릴게요!"
+        subLabel.text = "회원 탈퇴 시 더 이상 해당 계정으로\n로그인할 수 없습니다"
         subLabel.font = JYPIOSFontFamily.Pretendard.regular.font(size: 16)
+        subLabel.numberOfLines = 0
         subLabel.textColor = JYPIOSAsset.textB40.color
+        subLabel.lineSpacing(lineHeight: 24)
         
         stackView.distribution = .fillEqually
         stackView.spacing = 12
         stackView.alignment = .leading
         
-        [noButton, yesButton].forEach {
+        [noButton, withdrawButton].forEach {
             $0.snp.makeConstraints {
                 $0.height.equalTo(52)
             }
@@ -72,7 +74,7 @@ class LogoutBottomSheetViewController: BottomSheetViewController, View {
         super.setupHierarchy()
         
         containerView.addSubviews([titleLabel, subLabel, stackView])
-        stackView.addArrangedSubviews([noButton, yesButton])
+        stackView.addArrangedSubviews([noButton, withdrawButton])
     }
     
     override func setupLayout() {
@@ -102,7 +104,7 @@ class LogoutBottomSheetViewController: BottomSheetViewController, View {
             })
             .disposed(by: disposeBag)
         
-        yesButton.rx.tap
+        withdrawButton.rx.tap
             .map { .tap }
             .subscribe(reactor.action)
             .disposed(by: disposeBag)

@@ -44,14 +44,20 @@ extension OnboardingSignUpReactor {
         let authEventMutation = authService.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
             switch event {
             case .apple, .kakao:
-                this.userService.fetchMe()
-                return .empty()
+                return this.userService.fetchMe()
+                    .map { _ in return .setNextScreenType(nil) }
+                    .catch { error in
+                        if error is JYPNetworkError {
+                            return .just(.setNextScreenType(.onboardingQuestionJourney))
+                        }
+                        return .just(.setNextScreenType(nil))
+                    }
                 
             default:
                 return .empty()
             }
         }
-        
+
         let userEventMutation = userService.event.withUnretained(self).flatMap { (_, event) -> Observable<Mutation> in
             switch event {
             case .fetchMe:
@@ -59,19 +65,13 @@ extension OnboardingSignUpReactor {
                     .just(.setNextScreenType(.tabBar)),
                     .just(.setNextScreenType(nil))
                 ])
-                
-            case .error:
-                return .concat([
-                    .just(.setNextScreenType(.onboardingQuestionJourney)),
-                    .just(.setNextScreenType(nil))
-                ])
-                
+
             default:
                 return .empty()
             }
         }
         
-        return Observable.merge(authEventMutation, userEventMutation, mutation)
+        return Observable.merge(mutation, authEventMutation, userEventMutation)
     }
     
     func mutate(action: Action) -> Observable<Mutation> {

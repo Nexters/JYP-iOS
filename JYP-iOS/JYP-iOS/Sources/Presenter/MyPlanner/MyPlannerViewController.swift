@@ -149,7 +149,6 @@ class MyPlannerViewController: NavigationBarViewController, View {
         rx.viewWillAppear
             .bind { [weak self] _ in
                 self?.titleLabel.text = String(describing: "\(PersonalityID.toSelf(title: UserDefaultsAccess.get(key: .personality) ?? "").title),\n\(UserDefaultsAccess.get(key: .nickname) ?? "")의 시작된 여행")
-                
                 reactor.action.onNext(.fetchJourneyList)
             }
             .disposed(by: disposeBag)

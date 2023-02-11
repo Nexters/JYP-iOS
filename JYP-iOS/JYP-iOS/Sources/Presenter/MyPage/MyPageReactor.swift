@@ -9,16 +9,19 @@
 import ReactorKit
 
 class MyPageReactor: Reactor {
-    enum Action {
-        
+    typealias Action = NoAction
+    
+    enum DismissType {
+        case logout
+        case withdraw
     }
     
     enum Mutation {
-        case setDismiss(Bool)
+        case setDismissType(DismissType)
     }
 
     struct State {
-        var dismiss: Bool = false
+        var dismissType: DismissType?
     }
     
     var initialState: State
@@ -36,12 +39,14 @@ extension MyPageReactor {
         let userEvnetMutation = userService.event.flatMap { event -> Observable<Mutation> in
             switch event {
             case .logout:
-                return .just(.setDismiss(true))
+                return .just(.setDismissType(.logout))
+                
+            case .withdraw:
+                return .just(.setDismissType(.withdraw))
                 
             default:
                 return .empty()
             }
-            
         }
         
         return .merge(mutation, userEvnetMutation)
@@ -51,8 +56,8 @@ extension MyPageReactor {
         var newState = state
         
         switch mutation {
-        case let .setDismiss(bool):
-            newState.dismiss = bool
+        case let .setDismissType(type):
+            newState.dismissType = type
         }
         
         return newState

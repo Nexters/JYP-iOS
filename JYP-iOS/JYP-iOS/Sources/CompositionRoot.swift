@@ -18,12 +18,13 @@ final class CompositionRoot {
         let window = UIWindow(windowScene: windowScene)
         window.backgroundColor = .white
         window.makeKeyAndVisible()
-
-        let authService: AuthServiceType = AuthService()
-        let userService: UserServiceType = UserService()
+        
         let onboardingService: OnboardingServiceType = OnboardingService()
 
         lazy var pushOnboardingScreen: () -> OnboardingOneViewController = {
+            let authService: AuthServiceType = AuthService()
+            let userService: UserServiceType = UserService()
+            
             return makeOnboardingScreen(onboardingService: onboardingService,
                                         authService: authService,
                                         userService: userService,
@@ -31,6 +32,8 @@ final class CompositionRoot {
         }
         
         lazy var pushTabBarScreen: () -> TabBarViewController = {
+            let userService: UserServiceType = UserService()
+            
             let pushCreateProfileBottomSheetScreen: () -> CreateProfileBottomSheetViewController = {
                 let reactor = CreateProfileBottomSheetReactor(onboardingService: onboardingService,
                                                               userService: userService)
@@ -247,10 +250,18 @@ extension CompositionRoot {
             return viewController
         }
         
+        let pushWithdrawBottomSheetScreen: () -> WithdrawBottomSheetViewController = {
+            let reactor = WithdrawBottomSheetReactor(userService: userService)
+            let viewController = WithdrawBottomSheetViewController(reactor: reactor)
+            
+            return viewController
+        }
+        
         let reactor = MyPageReactor(userService: userService)
         let viewController = MyPageViewController(reactor: reactor,
                                                   pushOnboardingScreen: pushOnboardingScreen,
-                                                  pushLogoutBottomSheetScreen: pushLogoutBottomSheetScreen)
+                                                  pushLogoutBottomSheetScreen: pushLogoutBottomSheetScreen,
+                                                  pushWithdrawBottomSheetScreen: pushWithdrawBottomSheetScreen)
 
         let tabBarItem = UITabBarItem(title: nil,
                                       image: JYPIOSAsset.myPageInactive.image.withRenderingMode(.alwaysOriginal),

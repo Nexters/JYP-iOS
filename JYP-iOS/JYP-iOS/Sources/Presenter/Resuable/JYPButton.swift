@@ -25,6 +25,7 @@ enum JYPButtonType {
     case plannerJoin
     case confirm
     case nextTime
+    case withdraw
     case yes
     case no
     
@@ -62,6 +63,8 @@ enum JYPButtonType {
             return "확인했어요"
         case .nextTime:
             return "다음에 함께하기"
+        case .withdraw:
+            return "떠날게요"
         case .yes:
             return "네"
         case .no:
@@ -99,6 +102,8 @@ enum JYPButtonType {
             return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color, image: nil)
         case .plannerJoin:
             return .init(titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color, image: nil)
+        case .withdraw:
+            return .init(titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color, image: nil)
         case .yes:
             return .init(titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color, image: nil)
         case .no:
@@ -124,7 +129,7 @@ enum JYPButtonType {
             return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color, image: nil)
         case .plannerJoin:
             return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color, image: nil)
-        case .addPlace, .smallAdd, .smallMake, .good, .invite, .kakaoInvite, .confirm, .nextTime, .yes, .no:
+        case .addPlace, .smallAdd, .smallMake, .good, .invite, .kakaoInvite, .confirm, .nextTime, .yes, .no, .withdraw:
             return nil
         }
     }

@@ -16,6 +16,10 @@ class MyPageViewController: NavigationBarViewController, View {
     
     private let pushOnboardingScreen: (() -> OnboardingOneViewController)?
     private let pushLogoutBottomSheetScreen: () -> LogoutBottomSheetViewController
+    private let pushWithdrawBottomSheetScreen: () -> WithdrawBottomSheetViewController
+    
+    private lazy var logoutBottomSheetViewController = pushLogoutBottomSheetScreen()
+    private lazy var withdrawBottomSheetViewController = pushWithdrawBottomSheetScreen()
     
     // MARK: - UI Components
     
@@ -35,9 +39,11 @@ class MyPageViewController: NavigationBarViewController, View {
     
     init(reactor: Reactor,
          pushOnboardingScreen: @escaping () -> OnboardingOneViewController,
-         pushLogoutBottomSheetScreen: @escaping () -> LogoutBottomSheetViewController) {
+         pushLogoutBottomSheetScreen: @escaping () -> LogoutBottomSheetViewController,
+         pushWithdrawBottomSheetScreen: @escaping () -> WithdrawBottomSheetViewController) {
         self.pushOnboardingScreen = pushOnboardingScreen
         self.pushLogoutBottomSheetScreen = pushLogoutBottomSheetScreen
+        self.pushWithdrawBottomSheetScreen = pushWithdrawBottomSheetScreen
         super.init(nibName: nil, bundle: nil)
         
         self.reactor = reactor
@@ -136,16 +142,33 @@ class MyPageViewController: NavigationBarViewController, View {
             .disposed(by: disposeBag)
         
         logoutButton.rx.tap
-            .subscribe(onNext: { [weak self] _ in
-                self?.willPresentLogoutBottomSheetViewController()
+            .withUnretained(self)
+            .subscribe(onNext: { this, _ in
+                this.tabBarController?.present(this.logoutBottomSheetViewController, animated: true)
+            })
+            .disposed(by: disposeBag)
+        
+        withdrawButton.rx.tap
+            .withUnretained(self)
+            .subscribe(onNext: { this, _ in
+                this.tabBarController?.present(this.withdrawBottomSheetViewController, animated: true)
             })
             .disposed(by: disposeBag)
         
         reactor.state
-            .map(\.dismiss)
-            .filter { $0 }
-            .subscribe(onNext: { [weak self] _ in
-                self?.willPresentOnboardingOneViewController()
+            .compactMap(\.dismissType)
+            .withUnretained(self)
+            .subscribe(onNext: { this, type in
+                switch type {
+                case .logout:
+                    this.logoutBottomSheetViewController.dismiss(animated: true, completion: {
+                        this.willPresentOnboardingOneViewController()
+                    })
+                case .withdraw:
+                    this.withdrawBottomSheetViewController.dismiss(animated: true, completion: {
+                        this.willPresentOnboardingOneViewController()
+                    })
+                }
             })
             .disposed(by: disposeBag)
     }
@@ -155,13 +178,7 @@ extension MyPageViewController {
     private func willPresentOnboardingOneViewController() {
         if let viewController = pushOnboardingScreen?().navigationWrap() {
             viewController.modalPresentationStyle = .fullScreen
-            present(viewController, animated: true)
+            tabBarController?.present(viewController, animated: true)
         }
-    }
-    
-    private func willPresentLogoutBottomSheetViewController() {
-        let viewController = pushLogoutBottomSheetScreen()
-        
-        tabBarController?.present(viewController, animated: true)
     }
 }

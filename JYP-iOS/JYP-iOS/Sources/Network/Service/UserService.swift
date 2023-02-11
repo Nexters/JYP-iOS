@@ -18,37 +18,51 @@ enum UserEvent {
     
     case login
     case logout
+    case withdraw
 }
 
 protocol UserServiceType {
     var event: PublishSubject<UserEvent> { get }
     
-    func fetchMe()
+    func fetchMe() -> Observable<Any>
     func fetchUser(id: String)
     func updateUser(id: String, request: UpdateUserRequest)
     func createUser(request: CreateUserRequest)
+    func deleteUser(id: String)
     
     func login(user: User)
     func logout()
+    func withdraw()
 }
 
 class UserService: GlobalService, UserServiceType {
     var event = PublishSubject<UserEvent>()
         
-    func fetchMe() {
+    func fetchMe() -> Observable<Any> {
         let target = UserAPI.fetchMe
         
         let request = APIService.request(target: target)
             .map(BaseModel<User>.self)
-            .compactMap(\.data)
             .asObservable()
         
         request
+            .compactMap(\.data)
             .subscribe(onNext: { [weak self] user in
                 self?.login(user: user)
                 self?.event.onNext(.fetchMe(user))
             })
             .disposed(by: disposeBag)
+        
+        return request.flatMap { model -> Observable in
+                .create { observer in
+                    switch model.code {
+                    case "40400": observer.onError(JYPNetworkError.serverError(model.message))
+                    default: break
+                    }
+                    return Disposables.create()
+                }
+        }
+        .asObservable()
     }
     
     func fetchUser(id: String) {
@@ -99,6 +113,22 @@ class UserService: GlobalService, UserServiceType {
             .disposed(by: disposeBag)
     }
     
+    func deleteUser(id: String) {
+        let target = UserAPI.deleteUser(id: id)
+        
+        let request = APIService.request(target: target)
+            .map(EmptyModel.self)
+            .asObservable()
+        
+        request
+            .filter({ $0.code == "20000" })
+            .bind { [weak self] _ in
+                self?.withdraw()
+                self?.event.onNext(.deleteUser)
+            }
+            .disposed(by: disposeBag)
+    }
+    
     func login(user: User) {
         UserDefaultsAccess.set(key: .userID, value: user.id)
         UserDefaultsAccess.set(key: .nickname, value: user.nickname)
@@ -112,5 +142,12 @@ class UserService: GlobalService, UserServiceType {
         UserDefaultsAccess.remove(key: .accessToken)
         
         event.onNext(.logout)
+    }
+    
+    func withdraw() {
+        UserDefaultsAccess.remove(key: .userID)
+        UserDefaultsAccess.remove(key: .accessToken)
+        
+        event.onNext(.withdraw)
     }
 }
