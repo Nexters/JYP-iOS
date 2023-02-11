@@ -16,11 +16,19 @@ class PlannerRouteViewController: NavigationBarViewController, View {
     typealias Reactor = PlannerRouteReactor
     
     private lazy var routeDataSource = RxCollectionViewSectionedReloadDataSource<RouteSectionModel> { [weak self] _, collectionView, indexPath, item -> UICollectionViewCell in
+        guard let reactor = self?.reactor else { return .init() }
+        
         switch item {
-        case let .route(reactor):
+        case let .route(cellReactor):
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: RouteCollectionViewCell.self), for: indexPath) as? RouteCollectionViewCell else { return .init() }
             
-            cell.reactor = reactor
+            cell.reactor = cellReactor
+            
+            cell.deleteButton.rx.tap
+                .map { .tapRouteCell(indexPath) }
+                .bind(to: reactor.action)
+                .disposed(by: cell.disposeBag)
+            
             return cell
         }
     }
@@ -69,6 +77,9 @@ class PlannerRouteViewController: NavigationBarViewController, View {
     
     override func setupNavigationBar() {
         super.setupNavigationBar()
+        
+        setNavigationBarTitleFont(JYPIOSFontFamily.Pretendard.semiBold.font(size: 20))
+        setNavigationBarSubTitleFont(JYPIOSFontFamily.Pretendard.regular.font(size: 18))
     }
     
     override func setupProperty() {
@@ -146,19 +157,24 @@ class PlannerRouteViewController: NavigationBarViewController, View {
         
         reactor.state
             .map(\.order)
+            .map { $0 + 1 }
+            .map { String(describing: "DAY \($0)") }
             .withUnretained(self)
-            .bind { this, order in
-                this.setNavigationBarTitleText("DAY \(order + 1)")
+            .bind { this, day in
+                this.setNavigationBarTitleText(day)
             }
             .disposed(by: disposeBag)
         
-//        reactor.state
-//            .map(\.date)
-//            .withUnretained(self)
-//            .bind { this, date in
-//                this.setNavigationBarSubTitleText(DateManager.dateToString(format: "M월 d일", date: date))
-//            }
-//            .disposed(by: disposeBag)
+        reactor.state
+            .map(\.order)
+            .map { ($0, Date(timeIntervalSince1970: reactor.currentState.journey.startDate)) }
+            .map { DateManager.addDateComponent(byAdding: .day, value: $0, to: $1) }
+            .map { DateManager.dateToString(format: "M월 d일", date: $0) }
+            .withUnretained(self)
+            .bind { this, date in
+                this.setNavigationBarSubTitleText(date)
+            }
+            .disposed(by: disposeBag)
         
         reactor.state
             .map(\.routeSections)
