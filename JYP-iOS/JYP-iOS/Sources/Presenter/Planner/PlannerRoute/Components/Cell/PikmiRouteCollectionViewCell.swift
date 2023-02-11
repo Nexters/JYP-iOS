@@ -59,21 +59,25 @@ class PikmiRouteCollectionViewCell: BaseCollectionViewCell, View {
         }
         
         subLabel.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(5)
+            $0.centerY.equalTo(categoryLabel)
             $0.leading.equalToSuperview().inset(20)
         }
         
         rankBadgeImageView.snp.makeConstraints {
             $0.top.equalToSuperview()
             $0.trailing.equalToSuperview().inset(23)
-//            $0.width.equalTo(26)
+        }
+        
+        categoryLabel.snp.makeConstraints {
+            $0.centerX.equalTo(rankBadgeImageView)
+            $0.bottom.equalToSuperview().inset(12)
         }
     }
     
     func bind(reactor: Reactor) {
         titleLabel.text = reactor.currentState.pik.name
-        
         subLabel.text = reactor.currentState.pik.address
+        categoryLabel.text = reactor.currentState.pik.category.title
         
         switch reactor.currentState.rank {
         case 0: rankBadgeImageView.image = JYPIOSAsset.badge1.image
