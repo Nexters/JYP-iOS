@@ -34,6 +34,8 @@ class PikmiCollectionViewCell: BaseCollectionViewCell, View {
         
         rankBadgeImageView.image = nil
         likeImageView.image = nil
+        likeLabel.textColor = JYPIOSAsset.mainPink.color
+        likeLabel.text = ""
     }
     
     override func setupProperty() {
@@ -134,16 +136,21 @@ class PikmiCollectionViewCell: BaseCollectionViewCell, View {
         categoryLabel.text = reactor.currentState.pik.category.title
         titleLabel.text = reactor.currentState.pik.name
         subLabel.text = reactor.currentState.pik.address
-        likeLabel.text = "\(reactor.currentState.pik.likeBy?.count ?? 0)"
         
-        switch state.rank {
-        case 0:
-            rankBadgeImageView.image = JYPIOSAsset.badge1.image
-        case 1:
-            rankBadgeImageView.image = JYPIOSAsset.badge2.image
-        case 2:
-            rankBadgeImageView.image = JYPIOSAsset.badge3.image
-        default: break
+        if let likeBy = reactor.currentState.pik.likeBy {
+            if !likeBy.isEmpty {
+                likeLabel.text = String(describing: likeBy.count)
+                likeLabel.textColor = JYPIOSAsset.mainPink.color
+                switch state.rank {
+                case 0:
+                    rankBadgeImageView.image = JYPIOSAsset.badge1.image
+                case 1:
+                    rankBadgeImageView.image = JYPIOSAsset.badge2.image
+                case 2:
+                    rankBadgeImageView.image = JYPIOSAsset.badge3.image
+                default: break
+                }
+            }
         }
         
         if state.isSelectedLikeButton {
