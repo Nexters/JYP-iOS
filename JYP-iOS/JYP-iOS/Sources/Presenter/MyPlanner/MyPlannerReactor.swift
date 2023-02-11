@@ -75,9 +75,10 @@ final class MyPlannerReactor: Reactor {
             }
         }
         
-        let userEvent = userService.event.flatMap { event -> Observable<Mutation> in
+        let userEvent = userService.event.flatMap { [weak self] event -> Observable<Mutation> in
             switch event {
             case let .fetchMe(user), let .fetchUser(user), let .createUser(user):
+                self?.journeyService.fetchJornenys()
                 return .just(.setUser(user))
             default: return .empty()
             }

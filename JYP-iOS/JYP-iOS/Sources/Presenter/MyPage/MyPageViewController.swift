@@ -15,6 +15,11 @@ class MyPageViewController: NavigationBarViewController, View {
     typealias Reactor = MyPageReactor
     
     private let pushOnboardingScreen: (() -> OnboardingOneViewController)?
+    private let pushLogoutBottomSheetScreen: () -> LogoutBottomSheetViewController
+    private let pushWithdrawBottomSheetScreen: () -> WithdrawBottomSheetViewController
+    
+    private lazy var logoutBottomSheetViewController = pushLogoutBottomSheetScreen()
+    private lazy var withdrawBottomSheetViewController = pushWithdrawBottomSheetScreen()
     
     // MARK: - UI Components
     
@@ -25,15 +30,20 @@ class MyPageViewController: NavigationBarViewController, View {
     
     let stackView: UIStackView = .init()
     
-    let noticeButton: MyPageButton = .init(title: "공지사항")
-    let versionButton: MyPageButton = .init(title: "버전 정보", info: Environment.version)
+    let noticeButton: MyPageButton = .init(title: "앱 소식 및 설명서")
+    let versionButton: MyPageButton = .init(title: "버전정보", info: Environment.version)
     let logoutButton: MyPageButton = .init(title: "로그아웃")
+    let withdrawButton: MyPageButton = .init(title: "회원탈퇴")
     
     // MARK: - Initializer
     
     init(reactor: Reactor,
-         pushOnboardingScreen: @escaping () -> OnboardingOneViewController) {
+         pushOnboardingScreen: @escaping () -> OnboardingOneViewController,
+         pushLogoutBottomSheetScreen: @escaping () -> LogoutBottomSheetViewController,
+         pushWithdrawBottomSheetScreen: @escaping () -> WithdrawBottomSheetViewController) {
         self.pushOnboardingScreen = pushOnboardingScreen
+        self.pushLogoutBottomSheetScreen = pushLogoutBottomSheetScreen
+        self.pushWithdrawBottomSheetScreen = pushWithdrawBottomSheetScreen
         super.init(nibName: nil, bundle: nil)
         
         self.reactor = reactor
@@ -86,7 +96,7 @@ class MyPageViewController: NavigationBarViewController, View {
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        [noticeButton, versionButton, logoutButton].forEach { stackView.addArrangedSubview($0) }
+        [noticeButton, versionButton, logoutButton, withdrawButton].forEach { stackView.addArrangedSubview($0) }
         
         contentView.addSubviews([headerView, profileImageView, personalityLabel, nicknameLabel, stackView])
     }
@@ -132,10 +142,34 @@ class MyPageViewController: NavigationBarViewController, View {
             .disposed(by: disposeBag)
         
         logoutButton.rx.tap
-            .bind { [weak self] _ in
-                reactor.action.onNext(.logout)
-                self?.willPresentOnboardingOneViewController()
-            }
+            .withUnretained(self)
+            .subscribe(onNext: { this, _ in
+                this.tabBarController?.present(this.logoutBottomSheetViewController, animated: true)
+            })
+            .disposed(by: disposeBag)
+        
+        withdrawButton.rx.tap
+            .withUnretained(self)
+            .subscribe(onNext: { this, _ in
+                this.tabBarController?.present(this.withdrawBottomSheetViewController, animated: true)
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .compactMap(\.dismissType)
+            .withUnretained(self)
+            .subscribe(onNext: { this, type in
+                switch type {
+                case .logout:
+                    this.logoutBottomSheetViewController.dismiss(animated: true, completion: {
+                        this.willPresentOnboardingOneViewController()
+                    })
+                case .withdraw:
+                    this.withdrawBottomSheetViewController.dismiss(animated: true, completion: {
+                        this.willPresentOnboardingOneViewController()
+                    })
+                }
+            })
             .disposed(by: disposeBag)
     }
 }
@@ -144,7 +178,7 @@ extension MyPageViewController {
     private func willPresentOnboardingOneViewController() {
         if let viewController = pushOnboardingScreen?().navigationWrap() {
             viewController.modalPresentationStyle = .fullScreen
-            present(viewController, animated: true)
+            tabBarController?.present(viewController, animated: true)
         }
     }
 }

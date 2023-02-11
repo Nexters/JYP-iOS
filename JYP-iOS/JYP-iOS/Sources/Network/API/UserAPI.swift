@@ -14,6 +14,7 @@ enum UserAPI {
     case fetchUser(id: String)
     case updateUser(id: String, request: UpdateUserRequest)
     case createUser(request: CreateUserRequest)
+    case deleteUser(id: String)
 }
 
 extension UserAPI: BaseAPI {
@@ -27,13 +28,16 @@ extension UserAPI: BaseAPI {
             return "users/me"
             
         case let .fetchUser(id):
-            return "/users/\(id)"
+            return "users/\(id)"
             
         case let .updateUser(id, _):
-            return "/users/\(id)"
+            return "users/\(id)"
             
         case .createUser:
             return "users"
+            
+        case let .deleteUser(id):
+            return "users/\(id)"
         }
     }
 
@@ -50,12 +54,15 @@ extension UserAPI: BaseAPI {
             
         case .createUser:
             return .post
+            
+        case .deleteUser:
+            return .delete
         }
     }
 
     var task: Task {
         switch self {
-        case .fetchMe, .fetchUser:
+        case .fetchMe, .fetchUser, .deleteUser:
             return .requestPlain
             
         case let .updateUser(_, request):

@@ -17,14 +17,17 @@ enum JYPButtonType {
     case addPlace
     case smallAdd
     case smallMake
-    case yes
-    case no
+    case good
+    case hate
     case invite
     case kakaoInvite
     case linkInvite
     case plannerJoin
     case confirm
     case nextTime
+    case withdraw
+    case yes
+    case no
     
     var title: String {
         switch self {
@@ -44,9 +47,9 @@ enum JYPButtonType {
             return "시작하기"
         case .smallMake:
             return "만들기"
-        case .yes:
+        case .good:
             return "좋아요"
-        case .no:
+        case .hate:
             return "싫어요"
         case .invite:
             return ""
@@ -60,6 +63,12 @@ enum JYPButtonType {
             return "확인했어요"
         case .nextTime:
             return "다음에 함께하기"
+        case .withdraw:
+            return "떠날게요"
+        case .yes:
+            return "네"
+        case .no:
+            return "아니요"
         }
     }
     
@@ -81,9 +90,9 @@ enum JYPButtonType {
             return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.subBlack.color, image: nil)
         case .smallMake:
             return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color, image: nil)
-        case .yes:
+        case .good:
             return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color, image: nil)
-        case .no:
+        case .hate:
             return .init(titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color, image: nil)
         case .invite:
             return .init(titleColor: .clear, backgroundColor: .clear, image: JYPIOSAsset.iconInvite.image)
@@ -93,6 +102,12 @@ enum JYPButtonType {
             return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color, image: nil)
         case .plannerJoin:
             return .init(titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color, image: nil)
+        case .withdraw:
+            return .init(titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color, image: nil)
+        case .yes:
+            return .init(titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color, image: nil)
+        case .no:
+            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color, image: nil)
         }
     }
     
@@ -108,25 +123,13 @@ enum JYPButtonType {
             return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color, image: nil)
         case .add:
             return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color, image: nil)
-        case .addPlace:
-            return nil
-        case .smallAdd:
-            return nil
-        case .smallMake:
-            return nil
-        case .yes:
-            return nil
-        case .no:
+        case .hate:
             return .init(titleColor: JYPIOSAsset.textB40.color, backgroundColor: JYPIOSAsset.tagWhiteGrey100.color, image: nil)
-        case .invite:
-            return nil
-        case .kakaoInvite:
-            return nil
         case .linkInvite:
             return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color, image: nil)
         case .plannerJoin:
             return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color, image: nil)
-        case .confirm, .nextTime:
+        case .addPlace, .smallAdd, .smallMake, .good, .invite, .kakaoInvite, .confirm, .nextTime, .yes, .no, .withdraw:
             return nil
         }
     }
@@ -151,6 +154,7 @@ class JYPButton: UIButton {
         super.init(frame: .zero)
         
         setTitle(type.title, for: .normal)
+        setTitleColor(type.inactiveConfig.titleColor, for: .normal)
         setImage(type.inactiveConfig.image, for: .normal)
         backgroundColor = type.inactiveConfig.backgroundColor
         titleLabel?.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 16)

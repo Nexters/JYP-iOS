@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Alamofire
 
 enum JYPNetworkError: Error {
     /// 잘못된 참여코드 - 40001

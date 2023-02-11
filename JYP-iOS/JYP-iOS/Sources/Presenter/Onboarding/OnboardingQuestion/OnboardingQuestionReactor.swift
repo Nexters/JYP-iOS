@@ -69,19 +69,6 @@ class OnboardingQuestionReactor: Reactor {
                 .just(.setSecondViewState(.active)),
                 .just(.setIsActive(true))
             ])
-            
-//        case .tapNextButton:
-//            switch mode {
-//            case .joruney, .place:
-//                return .empty()
-//                
-//            case .plan:
-//                let name = KeychainAccess.get(key: .nickname) ?? ""
-//                let profileImagePath = KeychainAccess.get(key: .profileImagePath) ?? ""
-//                
-//                userService.createUser(request: .init(name: name, profileImagePath: profileImagePath, personalityId: onboardingService.getPersonalityID()))
-//                return .empty()
-//            }
         }
     }
     

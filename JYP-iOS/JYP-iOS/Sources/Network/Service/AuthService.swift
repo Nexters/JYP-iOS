@@ -11,6 +11,8 @@ import RxSwift
 enum AuthEvent {
     case apple(AppleLoginResponse)
     case kakao(KakaoLoginResponse)
+    
+    case authorize
 }
 
 protocol AuthServiceType {
@@ -18,25 +20,12 @@ protocol AuthServiceType {
 
     func apple(token: String)
     func kakao(token: String)
+    
+    func authorize(token: String)
 }
 
 final class AuthService: GlobalService, AuthServiceType {
     let event = PublishSubject<AuthEvent>()
-    
-    override init() {
-        super.init()
-        
-        event.subscribe(onNext: { event in
-            switch event {
-            case let .apple(res):
-                KeychainAccess.set(key: .accessToken, value: res.token)
-                
-            case let .kakao(res):
-                KeychainAccess.set(key: .accessToken, value: res.token)
-            }
-        })
-        .disposed(by: disposeBag)
-    }
     
     func apple(token: String) {
         let target = AuthAPI.apple(token: token)
@@ -49,6 +38,7 @@ final class AuthService: GlobalService, AuthServiceType {
         request
             .compactMap { $0 }
             .subscribe { [weak self] res in
+                self?.authorize(token: res.token)
                 self?.event.onNext(.apple(res))
             }
             .disposed(by: disposeBag)
@@ -65,8 +55,13 @@ final class AuthService: GlobalService, AuthServiceType {
         request
             .compactMap { $0 }
             .subscribe { [weak self] res in
+                self?.authorize(token: res.token)
                 self?.event.onNext(.kakao(res))
             }
             .disposed(by: disposeBag)
+    }
+    
+    func authorize(token: String) {
+        UserDefaultsAccess.set(key: .accessToken, value: token)
     }
 }

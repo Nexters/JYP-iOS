@@ -18,12 +18,13 @@ final class CompositionRoot {
         let window = UIWindow(windowScene: windowScene)
         window.backgroundColor = .white
         window.makeKeyAndVisible()
-
-        let authService: AuthServiceType = AuthService()
-        let userService: UserServiceType = UserService()
+        
         let onboardingService: OnboardingServiceType = OnboardingService()
 
         lazy var pushOnboardingScreen: () -> OnboardingOneViewController = {
+            let authService: AuthServiceType = AuthService()
+            let userService: UserServiceType = UserService()
+            
             return makeOnboardingScreen(onboardingService: onboardingService,
                                         authService: authService,
                                         userService: userService,
@@ -31,6 +32,8 @@ final class CompositionRoot {
         }
         
         lazy var pushTabBarScreen: () -> TabBarViewController = {
+            let userService: UserServiceType = UserService()
+            
             let pushCreateProfileBottomSheetScreen: () -> CreateProfileBottomSheetViewController = {
                 let reactor = CreateProfileBottomSheetReactor(onboardingService: onboardingService,
                                                               userService: userService)
@@ -44,7 +47,7 @@ final class CompositionRoot {
                                     pushCreateProfileBottomSheetScreen: pushCreateProfileBottomSheetScreen)
         }
         
-        if KeychainAccess.get(key: .accessToken) != nil && UserDefaultsAccess.get(key: .userID) != nil {
+        if UserDefaultsAccess.get(key: .accessToken) != nil && UserDefaultsAccess.get(key: .userID) != nil {
             window.rootViewController = pushTabBarScreen()
         } else {
             window.rootViewController = pushOnboardingScreen().navigationWrap()
@@ -69,7 +72,8 @@ extension CompositionRoot {
         let myPlannerViewController = makeMyPlannerScreen(userService: userService)
         let anotherJourneyViewController = makeAnotherJourneyScreen()
         
-        let myPageViewController = makeMyPageScreen(pushOnboardingScreen: pushOnboardingScreen)
+        let myPageViewController = makeMyPageScreen(pushOnboardingScreen: pushOnboardingScreen,
+                                                    userService: userService)
 
         viewController.viewControllers = [
             myPlannerViewController.navigationWrap(),
@@ -237,10 +241,27 @@ extension CompositionRoot {
         return viewController
     }
 
-    static func makeMyPageScreen(pushOnboardingScreen: @escaping () -> OnboardingOneViewController) -> MyPageViewController {
-        let reactor = MyPageReactor()
+    static func makeMyPageScreen(pushOnboardingScreen: @escaping () -> OnboardingOneViewController,
+                                 userService: UserServiceType) -> MyPageViewController {
+        let pushLogoutBottomSheetScreen: () -> LogoutBottomSheetViewController = {
+            let reactor = LogoutBottomSheetReactor(userService: userService)
+            let viewController = LogoutBottomSheetViewController(reactor: reactor)
+            
+            return viewController
+        }
+        
+        let pushWithdrawBottomSheetScreen: () -> WithdrawBottomSheetViewController = {
+            let reactor = WithdrawBottomSheetReactor(userService: userService)
+            let viewController = WithdrawBottomSheetViewController(reactor: reactor)
+            
+            return viewController
+        }
+        
+        let reactor = MyPageReactor(userService: userService)
         let viewController = MyPageViewController(reactor: reactor,
-                                                  pushOnboardingScreen: pushOnboardingScreen)
+                                                  pushOnboardingScreen: pushOnboardingScreen,
+                                                  pushLogoutBottomSheetScreen: pushLogoutBottomSheetScreen,
+                                                  pushWithdrawBottomSheetScreen: pushWithdrawBottomSheetScreen)
 
         let tabBarItem = UITabBarItem(title: nil,
                                       image: JYPIOSAsset.myPageInactive.image.withRenderingMode(.alwaysOriginal),

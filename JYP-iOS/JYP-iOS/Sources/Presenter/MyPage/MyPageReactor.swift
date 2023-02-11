@@ -9,28 +9,57 @@
 import ReactorKit
 
 class MyPageReactor: Reactor {
-    enum Action {
+    typealias Action = NoAction
+    
+    enum DismissType {
         case logout
+        case withdraw
     }
     
-    enum Mutation { }
-    
-    struct State { }
+    enum Mutation {
+        case setDismissType(DismissType)
+    }
+
+    struct State {
+        var dismissType: DismissType?
+    }
     
     var initialState: State
     
-    init() {
+    private let userService: UserServiceType
+    
+    init(userService: UserServiceType) {
+        self.userService = userService
         self.initialState = State()
     }
 }
 
 extension MyPageReactor {
-    func mutate(action: Action) -> Observable<Mutation> {
-        switch action {
-        case .logout:
-            UserDefaultsAccess.remove(key: .userID)
-            KeychainAccess.remove(key: .accessToken)
-            return .empty()
+    func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
+        let userEvnetMutation = userService.event.flatMap { event -> Observable<Mutation> in
+            switch event {
+            case .logout:
+                return .just(.setDismissType(.logout))
+                
+            case .withdraw:
+                return .just(.setDismissType(.withdraw))
+                
+            default:
+                return .empty()
+            }
         }
+        
+        return .merge(mutation, userEvnetMutation)
+    }
+    
+    func reduce(state: State, mutation: Mutation) -> State {
+        var newState = state
+        
+        switch mutation {
+        case let .setDismissType(type):
+            newState.dismissType = type
+        }
+        
+        return newState
     }
 }

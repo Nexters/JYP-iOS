@@ -45,7 +45,7 @@ final class RemovePlannerBottomSheetViewController: BottomSheetViewController, V
         return button
     }()
 
-    private let yesButton = JYPButton(type: .yes)
+    private let yesButton = JYPButton(type: .good)
 
     init(reactor: Reactor) {
         super.init(mode: .drag)
