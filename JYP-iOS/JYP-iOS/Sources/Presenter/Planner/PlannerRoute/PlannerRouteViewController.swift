@@ -167,7 +167,8 @@ class PlannerRouteViewController: NavigationBarViewController, View {
         
         reactor.state
             .map(\.order)
-            .map { DateManager.addDateComponent(byAdding: .day, value: $0, to: Date()) }
+            .map { ($0, Date(timeIntervalSince1970: reactor.currentState.journey.startDate)) }
+            .map { DateManager.addDateComponent(byAdding: .day, value: $0, to: $1) }
             .map { DateManager.dateToString(format: "M월 d일", date: $0) }
             .withUnretained(self)
             .bind { this, date in
