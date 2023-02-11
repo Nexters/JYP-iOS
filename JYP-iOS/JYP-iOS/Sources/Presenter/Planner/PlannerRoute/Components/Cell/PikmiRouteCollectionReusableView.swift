@@ -12,7 +12,6 @@ class PikmiRouteCollectionReusableView: BaseCollectionReusableView {
     // MARK: - UI Components
     
     let titleLabel: UILabel = .init()
-    let trailingButton: UIButton = .init()
     
     // MARK: - Setup Methods
     
@@ -22,14 +21,12 @@ class PikmiRouteCollectionReusableView: BaseCollectionReusableView {
         titleLabel.text = "여행 후보 장소"
         titleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 16)
         titleLabel.textColor = JYPIOSAsset.textB80.color
-        
-        trailingButton.setImage(JYPIOSAsset.iconAdd.image, for: .normal)
     }
     
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        addSubviews([titleLabel, trailingButton])
+        addSubviews([titleLabel])
     }
     
     override func setupLayout() {
@@ -38,12 +35,6 @@ class PikmiRouteCollectionReusableView: BaseCollectionReusableView {
         titleLabel.snp.makeConstraints {
             $0.leading.equalToSuperview()
             $0.centerY.equalToSuperview()
-        }
-        
-        trailingButton.snp.makeConstraints {
-            $0.trailing.equalToSuperview()
-            $0.centerY.equalToSuperview()
-            $0.width.height.equalTo(24)
         }
     }
 }
