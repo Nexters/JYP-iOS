@@ -69,7 +69,8 @@ extension CompositionRoot {
         let myPlannerViewController = makeMyPlannerScreen(userService: userService)
         let anotherJourneyViewController = makeAnotherJourneyScreen()
         
-        let myPageViewController = makeMyPageScreen(pushOnboardingScreen: pushOnboardingScreen)
+        let myPageViewController = makeMyPageScreen(pushOnboardingScreen: pushOnboardingScreen,
+                                                    userService: userService)
 
         viewController.viewControllers = [
             myPlannerViewController.navigationWrap(),
@@ -237,10 +238,19 @@ extension CompositionRoot {
         return viewController
     }
 
-    static func makeMyPageScreen(pushOnboardingScreen: @escaping () -> OnboardingOneViewController) -> MyPageViewController {
+    static func makeMyPageScreen(pushOnboardingScreen: @escaping () -> OnboardingOneViewController,
+                                 userService: UserServiceType) -> MyPageViewController {
+        let pushLogoutBottomSheetScreen: () -> LogoutBottomSheetViewController = {
+            let reactor = LogoutBottomSheetReactor(userService: userService)
+            let viewController = LogoutBottomSheetViewController(reactor: reactor)
+            
+            return viewController
+        }
+        
         let reactor = MyPageReactor()
         let viewController = MyPageViewController(reactor: reactor,
-                                                  pushOnboardingScreen: pushOnboardingScreen)
+                                                  pushOnboardingScreen: pushOnboardingScreen,
+                                                  pushLogoutBottomSheetScreen: pushLogoutBottomSheetScreen)
 
         let tabBarItem = UITabBarItem(title: nil,
                                       image: JYPIOSAsset.myPageInactive.image.withRenderingMode(.alwaysOriginal),

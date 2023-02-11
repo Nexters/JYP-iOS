@@ -141,7 +141,7 @@ class CreateProfileBottomSheetViewController: BottomSheetViewController, View {
             .disposed(by: disposeBag)
         
         button.rx.tap
-            .subscribe(onNext: { [weak self] _ in
+            .subscribe(onNext: { _ in
                 reactor.action.onNext(.tapButton)
             })
             .disposed(by: disposeBag)

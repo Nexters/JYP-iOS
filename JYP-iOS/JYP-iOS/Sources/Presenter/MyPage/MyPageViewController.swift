@@ -15,6 +15,7 @@ class MyPageViewController: NavigationBarViewController, View {
     typealias Reactor = MyPageReactor
     
     private let pushOnboardingScreen: (() -> OnboardingOneViewController)?
+    private let pushLogoutBottomSheetScreen: () -> LogoutBottomSheetViewController
     
     // MARK: - UI Components
     
@@ -25,15 +26,18 @@ class MyPageViewController: NavigationBarViewController, View {
     
     let stackView: UIStackView = .init()
     
-    let noticeButton: MyPageButton = .init(title: "공지사항")
-    let versionButton: MyPageButton = .init(title: "버전 정보", info: Environment.version)
+    let noticeButton: MyPageButton = .init(title: "앱 소식 및 설명서")
+    let versionButton: MyPageButton = .init(title: "버전정보", info: Environment.version)
     let logoutButton: MyPageButton = .init(title: "로그아웃")
+    let withdrawButton: MyPageButton = .init(title: "회원탈퇴")
     
     // MARK: - Initializer
     
     init(reactor: Reactor,
-         pushOnboardingScreen: @escaping () -> OnboardingOneViewController) {
+         pushOnboardingScreen: @escaping () -> OnboardingOneViewController,
+         pushLogoutBottomSheetScreen: @escaping () -> LogoutBottomSheetViewController) {
         self.pushOnboardingScreen = pushOnboardingScreen
+        self.pushLogoutBottomSheetScreen = pushLogoutBottomSheetScreen
         super.init(nibName: nil, bundle: nil)
         
         self.reactor = reactor
@@ -86,7 +90,7 @@ class MyPageViewController: NavigationBarViewController, View {
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        [noticeButton, versionButton, logoutButton].forEach { stackView.addArrangedSubview($0) }
+        [noticeButton, versionButton, logoutButton, withdrawButton].forEach { stackView.addArrangedSubview($0) }
         
         contentView.addSubviews([headerView, profileImageView, personalityLabel, nicknameLabel, stackView])
     }
@@ -146,5 +150,9 @@ extension MyPageViewController {
             viewController.modalPresentationStyle = .fullScreen
             present(viewController, animated: true)
         }
+    }
+    
+    private func willPresentLogoutBottomSheetViewController() {
+//        if let viewController =
     }
 }
