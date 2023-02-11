@@ -59,7 +59,7 @@ class PikmiRouteCollectionViewCell: BaseCollectionViewCell, View {
         }
         
         subLabel.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom).offset(5)
+            $0.centerY.equalTo(categoryLabel)
             $0.leading.equalToSuperview().inset(20)
         }
         
