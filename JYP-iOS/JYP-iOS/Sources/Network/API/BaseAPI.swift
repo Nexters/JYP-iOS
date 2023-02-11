@@ -17,7 +17,7 @@ extension BaseAPI {
     }
 
     var headers: [String: String]? {
-        if let token = KeychainAccess.get(key: .accessToken) {
+        if let token = UserDefaultsAccess.get(key: .accessToken) {
             return [
                 "Authorization": "Bearer \(token)",
                 "Content-Type": "application/json",

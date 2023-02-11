@@ -45,8 +45,11 @@ extension OnboardingSignUpReactor {
             switch event {
             case .apple, .kakao:
                 this.userService.fetchMe()
+                return .empty()
+                
+            default:
+                return .empty()
             }
-            return .empty()
         }
         
         let userEventMutation = userService.event.withUnretained(self).flatMap { (_, event) -> Observable<Mutation> in

@@ -8,11 +8,10 @@
 
 import Foundation
 import RxSwift
-import Foundation
 
 enum MyPageEvent {
-    case logout
-    case withdraw
+    case didLogout
+    case didWithdraw
 }
 
 protocol MyPageServiceType {
@@ -23,10 +22,10 @@ class MyPageService: MyPageServiceType {
     let event = PublishSubject<MyPageEvent>()
     
     func logout() {
-        event.onNext(.logout)
+        event.onNext(.didLogout)
     }
     
     func withdraw() {
-        event.onNext(.withdraw)
+        event.onNext(.didWithdraw)
     }
 }

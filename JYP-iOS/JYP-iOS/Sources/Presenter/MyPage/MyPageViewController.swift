@@ -136,10 +136,17 @@ class MyPageViewController: NavigationBarViewController, View {
             .disposed(by: disposeBag)
         
         logoutButton.rx.tap
-            .bind { [weak self] _ in
-                reactor.action.onNext(.logout)
+            .subscribe(onNext: { [weak self] _ in
+                self?.willPresentLogoutBottomSheetViewController()
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .map(\.dismiss)
+            .filter { $0 }
+            .subscribe(onNext: { [weak self] _ in
                 self?.willPresentOnboardingOneViewController()
-            }
+            })
             .disposed(by: disposeBag)
     }
 }
@@ -153,6 +160,8 @@ extension MyPageViewController {
     }
     
     private func willPresentLogoutBottomSheetViewController() {
-//        if let viewController =
+        let viewController = pushLogoutBottomSheetScreen()
+        
+        present(viewController, animated: true)
     }
 }

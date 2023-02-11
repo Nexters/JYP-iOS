@@ -13,7 +13,11 @@ enum UserEvent {
     case fetchUser(User)
     case updateUser(User)
     case createUser(User)
+    case deleteUser
     case error(JYPNetworkError)
+    
+    case login
+    case logout
 }
 
 protocol UserServiceType {
@@ -23,28 +27,14 @@ protocol UserServiceType {
     func fetchUser(id: String)
     func updateUser(id: String, request: UpdateUserRequest)
     func createUser(request: CreateUserRequest)
+    
+    func login(user: User)
+    func logout()
 }
 
 class UserService: GlobalService, UserServiceType {
     var event = PublishSubject<UserEvent>()
-    
-    override init() {
-        super.init()
         
-        event.subscribe(onNext: { event in
-            switch event {
-            case let .fetchMe(user), let .createUser(user):
-                UserDefaultsAccess.set(key: .userID, value: user.id)
-                UserDefaultsAccess.set(key: .nickname, value: user.nickname)
-                UserDefaultsAccess.set(key: .personality, value: user.personality.title)
-                
-            default:
-                return
-            }
-        })
-        .disposed(by: disposeBag)
-    }
-    
     func fetchMe() {
         let target = UserAPI.fetchMe
         
@@ -105,28 +95,26 @@ class UserService: GlobalService, UserServiceType {
             .asObservable()
         
         request
-            .subscribe(onNext: { [weak self] res in
-                switch res.code {
-                case "20000":
-                    if let user = res.data {
-                        UserDefaultsAccess.set(key: .userID, value: user.id)
-                        self?.event.onNext(.createUser(user))
-                    }
-                case "50000":
-                    //TODO: User 조회 API 가 만들어지면 수정, 우선 User ID 만 넘김
-                    let sIndx = res.message.endIndex(of: "_id:")
-                    let eIndx = res.message.index(of: "}")
-                    if let sIndx = sIndx, let eIndx = eIndx, sIndx < eIndx {
-                        var userID = String(describing: res.message[sIndx..<eIndx])
-                        userID = userID.replacingOccurrences(of: "\"", with: "")
-                        userID = userID.trimmingCharacters(in: .whitespacesAndNewlines)
-                        UserDefaultsAccess.set(key: .userID, value: userID)
-                        self?.event.onNext(.createUser(User(id: userID, nickname: "테스트 닉네임", profileImagePath: "없음", personality: .FW)))
-                    }
-                default:
-                    return
-                }
+            .compactMap(\.data)
+            .subscribe(onNext: { [weak self] user in
+                self?.login(user: user)
+                self?.event.onNext(.createUser(user))
             })
             .disposed(by: disposeBag)
+    }
+    
+    func login(user: User) {
+        UserDefaultsAccess.set(key: .userID, value: user.id)
+        UserDefaultsAccess.set(key: .nickname, value: user.nickname)
+        UserDefaultsAccess.set(key: .personality, value: user.personality.title)
+        
+        event.onNext(.logout)
+    }
+    
+    func logout() {
+        UserDefaultsAccess.remove(key: .userID)
+        UserDefaultsAccess.remove(key: .accessToken)
+        
+        event.onNext(.logout)
     }
 }

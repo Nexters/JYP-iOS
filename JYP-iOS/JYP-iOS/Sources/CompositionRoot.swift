@@ -44,7 +44,7 @@ final class CompositionRoot {
                                     pushCreateProfileBottomSheetScreen: pushCreateProfileBottomSheetScreen)
         }
         
-        if KeychainAccess.get(key: .accessToken) != nil && UserDefaultsAccess.get(key: .userID) != nil {
+        if UserDefaultsAccess.get(key: .accessToken) != nil && UserDefaultsAccess.get(key: .userID) != nil {
             window.rootViewController = pushTabBarScreen()
         } else {
             window.rootViewController = pushOnboardingScreen().navigationWrap()
@@ -247,7 +247,7 @@ extension CompositionRoot {
             return viewController
         }
         
-        let reactor = MyPageReactor()
+        let reactor = MyPageReactor(userService: userService)
         let viewController = MyPageViewController(reactor: reactor,
                                                   pushOnboardingScreen: pushOnboardingScreen,
                                                   pushLogoutBottomSheetScreen: pushLogoutBottomSheetScreen)
