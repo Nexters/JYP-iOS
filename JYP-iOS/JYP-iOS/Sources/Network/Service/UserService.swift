@@ -40,19 +40,13 @@ class UserService: GlobalService, UserServiceType {
         
         let request = APIService.request(target: target)
             .map(BaseModel<User>.self)
+            .compactMap(\.data)
             .asObservable()
         
         request
-            .subscribe(onNext: { [weak self] model in
-                switch model.code {
-                case "20000":
-                    if let user = model.data {
-                        self?.event.onNext(.fetchMe(user))
-                    }
-                    
-                default:
-                    self?.event.onNext(.error(.serverError(model.message)))
-                }
+            .subscribe(onNext: { [weak self] user in
+                self?.login(user: user)
+                self?.event.onNext(.fetchMe(user))
             })
             .disposed(by: disposeBag)
     }
@@ -62,11 +56,12 @@ class UserService: GlobalService, UserServiceType {
         
         let request = APIService.request(target: target)
             .map(BaseModel<User>.self)
+            .compactMap(\.data)
             .asObservable()
         
         request
-            .compactMap(\.data)
             .subscribe(onNext: { [weak self] user in
+                self?.login(user: user)
                 self?.event.onNext(.fetchUser(user))
             })
             .disposed(by: disposeBag)
@@ -82,6 +77,7 @@ class UserService: GlobalService, UserServiceType {
         request
             .compactMap(\.data)
             .subscribe(onNext: { [weak self] user in
+                self?.login(user: user)
                 self?.event.onNext(.updateUser(user))
             })
             .disposed(by: disposeBag)
@@ -92,10 +88,10 @@ class UserService: GlobalService, UserServiceType {
         
         let request = APIService.request(target: target)
             .map(BaseModel<User>.self)
+            .compactMap(\.data)
             .asObservable()
         
         request
-            .compactMap(\.data)
             .subscribe(onNext: { [weak self] user in
                 self?.login(user: user)
                 self?.event.onNext(.createUser(user))
@@ -108,7 +104,7 @@ class UserService: GlobalService, UserServiceType {
         UserDefaultsAccess.set(key: .nickname, value: user.nickname)
         UserDefaultsAccess.set(key: .personality, value: user.personality.title)
         
-        event.onNext(.logout)
+        event.onNext(.login)
     }
     
     func logout() {

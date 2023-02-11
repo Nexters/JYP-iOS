@@ -162,6 +162,6 @@ extension MyPageViewController {
     private func willPresentLogoutBottomSheetViewController() {
         let viewController = pushLogoutBottomSheetScreen()
         
-        present(viewController, animated: true)
+        tabBarController?.present(viewController, animated: true)
     }
 }

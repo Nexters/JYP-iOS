@@ -22,8 +22,8 @@ class LogoutBottomSheetViewController: BottomSheetViewController, View {
     let subLabel: UILabel = .init()
     
     let stackView: UIStackView = .init()
-    let noButton: JYPButton = .init(type: .start)
-    let logoutButton: JYPButton = .init(type: .start)
+    let noButton: JYPButton = .init(type: .no)
+    let yesButton: JYPButton = .init(type: .yes)
     
     // MARK: - Initializer
     
@@ -57,15 +57,22 @@ class LogoutBottomSheetViewController: BottomSheetViewController, View {
         subLabel.font = JYPIOSFontFamily.Pretendard.regular.font(size: 16)
         subLabel.textColor = JYPIOSAsset.textB40.color
         
-        stackView.distribution = .equalSpacing
+        stackView.distribution = .fillEqually
         stackView.spacing = 12
         stackView.alignment = .leading
+        
+        [noButton, yesButton].forEach {
+            $0.snp.makeConstraints {
+                $0.height.equalTo(52)
+            }
+        }
     }
     
     override func setupHierarchy() {
         super.setupHierarchy()
         
         containerView.addSubviews([titleLabel, subLabel, stackView])
+        stackView.addArrangedSubviews([noButton, yesButton])
     }
     
     override func setupLayout() {
@@ -84,10 +91,28 @@ class LogoutBottomSheetViewController: BottomSheetViewController, View {
         stackView.snp.makeConstraints {
             $0.top.equalTo(subLabel.snp.bottom).offset(72)
             $0.leading.trailing.equalToSuperview()
+            $0.bottom.equalToSuperview().inset(6)
         }
     }
     
     func bind(reactor: Reactor) {
+        noButton.rx.tap
+            .subscribe(onNext: { [weak self] _ in
+                self?.dismiss(animated: true)
+            })
+            .disposed(by: disposeBag)
         
+        yesButton.rx.tap
+            .map { .tapLogoutButton }
+            .subscribe(reactor.action)
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .map(\.dismiss)
+            .filter { $0 }
+            .subscribe(onNext: { [weak self] _ in
+                self?.dismiss(animated: true)
+            })
+            .disposed(by: disposeBag)
     }
 }

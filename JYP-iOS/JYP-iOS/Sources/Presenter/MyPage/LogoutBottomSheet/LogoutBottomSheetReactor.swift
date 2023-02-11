@@ -14,10 +14,11 @@ class LogoutBottomSheetReactor: Reactor {
     }
     
     enum Mutation {
+        case setDismiss(Bool)
     }
     
     struct State {
-        
+        var dismiss: Bool = false
     }
     
     var initialState: State
@@ -31,5 +32,36 @@ class LogoutBottomSheetReactor: Reactor {
 }
 
 extension LogoutBottomSheetReactor {
-
+    func mutate(action: Action) -> Observable<Mutation> {
+        switch action {
+        case .tapLogoutButton:
+            userService.logout()
+            return .empty()
+        }
+    }
+    
+    func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
+        let userEventMutation = userService.event.flatMap { event -> Observable<Mutation> in
+            switch event {
+            case .logout:
+                return .just(.setDismiss(true))
+                
+            default:
+                return .empty()
+            }
+        }
+        
+        return .merge(mutation, userEventMutation)
+    }
+    
+    func reduce(state: State, mutation: Mutation) -> State {
+        var newState = state
+        
+        switch mutation {
+        case let .setDismiss(bool):
+            newState.dismiss = bool
+        }
+        
+        return newState
+    }
 }
