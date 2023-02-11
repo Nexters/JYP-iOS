@@ -23,8 +23,8 @@ final class EmptyJourneyCardCollectionViewCell: BaseCollectionViewCell, View {
         $0.numberOfLines = 0
         $0.font = JYPIOSFontFamily.Pretendard.medium.font(size: 16)
         $0.textColor = JYPIOSAsset.textB75.color
-        $0.textAlignment = .center
         $0.lineSpacing(lineHeight: 23.2)
+        $0.textAlignment = .center
     }
     
     let makeButton: JYPButton = .init(type: .smallMake)

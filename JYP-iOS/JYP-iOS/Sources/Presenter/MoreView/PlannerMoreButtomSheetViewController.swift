@@ -30,7 +30,7 @@ final class PlannerMoreButtomSheetViewController: BottomSheetViewController {
     private let deleteButton: UIButton = {
         let button = UIButton()
         button.contentHorizontalAlignment = .left
-        button.setImage(JYPIOSAsset.iconDelete.image, for: .normal)
+        button.setImage(JYPIOSAsset.iconJourneyDelete.image, for: .normal)
         button.setTitle("나가기", for: .normal)
         button.titleLabel?.textAlignment = .left
         button.titleLabel?.font = JYPIOSFontFamily.Pretendard.medium.font(size: 16)
