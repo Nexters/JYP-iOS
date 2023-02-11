@@ -12,7 +12,7 @@ class JYPTagCollectionViewCell: BaseCollectionViewCell, View {
     typealias Reactor = JYPTagCollectionViewCellReactor
     
     var jypTag = JYPTag()
-      
+    
     override func setupHierarchy() {
         super.setupHierarchy()
         
@@ -28,19 +28,9 @@ class JYPTagCollectionViewCell: BaseCollectionViewCell, View {
     }
     
     func bind(reactor: Reactor) {
-        reactor.state
-            .map(\.orientation)
-            .bind(to: jypTag.rx.type)
-            .disposed(by: disposeBag)
-        
-        reactor.state
-            .map(\.topic)
-            .bind(to: jypTag.titleLabel.rx.text)
-            .disposed(by: disposeBag)
-        
-        reactor.state
-            .map(\.isSelected)
-            .bind(to: jypTag.rx.isSelected)
-            .disposed(by: disposeBag)
+        jypTag.type = reactor.currentState.tag.orientation
+        jypTag.titleLabel.text = reactor.currentState.tag.topic
+        jypTag.isInactive = reactor.currentState.inActive
+        jypTag.isSelected = reactor.currentState.tag.isSelected
     }
 }

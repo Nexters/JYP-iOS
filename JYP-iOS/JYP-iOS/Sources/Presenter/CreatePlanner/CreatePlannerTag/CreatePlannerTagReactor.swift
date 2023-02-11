@@ -79,16 +79,16 @@ final class CreatePlannerTagReactor: Reactor {
 
             if currentState.selectedItems.contains(indexPath) {
                 return .concat(
-                    .just(.removeIndexPath(indexPath)),
                     updateTagItem,
+                    .just(.removeIndexPath(indexPath)),
                     enableStartButton
                 )
             } else {
                 guard currentState.selectedItems.count < Self.MAX_SELECTION_COUNT else { return .empty() }
 
                 return .concat(
-                    .just(.insertIndexPath(indexPath)),
                     updateTagItem,
+                    .just(.insertIndexPath(indexPath)),
                     enableStartButton
                 )
             }
@@ -128,7 +128,7 @@ final class CreatePlannerTagReactor: Reactor {
                 let item = self.currentState.sections[section].items.count
                 let indexPath = IndexPath(item: item, section: section)
 
-                let reactor = JYPTagCollectionViewCellReactor(tag: tag)
+                let reactor = JYPTagCollectionViewCellReactor(tag: tag, inActive: false)
                 let tag = TagItem.tagCell(reactor)
                 return .just(.insertSectionTagItem(indexPath, tag))
             }
@@ -143,11 +143,11 @@ final class CreatePlannerTagReactor: Reactor {
         switch mutation {
         case let .setTags(tags):
             newState.nomatterItems = tags.filter { $0.orientation == .nomatter }
-                .map { TagItem.tagCell(.init(tag: $0)) }
+                .map { TagItem.tagCell(.init(tag: $0, inActive: false)) }
             newState.likeItems = tags.filter { $0.orientation == .like }
-                .map { TagItem.tagCell(.init(tag: $0)) }
+                .map { TagItem.tagCell(.init(tag: $0, inActive: false)) }
             newState.dislikeItems = tags.filter { $0.orientation == .dislike }
-                .map { TagItem.tagCell(.init(tag: $0)) }
+                .map { TagItem.tagCell(.init(tag: $0, inActive: false)) }
         case .updateAllSections:
             newState.sections[JYPTagType.nomatter.section].items = newState.nomatterItems
             newState.sections[JYPTagType.like.section].items = newState.likeItems
@@ -159,14 +159,23 @@ final class CreatePlannerTagReactor: Reactor {
         case let .insertIndexPath(indexPath):
             newState.selectedItems.insert(indexPath)
             if case let TagItem.tagCell(tag) = state.sections[indexPath.section].items[indexPath.row] {
-                newState.journey.tags.append(tag.currentState)
+                newState.journey.tags.append(tag.currentState.tag)
+            }
+            
+            if state.selectedItems.count != Self.MAX_SELECTION_COUNT && newState.selectedItems.count == Self.MAX_SELECTION_COUNT {
+                newState.sections = remakeInactvieTagSections(sections: newState.sections, inActive: true)
             }
         case let .removeIndexPath(indexPath):
             newState.selectedItems.remove(indexPath)
             if case let TagItem.tagCell(tag) = state.sections[indexPath.section].items[indexPath.row],
-               let index = newState.journey.tags.firstIndex(where: { $0 == tag.currentState }) {
+               let index = newState.journey.tags.firstIndex(where: { $0 == tag.currentState.tag }) {
                 newState.journey.tags.remove(at: index)
             }
+            
+            if state.selectedItems.count == Self.MAX_SELECTION_COUNT && newState.selectedItems.count != Self.MAX_SELECTION_COUNT {
+                newState.sections = remakeInactvieTagSections(sections: newState.sections, inActive: false)
+            }
+            
         case .activeStartButton:
             newState.isEnabledStartButton = !currentState.selectedItems.isEmpty
         case let .pushPlannerView(id):
@@ -201,19 +210,19 @@ extension CreatePlannerTagReactor {
         let nomatterItems = tags.filter { $0.orientation == .nomatter }
         let nomatterSection = TagSectionModel(
             model: .nomatter(nomatterItems),
-            items: nomatterItems.map { .tagCell(.init(tag: $0)) }
+            items: nomatterItems.map { .tagCell(.init(tag: $0, inActive: false)) }
         )
 
         let likeItems = tags.filter { $0.orientation == .like }
         let likeSection = TagSectionModel(
             model: .like(likeItems),
-            items: tags.filter { $0.orientation == .like }.map { .tagCell(.init(tag: $0)) }
+            items: tags.filter { $0.orientation == .like }.map { .tagCell(.init(tag: $0, inActive: false)) }
         )
 
         let dislikeItems = tags.filter { $0.orientation == .dislike }
         let dislikeSection = TagSectionModel(
             model: .dislike(dislikeItems),
-            items: dislikeItems.map { .tagCell(.init(tag: $0)) }
+            items: dislikeItems.map { .tagCell(.init(tag: $0, inActive: false)) }
         )
 
         return [nomatterSection, likeSection, dislikeSection]
@@ -221,6 +230,40 @@ extension CreatePlannerTagReactor {
 }
 
 extension CreatePlannerTagReactor {
+    /// section의 모든 tagItem의 inActive 를 변경함
+    /// - Parameter section: 변경할 section의 index, inActive 상태
+    /// - Returns: 변경된 section
+    private func remakeInactvieTagSections(sections: [TagSectionModel], inActive: Bool) -> [TagSectionModel] {
+        var nomatterSection = sections[JYPTagType.nomatter.section]
+        let nomatterItems: [TagItem] = nomatterSection.items.map {
+            switch $0 {
+            case let .tagCell(reactor):
+                return .tagCell(.init(tag: reactor.currentState.tag, inActive: inActive))
+            }
+        }
+        nomatterSection.items = nomatterItems
+        
+        var likeSection = sections[JYPTagType.like.section]
+        let likeItems: [TagItem] = likeSection.items.map {
+            switch $0 {
+            case let .tagCell(reactor):
+                return .tagCell(.init(tag: reactor.currentState.tag, inActive: inActive))
+            }
+        }
+        likeSection.items = likeItems
+        
+        var dislikeSection = sections[JYPTagType.dislike.section]
+        let dislikeItems: [TagItem] = dislikeSection.items.map {
+            switch $0 {
+            case let .tagCell(reactor):
+                return .tagCell(.init(tag: reactor.currentState.tag, inActive: inActive))
+            }
+        }
+        dislikeSection.items = dislikeItems
+        
+        return [nomatterSection, likeSection, dislikeSection]
+    }
+    
     /// 선택된 tag의 isSelected를 변경하고, items 배열의 원래 요소와 교체함
     /// - Parameter indexPath: 선택된 tag의 indexPath
     /// - Returns: 선택된 태그의 상태가 반영된 전체 Item 배열
@@ -231,9 +274,9 @@ extension CreatePlannerTagReactor {
 
         guard case let TagItem.tagCell(reactor) = currentTag else { return .init() }
         var newTag = reactor.currentState
-        newTag.isSelected.toggle()
+        newTag.tag.isSelected.toggle()
 
-        items.replaceSubrange(indexPath.row ... indexPath.row, with: [.tagCell(JYPTagCollectionViewCellReactor(tag: newTag))])
+        items.replaceSubrange(indexPath.row ... indexPath.row, with: [.tagCell(JYPTagCollectionViewCellReactor(tag: newTag.tag, inActive: newTag.inActive))])
 
         return items
     }

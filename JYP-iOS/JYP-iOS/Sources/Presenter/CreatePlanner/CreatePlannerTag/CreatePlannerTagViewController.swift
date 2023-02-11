@@ -129,7 +129,7 @@ class CreatePlannerTagViewController: NavigationBarViewController, View {
         }
 
         subTitleLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(4)
+            make.top.equalTo(titleLabel.snp.bottom).offset(8)
             make.leading.equalTo(titleLabel.snp.leading)
         }
 
@@ -226,7 +226,7 @@ extension CreatePlannerTagViewController: UICollectionViewDelegateFlowLayout {
 
         switch section {
         case let .tagCell(reactor):
-            return CGSize(width: reactor.currentState.text.size(withAttributes: [NSAttributedString.Key.font: JYPIOSFontFamily.Pretendard.medium.font(size: 16)]).width + 50, height: 32)
+            return CGSize(width: reactor.currentState.tag.text.size(withAttributes: [NSAttributedString.Key.font: JYPIOSFontFamily.Pretendard.medium.font(size: 16)]).width + 50, height: 32)
         }
     }
 

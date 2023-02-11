@@ -105,7 +105,7 @@ class CreatePlannerNameViewController: NavigationBarViewController, View {
         }
 
         subTitleLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(4)
+            make.top.equalTo(titleLabel.snp.bottom).offset(8)
             make.leading.equalTo(titleLabel.snp.leading)
         }
 
