@@ -66,7 +66,6 @@ class PikmiRouteCollectionViewCell: BaseCollectionViewCell, View {
         rankBadgeImageView.snp.makeConstraints {
             $0.top.equalToSuperview()
             $0.trailing.equalToSuperview().inset(23)
-//            $0.width.equalTo(26)
         }
     }
     

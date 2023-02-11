@@ -8,7 +8,7 @@
 
 import UIKit
 
-enum OnboardingViewType {
+enum OnboardingViewType: CaseIterable {
     case one
     case two
     
@@ -34,10 +34,12 @@ enum OnboardingViewType {
 class OnboardingView: BaseView {
     let type: OnboardingViewType
     
-    let onboardingTextLogoImageView = UIImageView()
-    let subLabel = UILabel()
-    let onboardingImageView = UIImageView()
-    let nextButton = JYPButton(type: .next)
+    let onboardingContentView: UIView = .init()
+    let onboardingTextLogoImageView: UIImageView = .init()
+    let subLabel: UILabel = .init()
+    let onboardingImageView: UIImageView = .init()
+    let stackView: UIStackView = .init()
+    let nextButton: JYPButton = .init(type: .next)
     
     required init?(coder: NSCoder) {
         fatalError("not supported")
@@ -52,15 +54,40 @@ class OnboardingView: BaseView {
     override func setupProperty() {
         super.setupProperty()
         
+        backgroundColor = .init(hex: 0xF9F9F9)
+        
+        onboardingContentView.backgroundColor = .white
+        onboardingContentView.cornerRound(radius: 40, direct: [.layerMaxXMaxYCorner, .layerMinXMaxYCorner])
+        onboardingContentView.setShadow(radius: 5, offset: .init(width: 0, height: 5), opacity: 0.06)
+        
         onboardingTextLogoImageView.image = JYPIOSAsset.onboardingTextLogoBlack.image
         
         subLabel.text = type.sub
         subLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 24)
         subLabel.textColor = JYPIOSAsset.textB90.color
         subLabel.numberOfLines = 2
+        subLabel.lineSpacing(lineHeight: 36)
         
         onboardingImageView.image = type.onboardingImage
-        onboardingImageView.cornerRound(radius: 40, direct: [.layerMaxXMaxYCorner, .layerMinXMaxYCorner])
+        
+        stackView.spacing = 8
+        
+        for type in OnboardingViewType.allCases {
+            var circleView: UIView = .init()
+
+            circleView.snp.makeConstraints {
+                $0.size.equalTo(8)
+            }
+            
+            if type == self.type {
+                circleView.backgroundColor = JYPIOSAsset.textB80.color
+            } else {
+                circleView.backgroundColor = .init(hex: 0xDADADA)
+            }
+            circleView.cornerRound(radius: 4)
+            
+            stackView.addArrangedSubview(circleView)
+        }
         
         nextButton.isEnabled = true
     }
@@ -68,11 +95,17 @@ class OnboardingView: BaseView {
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        addSubviews([onboardingTextLogoImageView, subLabel, onboardingImageView, nextButton])
+        addSubviews([onboardingContentView, stackView, nextButton])
+        onboardingContentView.addSubviews([onboardingTextLogoImageView, subLabel, onboardingImageView])
     }
     
     override func setupLayout() {
         super.setupLayout()
+        
+        onboardingContentView.snp.makeConstraints {
+            $0.top.leading.trailing.equalToSuperview()
+            $0.bottom.equalToSuperview().inset(110)
+        }
         
         onboardingTextLogoImageView.snp.makeConstraints {
             $0.top.equalToSuperview().inset(20)
@@ -86,12 +119,17 @@ class OnboardingView: BaseView {
         
         onboardingImageView.snp.makeConstraints {
             $0.leading.trailing.equalToSuperview()
+            $0.bottom.equalToSuperview()
+        }
+        
+        stackView.snp.makeConstraints {
+            $0.top.equalTo(onboardingContentView.snp.bottom).offset(16)
+            $0.centerX.equalToSuperview()
         }
         
         nextButton.snp.makeConstraints {
-            $0.top.equalTo(onboardingImageView.snp.bottom).offset(36)
             $0.leading.trailing.equalToSuperview().inset(24)
-            $0.bottom.equalToSuperview()
+            $0.bottom.equalToSuperview().inset(6)
             $0.height.equalTo(52)
         }
     }
