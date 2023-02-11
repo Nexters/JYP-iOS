@@ -73,7 +73,7 @@ class OnboardingView: BaseView {
         stackView.spacing = 8
         
         for type in OnboardingViewType.allCases {
-            var circleView: UIView = .init()
+            let circleView: UIView = .init()
 
             circleView.snp.makeConstraints {
                 $0.size.equalTo(8)
