@@ -46,6 +46,7 @@ jobs:
       - run: fastlane tf
         env:
             TEAM_ID: ${{ secrets.TEAM_ID }}
+            MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
             MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
             APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
             APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
