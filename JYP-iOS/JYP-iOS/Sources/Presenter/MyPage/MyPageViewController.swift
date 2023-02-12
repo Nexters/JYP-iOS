@@ -15,7 +15,7 @@ class MyPageViewController: NavigationBarViewController, View {
     typealias Reactor = MyPageReactor
     
     private let pushOnboardingScreen: (() -> OnboardingOneViewController)?
-    private let pushWebViewScreen: (_ url: String) -> WebViewController
+    private let pushWebScreen: (_ url: String) -> WebViewController
     private let pushLogoutBottomSheetScreen: () -> LogoutBottomSheetViewController
     private let pushWithdrawBottomSheetScreen: () -> WithdrawBottomSheetViewController
     
@@ -31,7 +31,7 @@ class MyPageViewController: NavigationBarViewController, View {
     
     let stackView: UIStackView = .init()
     
-    let noticeButton: MyPageButton = .init(title: "앱 소식 및 설명서")
+    let manualButton: MyPageButton = .init(title: "앱 소식 및 설명서")
     let versionButton: MyPageButton = .init(title: "버전정보", info: Environment.version)
     let logoutButton: MyPageButton = .init(title: "로그아웃")
     let withdrawButton: MyPageButton = .init(title: "회원탈퇴")
@@ -39,10 +39,11 @@ class MyPageViewController: NavigationBarViewController, View {
     // MARK: - Initializer
     
     init(reactor: Reactor,
-         pushWebViewScreen: @escaping () -> WebViewController,
+         pushWebScreen: @escaping (_ url: String) -> WebViewController,
          pushOnboardingScreen: @escaping () -> OnboardingOneViewController,
          pushLogoutBottomSheetScreen: @escaping () -> LogoutBottomSheetViewController,
          pushWithdrawBottomSheetScreen: @escaping () -> WithdrawBottomSheetViewController) {
+        self.pushWebScreen = pushWebScreen
         self.pushOnboardingScreen = pushOnboardingScreen
         self.pushLogoutBottomSheetScreen = pushLogoutBottomSheetScreen
         self.pushWithdrawBottomSheetScreen = pushWithdrawBottomSheetScreen
@@ -98,7 +99,7 @@ class MyPageViewController: NavigationBarViewController, View {
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        [noticeButton, versionButton, logoutButton, withdrawButton].forEach { stackView.addArrangedSubview($0) }
+        [manualButton, versionButton, logoutButton, withdrawButton].forEach { stackView.addArrangedSubview($0) }
         
         contentView.addSubviews([headerView, profileImageView, personalityLabel, nicknameLabel, stackView])
     }
@@ -140,6 +141,12 @@ class MyPageViewController: NavigationBarViewController, View {
             .subscribe(onNext: { [weak self] _ in
                 self?.personalityLabel.text = UserDefaultsAccess.get(key: .personality)
                 self?.nicknameLabel.text = UserDefaultsAccess.get(key: .nickname)
+            })
+            .disposed(by: disposeBag)
+        
+        manualButton.rx.tap
+            .subscribe(onNext: { [weak self] _ in
+                self?.willPresentWebViewController(url: Environment.manualUrl)
             })
             .disposed(by: disposeBag)
         
@@ -185,7 +192,8 @@ extension MyPageViewController {
     }
     
     private func willPresentWebViewController(url: String) {
-        let viewController = pushWebViewScreen(url)
+        let viewController = pushWebScreen(url)
+        viewController.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(viewController, animated: true)
     }
 }

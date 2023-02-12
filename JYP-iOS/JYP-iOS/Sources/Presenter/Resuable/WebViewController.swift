@@ -10,10 +10,11 @@ import UIKit
 import WebKit
 import ReactorKit
 
-class WebViewController: BaseViewController, View {
+class WebViewController: NavigationBarViewController, View {
     typealias Reactor = WebReactor
     
-    let webView = WKWebView()
+    let webView: WKWebView = .init()
+    let indicator: UIActivityIndicatorView = .init(style: .medium)
     
     required init?(coder: NSCoder) {
         fatalError("not supported")
@@ -25,10 +26,16 @@ class WebViewController: BaseViewController, View {
         self.reactor = reactor
     }
     
+    override func setupDelegate() {
+        super.setupDelegate()
+        
+        webView.navigationDelegate = self
+    }
+    
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        view.addSubview(webView)
+        contentView.addSubviews([webView, indicator])
     }
     
     override func setupLayout() {
@@ -37,13 +44,28 @@ class WebViewController: BaseViewController, View {
         webView.snp.makeConstraints {
             $0.top.leading.trailing.bottom.equalToSuperview()
         }
+        
+        indicator.snp.makeConstraints {
+            $0.center.equalToSuperview()
+        }
     }
     
     func bind(reactor: WebReactor) {
-        let state = reactor.currentState
+        setNavigationBarHidden(reactor.currentState.navigationBarHidden)
+        setNavigationBarBackButtonHidden(reactor.currentState.navigationBarHidden)
         
-        if let webUrl = URL(string: state.url) {
+        if let webUrl = URL(string: reactor.currentState.url) {
             webView.load(URLRequest(url: webUrl))
         }
+    }
+}
+
+extension WebViewController: WKNavigationDelegate {
+    func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
+        indicator.startAnimating()
+    }
+    
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        indicator.stopAnimating()
     }
 }

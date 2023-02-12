@@ -243,6 +243,13 @@ extension CompositionRoot {
 
     static func makeMyPageScreen(pushOnboardingScreen: @escaping () -> OnboardingOneViewController,
                                  userService: UserServiceType) -> MyPageViewController {
+        let pushWebScreen: (_ url: String) -> WebViewController = { url in
+            let reactor = WebReactor(url: url, navigationBarHidden: false)
+            let viewController = WebViewController(reactor: reactor)
+            
+            return viewController
+        }
+        
         let pushLogoutBottomSheetScreen: () -> LogoutBottomSheetViewController = {
             let reactor = LogoutBottomSheetReactor(userService: userService)
             let viewController = LogoutBottomSheetViewController(reactor: reactor)
@@ -259,6 +266,7 @@ extension CompositionRoot {
         
         let reactor = MyPageReactor(userService: userService)
         let viewController = MyPageViewController(reactor: reactor,
+                                                  pushWebScreen: pushWebScreen,
                                                   pushOnboardingScreen: pushOnboardingScreen,
                                                   pushLogoutBottomSheetScreen: pushLogoutBottomSheetScreen,
                                                   pushWithdrawBottomSheetScreen: pushWithdrawBottomSheetScreen)

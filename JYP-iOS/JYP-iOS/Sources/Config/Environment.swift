@@ -20,4 +20,5 @@ struct Environment {
     static let kakaoRestKey = JYPIOSResources.bundle.infoDictionary?["KAKAO_REST_KEY"] ?? ""
     static let kakaoAppKey: String = JYPIOSResources.bundle.infoDictionary?["KAKAO_APP_KEY"] as? String ?? ""
     static let googleAPIKey: String = JYPIOSResources.bundle.infoDictionary?["GOOGLE_API_KEY"] as? String ?? ""
+    static let manualUrl: String = "https://plausible-seahorse-ba5.notion.site/Journey-piki-688aac1424924a30bf974c7866592a98"
 }
