@@ -18,8 +18,8 @@ jobs:
 
       - uses: shimataro/ssh-key-action@v2
         with:
-          key: ${{ secrets.FASTLANE.SSH_KEY }}
-          known_hosts: ${{ secrets.FASTLANE.KNOWN_HOSTS }}
+            key: ${{ secrets.SSH_KEY }}
+            known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
       - name: Install Tuist
         run: curl -Ls https://install.tuist.io|bash
@@ -35,12 +35,12 @@ jobs:
           
       - uses: actions/setup-ruby@v1
         with:
-          ruby-version: 2.7
+            ruby-version: 2.7
           
       - run: fastlane tf
         env:
-          TEAM_ID: ${{ secrets.TEAM_ID }}
-          MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
-          APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
-          APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
-          APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
+            TEAM_ID: ${{ secrets.TEAM_ID }}
+            MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+            APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
+            APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
+            APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
