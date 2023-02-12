@@ -42,7 +42,7 @@ platform :ios do
     sync_code_signing(type: "appstore", readonly: true)
 
     # ✅ Tuist 때문에 생성된 자동 코드 사이닝 수정
-    update_code_signing_settings(use_automatic_signing: false, path: "#{APP_NAME}.xcodeproj")
+    update_code_signing_settings(use_automatic_signing: false, path: "#{APP_NAME}.xcodeproj", team_id: "#{TEAM_ID}")
 
     # ✅ Tuist 때문에 생성된 프로젝트 팀 수정
 	  update_project_team(path: "#{APP_NAME}.xcodeproj", teamid: "#{TEAM_ID}")
