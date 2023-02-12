@@ -3,7 +3,8 @@ name: UploadTestflight
 on:
   push:
     branches: 
-      - 'develop'
+      # - 'develop'
+      - 'bug-fix/#174-fastlane-xxconfig'
 
 jobs:
   upload_testflight:
@@ -20,6 +21,14 @@ jobs:
         with:
             key: ${{ secrets.SSH_KEY }}
             known_hosts: ${{ secrets.KNOWN_HOSTS }}
+            
+      - name: Bring ignored files
+        uses: actions/checkout@v3
+        with:
+          path: JYP-iOS/JYP-iOS/JYP-iOS/Sources/Config
+          repository: Nexters/JYP-iOS-ignored
+
+          token: ${{ secrets.ACTION_TOKEN }}
 
       - name: Install Tuist
         run: curl -Ls https://install.tuist.io|bash
