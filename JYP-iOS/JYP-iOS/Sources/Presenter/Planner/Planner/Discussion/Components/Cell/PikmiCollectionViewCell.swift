@@ -21,7 +21,7 @@ class PikmiCollectionViewCell: BaseCollectionViewCell, View {
     let likeButton = UIButton()
     let likeImageView = UIImageView()
     let likeLabel = UILabel()
-    let animationView = AnimationView(name: "like_active_alone")
+    let animationView = LottieAnimationView(name: "like_active_alone")
     
     override func layoutSubviews() {
         super.layoutSubviews()
