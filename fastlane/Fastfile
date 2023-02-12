@@ -18,6 +18,7 @@ APP_NAME = "JYP-iOS"
 SCHEME = "JYP-iOS"
 BUNDLE_ID = "com.jyp.journeypiki"
 
+# ✅ 환경변수
 TEAM_ID = ENV["TEAM_ID"]
 
 default_platform(:ios)
