@@ -1,8 +1,1 @@
 app_identifier("com.jyp.journeypiki") # The bundle identifier of your app
-apple_id("mooyoung2309@gmail.com") # Your Apple Developer Portal username
-
-itc_team_id("123552697") # App Store Connect Team ID
-team_id("X64MATB2CC") # Developer Portal Team ID
-
-# For more information about the Appfile, see:
-#     https://docs.fastlane.tools/advanced/#appfile

@@ -13,12 +13,52 @@
 # Uncomment the line if you want fastlane to automatically update itself
 # update_fastlane
 
+# ✅ 상수
+APP_NAME = "JYP-iOS"
+SCHEME = "JYP-iOS"
+BUNDLE_ID = "com.jyp.journeypiki"
+
+TEAM_ID = ENV["TEAM_ID"]
+
 default_platform(:ios)
 
 platform :ios do
-  desc "Push a new beta build to TestFlight"
-  lane :beta do
-    build_app(workspace: "JYP-iOS.xcworkspace", scheme: "JYP-iOS")
-    upload_to_testflight
+  # ✅ 새로운 인증서 생성
+  desc "Generate new certificates"
+  lane :generate_new_certificates do
+    app_store_connect_api_key(is_key_content_base64: true, in_house: false)
+
+    sync_code_signing(type: "appstore", force_for_new_devices: true, readonly: false)
+  end
+
+  # 테스트 플라이트 업로드
+  desc "Push to TestFlight"
+  lane :tf do |options|
+    # ✅ 앱스토어 커넥트 키 연결
+    app_store_connect_api_key(is_key_content_base64: true, in_house: false)
+
+    # ✅ 인증서 가져오기
+    sync_code_signing(type: "appstore", readonly: true)
+
+    # ✅ Tuist 때문에 생성된 자동 코드 사이닝 수정
+    update_code_signing_settings(use_automatic_signing: false, path: "#{APP_NAME}.xcodeproj")
+
+    # ✅ Tuist 때문에 생성된 프로젝트 팀 수정
+	  update_project_team(path: "#{APP_NAME}.xcodeproj", teamid: "#{TEAM_ID}")
+
+    # ✅ 빌드 넘버 증가
+    increment_build_number({ build_number: latest_testflight_build_number() + 1 })
+
+    # ✅ 빌드
+    build_app(
+      workspace: "#{APP_NAME}.xcworkspace",
+      scheme: "#{SCHEME}",
+      xcargs: "-allowProvisioningUpdates",
+      export_method: "app-store",
+      export_options: { provisioningProfiles: { BUNDLE_ID => "match AppStore #{BUNDLE_ID}"} },
+      xcargs: "PROVISIONING_PROFILE_SPECIFIER='match AppStore #{BUNDLE_ID}'")
+
+    # ✅ 테스트 플라이트 업로드
+    upload_to_testflight(skip_waiting_for_build_processing: true)
   end
 end

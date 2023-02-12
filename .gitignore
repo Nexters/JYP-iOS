@@ -6,6 +6,8 @@
 .AppleDouble
 .LSOverride
 
+.env
+
 # Icon must end with two \r
 Icon
 
@@ -16,7 +18,7 @@ Icon
 .TemporaryItems
 .Trashes
 .VolumeIcon.icns
-.com.apple.timemachine.donotpresent
+.com.apple.timemachine.donotpresentv
 
 # Directories potentially created on remote AFP share
 .AppleDB
