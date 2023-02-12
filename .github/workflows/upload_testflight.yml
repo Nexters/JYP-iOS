@@ -1,0 +1,46 @@
+name: UploadTestflight
+
+on:
+  push:
+    branches: 
+      - 'develop'
+
+jobs:
+  upload_testflight:
+    runs-on: macos-12
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Setup Xcode version
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+            xcode-version: 14.2.0
+
+      - uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_KEY }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+
+      - name: Install Tuist
+        run: curl -Ls https://install.tuist.io|bash
+
+      - name: Install Fastlane
+        run: brew install fastlane
+
+      - name: Tuist fetch
+        run: tuist fetch
+      
+      - name: Tuist generate
+        run: tuist generate
+          
+      - uses: actions/setup-ruby@v1
+        with:
+          ruby-version: 2.7
+          
+      - run: fastlane tf
+        env:
+          TEAM_ID: ${{ secrets.TEAM_ID }}
+          MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
+          APP_STORE_CONNECT_API_KEY_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY_ID }}
+          APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY_KEY }}
