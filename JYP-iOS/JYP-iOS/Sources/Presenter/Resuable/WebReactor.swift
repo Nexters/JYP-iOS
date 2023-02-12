@@ -13,11 +13,12 @@ class WebReactor: Reactor {
     
     struct State {
         var url: String
+        var navigationBarHidden: Bool
     }
     
     var initialState: State
     
-    init(state: State) {
-        initialState = state
+    init(url: String, navigationBarHidden: Bool = true) {
+        initialState = State(url: url, navigationBarHidden: navigationBarHidden)
     }
 }

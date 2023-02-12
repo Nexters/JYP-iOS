@@ -40,7 +40,7 @@ extension PlannerSearchPlaceMapReactor {
         switch action {
         case .tapInfoButton:
             return .concat([
-                .just(.setWebReactor(WebReactor(state: .init(url: currentState.kakaoSearchPlace.placeURL)))),
+                .just(.setWebReactor(WebReactor(url: currentState.kakaoSearchPlace.placeURL))),
                 .just(.setWebReactor(nil))
             ])
             

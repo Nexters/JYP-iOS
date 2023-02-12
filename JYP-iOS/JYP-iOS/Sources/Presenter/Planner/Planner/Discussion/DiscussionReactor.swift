@@ -153,7 +153,7 @@ extension DiscussionReactor {
     private func tapPikmiCellInfoButtonMutation(_ indexPath: IndexPath) -> Observable<Mutation> {
         guard case let .pikmi(reactor) = currentState.sections[indexPath.section].items[indexPath.item] else { return .empty() }
         
-        provider.plannerService.presentWeb(from: .init(state: .init(url: reactor.currentState.pik.link)))
+        provider.plannerService.presentWeb(from: .init(url: reactor.currentState.pik.link))
         return .empty()
     }
     
@@ -205,7 +205,7 @@ extension DiscussionReactor {
         return .init(id: currentState.id)
     }
     
-    private func makeReactor(from reactor: PikmiCollectionViewCellReactor) -> WebReactor {
-        return .init(state: .init(url: reactor.currentState.pik.link))
-    }
+//    private func makeReactor(from reactor: PikmiCollectionViewCellReactor) -> WebReactor {
+//        return .init(state: .init(url: reactor.currentState.pik.link))
+//    }
 }

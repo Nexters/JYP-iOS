@@ -148,8 +148,18 @@ class NavigationBarViewController: BaseViewController, BaseNavigationBarViewCont
     func setNavigationBarHidden(_ hidden: Bool) {
         navigationBar.isHidden = hidden
         
-        contentView.snp.updateConstraints {
-            $0.top.equalTo(statusBar.snp.bottom)
+        if hidden {
+            contentView.snp.remakeConstraints {
+                $0.top.equalTo(statusBar.snp.bottom)
+                $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
+                $0.bottom.equalToSuperview()
+            }
+        } else {
+            contentView.snp.remakeConstraints {
+                $0.top.equalTo(statusBar.snp.bottom).offset(60)
+                $0.leading.trailing.equalTo(view.safeAreaLayoutGuide)
+                $0.bottom.equalToSuperview()
+            }
         }
     }
     
