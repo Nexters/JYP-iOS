@@ -15,6 +15,7 @@ class MyPageViewController: NavigationBarViewController, View {
     typealias Reactor = MyPageReactor
     
     private let pushOnboardingScreen: (() -> OnboardingOneViewController)?
+    private let pushWebViewScreen: (_ url: String) -> WebViewController
     private let pushLogoutBottomSheetScreen: () -> LogoutBottomSheetViewController
     private let pushWithdrawBottomSheetScreen: () -> WithdrawBottomSheetViewController
     
@@ -38,6 +39,7 @@ class MyPageViewController: NavigationBarViewController, View {
     // MARK: - Initializer
     
     init(reactor: Reactor,
+         pushWebViewScreen: @escaping () -> WebViewController,
          pushOnboardingScreen: @escaping () -> OnboardingOneViewController,
          pushLogoutBottomSheetScreen: @escaping () -> LogoutBottomSheetViewController,
          pushWithdrawBottomSheetScreen: @escaping () -> WithdrawBottomSheetViewController) {
@@ -180,5 +182,10 @@ extension MyPageViewController {
             viewController.modalPresentationStyle = .fullScreen
             tabBarController?.present(viewController, animated: true)
         }
+    }
+    
+    private func willPresentWebViewController(url: String) {
+        let viewController = pushWebViewScreen(url)
+        navigationController?.pushViewController(viewController, animated: true)
     }
 }

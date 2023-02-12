@@ -17,7 +17,7 @@ class WebReactor: Reactor {
     
     var initialState: State
     
-    init(state: State) {
-        initialState = state
+    init(url: String) {
+        initialState = State(url: url)
     }
 }
