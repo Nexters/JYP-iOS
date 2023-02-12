@@ -27,8 +27,7 @@ jobs:
         with:
           path: JYP-iOS/JYP-iOS/JYP-iOS/Sources/Config
           repository: Nexters/JYP-iOS-ignored
-
-          token: ${{ secrets.ACTION_TOKEN }}
+          token: ${{ secrets.TOKEN }}
 
       - name: Install Tuist
         run: curl -Ls https://install.tuist.io|bash
