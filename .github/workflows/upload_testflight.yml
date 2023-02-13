@@ -27,6 +27,13 @@ jobs:
           path: JYP-iOS/JYP-iOS/Sources/Config
           token: ${{ secrets.ACTION_TOKEN }}
 
+      - name: Bring certificate files
+        uses: actions/checkout@v3
+        with:
+          repository: Nexters/JYP-iOS-certification-center
+          path: Tuist/Signing
+          token: ${{ secrets.ACTION_TOKEN }}
+
       - name: Install Tuist
         run: curl -Ls https://install.tuist.io|bash
 
