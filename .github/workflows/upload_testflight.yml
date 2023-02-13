@@ -42,6 +42,9 @@ jobs:
       - name: Install Fastlane
         run: brew install fastlane
 
+      - name: Tuist clean
+        run: tuist clean
+
       - name: Tuist fetch
         run: tuist fetch
       
