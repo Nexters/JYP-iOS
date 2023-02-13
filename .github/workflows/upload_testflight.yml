@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: Nexters/JYP-iOS-certification-center
-          path: JYP-iOS/Tuist/Signing
+          path: Tuist/Signing
           token: ${{ secrets.ACTION_TOKEN }}
       - run: ls JYP-iOS/Tuist/Signing
       - run: ls JYP-iOS/Tuist
