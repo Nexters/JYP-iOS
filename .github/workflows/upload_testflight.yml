@@ -26,8 +26,6 @@ jobs:
           repository: Nexters/JYP-iOS-certification-center
           path: Tuist/Signing
           token: ${{ secrets.ACTION_TOKEN }}
-      - run: ls JYP-iOS/Tuist/Signing
-      - run: ls JYP-iOS/Tuist
       - run: ls Tuist
 
       - name: Bring ignored files
