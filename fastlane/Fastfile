@@ -34,6 +34,11 @@ platform :ios do
     # ✅ 빌드 넘버 증가
     increment_build_number({ build_number: latest_testflight_build_number() + 1 })
 
+    get_provisioning_profile(
+      force: true,
+      filename: "JYP-iOS.Release.mobileprovision",
+    )
+
     # ✅ 빌드
     build_app(
       workspace: "#{APP_NAME}.xcworkspace",
