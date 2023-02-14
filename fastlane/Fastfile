@@ -26,6 +26,8 @@ platform :ios do
   # 테스트 플라이트 업로드
   desc "Push to TestFlight"
   lane :tf do |options|
+    xcversion(version: "14.2.0")
+
     # ✅ 앱스토어 커넥트 키 연결
     app_store_connect_api_key(is_key_content_base64: true, in_house: false)
 
