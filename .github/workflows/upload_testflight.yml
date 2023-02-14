@@ -21,13 +21,12 @@ jobs:
             known_hosts: ${{ secrets.KNOWN_HOSTS }}
       
       - name: Bring certificate files
-        uses: actions/checkout@v3
-        with:
-          repository: Nexters/JYP-iOS-certification-center
-          path: Tuist/Signing
-          token: ${{ secrets.ACTION_TOKEN }}
-      - run: ls Tuist
-      - run: ls Tuist/Signing
+        # uses: actions/checkout@v3
+        # with:
+        #   repository: Nexters/JYP-iOS-certification-center
+        #   path: Tuist/Signing
+        #   token: ${{ secrets.ACTION_TOKEN }}
+      - run: ${{ secrets.ACTION_TOKEN }} > Tuist/master.key
 
       - name: Bring ignored files
         uses: actions/checkout@v3
