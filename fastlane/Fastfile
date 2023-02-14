@@ -33,6 +33,13 @@ platform :ios do
     # ✅ 앱스토어 커넥트 키 연결
     app_store_connect_api_key(is_key_content_base64: true, in_house: false)
 
+    update_project_provisioning(
+      xcodeproj: "#{APP_NAME}.xcodeproj",
+      profile: "Tuist/Signing/JYP-iOS.Release.mobileprovision", # optional if you use sigh
+      # target_filter: "*JYP-iOS*",
+      build_configuration: "Release",
+    )
+
     # ✅ 빌드 넘버 증가
     increment_build_number({ build_number: latest_testflight_build_number() + 1 })
 
@@ -41,11 +48,11 @@ platform :ios do
       workspace: "#{APP_NAME}.xcworkspace",
       scheme: "#{SCHEME}",
       export_method: "app-store",
-      export_options: {
-        provisioningProfiles: { 
-          "com.jyp.journeypiki" => "a02d9291-8aaa-4767-b96e-fff676a2f100"
-        }
-      }
+      # export_options: {
+      #   provisioningProfiles: { 
+      #     "com.jyp.journeypiki" => "a02d9291-8aaa-4767-b96e-fff676a2f100"
+      #   }
+      # }
     )
 
     # ✅ 테스트 플라이트 업로드
