@@ -20,7 +20,7 @@ BUNDLE_ID = "com.jyp.journeypiki"
 
 TEAM_ID = ENV["TEAM_ID"]
 KEYCHAIN_NAME = ENV["KEYCHAIN_NAME"]
-# KEYCHAIN_PASSWORD = ENV["KEYCHAIN_PASSWORD"]
+KEYCHAIN_PASSWORD = ENV["KEYCHAIN_PASSWORD"]
 
 default_platform(:ios)
 
@@ -29,7 +29,8 @@ platform :ios do
   desc "Push to TestFlight"
   lane :set_keychain do |options|
     create_keychain(
-      name: KEYCHAIN_NAME,
+      name: "#{KEYCHAIN_NAME}",
+      password: "#{KEYCHAIN_PASSWORD}",
       default_keychain: true,
       unlock: true,
       timeout: 3600,
@@ -48,12 +49,6 @@ platform :ios do
 
     # ✅ 앱스토어 커넥트 키 연결
     app_store_connect_api_key(is_key_content_base64: true, in_house: false)
-
-    update_code_signing_settings(
-      use_automatic_signing: true,
-      path: "#{APP_NAME}.xcodeproj",
-      team_id: TEAM_ID
-    )
 
     # ✅ 빌드 넘버 증가
     increment_build_number({ build_number: latest_testflight_build_number() + 1 })
