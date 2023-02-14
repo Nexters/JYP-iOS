@@ -19,9 +19,6 @@ jobs:
         with:
             key: ${{ secrets.SSH_KEY }}
             known_hosts: ${{ secrets.KNOWN_HOSTS }}
-      
-      - name: Setting Master Key
-      - run: ${{ secrets.MASTER_KEY }} > Tuist/master.key
 
       - name: Bring ignored files
         uses: actions/checkout@v3
@@ -29,6 +26,9 @@ jobs:
           repository: Nexters/JYP-iOS-ignored
           path: JYP-iOS/JYP-iOS/Sources/Config
           token: ${{ secrets.ACTION_TOKEN }}
+
+      - name: Setting Master Key
+        run: ${{ secrets.MASTER_KEY }} > Tuist/master.key
 
       - name: Install Tuist
         run: curl -Ls https://install.tuist.io|bash
