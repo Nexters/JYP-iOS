@@ -37,8 +37,18 @@ platform :ios do
       lock_when_sleeps: true
     )
 
-    import_certificate(certificate_path: "Tuist/Signing/release.cer")
-    import_certificate(certificate_path: "Tuist/Signing/release.p12")
+    import_certificate(
+      certificate_path: "Tuist/Signing/release.cer"
+      keychain_name: "#{KEYCHAIN_NAME}",
+      keychain_password: "#{KEYCHAIN_PASSWORD}"
+    )
+
+    import_certificate(
+      certificate_path: "Tuist/Signing/release.p12"
+      keychain_name: "#{KEYCHAIN_NAME}",
+      keychain_password: "#{KEYCHAIN_PASSWORD}"
+    )
+
     install_provisioning_profile(path: "Tuist/Signing/JYP-iOS.Release.mobileprovision")
   end
 
