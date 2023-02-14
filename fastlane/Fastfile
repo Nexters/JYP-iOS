@@ -36,9 +36,9 @@ platform :ios do
       lock_when_sleeps: true
     )
 
-    import_certificate(certificate_path: "Tuist/Siging/release.cer")
-    import_certificate(certificate_path: "Tuist/Siging/release.p12")
-    install_provisioning_profile(path: "Tuist/Siging/JYP-iOS.Release.mobileprovision")
+    import_certificate(certificate_path: "Tuist/Signing/release.cer")
+    import_certificate(certificate_path: "Tuist/Signing/release.p12")
+    install_provisioning_profile(path: "Tuist/Signing/JYP-iOS.Release.mobileprovision")
   end
 
   # 테스트 플라이트 업로드
