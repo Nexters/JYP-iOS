@@ -32,6 +32,8 @@ platform :ios do
     # ✅ 빌드 넘버 증가
     increment_build_number({ build_number: latest_testflight_build_number() + 1 })
 
+    xcversion(version: "~> 14.2.0")
+
     # ✅ 빌드
     build_app(
       workspace: "#{APP_NAME}.xcworkspace",
