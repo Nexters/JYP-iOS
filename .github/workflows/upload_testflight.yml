@@ -49,11 +49,20 @@ jobs:
       - name: Tuist fetch
         run: tuist fetch
       
+      - name: Tuist Signing Decrypt
+        run: tuist signing decrypt
+
+      - name: Set Keychain
+        run: fastlane set_keychain
+        env:
+            KEYCHAIN: ${{ secrets.KEYCHAIN }}
+      
       - name: Tuist generate
         run: tuist generate
           
       - run: fastlane tf
         env:
+            KEYCHAIN: ${{ secrets.KEYCHAIN }}
             TEAM_ID: ${{ secrets.TEAM_ID }}
             MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
             MATCH_KEYCHAIN_PASSWORD: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}

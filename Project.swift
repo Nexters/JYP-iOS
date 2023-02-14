@@ -70,6 +70,7 @@ class BaseProjectFactory: ProjectFactory {
         ]
     ]
 
+
     let dependencies: [TargetDependency] = [
         .external(name: "Moya"),
         .external(name: "Alamofire"),

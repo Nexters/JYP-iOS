@@ -19,11 +19,27 @@ SCHEME = "JYP-iOS"
 BUNDLE_ID = "com.jyp.journeypiki"
 
 TEAM_ID = ENV["TEAM_ID"]
+KEYCHAIN_NAME = ENV["KEYCHAIN_NAME"]
+# KEYCHAIN_PASSWORD = ENV["KEYCHAIN_PASSWORD"]
 
 default_platform(:ios)
 
 platform :ios do
   # ✅ 새로운 인증서 생성
+  desc "Push to TestFlight"
+  lane :set_keychain do |options|
+    create_keychain(
+      name: KEYCHAIN_NAME,
+      default_keychain: true,
+      unlock: true,
+      timeout: 3600,
+      lock_when_sleeps: true
+    )
+
+    import_certificate(certificate_path: "Tuist/Siging/release.cer")
+    import_certificate(certificate_path: "Tuist/Siging/release.p12")
+    install_provisioning_profile(path: "Tuist/Siging/JYP-iOS.Release.mobileprovision")
+  end
 
   # 테스트 플라이트 업로드
   desc "Push to TestFlight"
@@ -34,8 +50,9 @@ platform :ios do
     app_store_connect_api_key(is_key_content_base64: true, in_house: false)
 
     update_code_signing_settings(
-      use_automatic_signing: false,
-      path: "#{APP_NAME}.xcodeproj"
+      use_automatic_signing: true,
+      path: "#{APP_NAME}.xcodeproj",
+      team_id: TEAM_ID
     )
 
     # ✅ 빌드 넘버 증가
