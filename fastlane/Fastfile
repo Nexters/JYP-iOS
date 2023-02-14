@@ -31,13 +31,16 @@ platform :ios do
     # ✅ 앱스토어 커넥트 키 연결
     app_store_connect_api_key(is_key_content_base64: true, in_house: false)
 
-    # ✅ 빌드 넘버 증가
-    increment_build_number({ build_number: latest_testflight_build_number() + 1 })
+    get_certificates
 
     get_provisioning_profile(
       force: true,
       filename: "JYP-iOS.Release.mobileprovision",
     )
+
+
+    # ✅ 빌드 넘버 증가
+    increment_build_number({ build_number: latest_testflight_build_number() + 1 })
 
     # ✅ 빌드
     build_app(
