@@ -31,10 +31,6 @@ platform :ios do
     # ✅ 앱스토어 커넥트 키 연결
     app_store_connect_api_key(is_key_content_base64: true, in_house: false)
 
-    cert
-
-    sigh
-
     # ✅ 빌드 넘버 증가
     increment_build_number({ build_number: latest_testflight_build_number() + 1 })
 
