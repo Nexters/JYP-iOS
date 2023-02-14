@@ -52,7 +52,7 @@ jobs:
         with:
             ruby-version: 2.7
           
-      - run: fastlane tf
+      - run: fastlane tf --verbose
         env:
             TEAM_ID: ${{ secrets.TEAM_ID }}
             MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
