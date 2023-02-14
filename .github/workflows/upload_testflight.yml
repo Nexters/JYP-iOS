@@ -52,7 +52,7 @@ jobs:
       - name: Tuist generate
         run: tuist generate
           
-      - run: fastlane tf --verbose
+      - run: fastlane tf
         env:
             TEAM_ID: ${{ secrets.TEAM_ID }}
             MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
