@@ -39,6 +39,7 @@ platform :ios do
       workspace: "#{APP_NAME}.xcworkspace",
       scheme: "#{SCHEME}",
       export_method: "app-store",
+      codesigning_identity: "Apple Distribution: youngmo song(#{TEAM_ID})"
     )
 
     # ✅ 테스트 플라이트 업로드
