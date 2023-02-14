@@ -18,6 +18,8 @@ APP_NAME = "JYP-iOS"
 SCHEME = "JYP-iOS"
 BUNDLE_ID = "com.jyp.journeypiki"
 
+TEAM_ID = ENV["TEAM_ID"]
+
 default_platform(:ios)
 
 platform :ios do
@@ -39,10 +41,7 @@ platform :ios do
       workspace: "#{APP_NAME}.xcworkspace",
       scheme: "#{SCHEME}",
       export_method: "app-store",
-      skip_codesigning: true
     )
-    
-          # codesigning_identity: "Apple Distribution: youngmo song(#{TEAM_ID})"
 
     # ✅ 테스트 플라이트 업로드
     upload_to_testflight(skip_waiting_for_build_processing: true)
