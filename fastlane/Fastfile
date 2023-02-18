@@ -49,14 +49,12 @@ platform :ios do
       keychain_password: "#{KEYCHAIN_PASSWORD}"
     )
 
-    install_provisioning_profile(path: "Tuist/Signing/JYP-iOS.Release.mobileprovision")
+    install_provisioning_profile(path: "Tuist/Signing/#{APP_NAME}.Release.mobileprovision")
   end
 
   # 테스트 플라이트 업로드
   desc "Push to TestFlight"
   lane :tf do |options|
-    xcversion(version: "14.2.0")
-
     # ✅ 앱스토어 커넥트 키 연결
     app_store_connect_api_key(is_key_content_base64: true, in_house: false)
 
