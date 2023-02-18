@@ -79,11 +79,15 @@ class PikmiRouteCollectionViewCell: BaseCollectionViewCell, View {
         subLabel.text = reactor.currentState.pik.address
         categoryLabel.text = reactor.currentState.pik.category.title
         
-        switch reactor.currentState.rank {
-        case 0: rankBadgeImageView.image = JYPIOSAsset.badge1.image
-        case 1: rankBadgeImageView.image = JYPIOSAsset.badge2.image
-        case 2: rankBadgeImageView.image = JYPIOSAsset.badge3.image
-        default: break
+        if let likeBy = reactor.currentState.pik.likeBy {
+            if !likeBy.isEmpty {
+                switch reactor.currentState.rank {
+                case 0: rankBadgeImageView.image = JYPIOSAsset.badge1.image
+                case 1: rankBadgeImageView.image = JYPIOSAsset.badge2.image
+                case 2: rankBadgeImageView.image = JYPIOSAsset.badge3.image
+                default: break
+                }
+            }
         }
     }
 }

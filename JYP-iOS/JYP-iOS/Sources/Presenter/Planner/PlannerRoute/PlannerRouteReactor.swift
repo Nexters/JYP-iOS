@@ -161,9 +161,19 @@ extension PlannerRouteReactor {
     }
     
     private func makeSections(pikmis: [Pik]) -> [PikmiRouteSectionModel] {
-        let pikmiRouteItems = pikmis.enumerated().map({ (index, pik) -> PikmiRouteItem in
-            return .pikmiRoute(.init(state: .init(pik: pik, rank: index)))
-        })
+        var prevLikeByCount: Int = 0
+        var rank: Int = -1
+        var pikmiRouteItems: [PikmiRouteItem] = pikmis.sorted(by: { $0.likeBy?.count ?? 0 > $1.likeBy?.count ?? 0 }).enumerated().map { (index, pik) -> PikmiRouteItem in
+            if let likeBy = pik.likeBy, likeBy.contains(where: { $0.id == UserDefaultsAccess.get(key: .userID) }) {
+                if prevLikeByCount != likeBy.count {
+                    rank += 1
+                }
+                prevLikeByCount = likeBy.count
+                return .pikmiRoute(.init(state: .init(pik: pik, rank: rank)))
+            } else {
+                return .pikmiRoute(.init(state: .init(pik: pik, rank: index)))
+            }
+        }
         
         let pikmiRouteSection = PikmiRouteSectionModel(model: .pikmiRoute(pikmiRouteItems), items: pikmiRouteItems)
         
