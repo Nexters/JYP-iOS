@@ -179,9 +179,15 @@ extension DiscussionReactor {
             }
         }()
         
+        var prevLikeByCount: Int = 0
+        var rank: Int = -1
         var pikmiItems: [DiscussionItem] = journey.pikmis.sorted(by: { $0.likeBy?.count ?? 0 > $1.likeBy?.count ?? 0 }).enumerated().map { (index, pik) -> DiscussionItem in
             if let likeBy = pik.likeBy, likeBy.contains(where: { $0.id == UserDefaultsAccess.get(key: .userID) }) {
-                return .pikmi(.init(state: .init(pik: pik, rank: index, isSelectedLikeButton: true, isReadyAnimate: true)))
+                if prevLikeByCount != likeBy.count {
+                    rank += 1
+                }
+                prevLikeByCount = likeBy.count
+                return .pikmi(.init(state: .init(pik: pik, rank: rank, isSelectedLikeButton: true, isReadyAnimate: true)))
             } else {
                 return .pikmi(.init(state: .init(pik: pik, rank: index)))
             }

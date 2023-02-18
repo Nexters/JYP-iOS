@@ -13,15 +13,17 @@ import Lottie
 class PikmiCollectionViewCell: BaseCollectionViewCell, View {
     typealias Reactor = PikmiCollectionViewCellReactor
     
-    let categoryLabel = UILabel()
-    let titleLabel = UILabel()
-    let subLabel = UILabel()
-    let rankBadgeImageView = UIImageView()
-    let infoButton = UIButton()
-    let likeButton = UIButton()
-    let likeImageView = UIImageView()
-    let likeLabel = UILabel()
-    let animationView = LottieAnimationView(name: "like_active_alone")
+    // MARK: - UI Components
+    
+    let categoryLabel: UILabel = .init()
+    let titleLabel: UILabel = .init()
+    let subLabel: UILabel = .init()
+    let rankBadgeImageView: UIImageView = .init()
+    let infoButton: UIButton = .init()
+    let likeButton: UIButton = .init()
+    let likeImageView: UIImageView = .init()
+    let likeLabel: UILabel = .init()
+    let animationView: LottieAnimationView = .init(name: "like_active_alone")
     
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -89,12 +91,12 @@ class PikmiCollectionViewCell: BaseCollectionViewCell, View {
         }
         
         titleLabel.snp.makeConstraints {
-            $0.top.equalTo(categoryLabel.snp.bottom).offset(7)
+            $0.top.equalTo(categoryLabel.snp.bottom).offset(10)
             $0.leading.equalToSuperview().inset(20)
         }
         
         subLabel.snp.makeConstraints {
-            $0.top.equalTo(titleLabel.snp.bottom)
+            $0.top.equalTo(titleLabel.snp.bottom).offset(7)
             $0.leading.equalToSuperview().inset(20)
         }
         

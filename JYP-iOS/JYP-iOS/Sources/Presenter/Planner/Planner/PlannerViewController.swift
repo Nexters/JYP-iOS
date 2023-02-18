@@ -206,17 +206,6 @@ class PlannerViewController: NavigationBarViewController, View {
             }
             .disposed(by: disposeBag)
         
-//        reactor.state
-//            .compactMap(\.plannerInviteReactor)
-//            .withUnretained(self)
-//            .bind { this, reactor in
-//                let plannerInviteViewController = PlannerInviteViewController(reactor: reactor)
-//
-//                plannerInviteViewController.hidesBottomBarWhenPushed = true
-//                this.navigationController?.pushViewController(plannerInviteViewController, animated: true)
-//            }
-//            .disposed(by: disposeBag)
-        
         reactor.state
             .compactMap(\.tagBottomSheetReactor)
             .withUnretained(self)
