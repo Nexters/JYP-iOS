@@ -8,6 +8,7 @@
 
 import UIKit
 import ReactorKit
+import Kingfisher
 
 class MyPageViewController: NavigationBarViewController, View {
     // MARK: - Properties
@@ -77,7 +78,7 @@ class MyPageViewController: NavigationBarViewController, View {
         headerView.backgroundColor = JYPIOSAsset.backgroundWhite100.color
         headerView.setContentHuggingPriority(.defaultHigh, for: .vertical)
         
-        profileImageView.image = JYPIOSAsset.profile2.image
+        profileImageView.cornerRound(radius: 24)
         
         personalityLabel.numberOfLines = 1
         personalityLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 22)
@@ -141,6 +142,11 @@ class MyPageViewController: NavigationBarViewController, View {
             .subscribe(onNext: { [weak self] _ in
                 self?.personalityLabel.text = UserDefaultsAccess.get(key: .personality)
                 self?.nicknameLabel.text = UserDefaultsAccess.get(key: .nickname)
+                if let profileImagePath = UserDefaultsAccess.get(key: .profileImagePath) {
+                    self?.profileImageView.kf.setImage(with: URL(string: profileImagePath))
+                } else {
+                    self?.profileImageView.kf.setImage(with: URL(string: PersonalityID.toSelf(title: UserDefaultsAccess.get(key: .personality) ?? "").defaultImagePath))
+                }
             })
             .disposed(by: disposeBag)
         
