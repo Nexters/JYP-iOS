@@ -31,6 +31,7 @@ platform :ios do
     create_keychain(
       name: "#{KEYCHAIN_NAME}",
       password: "#{KEYCHAIN_PASSWORD}",
+      default_keychain: true,
       unlock: true,
       timeout: 3600,
       lock_when_sleeps: true
@@ -38,14 +39,12 @@ platform :ios do
 
     import_certificate(
       certificate_path: "Tuist/Signing/release.cer",
-      keychain_path: "~/Users/runner/work/JYP-iOS/JYP-iOS.keychain",
       keychain_name: "#{KEYCHAIN_NAME}",
       keychain_password: "#{KEYCHAIN_PASSWORD}"
     )
 
     import_certificate(
       certificate_path: "Tuist/Signing/release.p12",
-      keychain_path: "~/Users/runner/work/JYP-iOS/JYP-iOS.keychain",
       keychain_name: "#{KEYCHAIN_NAME}",
       keychain_password: "#{KEYCHAIN_PASSWORD}"
     )
