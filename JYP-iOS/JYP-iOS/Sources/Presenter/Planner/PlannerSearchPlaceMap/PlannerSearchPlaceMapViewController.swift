@@ -95,6 +95,8 @@ class PlannerSearchPlaceMapViewController: NavigationBarViewController, View {
         infoButton.cornerRound(radius: 8)
         infoButton.backgroundColor = JYPIOSAsset.textWhite.color
         infoButton.setShadow(radius: 12, offset: .init(width: 2, height: 2), opacity: 0.1)
+        
+        searchTextField.isUserInteractionEnabled = false
     }
     
     override func setupHierarchy() {
