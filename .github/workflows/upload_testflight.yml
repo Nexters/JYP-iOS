@@ -2,7 +2,7 @@ name: UploadTestflight
 
 on:
   push:
-    branches: [ develop, bug-fix/#174-fastlane-xxconfig ]
+    branches: [ develop ]
 
 jobs:
   upload_testflight:
