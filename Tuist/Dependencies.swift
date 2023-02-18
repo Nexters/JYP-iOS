@@ -11,15 +11,11 @@ let spm = SwiftPackageManagerDependencies([
     .remote(url: "https://github.com/YAtechnologies/GoogleMaps-SP.git", requirement: .upToNextMinor(from: "6.0.0")),
     .remote(url: "https://github.com/RxSwiftCommunity/RxDataSources.git", requirement: .upToNextMinor(from: "5.0.0")),
     .remote(url: "https://github.com/onevcat/Kingfisher.git", requirement: .upToNextMajor(from: "7.0.0")),
-    .remote(url: "https://github.com/kishikawakatsumi/KeychainAccess.git", requirement: .upToNextMajor(from: "4.2.2"))
-])
-
-let crt = CarthageDependencies([
-    .github(path: "airbnb/lottie-ios", requirement: .upToNext("3.0.0"))
+    .remote(url: "https://github.com/kishikawakatsumi/KeychainAccess.git", requirement: .upToNextMajor(from: "4.2.2")),
+    .remote(url: "https://github.com/airbnb/lottie-spm.git", requirement: .upToNextMajor(from: "4.1.2"))
 ])
 
 let dependencies = Dependencies(
-    carthage: crt,
     swiftPackageManager: spm,
     platforms: [.iOS]
 )

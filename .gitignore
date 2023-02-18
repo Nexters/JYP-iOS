@@ -8,6 +8,10 @@
 
 .env
 
+master.key
+
+*.zip
+
 # Icon must end with two \r
 Icon
 

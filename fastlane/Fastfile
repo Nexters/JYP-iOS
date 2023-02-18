@@ -18,34 +18,44 @@ APP_NAME = "JYP-iOS"
 SCHEME = "JYP-iOS"
 BUNDLE_ID = "com.jyp.journeypiki"
 
-# ✅ 환경변수
-TEAM_ID = ENV["TEAM_ID"]
+KEYCHAIN_NAME = ENV["KEYCHAIN_NAME"]
+KEYCHAIN_PASSWORD = ENV["KEYCHAIN_PASSWORD"]
 
 default_platform(:ios)
 
 platform :ios do
-  # ✅ 새로운 인증서 생성
-  desc "Generate new certificates"
-  lane :generate_new_certificates do
-    app_store_connect_api_key(is_key_content_base64: true, in_house: false)
+  # ✅ 인증서를 키체인에 저장
+  desc "Save To Keychain"
+  lane :set_keychain do |options|
+    create_keychain(
+      name: "#{KEYCHAIN_NAME}",
+      password: "#{KEYCHAIN_PASSWORD}",
+      default_keychain: true,
+      unlock: true,
+      timeout: 3600,
+      lock_when_sleeps: true
+    )
 
-    sync_code_signing(type: "appstore", force_for_new_devices: true, readonly: false)
+    import_certificate(
+      certificate_path: "Tuist/Signing/release.cer",
+      keychain_name: "#{KEYCHAIN_NAME}",
+      keychain_password: "#{KEYCHAIN_PASSWORD}"
+    )
+
+    import_certificate(
+      certificate_path: "Tuist/Signing/release.p12",
+      keychain_name: "#{KEYCHAIN_NAME}",
+      keychain_password: "#{KEYCHAIN_PASSWORD}"
+    )
+
+    install_provisioning_profile(path: "Tuist/Signing/#{APP_NAME}.Release.mobileprovision")
   end
 
-  # 테스트 플라이트 업로드
+  # ✅ 테스트 플라이트 업로드
   desc "Push to TestFlight"
   lane :tf do |options|
     # ✅ 앱스토어 커넥트 키 연결
     app_store_connect_api_key(is_key_content_base64: true, in_house: false)
-
-    # ✅ 인증서 가져오기
-    sync_code_signing(type: "appstore", readonly: true)
-
-    # ✅ Tuist 때문에 생성된 자동 코드 사이닝 수정
-    update_code_signing_settings(use_automatic_signing: false, path: "#{APP_NAME}.xcodeproj")
-
-    # ✅ Tuist 때문에 생성된 프로젝트 팀 수정
-	  update_project_team(path: "#{APP_NAME}.xcodeproj", teamid: "#{TEAM_ID}")
 
     # ✅ 빌드 넘버 증가
     increment_build_number({ build_number: latest_testflight_build_number() + 1 })
@@ -54,10 +64,8 @@ platform :ios do
     build_app(
       workspace: "#{APP_NAME}.xcworkspace",
       scheme: "#{SCHEME}",
-      xcargs: "-allowProvisioningUpdates",
-      export_method: "app-store",
-      export_options: { provisioningProfiles: { BUNDLE_ID => "match AppStore #{BUNDLE_ID}"} },
-      xcargs: "PROVISIONING_PROFILE_SPECIFIER='match AppStore #{BUNDLE_ID}'")
+      export_method: "app-store"
+    )
 
     # ✅ 테스트 플라이트 업로드
     upload_to_testflight(skip_waiting_for_build_processing: true)
