@@ -38,14 +38,14 @@ platform :ios do
 
     import_certificate(
       certificate_path: "Tuist/Signing/release.cer",
-      keychain_path: "~/Users/runner/work/JYP-iOS/JYP-iOS.keychain"
+      keychain_path: "~/Users/runner/work/JYP-iOS/JYP-iOS.keychain",
       keychain_name: "#{KEYCHAIN_NAME}",
       keychain_password: "#{KEYCHAIN_PASSWORD}"
     )
 
     import_certificate(
       certificate_path: "Tuist/Signing/release.p12",
-      keychain_path: "~/Users/runner/work/JYP-iOS/JYP-iOS.keychain"
+      keychain_path: "~/Users/runner/work/JYP-iOS/JYP-iOS.keychain",
       keychain_name: "#{KEYCHAIN_NAME}",
       keychain_password: "#{KEYCHAIN_PASSWORD}"
     )
