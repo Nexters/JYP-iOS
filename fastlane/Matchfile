@@ -1,5 +1,0 @@
-# git_url("git@github.com:Nexters/JYP-iOS-certificates.git")
-
-# storage_mode("git")
-
-# type("appstore")

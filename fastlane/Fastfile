@@ -18,15 +18,14 @@ APP_NAME = "JYP-iOS"
 SCHEME = "JYP-iOS"
 BUNDLE_ID = "com.jyp.journeypiki"
 
-TEAM_ID = ENV["TEAM_ID"]
 KEYCHAIN_NAME = ENV["KEYCHAIN_NAME"]
 KEYCHAIN_PASSWORD = ENV["KEYCHAIN_PASSWORD"]
 
 default_platform(:ios)
 
 platform :ios do
-  # ✅ 새로운 인증서 생성
-  desc "Push to TestFlight"
+  # ✅ 인증서를 키체인에 저장
+  desc "Save To Keychain"
   lane :set_keychain do |options|
     create_keychain(
       name: "#{KEYCHAIN_NAME}",
@@ -52,7 +51,7 @@ platform :ios do
     install_provisioning_profile(path: "Tuist/Signing/#{APP_NAME}.Release.mobileprovision")
   end
 
-  # 테스트 플라이트 업로드
+  # ✅ 테스트 플라이트 업로드
   desc "Push to TestFlight"
   lane :tf do |options|
     # ✅ 앱스토어 커넥트 키 연결
