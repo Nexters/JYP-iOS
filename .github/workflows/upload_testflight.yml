@@ -55,7 +55,7 @@ jobs:
       - name: Set Keychain
         run: fastlane set_keychain
         env:
-            KEYCHAIN: ${{ secrets.KEYCHAIN }}
+            KEYCHAIN_NAME: ${{ secrets.KEYCHAIN_NAME }}
             KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
       
       - name: Tuist generate
@@ -63,7 +63,7 @@ jobs:
           
       - run: fastlane tf
         env:
-            KEYCHAIN: ${{ secrets.KEYCHAIN }}
+            KEYCHAIN_NAME: ${{ secrets.KEYCHAIN_NAME }}
             KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
             TEAM_ID: ${{ secrets.TEAM_ID }}
             MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
