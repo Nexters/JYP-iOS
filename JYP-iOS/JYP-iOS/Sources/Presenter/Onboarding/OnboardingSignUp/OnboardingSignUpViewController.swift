@@ -23,12 +23,12 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
 
     // MARK: - UI Components
 
-    let onboardingView = UIView()
-    let onboardingLogoImageView = UIImageView()
-    let onboardinglogoTextImageView = UIImageView()
-    let loginLabel = UILabel()
-    let kakaoLoginButton = UIButton()
-    let appleLoginButton = ASAuthorizationAppleIDButton()
+    let onboardingView: UIView = .init()
+    let onboardingLogoImageView: UIImageView = .init()
+    let onboardinglogoTextImageView: UIImageView = .init()
+    let loginLabel: UILabel = .init()
+    let kakaoLoginButton: UIButton = .init()
+    let appleLoginButton: ASAuthorizationAppleIDButton = .init()
 
     // MARK: - Initializer
 
@@ -76,7 +76,8 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
         loginLabel.textColor = JYPIOSAsset.textB40.color
 
         kakaoLoginButton.setBackgroundImage(JYPIOSAsset.kakaoLogin.image, for: .normal)
-
+        kakaoLoginButton.imageView?.contentMode = .scaleToFill
+        
         appleLoginButton.cornerRound(radius: 6)
     }
 
@@ -97,7 +98,7 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
         onboardingLogoImageView.snp.makeConstraints {
             $0.top.equalToSuperview().inset(152)
             $0.centerX.equalToSuperview()
-            $0.width.height.equalTo(87)
+            $0.width.equalTo(87)
         }
 
         onboardinglogoTextImageView.snp.makeConstraints {
