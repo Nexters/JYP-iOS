@@ -40,7 +40,7 @@ final class RemovePlannerBottomSheetViewController: BottomSheetViewController, V
     }()
 
     private let noButton: JYPButton = {
-        let button = JYPButton(type: .no)
+        let button = JYPButton(type: .hate)
         button.isEnabled = true
         return button
     }()
