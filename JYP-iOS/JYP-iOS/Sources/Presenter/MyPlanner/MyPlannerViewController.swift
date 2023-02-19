@@ -78,7 +78,7 @@ class MyPlannerViewController: NavigationBarViewController, View {
         
         titleLabel.numberOfLines = 0
         titleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 22)
-        titleLabel.lineSpacing(lineHeight: 34.1)
+        titleLabel.lineSpacing(lineHeight: 29)
         titleLabel.textColor = JYPIOSAsset.textB90.color
 
         scheduledJourneyButton.isSelected = true
@@ -149,6 +149,7 @@ class MyPlannerViewController: NavigationBarViewController, View {
         rx.viewWillAppear
             .bind { [weak self] _ in
                 self?.titleLabel.text = String(describing: "\(PersonalityID.toSelf(title: UserDefaultsAccess.get(key: .personality) ?? "").title),\n\(UserDefaultsAccess.get(key: .nickname) ?? "")의 시작된 여행")
+                self?.titleLabel.lineSpacing(lineHeight: 29)
                 reactor.action.onNext(.fetchJourneyList)
             }
             .disposed(by: disposeBag)
@@ -172,6 +173,7 @@ class MyPlannerViewController: NavigationBarViewController, View {
             .compactMap(\.user)
             .bind { [weak self] user in
                 self?.titleLabel.text = String(describing: "\(user.personality.title),\n\(user.nickname)의 시작된 여행")
+                self?.titleLabel.lineSpacing(lineHeight: 29)
             }
             .disposed(by: disposeBag)
         
