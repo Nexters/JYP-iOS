@@ -33,18 +33,19 @@ class DiscussionReactor: Reactor {
     }
     
     struct State {
-        var id: String
         var journey: Journey?
         var sections: [DiscussionSectionModel] = []
         var isToggleOn: Bool = true
     }
     
     let provider = ServiceProvider.shared
+    private let journeyService: JourneyServiceType
     
     var initialState: State
     
-    init(id: String) {
-        self.initialState = State(id: id)
+    init(journeyService: JourneyServiceType) {
+        self.journeyService = journeyService
+        self.initialState = State()
     }
 }
 
@@ -76,7 +77,7 @@ extension DiscussionReactor {
     }
     
     func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
-        let APIMutation = provider.journeyService.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
+        let journeyEventMutation = journeyService.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
             switch event {
             case let .fetchJourney(journey):
                 return .concat([.just(.setJourney(journey)),
@@ -87,7 +88,7 @@ extension DiscussionReactor {
             }
         }
         
-        return Observable.merge(mutation, APIMutation)
+        return Observable.merge(mutation, journeyEventMutation)
     }
     
     func reduce(state: State, mutation: Mutation) -> State {

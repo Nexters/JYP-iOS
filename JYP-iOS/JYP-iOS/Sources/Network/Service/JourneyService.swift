@@ -27,7 +27,7 @@ protocol JourneyServiceType {
     var event: PublishSubject<JourneyEvent> { get }
 
     func fetchJornenys()
-    func fetchJorney(id: String)
+    func fetchJorney(id: String) -> Observable<Journey>
     func fetchDefaultTags() -> Observable<[Tag]>
     func fetchJourneyTags(journeyId: String, isIncludeDefaultTags: Bool) -> Observable<[Tag]>
     func createJourney(journey: Journey) -> Observable<String>
@@ -76,7 +76,7 @@ final class JourneyService: BaseService, JourneyServiceType {
         .disposed(by: disposeBag)
     }
 
-    func fetchJorney(id: String) {
+    func fetchJorney(id: String) -> Observable<Journey> {
         let target = JourneyAPI.fetchJourney(journeyId: id)
 
         let request = APIService.request(target: target)
@@ -89,6 +89,8 @@ final class JourneyService: BaseService, JourneyServiceType {
             self?.event.onNext(.fetchJourney(journey))
         }
         .disposed(by: disposeBag)
+        
+        return request.asObservable()
     }
 
     func fetchJourneyTags(

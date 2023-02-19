@@ -16,22 +16,21 @@ class JourneyPlanReactor: Reactor {
     }
     
     enum Mutation {
-        case setJourney(Journey)
         case setSections([JourneyPlanSectionModel])
         case updateSectionItem(IndexPath, JourneyPlanSectionModel.Item)
     }
     
     struct State {
-        var id: String
-        var journey: Journey?
         var sections: [JourneyPlanSectionModel] = []
     }
     
-    let provider = ServiceProvider.shared
     var initialState: State
     
-    init(id: String) {
-        self.initialState = State(id: id)
+    private let journeyService: JourneyServiceType
+    
+    init(journeyService: JourneyServiceType) {
+        self.journeyService = journeyService
+        self.initialState = State()
     }
 }
 
@@ -47,27 +46,23 @@ extension JourneyPlanReactor {
     }
     
     func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
-        let APIMutation = provider.journeyService.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
+        let journeyEventMutation = journeyService.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
             switch event {
             case let .fetchJourney(journey):
-                return .concat([.just(.setJourney(journey)),
-                                .just(.setSections(this.makeSections(from: journey)))])
+                return .just(.setSections(this.makeSections(from: journey)))
                 
             default:
                 return .empty()
             }
         }
         
-        return Observable.merge(mutation, APIMutation)
+        return .merge(mutation, journeyEventMutation)
     }
     
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
         
         switch mutation {
-        case let .setJourney(journey):
-            newState.journey = journey
-            
         case let .setSections(sections):
             newState.sections = sections
             
@@ -82,7 +77,7 @@ extension JourneyPlanReactor {
         guard let journey = currentState.journey else { return .empty() }
         guard case let .plan(reactor) = currentState.sections[indexPath.section].items[indexPath.item] else { return .empty() }
         provider.plannerService.showPlannerRouteScreen(order: indexPath.section - 1)
-//        provider.plannerService.presentPlannerRoute(from: makeReactor(from: reactor, pikis: journey.pikidays[indexPath.section - 1].pikis, pikmis: journey.pikmis))
+        
         return .empty()
     }
     
