@@ -129,6 +129,8 @@ enum JYPButtonType {
             return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color, image: nil)
         case .plannerJoin:
             return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color, image: nil)
+        case .plannerJoin:
+            return .init(titleColor: JYPIOSAsset.textWhite.color, backgroundColor: JYPIOSAsset.mainPink.color, image: nil)
         case .addPlace, .smallAdd, .smallMake, .good, .invite, .kakaoInvite, .confirm, .nextTime, .yes, .no, .withdraw:
             return nil
         }
