@@ -52,7 +52,7 @@ class JourneyPlanView: BaseView, View {
             guard case let .plan(cellReactor) = items[indexPath.item] else { return .init() }
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: PikiCollectionReusableView.self), for: indexPath) as? PikiCollectionReusableView else { return .init() }
             
-            header.reactor = PikiCollectionReusableViewReactor(journey: reactor.currentState.journey, order: indexPath.section - 1)
+            header.reactor = PikiCollectionReusableViewReactor(order: indexPath.section - 1, date: reactor.currentState.journey.startDate)
             
             header.trailingButton.rx.tap
                 .map { .tapEditButton(indexPath) }

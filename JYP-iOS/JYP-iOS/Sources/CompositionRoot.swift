@@ -155,10 +155,14 @@ extension CompositionRoot {
         }
 
         let pushPlannerScreen: (_ id: String) -> PlannerViewController = { id in
-            let reactor = PlannerReactor(id: id)
+            let discussionReactor = DiscussionView(reactor: .init(journeyService: <#T##JourneyServiceType#>, journey: <#T##Journey#>))
+            let discussionView = DiscussionView(reactor: discussionReactor)
+            let reactor = PlannerReactor(id: id, journeyService: journeyService)
             let controller = PlannerViewController(reactor: reactor,
                                                    pushPlannerInviteScreen: pushPlannerInviteScreen,
-                                                   pushPlannerRouteScreen: pushPlannerRouteScreen)
+                                                   pushPlannerRouteScreen: pushPlannerRouteScreen,
+                                                   pushWebScreen: <#T##(String) -> WebViewController##(String) -> WebViewController##(_ url: String) -> WebViewController#>
+            )
 
             return controller
         }

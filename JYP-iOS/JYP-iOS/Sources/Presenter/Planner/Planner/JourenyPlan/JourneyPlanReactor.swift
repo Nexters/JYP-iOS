@@ -21,6 +21,7 @@ class JourneyPlanReactor: Reactor {
     }
     
     struct State {
+        let journey: Journey
         var sections: [JourneyPlanSectionModel] = []
     }
     
@@ -28,9 +29,9 @@ class JourneyPlanReactor: Reactor {
     
     private let journeyService: JourneyServiceType
     
-    init(journeyService: JourneyServiceType) {
+    init(journeyService: JourneyServiceType, journey: Journey) {
         self.journeyService = journeyService
-        self.initialState = State()
+        self.initialState = State(journey: journey)
     }
 }
 
@@ -74,17 +75,16 @@ extension JourneyPlanReactor {
     }
     
     private func tapEditButtonMutation(_ indexPath: IndexPath) -> Observable<Mutation> {
-        guard let journey = currentState.journey else { return .empty() }
+//        guard let journey = currentState.journey else { return .empty() }
         guard case let .plan(reactor) = currentState.sections[indexPath.section].items[indexPath.item] else { return .empty() }
-        provider.plannerService.showPlannerRouteScreen(order: indexPath.section - 1)
+//        provider.plannerService.showPlannerRouteScreen(order: indexPath.section - 1)
         
         return .empty()
     }
     
     private func tapPlusButtonMutation(_ indexPath: IndexPath) -> Observable<Mutation> {
-        guard let journey = currentState.journey else { return .empty() }
         guard case let .emptyPlan(reactor) = currentState.sections[indexPath.section].items[indexPath.item] else { return .empty() }
-        provider.plannerService.showPlannerRouteScreen(order: indexPath.section - 1)
+//        provider.plannerService.showPlannerRouteScreen(order: indexPath.section - 1)
 //        provider.plannerService.presentPlannerRoute(from: makeReactor(from: reactor, pikis: journey.pikidays[indexPath.section - 1].pikis, pikmis: journey.pikmis))
         return .empty()
     }

@@ -174,19 +174,16 @@ class PlannerViewController: NavigationBarViewController, View {
         
         reactor.state
             .compactMap(\.journey)
-            .withUnretained(self)
-            .bind { this, journey in
-                this.dateLabel.text = DateManager.doubleToDateString(format: "M월d일", double: journey.startDate) + " - " + DateManager.doubleToDateString(format: "M월d일", double: journey.endDate)
-                if journey.users.isEmpty {
-                    this.inviteButton.isHidden = false
-                    this.inviteStackView.isHidden = true
-                } else {
-                    this.inviteStackView.update(users: journey.users)
-                    this.inviteButton.isHidden = true
-                    this.inviteStackView.isHidden = false
-                }
-                this.setNavigationBarTitleText(journey.name)
-            }
+            .map {($0,
+                   DateManager.doubleToDateString(format: "M월d일", double: $0.startDate),
+                   DateManager.doubleToDateString(format: "M월d일", double: $0.endDate))}
+            .subscribe(onNext: { [weak self] journey, start, end in
+                self?.dateLabel.text = String(describing: start + " - " + end)
+                self?.inviteStackView.update(users: journey.users)
+                self?.inviteButton.isHidden = !journey.users.isEmpty
+                self?.inviteStackView.isHidden = journey.users.isEmpty
+                self?.setNavigationBarTitleText(journey.name)
+            })
             .disposed(by: disposeBag)
         
         reactor.state
@@ -198,17 +195,9 @@ class PlannerViewController: NavigationBarViewController, View {
                 self?.discussionView.isHidden = (type == .journeyPlan)
             })
             .disposed(by: disposeBag)
-         
         
-        reactor.state
-            .compactMap(\.orderPlannerRouteScreen)
-            .withUnretained(self)
-            .bind { this, order in
-                let root = type(of: self)
-                guard let journey = reactor.currentState.journey else { return }
-                this.willPushPlannerRouteViewController(root: root, journey: journey, order: order)
-            }
-            .disposed(by: disposeBag)
+        journeyPlanView.reactor?.state
+            .map(\.sections)
     }
 }
 
