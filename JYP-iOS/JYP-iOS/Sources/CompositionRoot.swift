@@ -141,31 +141,59 @@ extension CompositionRoot {
     static func makeMyPlannerScreen(userService: UserServiceType) -> MyPlannerViewController {
         let journeyService: JourneyServiceType = ServiceProvider.shared.journeyService
 
-        let pushPlannerInviteScreen: (_ id: String) -> PlannerInviteViewController = { id in
-            let reactor = PlannerInviteReactor(id: id)
-            let controller = PlannerInviteViewController(reactor: reactor)
-
-            return controller
-        }
-
-        let pushPlannerRouteScreen: (_ root: AnyObject.Type, _ journey: Journey, _ order: Int) -> PlannerRouteViewController = { root, journey, order in
-            let reactor = PlannerRouteReactor(journey: journey, order: order, journeyService: journeyService)
-            let controller = PlannerRouteViewController(reactor: reactor, root: PlannerViewController.self)
-
-            return controller
-        }
-
         let pushPlannerScreen: (_ id: String) -> PlannerViewController = { id in
-            let discussionReactor = DiscussionView(reactor: .init(journeyService: <#T##JourneyServiceType#>, journey: <#T##Journey#>))
-            let discussionView = DiscussionView(reactor: discussionReactor)
-            let reactor = PlannerReactor(id: id, journeyService: journeyService)
-            let controller = PlannerViewController(reactor: reactor,
-                                                   pushPlannerInviteScreen: pushPlannerInviteScreen,
-                                                   pushPlannerRouteScreen: pushPlannerRouteScreen,
-                                                   pushWebScreen: <#T##(String) -> WebViewController##(String) -> WebViewController##(_ url: String) -> WebViewController#>
-            )
+            let pushPlannerInviteScreen: (_ id: String) -> PlannerInviteViewController = { id in
+                let reactor = PlannerInviteReactor(id: id)
+                let controller = PlannerInviteViewController(reactor: reactor)
 
-            return controller
+                return controller
+            }
+
+            let pushPlannerRouteScreen: (_ journey: Journey, _ order: Int) -> PlannerRouteViewController = { journey, order in
+                let reactor = PlannerRouteReactor(
+                    journey: journey,
+                    order: order,
+                    journeyService: journeyService
+                )
+                let viewController = PlannerRouteViewController(reactor: reactor)
+
+                return viewController
+            }
+            
+            let pushTagBottomSheetScreen: (_ tag: Tag) -> TagBottomSheetViewController = { tag in
+                let reactor = TagBottomSheetReactor(tag: tag)
+                let viewController = TagBottomSheetViewController(reactor: reactor)
+                
+                return viewController
+            }
+            
+            let pushPlannerSearchPlaceScreen: (_ id: String) -> PlannerSearchPlaceViewController = { id in
+                let reactor = PlannerSearchPlaceReactor(id: id)
+                let viewController = PlannerSearchPlaceViewController(reactor: reactor)
+                
+                return viewController
+            }
+            
+            let pushWebScreen: (_ url: String) -> WebViewController = { url in
+                let reactor = WebReactor(url: url)
+                let viewController = WebViewController(reactor: reactor)
+                
+                return viewController
+            }
+            
+            let reactor = PlannerReactor(
+                id: id,
+                journeyService: journeyService
+            )
+            let viewController = PlannerViewController(
+                reactor: reactor,
+                pushPlannerInviteScreen: pushPlannerInviteScreen,
+                pushPlannerRouteScreen: pushPlannerRouteScreen,
+                pushTagBottomSheetScreen: pushTagBottomSheetScreen,
+                pushPlannerSearchPlaceScreen: pushPlannerSearchPlaceScreen,
+                pushWebScreen: pushWebScreen
+            )
+            return viewController
         }
 
         let pushJoinPlannerTagScreen: (_ id: String) -> CreatePlannerTagViewController = { id in

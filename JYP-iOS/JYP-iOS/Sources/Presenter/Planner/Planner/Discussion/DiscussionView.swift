@@ -29,7 +29,7 @@ class DiscussionView: BaseView, View {
     
     // MARK: - Properties
     
-    private lazy var dataSource = DataSource { [weak self] _, collectionView, indexPath, item -> UICollectionViewCell in
+    lazy var dataSource = DataSource { [weak self] _, collectionView, indexPath, item -> UICollectionViewCell in
         guard let thisReactor = self?.reactor else { return .init() }
         
         switch item {
@@ -145,10 +145,10 @@ class DiscussionView: BaseView, View {
     func bind(reactor: Reactor) {
         collectionView.rx.setDelegate(self).disposed(by: disposeBag)
 
-        collectionView.rx.itemSelected
-            .map { .selectCell($0) }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
+//        collectionView.rx.itemSelected
+//            .map { .selectCell($0) }
+//            .bind(to: reactor.action)
+//            .disposed(by: disposeBag)
 
         reactor.state
             .map(\.sections)

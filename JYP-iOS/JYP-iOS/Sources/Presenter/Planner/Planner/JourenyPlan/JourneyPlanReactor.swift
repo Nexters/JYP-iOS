@@ -11,17 +11,20 @@ import ReactorKit
 
 class JourneyPlanReactor: Reactor {
     enum Action {
+        case refresh(Journey)
+        case selectCell(IndexPath, JourneyPlanItem)
         case tapEditButton(IndexPath)
         case tapPlusButton(IndexPath)
     }
     
     enum Mutation {
+        case setJourney(Journey)
         case setSections([JourneyPlanSectionModel])
         case updateSectionItem(IndexPath, JourneyPlanSectionModel.Item)
     }
     
     struct State {
-        let journey: Journey
+        var journey: Journey?
         var sections: [JourneyPlanSectionModel] = []
     }
     
@@ -29,64 +32,36 @@ class JourneyPlanReactor: Reactor {
     
     private let journeyService: JourneyServiceType
     
-    init(journeyService: JourneyServiceType, journey: Journey) {
+    init(journeyService: JourneyServiceType) {
         self.journeyService = journeyService
-        self.initialState = State(journey: journey)
+        self.initialState = State()
     }
 }
 
 extension JourneyPlanReactor {
-    func mutate(action: Action) -> Observable<Mutation> {
-        switch action {
-        case let .tapEditButton(indexPath):
-            return tapEditButtonMutation(indexPath)
-            
-        case let .tapPlusButton(indexPath):
-            return tapPlusButtonMutation(indexPath)
-        }
+    func bind(action: Action) {
+        self.action.onNext(action)
     }
     
-    func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
-        let journeyEventMutation = journeyService.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
-            switch event {
-            case let .fetchJourney(journey):
-                return .just(.setSections(this.makeSections(from: journey)))
-                
-            default:
-                return .empty()
-            }
+    func mutate(action: Action) -> Observable<Mutation> {
+        switch action {
+        case let .refresh(journey): return .just(.setJourney(journey))
+        case .selectCell: return .empty()
+        case let .tapEditButton(indexPath): return .empty()
+        case let .tapPlusButton(indexPath): return .empty()
         }
-        
-        return .merge(mutation, journeyEventMutation)
     }
     
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
         
         switch mutation {
-        case let .setSections(sections):
-            newState.sections = sections
-            
-        case let .updateSectionItem(indexPath, item):
-            newState.sections[indexPath.section].items[indexPath.row] = item
+        case let .setJourney(Journey): newState.journey = Journey
+        case let .setSections(sections): newState.sections = sections
+        case let .updateSectionItem(indexPath, item): newState.sections[indexPath.section].items[indexPath.row] = item
         }
         
         return newState
-    }
-    
-    private func tapEditButtonMutation(_ indexPath: IndexPath) -> Observable<Mutation> {
-//        guard let journey = currentState.journey else { return .empty() }
-        guard case let .plan(reactor) = currentState.sections[indexPath.section].items[indexPath.item] else { return .empty() }
-//        provider.plannerService.showPlannerRouteScreen(order: indexPath.section - 1)
-        
-        return .empty()
-    }
-    
-    private func tapPlusButtonMutation(_ indexPath: IndexPath) -> Observable<Mutation> {
-        guard case let .emptyPlan(reactor) = currentState.sections[indexPath.section].items[indexPath.item] else { return .empty() }
-//        provider.plannerService.showPlannerRouteScreen(order: indexPath.section - 1)
-//        provider.plannerService.presentPlannerRoute(from: makeReactor(from: reactor, pikis: journey.pikidays[indexPath.section - 1].pikis, pikmis: journey.pikmis))
-        return .empty()
     }
     
     private func makeSections(from journey: Journey) -> [JourneyPlanSectionModel] {

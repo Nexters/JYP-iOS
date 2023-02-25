@@ -19,7 +19,7 @@ class JourneyPlanView: BaseView, View {
     // MARK: - Properties
     let dayCollectionViewLayout = UICollectionViewFlowLayout()
     
-    private lazy var dataSource = RxCollectionViewSectionedReloadDataSource<JourneyPlanSectionModel> { [weak self] _, collectionView, indexPath, item -> UICollectionViewCell in
+    lazy var dataSource = RxCollectionViewSectionedReloadDataSource<JourneyPlanSectionModel> { [weak self] _, collectionView, indexPath, item -> UICollectionViewCell in
         guard let reactor = self?.reactor else { return .init() }
         
         switch item {
@@ -52,7 +52,7 @@ class JourneyPlanView: BaseView, View {
             guard case let .plan(cellReactor) = items[indexPath.item] else { return .init() }
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: PikiCollectionReusableView.self), for: indexPath) as? PikiCollectionReusableView else { return .init() }
             
-            header.reactor = PikiCollectionReusableViewReactor(order: indexPath.section - 1, date: reactor.currentState.journey.startDate)
+            header.reactor = PikiCollectionReusableViewReactor(order: indexPath.section - 1, date: reactor.currentState.journey?.startDate ?? 0.0)
             
             header.trailingButton.rx.tap
                 .map { .tapEditButton(indexPath) }

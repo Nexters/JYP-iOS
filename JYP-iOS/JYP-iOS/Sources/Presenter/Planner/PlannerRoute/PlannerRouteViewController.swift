@@ -205,14 +205,14 @@ class PlannerRouteViewController: NavigationBarViewController, View {
             }
             .disposed(by: disposeBag)
         
-        reactor.state
-            .map(\.didUpdatePikis)
-            .filter { $0 }
-            .withUnretained(self)
-            .bind { this, _ in
-                this.backToRootViewController(root: this.root)
-            }
-            .disposed(by: disposeBag)
+//        reactor.state
+//            .map(\.didUpdatePikis)
+//            .filter { $0 }
+//            .withUnretained(self)
+//            .bind { this, _ in
+//                this.backToRootViewController(root: this.root)
+//            }
+//            .disposed(by: disposeBag)
     }
 }
 
