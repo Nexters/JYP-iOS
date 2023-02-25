@@ -159,8 +159,14 @@ class PlannerViewController: NavigationBarViewController, View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
-        Observable.combineLatest(inviteButton.rx.tap, inviteStackView.inviteButton.rx.tap)
-            .subscribe(onNext: { [weak self] _, _ in
+        inviteButton.rx.tap
+            .subscribe(onNext: { [weak self] in
+                self?.willPushPlannerInviteViewController(id: reactor.initialState.id)
+            })
+            .disposed(by: disposeBag)
+        
+        inviteStackView.inviteButton.rx.tap
+            .subscribe(onNext: { [weak self] in
                 self?.willPushPlannerInviteViewController(id: reactor.initialState.id)
             })
             .disposed(by: disposeBag)
@@ -216,6 +222,8 @@ class PlannerViewController: NavigationBarViewController, View {
                     self?.willPresentTagBottomSheetViewController(tag: tag)
                 case let .plannerSearchPlace(id):
                     self?.willPushPlannerSearchPlaceViewController(id: id)
+                case let .web(url):
+                    self?.willPresentWebViewController(url: url)
                 }
             })
             .disposed(by: disposeBag)

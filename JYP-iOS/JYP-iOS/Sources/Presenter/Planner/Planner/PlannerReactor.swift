@@ -18,6 +18,7 @@ class PlannerReactor: Reactor {
     enum NextScreenType {
         case tagBottomSheet(tag: Tag)
         case plannerSearchPlace(id: String)
+        case web(url: String)
     }
     
     enum Action {
@@ -61,8 +62,6 @@ extension PlannerReactor {
                 self.action.onNext(.pushNextScreen(.tagBottomSheet(tag: reactor.currentState)))
             default: break
             }
-        case .tapCellCreateButton, .tapPlusButton:
-            self.action.onNext(.pushNextScreen(.plannerSearchPlace(id: initialState.id)))
         case let .tapCellLikeButton(_, state):
             if state.isSelected {
                 journeyService.deletePikmiLike(journeyId: currentState.id, pikmiId: state.pik.id)
@@ -70,6 +69,10 @@ extension PlannerReactor {
                 journeyService.createPikmiLike(journeyId: currentState.id, pikmiId: state.pik.id)
             }
             self.action.onNext(.refresh)
+        case .tapCellCreateButton, .tapPlusButton:
+            self.action.onNext(.pushNextScreen(.plannerSearchPlace(id: initialState.id)))
+        case let .tapCellInfoButton(_, state):
+            self.action.onNext(.pushNextScreen(.web(url: state.pik.link)))
         default: break
         }
     }
