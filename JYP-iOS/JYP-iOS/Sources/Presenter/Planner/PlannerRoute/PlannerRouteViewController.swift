@@ -11,9 +11,9 @@ import ReactorKit
 import RxDataSources
 
 class PlannerRouteViewController: NavigationBarViewController, View {
-    // MARK: - Properties
-    
     typealias Reactor = PlannerRouteReactor
+    
+    // MARK: - Properties
     
     private lazy var routeDataSource = RxCollectionViewSectionedReloadDataSource<RouteSectionModel> { [weak self] _, collectionView, indexPath, item -> UICollectionViewCell in
         guard let reactor = self?.reactor else { return .init() }
@@ -50,8 +50,6 @@ class PlannerRouteViewController: NavigationBarViewController, View {
         }
     }
     
-    let root: AnyObject.Type
-    
     // MARK: - UI Components
     
     let emptyLabel: UILabel = .init()
@@ -61,8 +59,7 @@ class PlannerRouteViewController: NavigationBarViewController, View {
     
     // MARK: - Initializer
     
-    init(reactor: Reactor, root: AnyObject.Type) {
-        self.root = root
+    init(reactor: Reactor) {
         super.init(nibName: nil, bundle: nil)
         
         self.reactor = reactor
