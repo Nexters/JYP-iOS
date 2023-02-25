@@ -10,11 +10,6 @@ import UIKit
 import ReactorKit
 
 class DiscussionReactor: Reactor {
-    enum SectionType {
-        case empty
-        case defualt
-    }
-    
     enum Action {
         case refresh(Journey)
         case selectCell(IndexPath, DiscussionItem)
@@ -71,14 +66,7 @@ extension DiscussionReactor {
                 )))
             ])
             
-        case let .tapCellLikeButton(_, state):
-            guard let journey = currentState.journey else { return .empty() }
-
-            journeyService.createPikmiLike(journeyId: journey.id, pikmiId: state.pik.id)
-            
-            return .empty()
-            
-        case .selectCell, .tapPlusButton, .tapCellInfoButton, .tapCellCreateButton:
+        case .selectCell, .tapPlusButton, .tapCellInfoButton, .tapCellCreateButton, .tapCellLikeButton:
             return .empty()
         }
     }
@@ -107,17 +95,15 @@ extension DiscussionReactor {
         }()
         
         var prevLikeByCount: Int = 0
-        var rank: Int = -1
-        var pikmiItems: [DiscussionItem] = journey.pikmis.sorted(by: { $0.likeBy?.count ?? 0 > $1.likeBy?.count ?? 0 }).enumerated().map { (index, pik) -> DiscussionItem in
-            if let likeBy = pik.likeBy, likeBy.contains(where: { $0.id == UserDefaultsAccess.get(key: .userID) }) {
-                if prevLikeByCount != likeBy.count {
-                    rank += 1
-                }
-                prevLikeByCount = likeBy.count
-                return .pikmi(.init(state: .init(pik: pik, rank: rank, isSelectedLikeButton: true, isReadyAnimate: true)))
-            } else {
-                return .pikmi(.init(state: .init(pik: pik, rank: index)))
+        var rank: Int = 0
+        let pikmis = journey.pikmis.sorted(by: { $0.likeBy?.count ?? 0 > $1.likeBy?.count ?? 0 })
+        
+        var pikmiItems: [DiscussionItem] = pikmis.map { pik -> DiscussionItem in
+            if let likeByCount = pik.likeBy?.count, likeByCount != prevLikeByCount {
+                prevLikeByCount = likeByCount
+                rank += 1
             }
+            return .pikmi(.init(rank: rank, pik: pik))
         }
         
         if pikmiItems.isEmpty {

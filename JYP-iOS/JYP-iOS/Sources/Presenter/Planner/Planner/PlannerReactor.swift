@@ -63,6 +63,13 @@ extension PlannerReactor {
             }
         case .tapCellCreateButton, .tapPlusButton:
             self.action.onNext(.pushNextScreen(.plannerSearchPlace(id: initialState.id)))
+        case let .tapCellLikeButton(_, state):
+            if state.isSelected {
+                journeyService.deletePikmiLike(journeyId: currentState.id, pikmiId: state.pik.id)
+            } else {
+                journeyService.createPikmiLike(journeyId: currentState.id, pikmiId: state.pik.id)
+            }
+            self.action.onNext(.refresh)
         default: break
         }
     }

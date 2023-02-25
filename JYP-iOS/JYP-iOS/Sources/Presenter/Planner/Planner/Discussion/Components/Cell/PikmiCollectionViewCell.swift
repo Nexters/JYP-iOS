@@ -133,42 +133,35 @@ class PikmiCollectionViewCell: BaseCollectionViewCell, View {
     }
     
     func bind(reactor: Reactor) {
-        let state = reactor.currentState
-        
         categoryLabel.text = reactor.currentState.pik.category.title
         titleLabel.text = reactor.currentState.pik.name
         subLabel.text = reactor.currentState.pik.address
         
-        if let likeBy = reactor.currentState.pik.likeBy {
-            if !likeBy.isEmpty {
-                likeLabel.text = String(describing: likeBy.count)
-                likeLabel.textColor = JYPIOSAsset.mainPink.color
-                switch state.rank {
-                case 0:
-                    rankBadgeImageView.image = JYPIOSAsset.badge1.image
-                case 1:
-                    rankBadgeImageView.image = JYPIOSAsset.badge2.image
-                case 2:
-                    rankBadgeImageView.image = JYPIOSAsset.badge3.image
-                default: break
-                }
+        if let likByCount = reactor.currentState.pik.likeBy?.count, likByCount > 0 {
+            likeLabel.text = String(describing: likByCount)
+            switch reactor.currentState.rank {
+            case 1: rankBadgeImageView.image = JYPIOSAsset.badge1.image
+            case 2: rankBadgeImageView.image = JYPIOSAsset.badge2.image
+            case 3: rankBadgeImageView.image = JYPIOSAsset.badge3.image
+            default: break
             }
-        }
-        
-        if state.isSelectedLikeButton {
-            likeImageView.image = JYPIOSAsset.iconVoteActive.image
         } else {
-            likeImageView.image = JYPIOSAsset.iconVoteInactive.image
+            likeLabel.text = " "
         }
         
-        if state.isReadyAnimate {
-            animationView.play(completion: { _ in
-                reactor.action.onNext(.animated)
+        reactor.state
+            .map(\.isSelected)
+            .subscribe(onNext: { [weak self] bool in
+                if bool {
+                    self?.likeImageView.image = JYPIOSAsset.iconVoteActive.image
+                    self?.likeLabel.textColor = JYPIOSAsset.mainPink.color
+                    self?.animationView.play()
+                } else {
+                    self?.likeImageView.image = JYPIOSAsset.iconVoteInactive.image
+                    self?.likeLabel.textColor = JYPIOSAsset.textB40.color
+                    self?.animationView.stop()
+                }
             })
-        } else if state.isSelectedLikeButton {
-            animationView.currentProgress = 1
-        } else {
-            animationView.stop()
-        }
+            .disposed(by: disposeBag)
     }
 }
