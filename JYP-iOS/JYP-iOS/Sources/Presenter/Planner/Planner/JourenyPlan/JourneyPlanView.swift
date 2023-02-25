@@ -105,8 +105,16 @@ class JourneyPlanView: BaseView, View {
     }
     
     func bind(reactor: Reactor) {
-        reactor.state.map(\.sections)
-            .asObservable()
+        Observable.zip(
+            collectionView.rx.itemSelected,
+            collectionView.rx.modelSelected(type(of: dataSource).Section.Item.self)
+        )
+        .map { .selectCell($0, $1) }
+        .bind(to: reactor.action)
+        .disposed(by: disposeBag)
+        
+        reactor.state
+            .map(\.sections)
             .withUnretained(self)
             .bind { this, sections in
                 this.dataSource.setSections(sections)

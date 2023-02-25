@@ -17,6 +17,7 @@ class DiscussionReactor: Reactor {
     
     enum Action {
         case refresh(Journey)
+        case selectCell(IndexPath, DiscussionItem)
         case tapToggleButton
         case tapPlusButton
         case tapCreatePikmiCellButton(IndexPath)
@@ -55,22 +56,28 @@ extension DiscussionReactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case let .refresh(journey):
-            return .just(.setJourney(journey))
+            return .concat([
+                .just(.setJourney(journey)),
+                .just(.setSections(makeSections(journey: journey)))
+            ])
+            
+        case .selectCell:
+            return .empty()
             
         case .tapToggleButton:
             return .empty()
             
         case .tapPlusButton:
-            return tapPlusButtonMutation()
+            return .empty()
             
         case let .tapCreatePikmiCellButton(indexPath):
-            return tapCreatePikmiCellButtonMutation(indexPath)
+            return .empty()
             
         case let .tapPikmiCellInfoButton(indexPath):
-            return tapPikmiCellInfoButtonMutation(indexPath)
+            return .empty()
             
         case let .tapPikmiCellLikeButton(indexPath, state):
-            return tapPikmiCellLikeButtonMutation(indexPath, state)
+            return .empty()
         }
     }
     
@@ -93,64 +100,7 @@ extension DiscussionReactor {
         
         return newState
     }
-    
-    private func selectCellMutation(_ indexPath: IndexPath) -> Observable<Mutation> {
-        switch currentState.sections[indexPath.section].items[indexPath.item] {
-        case let .tag(reactor):
-//            provider.plannerService.presentTagBottomSheet(from: makeReactor(from: reactor))
-            return .empty()
-            
-        case .emptyTag:
-            return .empty()
-            
-        case .createPikmi:
-            return .empty()
-            
-        case .pikmi:
-            return .empty()
-        }
-    }
-    
-//    private func tapToggleButtonMutation() -> Observable<Mutation> {
-////        guard let journey = currentState.journey else { return .empty() }
-//
-//        let updateIsToggleOnMutation: Observable<Mutation> = .just(.updateIsToggleOn(!currentState.isToggleOn))
-//        var setSectionsMutation: Observable<Mutation> {
-//            currentState.isToggleOn ?
-//                .just(.setSections(makeSections(from: currentState.journey, type: .empty))) :
-//                .just(.setSections(makeSections(from: currentState.journey)))
-//        }
-//        let sequence: [Observable<Mutation>] = [updateIsToggleOnMutation, setSectionsMutation]
-//        return .concat(sequence)
-//    }
-    
-    private func tapPlusButtonMutation() -> Observable<Mutation> {
-//        provider.plannerService.presentPlannerSearchPlace(from: makeReactor())
-        return .empty()
-    }
-    
-    private func tapCreatePikmiCellButtonMutation(_ indexPath: IndexPath) -> Observable<Mutation> {
-        guard case .createPikmi = currentState.sections[indexPath.section].items[indexPath.item] else { return .empty() }
-        
-//        provider.plannerService.presentPlannerSearchPlace(from: makeReactor())
-        return .empty()
-    }
-    
-    private func tapPikmiCellInfoButtonMutation(_ indexPath: IndexPath) -> Observable<Mutation> {
-        guard case let .pikmi(reactor) = currentState.sections[indexPath.section].items[indexPath.item] else { return .empty() }
-        
-//        provider.plannerService.presentWeb(from: .init(url: reactor.currentState.pik.link))
-        return .empty()
-    }
-    
-    private func tapPikmiCellLikeButtonMutation(_ indexPath: IndexPath, _ state: PikmiCollectionViewCellReactor.State) -> Observable<Mutation> {
-        if let likeBy = state.pik.likeBy, likeBy.contains(where: { $0.id == UserDefaultsAccess.get(key: .userID) }) {
-//            provider.journeyService.deletePikmiLike(journeyId: currentState.id, pikmiId: state.pik.id)
-        } else {
-        }
-        return .empty()
-    }
-    
+
     private func makeSections(journey: Journey, type: SectionType = .defualt) -> [DiscussionSectionModel] {
         let tagItmes: [DiscussionItem] = {
             switch type {

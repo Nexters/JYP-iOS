@@ -175,21 +175,11 @@ class PlannerViewController: NavigationBarViewController, View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
-        Observable.zip(
-            discussionView.collectionView.rx.itemSelected,
-            discussionView.collectionView.rx.modelSelected(type(of: discussionView.dataSource).Section.Item.self)
-        )
-        .map { .selectDiscussionCell($0, $1) }
-        .bind(to: reactor.action)
-        .disposed(by: disposeBag)
-        
-        Observable.zip(
-            journeyPlanView.collectionView.rx.itemSelected,
-            journeyPlanView.collectionView.rx.modelSelected(type(of: journeyPlanView.dataSource).Section.Item.self)
-        )
-        .map { .selectJourneyPlanCell($0, $1) }
-        .bind(to: reactor.action)
-        .disposed(by: disposeBag)
+        discussionView.reactor?.action
+            .subscribe(onNext: { action in
+                reactor.bind(action: action)
+            })
+            .disposed(by: disposeBag)
         
         reactor.state
             .compactMap(\.journey)
@@ -212,9 +202,19 @@ class PlannerViewController: NavigationBarViewController, View {
             .map(\.viewType)
             .subscribe(onNext: { [weak self] type in
                 self?.journeyPlanButton.isSelected = (type == .journeyPlan)
-                self?.journeyPlanView.isHidden = (type == .journeyPlan)
-                self?.discussionButton.isSelected = (type == .journeyPlan)
-                self?.discussionView.isHidden = (type == .journeyPlan)
+                self?.journeyPlanView.isHidden = !(type == .journeyPlan)
+                self?.discussionButton.isSelected = (type == .discussion)
+                self?.discussionView.isHidden = !(type == .discussion)
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .compactMap(\.nextScreenType)
+            .subscribe(onNext: { [weak self] type in
+                switch type {
+                case let .tagBottomSheet(tag):
+                    self?.willPresentTagBottomSheetViewController(tag: tag)
+                }
             })
             .disposed(by: disposeBag)
     }

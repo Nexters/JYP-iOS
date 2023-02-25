@@ -46,9 +46,7 @@ extension JourneyPlanReactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case let .refresh(journey): return .just(.setJourney(journey))
-        case .selectCell: return .empty()
-        case let .tapEditButton(indexPath): return .empty()
-        case let .tapPlusButton(indexPath): return .empty()
+        default: return .empty()
         }
     }
     

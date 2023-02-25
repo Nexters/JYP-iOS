@@ -35,11 +35,14 @@ class DiscussionView: BaseView, View {
         switch item {
         case let .tag(reactor):
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: TagCollectionViewCell.self), for: indexPath) as? TagCollectionViewCell else { return .init() }
+            
             cell.reactor = reactor
+            
             return cell
             
         case .emptyTag:
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: EmptyTagCollectionViewCell.self), for: indexPath) as? EmptyTagCollectionViewCell else { return .init() }
+            
             return cell
             
         case let .pikmi(reactor):
@@ -61,11 +64,14 @@ class DiscussionView: BaseView, View {
             
         case let .createPikmi(reactor):
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: CreatePikmiCollectionViewCell.self), for: indexPath) as? CreatePikmiCollectionViewCell else { return .init() }
+            
             cell.reactor = reactor
+            
             cell.button.rx.tap
                 .map { .tapCreatePikmiCellButton(indexPath) }
                 .bind(to: thisReactor.action)
                 .disposed(by: cell.disposeBag)
+            
             return cell
         }
     } configureSupplementaryView: { [weak self] dataSource, collectionView, _, indexPath -> UICollectionReusableView in
@@ -74,22 +80,27 @@ class DiscussionView: BaseView, View {
         switch dataSource[indexPath.section].model {
         case .tag:
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: DiscussionTagSectionHeader.self), for: indexPath) as? DiscussionTagSectionHeader else { return .init() }
+            
             header.toggleButton.rx.tap
                 .map { .tapToggleButton }
                 .bind(to: thisReactor.action)
                 .disposed(by: header.disposeBag)
+            
             thisReactor.state
                 .map(\.isToggleOn)
                 .bind(to: header.toggleButton.rx.isSelected)
                 .disposed(by: header.disposeBag)
+            
             return header
             
         case .pikmi:
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: DiscussionPikmiSectionHeader.self), for: indexPath) as? DiscussionPikmiSectionHeader else { return .init() }
+            
             header.trailingButton.rx.tap
                 .map { .tapPlusButton }
                 .bind(to: thisReactor.action)
                 .disposed(by: header.disposeBag)
+            
             return header
         }
     }
@@ -144,11 +155,14 @@ class DiscussionView: BaseView, View {
     
     func bind(reactor: Reactor) {
         collectionView.rx.setDelegate(self).disposed(by: disposeBag)
-
-//        collectionView.rx.itemSelected
-//            .map { .selectCell($0) }
-//            .bind(to: reactor.action)
-//            .disposed(by: disposeBag)
+        
+        Observable.zip(
+            collectionView.rx.itemSelected,
+            collectionView.rx.modelSelected(type(of: dataSource).Section.Item.self)
+        )
+        .map { .selectCell($0, $1) }
+        .bind(to: reactor.action)
+        .disposed(by: disposeBag)
 
         reactor.state
             .map(\.sections)
