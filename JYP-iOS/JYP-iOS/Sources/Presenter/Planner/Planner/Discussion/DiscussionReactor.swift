@@ -18,18 +18,17 @@ class DiscussionReactor: Reactor {
     enum Action {
         case refresh(Journey)
         case selectCell(IndexPath, DiscussionItem)
+        case tapCellLikeButton(IndexPath, PikmiCollectionViewCellReactor.State)
+        case tapCellInfoButton(IndexPath, PikmiCollectionViewCellReactor.State)
+        case tapCellCreateButton(IndexPath)
         case tapToggleButton
         case tapPlusButton
-        case tapCreatePikmiCellButton(IndexPath)
-        case tapPikmiCellInfoButton(IndexPath)
-        case tapPikmiCellLikeButton(IndexPath, PikmiCollectionViewCellReactor.State)
     }
     
     enum Mutation {
         case setJourney(Journey)
         case setSections([DiscussionSectionModel])
-        case updateSectionItem(IndexPath, DiscussionItem)
-        case updateIsToggleOn(Bool)
+        case toggle
     }
     
     struct State {
@@ -61,22 +60,25 @@ extension DiscussionReactor {
                 .just(.setSections(makeSections(journey: journey)))
             ])
             
-        case .selectCell:
-            return .empty()
-            
         case .tapToggleButton:
+            guard let journey = currentState.journey else { return .empty() }
+            
+            return .concat([
+                .just(.toggle),
+                .just(.setSections(makeSections(
+                    journey: journey,
+                    isEmpty: currentState.isToggleOn
+                )))
+            ])
+            
+        case let .tapCellLikeButton(_, state):
+            guard let journey = currentState.journey else { return .empty() }
+
+            journeyService.createPikmiLike(journeyId: journey.id, pikmiId: state.pik.id)
+            
             return .empty()
             
-        case .tapPlusButton:
-            return .empty()
-            
-        case let .tapCreatePikmiCellButton(indexPath):
-            return .empty()
-            
-        case let .tapPikmiCellInfoButton(indexPath):
-            return .empty()
-            
-        case let .tapPikmiCellLikeButton(indexPath, state):
+        case .selectCell, .tapPlusButton, .tapCellInfoButton, .tapCellCreateButton:
             return .empty()
         }
     }
@@ -85,29 +87,19 @@ extension DiscussionReactor {
         var newState = state
         
         switch mutation {
-        case let .setJourney(journey):
-            newState.journey = journey
-            
-        case let .setSections(sections):
-            newState.sections = sections
-            
-        case let .updateSectionItem(indexPath, item):
-            newState.sections[indexPath.section].items[indexPath.item] = item
-            
-        case let .updateIsToggleOn(bool):
-            newState.isToggleOn = bool
+        case let .setJourney(journey): newState.journey = journey
+        case let .setSections(sections): newState.sections = sections
+        case .toggle: newState.isToggleOn.toggle()
         }
         
         return newState
     }
 
-    private func makeSections(journey: Journey, type: SectionType = .defualt) -> [DiscussionSectionModel] {
+    private func makeSections(journey: Journey, isEmpty: Bool = false) -> [DiscussionSectionModel] {
         let tagItmes: [DiscussionItem] = {
-            switch type {
-            case .empty:
+            if isEmpty {
                 return [.emptyTag]
-                
-            case .defualt:
+            } else {
                 return journey.tags.map { (tag) -> DiscussionItem in
                     return .tag(.init(tag: tag))
                 }

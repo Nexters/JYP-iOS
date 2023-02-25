@@ -16,7 +16,8 @@ class PlannerReactor: Reactor {
     }
     
     enum NextScreenType {
-        case tagBottomSheet(Tag)
+        case tagBottomSheet(tag: Tag)
+        case plannerSearchPlace(id: String)
     }
     
     enum Action {
@@ -57,9 +58,11 @@ extension PlannerReactor {
         case let .selectCell(_, item):
             switch item {
             case let .tag(reactor):
-                self.action.onNext(.pushNextScreen(.tagBottomSheet(reactor.currentState)))
+                self.action.onNext(.pushNextScreen(.tagBottomSheet(tag: reactor.currentState)))
             default: break
             }
+        case .tapCellCreateButton, .tapPlusButton:
+            self.action.onNext(.pushNextScreen(.plannerSearchPlace(id: initialState.id)))
         default: break
         }
     }

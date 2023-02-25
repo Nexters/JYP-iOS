@@ -30,7 +30,7 @@ class DiscussionView: BaseView, View {
     // MARK: - Properties
     
     lazy var dataSource = DataSource { [weak self] _, collectionView, indexPath, item -> UICollectionViewCell in
-        guard let thisReactor = self?.reactor else { return .init() }
+        guard let reactor = self?.reactor else { return .init() }
         
         switch item {
         case let .tag(reactor):
@@ -45,31 +45,31 @@ class DiscussionView: BaseView, View {
             
             return cell
             
-        case let .pikmi(reactor):
+        case let .pikmi(cellReactor):
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: PikmiCollectionViewCell.self), for: indexPath) as? PikmiCollectionViewCell else { return .init() }
             
-            cell.reactor = reactor
+            cell.reactor = cellReactor
             
             cell.infoButton.rx.tap
-                .map { .tapPikmiCellInfoButton(indexPath) }
-                .bind(to: thisReactor.action)
+                .map { .tapCellInfoButton(indexPath, cellReactor.currentState) }
+                .bind(to: reactor.action)
                 .disposed(by: cell.disposeBag)
             
             cell.likeButton.rx.tap
-                .map { .tapPikmiCellLikeButton(indexPath, reactor.currentState) }
-                .bind(to: thisReactor.action)
+                .map { .tapCellLikeButton(indexPath, cellReactor.currentState) }
+                .bind(to: reactor.action)
                 .disposed(by: cell.disposeBag)
             
             return cell
             
-        case let .createPikmi(reactor):
+        case let .createPikmi(cellReactor):
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: CreatePikmiCollectionViewCell.self), for: indexPath) as? CreatePikmiCollectionViewCell else { return .init() }
             
-            cell.reactor = reactor
+            cell.reactor = cellReactor
             
             cell.button.rx.tap
-                .map { .tapCreatePikmiCellButton(indexPath) }
-                .bind(to: thisReactor.action)
+                .map { .tapCellCreateButton(indexPath) }
+                .bind(to: reactor.action)
                 .disposed(by: cell.disposeBag)
             
             return cell

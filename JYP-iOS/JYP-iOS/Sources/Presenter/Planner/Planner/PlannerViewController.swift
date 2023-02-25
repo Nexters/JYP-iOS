@@ -214,6 +214,8 @@ class PlannerViewController: NavigationBarViewController, View {
                 switch type {
                 case let .tagBottomSheet(tag):
                     self?.willPresentTagBottomSheetViewController(tag: tag)
+                case let .plannerSearchPlace(id):
+                    self?.willPushPlannerSearchPlaceViewController(id: id)
                 }
             })
             .disposed(by: disposeBag)
@@ -233,7 +235,7 @@ extension PlannerViewController {
         navigationController?.pushViewController(viewController, animated: true)
     }
     
-    func willPushPlannerSearchViewController(id: String) {
+    func willPushPlannerSearchPlaceViewController(id: String) {
         let viewController = pushPlannerSearchPlaceScreen(id)
         viewController.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(viewController, animated: true)
