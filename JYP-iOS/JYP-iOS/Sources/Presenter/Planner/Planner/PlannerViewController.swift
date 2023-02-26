@@ -185,13 +185,13 @@ class PlannerViewController: NavigationBarViewController, View {
             .subscribe(onNext: { action in
                 reactor.bind(action: action)
             })
-            .disposed(by: disposeBag)
+            .disposed(by: discussionView.disposeBag)
         
         journeyPlanView.reactor?.action
             .subscribe(onNext: { action in
                 reactor.bind(action: action)
             })
-            .disposed(by: disposeBag)
+            .disposed(by: journeyPlanView.disposeBag)
         
         reactor.state
             .compactMap(\.journey)
