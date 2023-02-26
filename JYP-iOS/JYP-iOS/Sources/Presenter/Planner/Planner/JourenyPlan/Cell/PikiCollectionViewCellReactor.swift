@@ -9,7 +9,7 @@
 import Foundation
 import ReactorKit
 
-class PlanCollectionViewCellReactor: Reactor {
+class PikiCollectionViewCellReactor: Reactor {
     typealias Action = NoAction
     
     struct State {

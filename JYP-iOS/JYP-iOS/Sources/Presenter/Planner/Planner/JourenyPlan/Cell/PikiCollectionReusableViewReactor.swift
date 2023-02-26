@@ -14,13 +14,13 @@ class PikiCollectionReusableViewReactor: Reactor {
     enum Mutation { }
     
     struct State {
-        let order: Int
-        let date: Double
+        let index: Int
+        let date: Date
     }
     
     var initialState: State
     
-    init(order: Int, date: Double) {
-        self.initialState = .init(order: order, date: date)
+    init(index: Int, date: Date) {
+        self.initialState = .init(index: index, date: date)
     }
 }

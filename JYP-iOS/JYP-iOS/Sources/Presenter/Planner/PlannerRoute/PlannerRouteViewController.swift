@@ -153,7 +153,7 @@ class PlannerRouteViewController: NavigationBarViewController, View {
             .disposed(by: disposeBag)
         
         reactor.state
-            .map(\.order)
+            .map(\.index)
             .map { $0 + 1 }
             .map { String(describing: "DAY \($0)") }
             .withUnretained(self)
@@ -163,7 +163,7 @@ class PlannerRouteViewController: NavigationBarViewController, View {
             .disposed(by: disposeBag)
         
         reactor.state
-            .map(\.order)
+            .map(\.index)
             .map { ($0, Date(timeIntervalSince1970: reactor.currentState.journey.startDate)) }
             .map { DateManager.addDateComponent(byAdding: .day, value: $0, to: $1) }
             .map { DateManager.dateToString(format: "M월 d일", date: $0) }

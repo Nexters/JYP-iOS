@@ -9,24 +9,8 @@
 import UIKit
 import ReactorKit
 
-class EmptyPlanCollectionViewCellReactor: Reactor {
-    enum Action { }
-    enum Mutation { }
-    
-    struct State {
-        let order: Int
-        let date: Date
-    }
-
-    var initialState: State
-    
-    init(state: State) {
-        initialState = state
-    }
-}
-
 class EmptyPikiCollectionViewCell: BaseCollectionViewCell, View {
-    typealias Reactor = EmptyPlanCollectionViewCellReactor
+    typealias Reactor = EmptyPikiCollectionViewCellReactor
     
     // MARK: - UI Components
     
@@ -79,7 +63,13 @@ class EmptyPikiCollectionViewCell: BaseCollectionViewCell, View {
     }
     
     func bind(reactor: Reactor) {
-        titleLabel.text = "Day \(reactor.currentState.order + 1)"
-        subLabel.text = DateManager.dateToString(format: "M월 d일", date: reactor.currentState.date)
+        let index = reactor.currentState.index
+        let startDate = reactor.currentState.startDate
+        
+        let day = index + 1
+        let date = DateManager.addDateComponent(byAdding: .day, value: index, to: startDate)
+        
+        titleLabel.text = "Day \(day)"
+        subLabel.text = DateManager.dateToString(format: "M월 d일", date: date)
     }
 }

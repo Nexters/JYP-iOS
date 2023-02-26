@@ -16,8 +16,8 @@ class PlannerRouteReactor: Reactor {
         case tapPikmiRouteCell(IndexPath, PikmiRouteSectionModel.Item)
         case tapDoneButton
     }
+    
     enum Mutation {
-        case setJourney(Journey)
         case setRouteSections([RouteSectionModel])
         case deleteRouteSectionItem(IndexPath)
         case setPikmiRouteSections([PikmiRouteSectionModel])
@@ -28,8 +28,8 @@ class PlannerRouteReactor: Reactor {
     }
     
     struct State {
-        var journey: Journey
-        let order: Int
+        let index: Int
+        let journey: Journey
         var routeSections: [RouteSectionModel] = []
         var pikmiRouteSections: [PikmiRouteSectionModel] = []
         var didUpdatePikis: Bool = false
@@ -40,11 +40,9 @@ class PlannerRouteReactor: Reactor {
     let provider = ServiceProvider.shared
     let journeyService: JourneyServiceType
     
-    init(journey: Journey,
-         order: Int,
-         journeyService: JourneyServiceType) {
+    init(index: Int, journey: Journey, journeyService: JourneyServiceType) {
         self.journeyService = journeyService
-        self.initialState = .init(journey: journey, order: order)
+        self.initialState = .init(index: index, journey: journey)
     }
 }
 
@@ -53,7 +51,7 @@ extension PlannerRouteReactor {
         switch action {
         case .refresh:
             journeyService.fetchJorney(id: currentState.journey.id)
-            let pikis = currentState.journey.pikidays[currentState.order].pikis
+            let pikis = currentState.journey.pikidays[currentState.index].pikis
             let pikmis = currentState.journey.pikmis
             
             return .concat([
@@ -90,39 +88,36 @@ extension PlannerRouteReactor {
                     pikis.append(reactor.currentState.pik)
                 }
             }
-            journeyService.updatePikis(journeyId: currentState.journey.id, request: .init(index: currentState.order, pikis: pikis))
+            journeyService.updatePikis(journeyId: currentState.journey.id, request: .init(index: currentState.index, pikis: pikis))
             return .empty()
         }
     }
     
-    func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
-        let journeyServiceMutation = journeyService.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
-            switch event {
-            case let .fetchJourney(journey):
-                return .concat([
-                    .just(.setJourney(journey)),
-                    .just(.setPikmiRouteSections(this.makeSections(pikmis: journey.pikmis)))
-                ])
-            case .updatePikis:
-                return .concat([
-                    .just(.setDidUpdatePikis(true)),
-                    .just(.setDidUpdatePikis(false))
-                ])
-            default:
-                return .empty()
-            }
-        }
-
-        return Observable.merge(mutation, journeyServiceMutation)
-    }
+//    func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
+//        let journeyServiceMutation = journeyService.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
+//            switch event {
+//            case let .fetchJourney(journey):
+//                return .concat([
+//                    .just(.setJourney(journey)),
+//                    .just(.setPikmiRouteSections(this.makeSections(pikmis: journey.pikmis)))
+//                ])
+//            case .updatePikis:
+//                return .concat([
+//                    .just(.setDidUpdatePikis(true)),
+//                    .just(.setDidUpdatePikis(false))
+//                ])
+//            default:
+//                return .empty()
+//            }
+//        }
+//
+//        return Observable.merge(mutation, journeyServiceMutation)
+//    }
     
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
         
         switch mutation {
-        case let .setJourney(journey):
-            newState.journey = journey
-            
         case let .setRouteSections(sections):
             newState.routeSections = sections
             

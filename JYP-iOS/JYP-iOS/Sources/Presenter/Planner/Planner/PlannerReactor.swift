@@ -18,6 +18,7 @@ class PlannerReactor: Reactor {
     enum NextScreenType {
         case tagBottomSheet(tag: Tag)
         case plannerSearchPlace(id: String)
+        case plannerRoute(index: Int, journey: Journey)
         case web(url: String)
     }
     
@@ -25,8 +26,6 @@ class PlannerReactor: Reactor {
         case refresh
         case showView(ViewType)
         case tapPlusButton
-        case selectDiscussionCell(IndexPath, DiscussionItem)
-        case selectJourneyPlanCell(IndexPath, JourneyPlanItem)
         case pushNextScreen(NextScreenType)
     }
     
@@ -78,10 +77,13 @@ extension PlannerReactor {
     }
     
     func bind(action: JourneyPlanReactor.Action) {
+        guard let journey = currentState.journey else { return }
+        
         switch action {
-        case let .tapEditButton(indexPath): break
-        case let .tapPlusButton(indexPath): break
-        case let .selectCell(indexPath, item): break
+        case let .tapEditButton(_, state):
+            self.action.onNext(.pushNextScreen(.plannerRoute(index: state.index, journey: journey)))
+        case let .tapPlusButton(_, state):
+            self.action.onNext(.pushNextScreen(.plannerRoute(index: state.index, journey: journey)))
         default: break
         }
     }
@@ -94,15 +96,14 @@ extension PlannerReactor {
             }
             
         case let .showView(type): return .just(.setViewType(type))
-        case let .selectDiscussionCell(indexPath, item): return .empty()
-        case let .selectJourneyPlanCell(indexPath, item): return .empty()
-        case .tapPlusButton: return .empty()
             
         case let .pushNextScreen(type):
             return .concat([
                 .just(.setNextScreenType(type)),
                 .just(.setNextScreenType(nil))
             ])
+            
+        case .tapPlusButton: return .empty()
         }
     }
     

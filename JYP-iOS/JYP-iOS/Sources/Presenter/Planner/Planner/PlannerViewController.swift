@@ -13,7 +13,7 @@ class PlannerViewController: NavigationBarViewController, View {
     typealias Reactor = PlannerReactor
     
     private let pushPlannerInviteScreen: (_ id: String) -> PlannerInviteViewController
-    private let pushPlannerRouteScreen: (_ journey: Journey, _ order: Int) -> PlannerRouteViewController
+    private let pushPlannerRouteScreen: (_ index: Int, _ journey: Journey) -> PlannerRouteViewController
     private let pushTagBottomSheetScreen: (_ tag: Tag) -> TagBottomSheetViewController
     private let pushPlannerSearchPlaceScreen: (_ id: String) -> PlannerSearchPlaceViewController
     private let pushWebScreen: (_ url: String) -> WebViewController
@@ -35,7 +35,7 @@ class PlannerViewController: NavigationBarViewController, View {
     
     init(reactor: Reactor,
          pushPlannerInviteScreen: @escaping (_ id: String) -> PlannerInviteViewController,
-         pushPlannerRouteScreen: @escaping (_ journey: Journey, _ order: Int) -> PlannerRouteViewController,
+         pushPlannerRouteScreen: @escaping (_ index: Int, _ journey: Journey) -> PlannerRouteViewController,
          pushTagBottomSheetScreen: @escaping (_ tag: Tag) -> TagBottomSheetViewController,
          pushPlannerSearchPlaceScreen: @escaping (_ id: String) -> PlannerSearchPlaceViewController,
          pushWebScreen: @escaping (_ url: String) -> WebViewController) {
@@ -187,6 +187,12 @@ class PlannerViewController: NavigationBarViewController, View {
             })
             .disposed(by: disposeBag)
         
+        journeyPlanView.reactor?.action
+            .subscribe(onNext: { action in
+                reactor.bind(action: action)
+            })
+            .disposed(by: disposeBag)
+        
         reactor.state
             .compactMap(\.journey)
             .map {($0,
@@ -222,6 +228,8 @@ class PlannerViewController: NavigationBarViewController, View {
                     self?.willPresentTagBottomSheetViewController(tag: tag)
                 case let .plannerSearchPlace(id):
                     self?.willPushPlannerSearchPlaceViewController(id: id)
+                case let .plannerRoute(index, journey):
+                    self?.willPushPlannerRouteViewController(index: index, journey: journey)
                 case let .web(url):
                     self?.willPresentWebViewController(url: url)
                 }
@@ -237,8 +245,8 @@ extension PlannerViewController {
         navigationController?.pushViewController(viewController, animated: true)
     }
     
-    func willPushPlannerRouteViewController(journey: Journey, order: Int) {
-        let viewController = pushPlannerRouteScreen(journey, order)
+    func willPushPlannerRouteViewController(index: Int, journey: Journey) {
+        let viewController = pushPlannerRouteScreen(index, journey)
         viewController.hidesBottomBarWhenPushed = true
         navigationController?.pushViewController(viewController, animated: true)
     }

@@ -149,10 +149,10 @@ extension CompositionRoot {
                 return controller
             }
 
-            let pushPlannerRouteScreen: (_ journey: Journey, _ order: Int) -> PlannerRouteViewController = { journey, order in
+            let pushPlannerRouteScreen: (_ index: Int, _ journey: Journey) -> PlannerRouteViewController = { index, journey in
                 let reactor = PlannerRouteReactor(
+                    index: index,
                     journey: journey,
-                    order: order,
                     journeyService: journeyService
                 )
                 let viewController = PlannerRouteViewController(reactor: reactor)

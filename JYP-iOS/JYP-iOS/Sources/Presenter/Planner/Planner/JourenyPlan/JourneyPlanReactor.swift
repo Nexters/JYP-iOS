@@ -12,15 +12,13 @@ import ReactorKit
 class JourneyPlanReactor: Reactor {
     enum Action {
         case refresh(Journey)
-        case selectCell(IndexPath, JourneyPlanItem)
-        case tapEditButton(IndexPath)
-        case tapPlusButton(IndexPath)
+        case tapEditButton(IndexPath, PikiCollectionReusableViewReactor.State)
+        case tapPlusButton(IndexPath, EmptyPikiCollectionViewCellReactor.State)
     }
     
     enum Mutation {
         case setJourney(Journey)
         case setSections([JourneyPlanSectionModel])
-        case updateSectionItem(IndexPath, JourneyPlanSectionModel.Item)
     }
     
     struct State {
@@ -45,7 +43,12 @@ extension JourneyPlanReactor {
     
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        case let .refresh(journey): return .just(.setJourney(journey))
+        case let .refresh(journey):
+            return .concat([
+                .just(.setJourney(journey)),
+                .just(.setSections(makeSections(from: journey)))
+            ])
+            
         default: return .empty()
         }
     }
@@ -56,7 +59,6 @@ extension JourneyPlanReactor {
         switch mutation {
         case let .setJourney(Journey): newState.journey = Journey
         case let .setSections(sections): newState.sections = sections
-        case let .updateSectionItem(indexPath, item): newState.sections[indexPath.section].items[indexPath.row] = item
         }
         
         return newState
@@ -77,12 +79,12 @@ extension JourneyPlanReactor {
             var journeyPlanItems: [JourneyPlanItem] = []
             
             if pikiday.pikis.isEmpty {
-                let sectionItem = JourneyPlanItem.emptyPlan(EmptyPlanCollectionViewCellReactor(state: .init(order: index, date: DateManager.addDateComponent(byAdding: .day, value: index, to: Date(timeIntervalSince1970: journey.startDate)))))
+                let sectionItem = JourneyPlanItem.emptyPlan(.init(index: index, startDate: Date(timeIntervalSince1970: journey.startDate)))
                 
                 journeyPlanItems.append(sectionItem)
             } else {
                 let sectionItems = pikiday.pikis.enumerated().map { (index, pik) -> JourneyPlanItem in
-                    return JourneyPlanItem.plan(PlanCollectionViewCellReactor(state: .init(isLast: index == pikiday.pikis.count - 1, order: index, date: DateManager.addDateComponent(byAdding: .day, value: index, to: Date(timeIntervalSince1970: journey.startDate)), pik: pik)))
+                    return JourneyPlanItem.plan(PikiCollectionViewCellReactor(state: .init(isLast: index == pikiday.pikis.count - 1, order: index, date: DateManager.addDateComponent(byAdding: .day, value: index, to: Date(timeIntervalSince1970: journey.startDate)), pik: pik)))
                 }
                 
                 journeyPlanItems.append(contentsOf: sectionItems)
