@@ -203,15 +203,8 @@ class PlannerSearchPlaceMapViewController: NavigationBarViewController, View {
             .map(\.isBack)
             .filter { $0 }
             .bind { [weak self] _ in
-                self?.backToPlannerViewController()
+                self?.popToViewController(PlannerViewController.self)
             }
             .disposed(by: disposeBag)
-    }
-}
-extension PlannerSearchPlaceMapViewController {
-    func backToPlannerViewController() {
-        guard let viewController = self.navigationController?.viewControllers.filter({ $0 is PlannerViewController }).first else { return }
-        
-        self.navigationController?.popToViewController(viewController, animated: true)
     }
 }
