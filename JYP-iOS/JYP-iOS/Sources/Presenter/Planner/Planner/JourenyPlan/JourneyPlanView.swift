@@ -19,7 +19,7 @@ class JourneyPlanView: BaseView, View {
     // MARK: - Properties
     let dayCollectionViewLayout = UICollectionViewFlowLayout()
     
-    private lazy var dataSource = RxCollectionViewSectionedReloadDataSource<JourneyPlanSectionModel> { [weak self] _, collectionView, indexPath, item -> UICollectionViewCell in
+    lazy var dataSource = RxCollectionViewSectionedReloadDataSource<JourneyPlanSectionModel> { [weak self] _, collectionView, indexPath, item -> UICollectionViewCell in
         guard let reactor = self?.reactor else { return .init() }
         
         switch item {
@@ -32,10 +32,8 @@ class JourneyPlanView: BaseView, View {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: EmptyPikiCollectionViewCell.self), for: indexPath) as? EmptyPikiCollectionViewCell else { return .init() }
             
             cell.reactor = cellReactor
-            cell.trailingButton
-                .rx
-                .tap
-                .map { .tapPlusButton(indexPath) }
+            cell.trailingButton.rx.tap
+                .map { .tapPlusButton(indexPath, cellReactor.currentState) }
                 .bind(to: reactor.action)
                 .disposed(by: cell.disposeBag)
             return cell
@@ -49,13 +47,16 @@ class JourneyPlanView: BaseView, View {
         guard let reactor = self?.reactor else { return .init() }
         switch dataSource[indexPath.section].model {
         case let .journey(items):
-            guard case let .plan(cellReactor) = items[indexPath.item] else { return .init() }
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: PikiCollectionReusableView.self), for: indexPath) as? PikiCollectionReusableView else { return .init() }
             
-            header.reactor = PikiCollectionReusableViewReactor(journey: reactor.currentState.journey, order: indexPath.section - 1)
+            let index = indexPath.section - 1
+            let date = Date(timeIntervalSince1970: reactor.currentState.journey?.startDate ?? Date.timeIntervalBetween1970AndReferenceDate)
+            
+            let cellReactor = PikiCollectionReusableViewReactor(index: index, date: date)
+            header.reactor = cellReactor
             
             header.trailingButton.rx.tap
-                .map { .tapEditButton(indexPath) }
+                .map { .tapEditButton(indexPath, cellReactor.currentState) }
                 .bind(to: reactor.action)
                 .disposed(by: header.disposeBag)
             return header
@@ -105,8 +106,8 @@ class JourneyPlanView: BaseView, View {
     }
     
     func bind(reactor: Reactor) {
-        reactor.state.map(\.sections)
-            .asObservable()
+        reactor.state
+            .map(\.sections)
             .withUnretained(self)
             .bind { this, sections in
                 this.dataSource.setSections(sections)

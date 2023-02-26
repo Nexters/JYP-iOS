@@ -10,145 +10,112 @@ import ReactorKit
 import UIKit
 
 class PlannerReactor: Reactor {
-    enum Action {
-        case refresh(UIViewController)
-        case showDiscussion
-        case showJourneyPlan
-//        case invite
+    enum ViewType {
+        case journeyPlan
+        case discussion
     }
-
+    
+    enum NextScreenType {
+        case tagBottomSheet(tag: Tag)
+        case plannerSearchPlace(id: String)
+        case plannerRoute(index: Int, journey: Journey)
+        case web(url: String)
+    }
+    
+    enum Action {
+        case refresh
+        case showView(ViewType)
+        case tapPlusButton
+        case pushNextScreen(NextScreenType)
+    }
+    
     enum Mutation {
         case setJourney(Journey)
-        case setIsShowDiscussion(Bool)
-        case setIsShowJourneyPlan(Bool)
-//        case setPlannerInviteReactor(PlannerInviteReactor?)
-        case setTagBottomSheetReactor(TagBottomSheetReactor?)
-        case setPlannerSearchPlaceReactor(PlannerSearchPlaceReactor?)
-//        case setPlannerRouteReactor(PlannerRouteReactor?)
-        case setWebReactor(WebReactor?)
-        case setOrderPlannerRouteScreen(Int?)
+        case setViewType(ViewType)
+        case setNextScreenType(NextScreenType?)
     }
-
+    
     struct State {
+        let id: String
         var journey: Journey?
-        var isShowDiscussion: Bool = true
-        var isShowJourneyPlan: Bool = false
-//        var plannerInviteReactor: PlannerInviteReactor?
-        var tagBottomSheetReactor: TagBottomSheetReactor?
-        var plannerSearchPlaceReactor: PlannerSearchPlaceReactor?
-//        var plannerRouteReactor: PlannerRouteReactor?
-        var webReactor: WebReactor?
-        var orderPlannerRouteScreen: Int?
+        var viewType: ViewType = .discussion
+        var nextScreenType: NextScreenType?
     }
-
-    let provider = ServiceProvider.shared
-
+    
     var initialState: State
     
-    let id: String
+    let journeyService: JourneyServiceType
     
-    init(id: String) {
-        self.id = id
-        self.initialState = .init()
+    init(id: String, journeyService: JourneyServiceType) {
+        self.journeyService = journeyService
+        self.initialState = .init(id: id)
     }
+}
 
+extension PlannerReactor {
+    func bind(action: DiscussionReactor.Action) {
+        switch action {
+        case let .selectCell(_, item):
+            switch item {
+            case let .tag(reactor):
+                self.action.onNext(.pushNextScreen(.tagBottomSheet(tag: reactor.currentState)))
+            default: break
+            }
+        case let .tapCellLikeButton(_, state):
+            if state.isSelected {
+                journeyService.deletePikmiLike(journeyId: currentState.id, pikmiId: state.pik.id)
+            } else {
+                journeyService.createPikmiLike(journeyId: currentState.id, pikmiId: state.pik.id)
+            }
+            self.action.onNext(.refresh)
+        case .tapCellCreateButton, .tapPlusButton:
+            self.action.onNext(.pushNextScreen(.plannerSearchPlace(id: initialState.id)))
+        case let .tapCellInfoButton(_, state):
+            self.action.onNext(.pushNextScreen(.web(url: state.pik.link)))
+        default: break
+        }
+    }
+    
+    func bind(action: JourneyPlanReactor.Action) {
+        guard let journey = currentState.journey else { return }
+        
+        switch action {
+        case let .tapEditButton(_, state):
+            self.action.onNext(.pushNextScreen(.plannerRoute(index: state.index, journey: journey)))
+        case let .tapPlusButton(_, state):
+            self.action.onNext(.pushNextScreen(.plannerRoute(index: state.index, journey: journey)))
+        default: break
+        }
+    }
+    
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .refresh:
-            provider.plannerService.refresh()
-            return .empty()
-
-        case .showDiscussion:
-            return .concat([
-                .just(.setIsShowDiscussion(true)),
-                .just(.setIsShowJourneyPlan(false))
-            ])
-
-        case .showJourneyPlan:
-            return .concat([
-                .just(.setIsShowDiscussion(false)),
-                .just(.setIsShowJourneyPlan(true))
-            ])
-
-//        case .invite:
-//            return .concat([
-//                .just(.setPlannerInviteReactor(makeReactor())),
-//                .just(.setPlannerInviteReactor(nil))
-//            ])
-        }
-    }
-
-    func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
-        let APIMutation = provider.journeyService.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
-            switch event {
-            case let .fetchJourney(journey):
-                return .just(.setJourney(journey))
+            return journeyService.fetchJorney(id: initialState.id).map {
+                .setJourney($0)
+            }
             
-            case .createPikmiLike, .deletePikmiLike:
-                this.provider.plannerService.refresh()
-                return .empty()
-                
-            default:
-                return .empty()
-            }
+        case let .showView(type): return .just(.setViewType(type))
+            
+        case let .pushNextScreen(type):
+            return .concat([
+                .just(.setNextScreenType(type)),
+                .just(.setNextScreenType(nil))
+            ])
+            
+        case .tapPlusButton: return .empty()
         }
-
-        let eventMutation = provider.plannerService.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
-            switch event {
-            case .refresh:
-                this.provider.journeyService.fetchJorney(id: this.id)
-                return .empty()
-
-            case let .presentTagBottomSheet(reactor):
-                return .just(.setTagBottomSheetReactor(reactor))
-
-            case let .presentPlannerSearchPlace(reactor):
-                return .just(.setPlannerSearchPlaceReactor(reactor))
-
-            case let .presentWeb(reactor):
-                return .just(.setWebReactor(reactor))
-                
-            case let .showPlannerRouteScreen(order):
-                return .concat([
-                    .just(.setOrderPlannerRouteScreen(order)),
-                    .just(.setOrderPlannerRouteScreen(nil))
-                ])
-            }
-        }
-
-        return Observable.merge(mutation, APIMutation, eventMutation)
     }
-
+    
     func reduce(state: State, mutation: Mutation) -> State {
         var newState = state
 
         switch mutation {
-        case let .setJourney(journey):
-            newState.journey = journey
-
-        case let .setIsShowDiscussion(bool):
-            newState.isShowDiscussion = bool
-
-        case let .setIsShowJourneyPlan(bool):
-            newState.isShowJourneyPlan = bool
-
-        case let .setTagBottomSheetReactor(reactor):
-            newState.tagBottomSheetReactor = reactor
-
-        case let .setPlannerSearchPlaceReactor(reactor):
-            newState.plannerSearchPlaceReactor = reactor
-
-        case let .setWebReactor(reactor):
-            newState.webReactor = reactor
-            
-        case let .setOrderPlannerRouteScreen(order):
-            newState.orderPlannerRouteScreen = order
+        case let .setJourney(journey): newState.journey = journey
+        case let .setViewType(type): newState.viewType = type
+        case let .setNextScreenType(type): newState.nextScreenType = type
         }
 
         return newState
-    }
-
-    private func makeReactor() -> PlannerInviteReactor {
-        .init(id: id)
     }
 }

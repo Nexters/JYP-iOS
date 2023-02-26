@@ -13,7 +13,13 @@ class PlannerViewController: NavigationBarViewController, View {
     typealias Reactor = PlannerReactor
     
     private let pushPlannerInviteScreen: (_ id: String) -> PlannerInviteViewController
-    private let pushPlannerRouteScreen: (_ root: AnyObject.Type, _ journey: Journey, _ order: Int) -> PlannerRouteViewController
+    private let pushPlannerRouteScreen: (_ index: Int, _ journey: Journey) -> PlannerRouteViewController
+    private let pushTagBottomSheetScreen: (_ tag: Tag) -> TagBottomSheetViewController
+    private let pushPlannerSearchPlaceScreen: (_ id: String) -> PlannerSearchPlaceViewController
+    private let pushWebScreen: (_ url: String) -> WebViewController
+    
+    private let journeyPlanView: JourneyPlanView
+    private let discussionView: DiscussionView
     
     // MARK: - UI Components
     
@@ -24,18 +30,24 @@ class PlannerViewController: NavigationBarViewController, View {
     let discussionButton: JYPBottomBorderButton = .init(title: "토론장")
     let journeyPlanButton: JYPBottomBorderButton = .init(title: "여행 계획")
     let menuDivider: UIView = .init()
-    let discussionView: DiscussionView
-    let journeyPlanView: JourneyPlanView
     
     // MARK: - Initializer
     
     init(reactor: Reactor,
          pushPlannerInviteScreen: @escaping (_ id: String) -> PlannerInviteViewController,
-         pushPlannerRouteScreen: @escaping (_ root: AnyObject.Type, _ journey: Journey, _ order: Int) -> PlannerRouteViewController) {
-        discussionView = .init(reactor: .init(id: reactor.id))
-        journeyPlanView = .init(reactor: .init(id: reactor.id))
+         pushPlannerRouteScreen: @escaping (_ index: Int, _ journey: Journey) -> PlannerRouteViewController,
+         pushTagBottomSheetScreen: @escaping (_ tag: Tag) -> TagBottomSheetViewController,
+         pushPlannerSearchPlaceScreen: @escaping (_ id: String) -> PlannerSearchPlaceViewController,
+         pushWebScreen: @escaping (_ url: String) -> WebViewController) {
         self.pushPlannerInviteScreen = pushPlannerInviteScreen
         self.pushPlannerRouteScreen = pushPlannerRouteScreen
+        self.pushTagBottomSheetScreen = pushTagBottomSheetScreen
+        self.pushPlannerSearchPlaceScreen = pushPlannerSearchPlaceScreen
+        self.pushWebScreen = pushWebScreen
+        
+        self.discussionView = DiscussionView(reactor: .init())
+        self.journeyPlanView = JourneyPlanView(reactor: .init())
+        
         super.init(nibName: nil, bundle: nil)
         self.reactor = reactor
     }
@@ -143,101 +155,85 @@ class PlannerViewController: NavigationBarViewController, View {
     
     func bind(reactor: Reactor) {
         rx.viewWillAppear
-            .map { _ in .refresh(self) }
+            .map { _ in .refresh }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
         inviteButton.rx.tap
-            .withUnretained(self)
-            .bind { this, _ in
-                this.willPushPlannerInviteViewController(id: reactor.id)
-            }
+            .subscribe(onNext: { [weak self] in
+                self?.willPushPlannerInviteViewController(id: reactor.initialState.id)
+            })
             .disposed(by: disposeBag)
         
         inviteStackView.inviteButton.rx.tap
-            .withUnretained(self)
-            .bind { this, _ in
-                this.willPushPlannerInviteViewController(id: reactor.id)
-            }
+            .subscribe(onNext: { [weak self] in
+                self?.willPushPlannerInviteViewController(id: reactor.initialState.id)
+            })
             .disposed(by: disposeBag)
         
         discussionButton.rx.tap
-            .map { .showDiscussion }
+            .map { .showView(.discussion) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
         journeyPlanButton.rx.tap
-            .map { .showJourneyPlan }
+            .map { .showView(.journeyPlan) }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
+        discussionView.reactor?.action
+            .subscribe(onNext: { action in
+                reactor.bind(action: action)
+            })
+            .disposed(by: discussionView.disposeBag)
+        
+        journeyPlanView.reactor?.action
+            .subscribe(onNext: { action in
+                reactor.bind(action: action)
+            })
+            .disposed(by: journeyPlanView.disposeBag)
+        
         reactor.state
             .compactMap(\.journey)
-            .withUnretained(self)
-            .bind { this, journey in
-                this.dateLabel.text = DateManager.doubleToDateString(format: "M월d일", double: journey.startDate) + " - " + DateManager.doubleToDateString(format: "M월d일", double: journey.endDate)
-                if journey.users.isEmpty {
-                    this.inviteButton.isHidden = false
-                    this.inviteStackView.isHidden = true
-                } else {
-                    this.inviteStackView.update(users: journey.users)
-                    this.inviteButton.isHidden = true
-                    this.inviteStackView.isHidden = false
+            .map {($0,
+                   DateManager.doubleToDateString(format: "M월d일", double: $0.startDate),
+                   DateManager.doubleToDateString(format: "M월d일", double: $0.endDate))}
+            .subscribe(onNext: { [weak self] journey, start, end in
+                self?.dateLabel.text = String(describing: start + " - " + end)
+                self?.inviteStackView.update(users: journey.users)
+                self?.inviteButton.isHidden = !journey.users.isEmpty
+                self?.inviteStackView.isHidden = journey.users.isEmpty
+                self?.setNavigationBarTitleText(journey.name)
+                
+                self?.discussionView.reactor?.bind(action: .refresh(journey))
+                self?.journeyPlanView.reactor?.bind(action: .refresh(journey))
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .map(\.viewType)
+            .subscribe(onNext: { [weak self] type in
+                self?.journeyPlanButton.isSelected = (type == .journeyPlan)
+                self?.journeyPlanView.isHidden = !(type == .journeyPlan)
+                self?.discussionButton.isSelected = (type == .discussion)
+                self?.discussionView.isHidden = !(type == .discussion)
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .compactMap(\.nextScreenType)
+            .subscribe(onNext: { [weak self] type in
+                switch type {
+                case let .tagBottomSheet(tag):
+                    self?.willPresentTagBottomSheetViewController(tag: tag)
+                case let .plannerSearchPlace(id):
+                    self?.willPushPlannerSearchPlaceViewController(id: id)
+                case let .plannerRoute(index, journey):
+                    self?.willPushPlannerRouteViewController(index: index, journey: journey)
+                case let .web(url):
+                    self?.willPresentWebViewController(url: url)
                 }
-                this.setNavigationBarTitleText(journey.name)
-            }
-            .disposed(by: disposeBag)
-        
-        reactor.state
-            .map(\.isShowDiscussion)
-            .withUnretained(self)
-            .bind { this, bool in
-                this.discussionButton.isSelected = bool
-                this.discussionView.isHidden = !bool
-            }
-            .disposed(by: disposeBag)
-        
-        reactor.state
-            .map(\.isShowJourneyPlan)
-            .withUnretained(self)
-            .bind { this, bool in
-                this.journeyPlanButton.isSelected = bool
-                this.journeyPlanView.isHidden = !bool
-            }
-            .disposed(by: disposeBag)
-        
-        reactor.state
-            .compactMap(\.tagBottomSheetReactor)
-            .withUnretained(self)
-            .bind { this, reactor in
-                this.tabBarController?.present(TagBottomSheetViewController(reactor: reactor), animated: true)
-            }
-            .disposed(by: disposeBag)
-        
-        reactor.state
-            .compactMap(\.plannerSearchPlaceReactor)
-            .withUnretained(self)
-            .bind { this, reactor in
-                this.navigationController?.pushViewController(PlannerSearchPlaceViewController(reactor: reactor), animated: true)
-            }
-            .disposed(by: disposeBag)
-         
-        reactor.state
-            .compactMap(\.webReactor)
-            .withUnretained(self)
-            .bind { this, reactor in
-                this.navigationController?.present(WebViewController(reactor: reactor), animated: true)
-            }
-            .disposed(by: disposeBag)
-        
-        reactor.state
-            .compactMap(\.orderPlannerRouteScreen)
-            .withUnretained(self)
-            .bind { this, order in
-                let root = type(of: self)
-                guard let journey = reactor.currentState.journey else { return }
-                this.willPushPlannerRouteViewController(root: root, journey: journey, order: order)
-            }
+            })
             .disposed(by: disposeBag)
     }
 }
@@ -246,12 +242,28 @@ extension PlannerViewController {
     func willPushPlannerInviteViewController(id: String) {
         let viewController = pushPlannerInviteScreen(id)
         viewController.hidesBottomBarWhenPushed = true
-        self.navigationController?.pushViewController(viewController, animated: true)
+        navigationController?.pushViewController(viewController, animated: true)
     }
     
-    func willPushPlannerRouteViewController(root: AnyObject.Type, journey: Journey, order: Int) {
-        let viewController = pushPlannerRouteScreen(root, journey, order)
+    func willPushPlannerRouteViewController(index: Int, journey: Journey) {
+        let viewController = pushPlannerRouteScreen(index, journey)
         viewController.hidesBottomBarWhenPushed = true
-        self.navigationController?.pushViewController(viewController, animated: true)
+        navigationController?.pushViewController(viewController, animated: true)
+    }
+    
+    func willPushPlannerSearchPlaceViewController(id: String) {
+        let viewController = pushPlannerSearchPlaceScreen(id)
+        viewController.hidesBottomBarWhenPushed = true
+        navigationController?.pushViewController(viewController, animated: true)
+    }
+    
+    func willPresentWebViewController(url: String) {
+        let viewController = pushWebScreen(url)
+        navigationController?.present(viewController, animated: true)
+    }
+    
+    func willPresentTagBottomSheetViewController(tag: Tag) {
+        let viewController = pushTagBottomSheetScreen(tag)
+        tabBarController?.present(viewController, animated: true)
     }
 }

@@ -24,8 +24,8 @@ class TagBottomSheetReactor: Reactor {
     
     var initialState: State
     
-    init(state: State) {
-        self.initialState = state
+    init(tag: Tag) {
+        self.initialState = State(tag: tag)
     }
 }
 

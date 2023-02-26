@@ -13,7 +13,6 @@ enum JourneyEvent {
     case fetchJourney(Journey)
     case create(Journey)
     case createPikmi(id: String)
-    case updatePikis(ids: [String])
     case createPikmiLike
     case deletePikmiLike
 
@@ -27,12 +26,12 @@ protocol JourneyServiceType {
     var event: PublishSubject<JourneyEvent> { get }
 
     func fetchJornenys()
-    func fetchJorney(id: String)
+    func fetchJorney(id: String) -> Observable<Journey>
     func fetchDefaultTags() -> Observable<[Tag]>
     func fetchJourneyTags(journeyId: String, isIncludeDefaultTags: Bool) -> Observable<[Tag]>
     func createJourney(journey: Journey) -> Observable<String>
     func createPikmi(id: String, name: String, address: String, category: JYPCategoryType, longitude: Double, latitude: Double, link: String)
-    func updatePikis(journeyId: String, request: UpdatePikisRequest)
+    func updatePikis(journeyId: String, request: UpdatePikisRequest) -> Observable<[String]>
     func editTags(journeyId: String, request: UpdateTagsRequest) -> Observable<EmptyModel>
     func joinPlanner(journeyId: String, request: CreateJourneyUserRequest) -> Observable<EmptyModel>
     func deleteJourneyUser(journeyId: String) -> Observable<EmptyModel>
@@ -76,7 +75,7 @@ final class JourneyService: BaseService, JourneyServiceType {
         .disposed(by: disposeBag)
     }
 
-    func fetchJorney(id: String) {
+    func fetchJorney(id: String) -> Observable<Journey> {
         let target = JourneyAPI.fetchJourney(journeyId: id)
 
         let request = APIService.request(target: target)
@@ -89,6 +88,8 @@ final class JourneyService: BaseService, JourneyServiceType {
             self?.event.onNext(.fetchJourney(journey))
         }
         .disposed(by: disposeBag)
+        
+        return request.asObservable()
     }
 
     func fetchJourneyTags(
@@ -146,19 +147,14 @@ final class JourneyService: BaseService, JourneyServiceType {
         .disposed(by: disposeBag)
     }
 
-    func updatePikis(journeyId: String, request: UpdatePikisRequest) {
+    func updatePikis(journeyId: String, request: UpdatePikisRequest) -> Observable<[String]> {
         let target = JourneyAPI.updatePikis(journeyId: journeyId, request: request)
-
-        let request = APIService.request(target: target)
+        
+        return APIService.request(target: target)
             .map(BaseModel<UpdatePikisResponse>.self)
             .compactMap(\.data)
             .map(\.ids)
             .asObservable()
-
-        request.bind { [weak self] ids in
-            self?.event.onNext(.updatePikis(ids: ids))
-        }
-        .disposed(by: disposeBag)
     }
 
     func editTags(journeyId: String, request: UpdateTagsRequest) -> Observable<EmptyModel> {

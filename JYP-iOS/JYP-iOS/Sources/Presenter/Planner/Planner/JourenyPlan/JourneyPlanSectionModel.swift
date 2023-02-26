@@ -17,8 +17,8 @@ enum JourneyPlanSection {
 
 enum JourneyPlanItem {
     case dayTag(DayTagCollectionViewCellReactor)
-    case plan(PlanCollectionViewCellReactor)
-    case emptyPlan(EmptyPlanCollectionViewCellReactor)
+    case plan(PikiCollectionViewCellReactor)
+    case emptyPlan(EmptyPikiCollectionViewCellReactor)
 }
 
 extension JourneyPlanSection: SectionModelType {

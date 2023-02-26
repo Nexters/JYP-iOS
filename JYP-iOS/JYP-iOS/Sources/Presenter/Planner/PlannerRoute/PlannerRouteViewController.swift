@@ -11,9 +11,9 @@ import ReactorKit
 import RxDataSources
 
 class PlannerRouteViewController: NavigationBarViewController, View {
-    // MARK: - Properties
-    
     typealias Reactor = PlannerRouteReactor
+    
+    // MARK: - Properties
     
     private lazy var routeDataSource = RxCollectionViewSectionedReloadDataSource<RouteSectionModel> { [weak self] _, collectionView, indexPath, item -> UICollectionViewCell in
         guard let reactor = self?.reactor else { return .init() }
@@ -25,7 +25,7 @@ class PlannerRouteViewController: NavigationBarViewController, View {
             cell.reactor = cellReactor
             
             cell.deleteButton.rx.tap
-                .map { .tapRouteCell(indexPath) }
+                .map { .tapCellDeleteButton(indexPath, cellReactor.currentState) }
                 .bind(to: reactor.action)
                 .disposed(by: cell.disposeBag)
             
@@ -50,8 +50,6 @@ class PlannerRouteViewController: NavigationBarViewController, View {
         }
     }
     
-    let root: AnyObject.Type
-    
     // MARK: - UI Components
     
     let emptyLabel: UILabel = .init()
@@ -61,8 +59,7 @@ class PlannerRouteViewController: NavigationBarViewController, View {
     
     // MARK: - Initializer
     
-    init(reactor: Reactor, root: AnyObject.Type) {
-        self.root = root
+    init(reactor: Reactor) {
         super.init(nibName: nil, bundle: nil)
         
         self.reactor = reactor
@@ -137,11 +134,6 @@ class PlannerRouteViewController: NavigationBarViewController, View {
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
         
-        routeCollectionView.rx.itemSelected
-            .map { .tapRouteCell($0) }
-            .bind(to: reactor.action)
-            .disposed(by: disposeBag)
-        
         Observable
             .zip(
                 pikmiRouteCollectionView.rx.itemSelected,
@@ -156,7 +148,7 @@ class PlannerRouteViewController: NavigationBarViewController, View {
             .disposed(by: disposeBag)
         
         reactor.state
-            .map(\.order)
+            .map(\.index)
             .map { $0 + 1 }
             .map { String(describing: "DAY \($0)") }
             .withUnretained(self)
@@ -166,7 +158,7 @@ class PlannerRouteViewController: NavigationBarViewController, View {
             .disposed(by: disposeBag)
         
         reactor.state
-            .map(\.order)
+            .map(\.index)
             .map { ($0, Date(timeIntervalSince1970: reactor.currentState.journey.startDate)) }
             .map { DateManager.addDateComponent(byAdding: .day, value: $0, to: $1) }
             .map { DateManager.dateToString(format: "M월 d일", date: $0) }
@@ -209,21 +201,12 @@ class PlannerRouteViewController: NavigationBarViewController, View {
             .disposed(by: disposeBag)
         
         reactor.state
-            .map(\.didUpdatePikis)
+            .map(\.popToPlanner)
             .filter { $0 }
-            .withUnretained(self)
-            .bind { this, _ in
-                this.backToRootViewController(root: this.root)
-            }
+            .subscribe(onNext: { [weak self] _ in
+                self?.popToViewController(PlannerViewController.self)
+            })
             .disposed(by: disposeBag)
-    }
-}
-
-extension PlannerRouteViewController {
-    func backToRootViewController(root: AnyObject.Type) {
-        guard let viewController = self.navigationController?.viewControllers.filter({ type(of: $0).isEqual(root) }).first else { return }
-
-        self.navigationController?.popToViewController(viewController, animated: true)
     }
 }
 

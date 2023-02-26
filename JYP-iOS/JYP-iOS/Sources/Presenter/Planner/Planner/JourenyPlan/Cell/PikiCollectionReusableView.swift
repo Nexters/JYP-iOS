@@ -59,12 +59,10 @@ class PikiCollectionReusableView: BaseCollectionReusableView, View {
     }
     
     func bind(reactor: Reactor) {
-        titleLabel.text = "Day \(reactor.currentState.order + 1)"
+        let index = reactor.currentState.index
+        let date = DateManager.addDateComponent(byAdding: .day, value: index, to: reactor.currentState.date)
         
-        if let journey = reactor.currentState.journey {
-            var date = Date(timeIntervalSince1970: journey.startDate)
-            date = DateManager.addDateComponent(byAdding: .day, value: reactor.currentState.order, to: date)
-            subLabel.text = DateManager.dateToString(format: "M월 d일", date: date)
-        }
+        titleLabel.text = String(describing: "Day \(index + 1)")
+        subLabel.text = DateManager.dateToString(format: "M월 d일", date: date)
     }
 }

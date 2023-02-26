@@ -205,3 +205,15 @@ class NavigationBarViewController: BaseViewController, BaseNavigationBarViewCont
         navigationBar.subTitle.textColor = color
     }
 }
+
+extension NavigationBarViewController {
+    /// pop 네비게이션 함수
+    /// - Parameters:
+    ///   - viewControllerType: 돌아갈 뷰컨트롤러 타입
+    ///   - animated: animation 적용 여부
+    func popToViewController(_ viewControllerType: AnyObject.Type, animated: Bool = true) {
+        guard let viewController = self.navigationController?.viewControllers.filter({ type(of: $0).isEqual(viewControllerType) }).first else { return }
+
+        self.navigationController?.popToViewController(viewController, animated: animated)
+    }
+}

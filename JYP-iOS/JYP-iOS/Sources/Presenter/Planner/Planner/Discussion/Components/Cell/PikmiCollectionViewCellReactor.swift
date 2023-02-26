@@ -10,32 +10,33 @@ import ReactorKit
 
 class PikmiCollectionViewCellReactor: Reactor {
     enum Action {
-        case animated
+        case tapLikeButton
     }
     
     enum Mutation {
-        case updateIsReadyAnimate(Bool)
+        case toggle
     }
     
     struct State {
+        let rank: Int
         let pik: Pik
-        var rank: Int
-        var isSelectedLikeButton: Bool = false
-        var isReadyAnimate: Bool = false
+        var isSelected: Bool
     }
     
     let initialState: State
     
-    init(state: State) {
-        initialState = state
+    init(rank: Int, pik: Pik) {
+        let userID = UserDefaultsAccess.get(key: .userID)
+        let isSelected = pik.likeBy?.contains(where: { $0.id == userID }) == true
+        
+        initialState = .init(rank: rank, pik: pik, isSelected: isSelected)
     }
 }
 
 extension PikmiCollectionViewCellReactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
-        case .animated:
-            return .just(.updateIsReadyAnimate(false))
+        case .tapLikeButton: return .just(.toggle)
         }
     }
     
@@ -43,8 +44,7 @@ extension PikmiCollectionViewCellReactor {
         var newState = state
         
         switch mutation {
-        case let .updateIsReadyAnimate(bool):
-            newState.isReadyAnimate = bool
+        case .toggle: newState.isSelected.toggle()
         }
         
         return newState
