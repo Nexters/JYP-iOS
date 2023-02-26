@@ -35,7 +35,8 @@ class BaseProjectFactory: ProjectFactory {
     let bundleName: String = "journeypiki"
 
     let infoPlist: [String: InfoPlist.Value] = [
-        "CFBundleName" : "저니피키",
+        "ITSAppUsesNonExemptEncryption": false,
+        "CFBundleName": "저니피키",
         "CFBundleShortVersionString": "1.0",
         "CFBundleVersion": "1",
         "UILaunchStoryboardName": "LaunchScreen",
