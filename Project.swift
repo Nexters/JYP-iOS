@@ -30,10 +30,13 @@ protocol ProjectFactory {
 // MARK: - Base Project Factory
 
 class BaseProjectFactory: ProjectFactory {
+    let appName: String = "저니피키"
     let projectName: String = "JYP-iOS"
     let bundleName: String = "journeypiki"
 
     let infoPlist: [String: InfoPlist.Value] = [
+        "ITSAppUsesNonExemptEncryption": false,
+        "CFBundleName": "저니피키",
         "CFBundleShortVersionString": "1.0",
         "CFBundleVersion": "1",
         "UILaunchStoryboardName": "LaunchScreen",

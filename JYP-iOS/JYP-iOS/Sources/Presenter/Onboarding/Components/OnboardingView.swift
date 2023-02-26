@@ -96,7 +96,7 @@ class OnboardingView: BaseView {
         super.setupHierarchy()
         
         addSubviews([onboardingContentView, stackView, nextButton])
-        onboardingContentView.addSubviews([onboardingTextLogoImageView, subLabel, onboardingImageView])
+        onboardingContentView.addSubviews([onboardingImageView, onboardingTextLogoImageView, subLabel])
     }
     
     override func setupLayout() {
