@@ -45,8 +45,8 @@ class PlannerViewController: NavigationBarViewController, View {
         self.pushPlannerSearchPlaceScreen = pushPlannerSearchPlaceScreen
         self.pushWebScreen = pushWebScreen
         
-        self.discussionView = DiscussionView(reactor: .init(journeyService: reactor.journeyService))
-        self.journeyPlanView = JourneyPlanView(reactor: .init(journeyService: reactor.journeyService))
+        self.discussionView = DiscussionView(reactor: .init())
+        self.journeyPlanView = JourneyPlanView(reactor: .init())
         
         super.init(nibName: nil, bundle: nil)
         self.reactor = reactor

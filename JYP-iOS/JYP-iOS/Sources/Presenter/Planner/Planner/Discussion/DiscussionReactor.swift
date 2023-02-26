@@ -34,10 +34,7 @@ class DiscussionReactor: Reactor {
     
     var initialState: State
     
-    private let journeyService: JourneyServiceType
-    
-    init(journeyService: JourneyServiceType) {
-        self.journeyService = journeyService
+    init() {
         self.initialState = State()
     }
 }
