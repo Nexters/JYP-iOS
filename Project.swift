@@ -37,7 +37,7 @@ class BaseProjectFactory: ProjectFactory {
     let infoPlist: [String: InfoPlist.Value] = [
         "ITSAppUsesNonExemptEncryption": false,
         "CFBundleName": "저니피키",
-        "CFBundleShortVersionString": "1.0",
+        "CFBundleShortVersionString": "1.0.1",
         "CFBundleVersion": "1",
         "UILaunchStoryboardName": "LaunchScreen",
         "KAKAO_REST_KEY": "$(KAKAO_REST_KEY)",
