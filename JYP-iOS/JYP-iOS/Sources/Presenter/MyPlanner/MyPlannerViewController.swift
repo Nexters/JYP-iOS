@@ -148,7 +148,7 @@ class MyPlannerViewController: NavigationBarViewController, View {
     func bind(reactor: MyPlannerReactor) {
         rx.viewWillAppear
             .bind { [weak self] _ in
-                self?.titleLabel.text = String(describing: "\(PersonalityID.toSelf(title: UserDefaultsAccess.get(key: .personality) ?? "").title),\n\(UserDefaultsAccess.get(key: .nickname) ?? "")의 시작된 여행")
+                self?.titleLabel.text = String(describing: "\(PersonalityID.toSelf(title: UserDefaultsAccess.get(key: .personality) ?? "").title),\n\(UserDefaultsAccess.get(key: .nickname) ?? "")님의 시작된 여행")
                 self?.titleLabel.lineSpacing(lineHeight: 29)
                 reactor.action.onNext(.fetchJourneyList)
             }
@@ -171,8 +171,9 @@ class MyPlannerViewController: NavigationBarViewController, View {
 
         reactor.state
             .compactMap(\.user)
-            .bind { [weak self] user in
-                self?.titleLabel.text = String(describing: "\(user.personality.title),\n\(user.nickname)의 시작된 여행")
+            .map { String(describing: "\($0.personality.title),\n\($0.nickname)님의 시작된 여행") }
+            .bind { [weak self] title in
+                self?.titleLabel.text = title
                 self?.titleLabel.lineSpacing(lineHeight: 29)
             }
             .disposed(by: disposeBag)
