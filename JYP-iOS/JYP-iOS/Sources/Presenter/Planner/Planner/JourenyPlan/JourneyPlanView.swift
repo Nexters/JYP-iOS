@@ -62,10 +62,34 @@ class JourneyPlanView: BaseView, View {
     }
     
     // MARK: - UI Components
+    
+    let dayScrollView: UIScrollView = .init()
+    let dayStackView: UIStackView = .init()
+    var dayButtons: [UIButton] = [] {
+        didSet {
+            dayStackView.removeArrangedSubviews()
+            
+            dayButtons.forEach({ button in
+                button.setTitleColor(JYPIOSAsset.textB80.color, for: .normal)
+                button.titleLabel?.font = JYPIOSFontFamily.Pretendard.bold.font(size: 14)
+                button.backgroundColor = JYPIOSAsset.tagWhiteGrey100.color
+                button.cornerRound(radius: 8)
+                
+                button.snp.makeConstraints {
+                    $0.width.equalTo(76)
+                    $0.height.equalTo(29)
+                }
+                
+                dayStackView.addArrangedSubview(button)
+            })
+        }
+    }
+    
     let refreshControl: UIRefreshControl = .init()
     let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
 
     // MARK: - Initializer
+    
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -83,6 +107,8 @@ class JourneyPlanView: BaseView, View {
         
         backgroundColor = JYPIOSAsset.backgroundWhite100.color
         
+        dayStackView.spacing = 8
+        
         refreshControl.transform = CGAffineTransformMakeScale(0.5, 0.5)
         
         collectionView.refreshControl = refreshControl
@@ -97,14 +123,26 @@ class JourneyPlanView: BaseView, View {
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        addSubviews([collectionView])
+        addSubviews([dayScrollView, collectionView])
+        dayScrollView.addSubviews([dayStackView])
     }
     
     override func setupLayout() {
         super.setupLayout()
         
+        dayScrollView.snp.makeConstraints {
+            $0.top.equalToSuperview()
+            $0.leading.trailing.equalToSuperview()
+            $0.height.equalTo(96)
+        }
+        
+        dayStackView.snp.makeConstraints {
+            $0.centerY.equalToSuperview()
+            $0.leading.trailing.equalToSuperview().inset(20)
+        }
+        
         collectionView.snp.makeConstraints {
-            $0.top.equalToSuperview().inset(28)
+            $0.top.equalTo(dayScrollView.snp.bottom)
             $0.leading.trailing.bottom.equalToSuperview()
         }
     }
@@ -113,6 +151,18 @@ class JourneyPlanView: BaseView, View {
         refreshControl.rx.controlEvent(.valueChanged)
             .map { .fetch }
             .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .compactMap(\.journey)
+            .subscribe(onNext: { [weak self] journey in
+                let buttons = journey.pikidays.enumerated().map { (index, _) -> UIButton in
+                    let button: UIButton = .init(type: .system)
+                    button.setTitle("Day \(index)", for: .normal)
+                    return button
+                }
+                self?.dayButtons = buttons
+            })
             .disposed(by: disposeBag)
         
         reactor.state
