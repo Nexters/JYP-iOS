@@ -55,6 +55,8 @@ class PlannerReactor: Reactor {
 extension PlannerReactor {
     func bind(action: DiscussionReactor.Action) {
         switch action {
+        case let .fetch:
+            self.action.onNext(.refresh)
         case let .selectCell(_, item):
             switch item {
             case let .tag(reactor):
@@ -67,7 +69,6 @@ extension PlannerReactor {
             } else {
                 journeyService.createPikmiLike(journeyId: currentState.id, pikmiId: state.pik.id)
             }
-            self.action.onNext(.refresh)
         case .tapCellCreateButton, .tapPlusButton:
             self.action.onNext(.pushNextScreen(.plannerSearchPlace(id: initialState.id)))
         case let .tapCellInfoButton(_, state):

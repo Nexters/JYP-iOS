@@ -107,6 +107,7 @@ class DiscussionView: BaseView, View {
     
     // MARK: - UI Components
     
+    let refreshControl: UIRefreshControl = .init()
     let collectionView: UICollectionView = .init(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     
     // MARK: - Initializer
@@ -127,6 +128,10 @@ class DiscussionView: BaseView, View {
         super.setupProperty()
         
         backgroundColor = JYPIOSAsset.backgroundWhite100.color
+        
+        refreshControl.transform = CGAffineTransformMakeScale(0.5, 0.5)
+        
+        collectionView.refreshControl = refreshControl
         
         collectionView.register(TagCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: TagCollectionViewCell.self))
         collectionView.register(EmptyTagCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: EmptyTagCollectionViewCell.self))
@@ -163,10 +168,22 @@ class DiscussionView: BaseView, View {
         .map { .selectCell($0, $1) }
         .bind(to: reactor.action)
         .disposed(by: disposeBag)
+        
+        refreshControl.rx.controlEvent(.valueChanged)
+            .map { .fetch }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
 
         reactor.state
             .map(\.sections)
             .bind(to: collectionView.rx.items(dataSource: dataSource))
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .map(\.sections)
+            .subscribe(onNext: { [weak self] sections in
+                self?.collectionView.refreshControl?.endRefreshing()
+            })
             .disposed(by: disposeBag)
     }
 }
