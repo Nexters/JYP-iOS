@@ -12,6 +12,7 @@ import ReactorKit
 class JourneyPlanReactor: Reactor {
     enum Action {
         case refresh(Journey)
+        case fetch
         case tapEditButton(IndexPath, PikiCollectionReusableViewReactor.State)
         case tapPlusButton(IndexPath, EmptyPikiCollectionViewCellReactor.State)
     }

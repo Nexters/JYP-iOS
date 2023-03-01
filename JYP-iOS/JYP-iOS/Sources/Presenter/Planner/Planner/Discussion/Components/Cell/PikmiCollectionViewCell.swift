@@ -137,6 +137,11 @@ class PikmiCollectionViewCell: BaseCollectionViewCell, View {
         titleLabel.text = reactor.currentState.pik.name
         subLabel.text = reactor.currentState.pik.address
         
+        likeButton.rx.tap
+            .map { .tapLikeButton }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
         if let likByCount = reactor.currentState.pik.likeBy?.count, likByCount > 0 {
             likeLabel.text = String(describing: likByCount)
             switch reactor.currentState.rank {

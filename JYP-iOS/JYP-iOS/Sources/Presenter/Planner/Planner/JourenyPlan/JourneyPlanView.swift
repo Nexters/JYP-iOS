@@ -13,11 +13,7 @@ import RxDataSources
 class JourneyPlanView: BaseView, View {
     typealias Reactor = JourneyPlanReactor
     
-    // MARK: - UI Components
-    let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-    
     // MARK: - Properties
-    let dayCollectionViewLayout = UICollectionViewFlowLayout()
     
     lazy var dataSource = RxCollectionViewSectionedReloadDataSource<JourneyPlanSectionModel> { [weak self] _, collectionView, indexPath, item -> UICollectionViewCell in
         guard let reactor = self?.reactor else { return .init() }
@@ -64,6 +60,10 @@ class JourneyPlanView: BaseView, View {
             return .init()
         }
     }
+    
+    // MARK: - UI Components
+    let refreshControl: UIRefreshControl = .init()
+    let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
 
     // MARK: - Initializer
     @available(*, unavailable)
@@ -83,7 +83,11 @@ class JourneyPlanView: BaseView, View {
         
         backgroundColor = JYPIOSAsset.backgroundWhite100.color
         
+        refreshControl.transform = CGAffineTransformMakeScale(0.5, 0.5)
+        
+        collectionView.refreshControl = refreshControl
         collectionView.dataSource = dataSource
+        
         collectionView.register(DayTagColectionViewCell.self, forCellWithReuseIdentifier: String(describing: DayTagColectionViewCell.self))
         collectionView.register(EmptyPikiCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: EmptyPikiCollectionViewCell.self))
         collectionView.register(PikiCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: PikiCollectionViewCell.self))
@@ -106,10 +110,16 @@ class JourneyPlanView: BaseView, View {
     }
     
     func bind(reactor: Reactor) {
+        refreshControl.rx.controlEvent(.valueChanged)
+            .map { .fetch }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
         reactor.state
             .map(\.sections)
             .withUnretained(self)
             .bind { this, sections in
+                this.collectionView.refreshControl?.endRefreshing()
                 this.dataSource.setSections(sections)
                 this.collectionView.collectionViewLayout = this.makeLayout(sections: sections)
                 this.collectionView.reloadData()
