@@ -12,6 +12,7 @@ import ReactorKit
 class DiscussionReactor: Reactor {
     enum Action {
         case refresh(Journey)
+        case fetch
         case selectCell(IndexPath, DiscussionItem)
         case tapCellLikeButton(IndexPath, PikmiCollectionViewCellReactor.State)
         case tapCellInfoButton(IndexPath, PikmiCollectionViewCellReactor.State)
@@ -63,7 +64,7 @@ extension DiscussionReactor {
                 )))
             ])
             
-        case .selectCell, .tapPlusButton, .tapCellInfoButton, .tapCellCreateButton, .tapCellLikeButton:
+        case .fetch, .selectCell, .tapPlusButton, .tapCellInfoButton, .tapCellCreateButton, .tapCellLikeButton:
             return .empty()
         }
     }

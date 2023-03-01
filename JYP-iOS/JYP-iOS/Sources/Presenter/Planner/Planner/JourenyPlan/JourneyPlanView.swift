@@ -13,21 +13,12 @@ import RxDataSources
 class JourneyPlanView: BaseView, View {
     typealias Reactor = JourneyPlanReactor
     
-    // MARK: - UI Components
-    let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-    
     // MARK: - Properties
-    let dayCollectionViewLayout = UICollectionViewFlowLayout()
     
     lazy var dataSource = RxCollectionViewSectionedReloadDataSource<JourneyPlanSectionModel> { [weak self] _, collectionView, indexPath, item -> UICollectionViewCell in
         guard let reactor = self?.reactor else { return .init() }
         
         switch item {
-        case let .dayTag(reactor):
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: DayTagColectionViewCell.self), for: indexPath) as? DayTagColectionViewCell else { return .init() }
-            
-            cell.reactor = reactor
-            return cell
         case let .emptyPlan(cellReactor):
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: String(describing: EmptyPikiCollectionViewCell.self), for: indexPath) as? EmptyPikiCollectionViewCell else { return .init() }
             
@@ -49,7 +40,7 @@ class JourneyPlanView: BaseView, View {
         case let .journey(items):
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: PikiCollectionReusableView.self), for: indexPath) as? PikiCollectionReusableView else { return .init() }
             
-            let index = indexPath.section - 1
+            let index = indexPath.section
             let date = Date(timeIntervalSince1970: reactor.currentState.journey?.startDate ?? Date.timeIntervalBetween1970AndReferenceDate)
             
             let cellReactor = PikiCollectionReusableViewReactor(index: index, date: date)
@@ -60,12 +51,44 @@ class JourneyPlanView: BaseView, View {
                 .bind(to: reactor.action)
                 .disposed(by: header.disposeBag)
             return header
-        case .day:
-            return .init()
         }
     }
+    
+    // MARK: - UI Components
+    
+    let dayScrollView: UIScrollView = .init()
+    let dayStackView: UIStackView = .init()
+    var dayButtons: [UIButton] = [] {
+        didSet {
+            dayStackView.removeArrangedSubviews()
+            
+            dayButtons.enumerated().forEach({ index, button in
+                button.setTitleColor(JYPIOSAsset.textB80.color, for: .normal)
+                button.titleLabel?.font = JYPIOSFontFamily.Pretendard.bold.font(size: 14)
+                button.backgroundColor = JYPIOSAsset.tagWhiteGrey100.color
+                button.cornerRound(radius: 8)
+                
+                button.snp.makeConstraints {
+                    $0.width.equalTo(76)
+                    $0.height.equalTo(29)
+                }
+                
+                if let reactor = reactor {
+                    button.rx.tap.map { .tapDayButton(index) }
+                        .bind(to: reactor.action)
+                        .disposed(by: disposeBag)
+                }
+                
+                dayStackView.addArrangedSubview(button)
+            })
+        }
+    }
+    
+    let refreshControl: UIRefreshControl = .init()
+    let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
 
     // MARK: - Initializer
+    
     @available(*, unavailable)
     required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -83,7 +106,13 @@ class JourneyPlanView: BaseView, View {
         
         backgroundColor = JYPIOSAsset.backgroundWhite100.color
         
+        dayStackView.spacing = 8
+        
+        refreshControl.transform = CGAffineTransformMakeScale(0.5, 0.5)
+        
+        collectionView.refreshControl = refreshControl
         collectionView.dataSource = dataSource
+        
         collectionView.register(DayTagColectionViewCell.self, forCellWithReuseIdentifier: String(describing: DayTagColectionViewCell.self))
         collectionView.register(EmptyPikiCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: EmptyPikiCollectionViewCell.self))
         collectionView.register(PikiCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: PikiCollectionViewCell.self))
@@ -93,27 +122,73 @@ class JourneyPlanView: BaseView, View {
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        addSubviews([collectionView])
+        addSubviews([dayScrollView, collectionView])
+        dayScrollView.addSubviews([dayStackView])
     }
     
     override func setupLayout() {
         super.setupLayout()
         
-        collectionView.snp.makeConstraints {
+        dayScrollView.snp.makeConstraints {
             $0.top.equalToSuperview()
+            $0.leading.trailing.equalToSuperview()
+            $0.height.equalTo(70)
+        }
+        
+        dayStackView.snp.makeConstraints {
+            $0.centerY.equalToSuperview()
+            $0.leading.trailing.equalToSuperview().inset(20)
+        }
+        
+        collectionView.snp.makeConstraints {
+            $0.top.equalTo(dayScrollView.snp.bottom)
             $0.leading.trailing.bottom.equalToSuperview()
         }
     }
     
     func bind(reactor: Reactor) {
+        refreshControl.rx.controlEvent(.valueChanged)
+            .map { .fetch }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .compactMap(\.journey)
+            .subscribe(onNext: { [weak self] journey in
+                let buttons = journey.pikidays.enumerated().map { (index, _) -> UIButton in
+                    let button: UIButton = .init(type: .system)
+                    button.setTitle("Day \(index + 1)", for: .normal)
+                    return button
+                }
+                self?.dayButtons = buttons
+            })
+            .disposed(by: disposeBag)
+        
         reactor.state
             .map(\.sections)
             .withUnretained(self)
             .bind { this, sections in
+                this.collectionView.refreshControl?.endRefreshing()
                 this.dataSource.setSections(sections)
                 this.collectionView.collectionViewLayout = this.makeLayout(sections: sections)
                 this.collectionView.reloadData()
             }
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .compactMap(\.scrollSection)
+            .subscribe(onNext: { [weak self] section in
+                self?.collectionView.scrollToItem(at: IndexPath(row: 0, section: section), at: .centeredVertically, animated: true)
+                self?.dayButtons.enumerated().forEach({ index, button in
+                    if index == section {
+                        button.setTitleColor(.white, for: .normal)
+                        button.backgroundColor = JYPIOSAsset.mainPink.color
+                    } else {
+                        button.setTitleColor(JYPIOSAsset.textB80.color, for: .normal)
+                        button.backgroundColor = JYPIOSAsset.tagWhiteGrey100.color
+                    }
+                })
+            })
             .disposed(by: disposeBag)
     }
 }
@@ -122,8 +197,6 @@ extension JourneyPlanView {
     func makeLayout(sections: [JourneyPlanSectionModel]) -> UICollectionViewCompositionalLayout {
         let layout = UICollectionViewCompositionalLayout { [weak self] sectionIndex, _ in
             switch sections[sectionIndex].model {
-            case let .day(journeyPlanItems):
-                return self?.makeDaySectionLayout(from: journeyPlanItems)
             case let .journey(journeyPlanItems):
                 return self?.makeJourneySectionLayout(from: journeyPlanItems)
             }
@@ -131,36 +204,12 @@ extension JourneyPlanView {
         
         return layout
     }
-
-    func makeDaySectionLayout(from sectionItems: [JourneyPlanItem]) -> NSCollectionLayoutSection {
-        var items: [NSCollectionLayoutItem] = []
-        
-        sectionItems.forEach({ sectionItem in
-            var item: NSCollectionLayoutItem
-            
-            if case .dayTag = sectionItem {
-                item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .absolute(76), heightDimension: .absolute(29)))
-                item.contentInsets = .init(top: 0, leading: 0, bottom: 0, trailing: 8)
-                
-                items.append(item)
-            }
-        })
-        
-        let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(29)), subitems: items)
-        
-        let section = NSCollectionLayoutSection(group: group)
-        section.orthogonalScrollingBehavior = .continuousGroupLeadingBoundary
-        section.contentInsets = .init(top: 28, leading: 20, bottom: 40, trailing: 20)
-        
-        return section
-    }
     
     func makeJourneySectionLayout(from sectionItems: [JourneyPlanItem]) -> NSCollectionLayoutSection {
         var items: [NSCollectionLayoutItem] = []
         
         sectionItems.forEach({ sectionItem in
             switch sectionItem {
-            case .dayTag: break
             case .emptyPlan:
                 let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .absolute(72)))
                 

@@ -12,6 +12,8 @@ import ReactorKit
 class JourneyPlanReactor: Reactor {
     enum Action {
         case refresh(Journey)
+        case fetch
+        case tapDayButton(Int)
         case tapEditButton(IndexPath, PikiCollectionReusableViewReactor.State)
         case tapPlusButton(IndexPath, EmptyPikiCollectionViewCellReactor.State)
     }
@@ -19,11 +21,13 @@ class JourneyPlanReactor: Reactor {
     enum Mutation {
         case setJourney(Journey)
         case setSections([JourneyPlanSectionModel])
+        case setScrollSection(Int)
     }
     
     struct State {
         var journey: Journey?
         var sections: [JourneyPlanSectionModel] = []
+        var scrollSection: Int?
     }
     
     var initialState: State
@@ -46,6 +50,9 @@ extension JourneyPlanReactor {
                 .just(.setSections(makeSections(from: journey)))
             ])
             
+        case let .tapDayButton(section):
+            return .just(.setScrollSection(section))
+            
         default: return .empty()
         }
     }
@@ -56,6 +63,7 @@ extension JourneyPlanReactor {
         switch mutation {
         case let .setJourney(Journey): newState.journey = Journey
         case let .setSections(sections): newState.sections = sections
+        case let .setScrollSection(index): newState.scrollSection = index
         }
         
         return newState
@@ -63,14 +71,6 @@ extension JourneyPlanReactor {
     
     private func makeSections(from journey: Journey) -> [JourneyPlanSectionModel] {
         var sections: [JourneyPlanSectionModel] = []
-        
-        let dayItems = journey.pikidays.enumerated().map { (index, _) -> JourneyPlanItem in
-            return JourneyPlanItem.dayTag(DayTagCollectionViewCellReactor(state: .init(day: index + 1)))
-        }
-        
-        if dayItems.isEmpty == false {
-            sections.append(.init(model: .day(dayItems), items: dayItems))
-        }
         
         journey.pikidays.enumerated().forEach { (index, pikiday) in
             var journeyPlanItems: [JourneyPlanItem] = []

@@ -7,23 +7,41 @@
 //
 
 import RxDataSources
+import Foundation
 
-typealias DiscussionSectionModel = SectionModel<DiscussionSection, DiscussionItem>
+typealias DiscussionSectionModel = AnimatableSectionModel<DiscussionSection, DiscussionItem>
 
 enum DiscussionSection {
     case tag([DiscussionItem])
     case pikmi([DiscussionItem])
 }
 
-enum DiscussionItem {
+enum DiscussionItem: IdentifiableType, Equatable {
     case tag(TagCollectionViewCellReactor)
     case emptyTag
     case createPikmi(CreatePikmiCollectionViewCellReactor)
     case pikmi(PikmiCollectionViewCellReactor)
+    
+    var identity: some Hashable {
+        switch self {
+        case .tag, .emptyTag, .createPikmi:
+            return UUID().uuidString
+        case let .pikmi(reactor):
+            return reactor.currentState.pik.id
+        }
+    }
+    
+    static func == (lhs: DiscussionItem, rhs: DiscussionItem) -> Bool {
+        lhs.identity == rhs.identity
+    }
 }
 
-extension DiscussionSection: SectionModelType {
+extension DiscussionSection: AnimatableSectionModelType {
     typealias Item = DiscussionItem
+    
+    var identity: String {
+        return "\(items.count)"
+    }
     
     var items: [Item] {
         switch self {
