@@ -56,6 +56,9 @@ extension CalendarReactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case let .selectDateAction(date):
+            let dateString = DateManager.dateToString(format: "yyyy-MM-dd", date: date)
+            let date = DateManager.stringToDate(format: "yyyy-MM-dd", date: dateString)
+            
             switch mode {
             case .start:
                 return service.updateStartDate(to: date).map { _ in .dismiss }
