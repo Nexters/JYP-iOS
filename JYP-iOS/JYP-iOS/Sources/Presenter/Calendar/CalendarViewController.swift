@@ -43,7 +43,7 @@ class CalendarViewController: BottomSheetViewController, View {
 
         addContentView(view: datePicker)
         datePicker.snp.makeConstraints { make in
-            make.height.equalTo(380)
+            make.height.equalTo(420)
         }
     }
 
