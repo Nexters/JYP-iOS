@@ -143,21 +143,27 @@ class PikmiCollectionViewCell: BaseCollectionViewCell, View {
             .disposed(by: disposeBag)
         
         if let likByCount = reactor.currentState.pik.likeBy?.count, likByCount > 0 {
-            likeLabel.text = String(describing: likByCount)
             switch reactor.currentState.rank {
             case 1: rankBadgeImageView.image = JYPIOSAsset.badge1.image
             case 2: rankBadgeImageView.image = JYPIOSAsset.badge2.image
             case 3: rankBadgeImageView.image = JYPIOSAsset.badge3.image
             default: break
             }
-        } else {
-            likeLabel.text = " "
         }
         
         reactor.state
             .map(\.isSelected)
-            .subscribe(onNext: { [weak self] bool in
-                if bool {
+            .map { (reactor.initialState.isMe, $0) }
+            .subscribe(onNext: { [weak self] isMe, isSelected in
+                var offset = isMe ? (isSelected ? 0 : -1) : (isSelected ? 1 : 0)
+                
+                if let likByCount = reactor.currentState.pik.likeBy?.count, likByCount + offset > 0 {
+                    self?.likeLabel.text = String(describing: offset + likByCount)
+                } else {
+                    self?.likeLabel.text = " "
+                }
+                
+                if isSelected {
                     self?.likeImageView.image = JYPIOSAsset.iconVoteActive.image
                     self?.likeLabel.textColor = JYPIOSAsset.mainPink.color
                     self?.animationView.play()

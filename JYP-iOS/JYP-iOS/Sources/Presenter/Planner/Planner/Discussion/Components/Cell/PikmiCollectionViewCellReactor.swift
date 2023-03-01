@@ -20,6 +20,7 @@ class PikmiCollectionViewCellReactor: Reactor {
     struct State {
         let rank: Int
         let pik: Pik
+        let isMe: Bool
         var isSelected: Bool
     }
     
@@ -27,9 +28,9 @@ class PikmiCollectionViewCellReactor: Reactor {
     
     init(rank: Int, pik: Pik) {
         let userID = UserDefaultsAccess.get(key: .userID)
-        let isSelected = pik.likeBy?.contains(where: { $0.id == userID }) == true
+        let isMe = pik.likeBy?.contains(where: { $0.id == userID }) == true
         
-        initialState = .init(rank: rank, pik: pik, isSelected: isSelected)
+        initialState = .init(rank: rank, pik: pik, isMe: isMe, isSelected: isMe)
     }
 }
 

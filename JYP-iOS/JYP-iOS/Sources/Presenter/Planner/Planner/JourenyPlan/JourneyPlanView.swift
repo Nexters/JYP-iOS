@@ -104,7 +104,7 @@ class JourneyPlanView: BaseView, View {
         super.setupLayout()
         
         collectionView.snp.makeConstraints {
-            $0.top.equalToSuperview()
+            $0.top.equalToSuperview().inset(28)
             $0.leading.trailing.bottom.equalToSuperview()
         }
     }
@@ -157,10 +157,9 @@ extension JourneyPlanView {
         })
         
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(29)), subitems: items)
-        
         let section = NSCollectionLayoutSection(group: group)
         section.orthogonalScrollingBehavior = .continuousGroupLeadingBoundary
-        section.contentInsets = .init(top: 28, leading: 20, bottom: 40, trailing: 20)
+        section.contentInsets = .init(top: 0, leading: 20, bottom: 0, trailing: 20)
         
         return section
     }

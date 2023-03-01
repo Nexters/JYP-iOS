@@ -181,7 +181,7 @@ class DiscussionView: BaseView, View {
         
         reactor.state
             .map(\.sections)
-            .subscribe(onNext: { [weak self] sections in
+            .subscribe(onNext: { [weak self] _ in
                 self?.collectionView.refreshControl?.endRefreshing()
             })
             .disposed(by: disposeBag)
