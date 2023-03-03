@@ -51,7 +51,7 @@ extension PlannerSearchPlaceMapReactor {
     }
     
     func transform(mutation: Observable<Mutation>) -> Observable<Mutation> {
-        let APIMutation = provider.journeyService.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
+        let APIMutation = provider.journeyService.event.withUnretained(self).flatMap { (_, event) -> Observable<Mutation> in
             switch event {
             case .createPikmi:
                 return .concat([
