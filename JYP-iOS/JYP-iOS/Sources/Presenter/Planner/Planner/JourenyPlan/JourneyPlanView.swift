@@ -178,7 +178,7 @@ class JourneyPlanView: BaseView, View {
         reactor.state
             .compactMap(\.scrollSection)
             .subscribe(onNext: { [weak self] section in
-                self?.collectionView.scrollToItem(at: IndexPath(row: 0, section: section), at: .centeredVertically, animated: true)
+                self?.collectionView.scrollToItem(at: IndexPath(row: 0, section: section), at: .top, animated: true)
                 self?.dayButtons.enumerated().forEach({ index, button in
                     if index == section {
                         button.setTitleColor(.white, for: .normal)
