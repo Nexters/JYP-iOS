@@ -52,7 +52,7 @@ extension UIBezierPath {
         
         if topLeftRadius != .zero {
             path.addLine(to: CGPoint(x: topLeft.x, y: topLeft.y+topLeftRadius.height))
-            path.addCurve(to: CGPoint(x: topLeft.x+topLeftRadius.width, y: topLeft.y), control1: CGPoint(x: topLeft.x, y: topLeft.y) , control2: CGPoint(x: topLeft.x+topLeftRadius.width, y: topLeft.y))
+            path.addCurve(to: CGPoint(x: topLeft.x+topLeftRadius.width, y: topLeft.y), control1: CGPoint(x: topLeft.x, y: topLeft.y), control2: CGPoint(x: topLeft.x+topLeftRadius.width, y: topLeft.y))
         } else {
             path.addLine(to: CGPoint(x: topLeft.x, y: topLeft.y))
         }

@@ -125,7 +125,7 @@ extension PlannerRouteReactor {
     private func makeSections(from piks: [Pik]) -> [PikmiRouteSectionModel] {
         var prevLikeByCount: Int = 0
         var rank: Int = -1
-        var pikmiRouteItems: [PikmiRouteItem] = piks.sorted(by: { $0.likeBy?.count ?? 0 > $1.likeBy?.count ?? 0 }).enumerated().map { (index, pik) -> PikmiRouteItem in
+        let pikmiRouteItems: [PikmiRouteItem] = piks.sorted(by: { $0.likeBy?.count ?? 0 > $1.likeBy?.count ?? 0 }).enumerated().map { (index, pik) -> PikmiRouteItem in
             if let likeBy = pik.likeBy, likeBy.contains(where: { $0.id == UserDefaultsAccess.get(key: .userID) }) {
                 if prevLikeByCount != likeBy.count {
                     rank += 1
