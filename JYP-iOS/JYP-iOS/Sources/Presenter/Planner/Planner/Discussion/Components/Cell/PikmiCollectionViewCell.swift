@@ -155,7 +155,7 @@ class PikmiCollectionViewCell: BaseCollectionViewCell, View {
             .map(\.isSelected)
             .map { (reactor.initialState.isMe, $0) }
             .subscribe(onNext: { [weak self] isMe, isSelected in
-                var offset = isMe ? (isSelected ? 0 : -1) : (isSelected ? 1 : 0)
+                let offset = isMe ? (isSelected ? 0 : -1) : (isSelected ? 1 : 0)
                 
                 if let likByCount = reactor.currentState.pik.likeBy?.count, likByCount + offset > 0 {
                     self?.likeLabel.text = String(describing: offset + likByCount)
