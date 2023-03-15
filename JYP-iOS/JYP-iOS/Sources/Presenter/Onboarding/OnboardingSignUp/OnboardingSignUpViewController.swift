@@ -29,7 +29,8 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
     let loginLabel: UILabel = .init()
     let kakaoLoginButton: UIButton = .init()
     let appleLoginButton: ASAuthorizationAppleIDButton = .init()
-
+    let indicator: UIActivityIndicatorView = .init(style: .medium)
+    
     // MARK: - Initializer
 
     init(
@@ -84,7 +85,7 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
     override func setupHierarchy() {
         super.setupHierarchy()
 
-        contentView.addSubviews([onboardingView, loginLabel, kakaoLoginButton, appleLoginButton])
+        contentView.addSubviews([onboardingView, loginLabel, kakaoLoginButton, appleLoginButton, indicator])
         onboardingView.addSubviews([onboardingLogoImageView, onboardinglogoTextImageView])
     }
 
@@ -92,7 +93,7 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
         super.setupLayout()
 
         onboardingView.snp.makeConstraints {
-            $0.top.leading.trailing.equalTo(view.safeAreaLayoutGuide)
+            $0.top.leading.trailing.equalToSuperview()
         }
 
         onboardingLogoImageView.snp.makeConstraints {
@@ -123,6 +124,10 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
             $0.bottom.equalTo(view.safeAreaLayoutGuide).inset(40)
             $0.height.equalTo(50)
         }
+        
+        indicator.snp.makeConstraints {
+            $0.center.equalToSuperview()
+        }
     }
 
     func bind(reactor: OnboardingSignUpReactor) {
@@ -151,6 +156,19 @@ class OnboardingSignUpViewController: NavigationBarViewController, View {
                     
                 case .tabBar:
                     self?.willPresentTabBarViewController()
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        reactor.state
+            .map(\.isLoading)
+            .subscribe(onNext: { [weak self] bool in
+                if bool {
+                    self?.indicator.startAnimating()
+                    self?.view.isUserInteractionEnabled = false
+                } else {
+                    self?.indicator.stopAnimating()
+                    self?.view.isUserInteractionEnabled = true
                 }
             })
             .disposed(by: disposeBag)
