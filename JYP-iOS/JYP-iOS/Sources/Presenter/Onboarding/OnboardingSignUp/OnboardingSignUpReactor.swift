@@ -20,10 +20,12 @@ class OnboardingSignUpReactor: Reactor {
     
     enum Mutation {
         case setNextScreenType(NextScreenType?)
+        case setIstLoading(Bool)
     }
     
     struct State {
         var nextScreenType: NextScreenType?
+        var isLoading: Bool = false
     }
     
     let initialState: State
@@ -93,7 +95,7 @@ extension OnboardingSignUpReactor {
                 authService.kakao(token: token)
             }
             
-            return .empty()
+            return .just(.setIstLoading(true))
         }
     }
     
@@ -103,6 +105,8 @@ extension OnboardingSignUpReactor {
         switch mutation {
         case let .setNextScreenType(type):
             newState.nextScreenType = type
+        case let .setIstLoading(bool):
+            newState.isLoading = bool
         }
         
         return newState
