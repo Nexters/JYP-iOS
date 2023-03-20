@@ -100,15 +100,48 @@ class UserService: GlobalService, UserServiceType {
     func createUser(request: CreateUserRequest) {
         let target = UserAPI.createUser(request: request)
         
+//        let request = APIService.request(target: target)
+//            .map(BaseModel<User>.self)
+//            .compactMap(\.data)
+//            .asObservable()
+
+//        request
+//            .subscribe(onNext: { [weak self] user in
+//                self?.login(user: user)
+//                self?.event.onNext(.createUser(user))
+//            })
+//            .disposed(by: disposeBag)
+        
         let request = APIService.request(target: target)
             .map(BaseModel<User>.self)
-            .compactMap(\.data)
             .asObservable()
         
         request
-            .subscribe(onNext: { [weak self] user in
-                self?.login(user: user)
-                self?.event.onNext(.createUser(user))
+            .subscribe(onNext: { [weak self] res in
+                switch res.code {
+                case "20000":
+                    if let user = res.data {
+                        self?.login(user: user)
+                        self?.event.onNext(.createUser(user))
+                    }
+                    
+                case "50000":
+                    //TODO: User 조회 API 가 만들어지면 수정, 우선 User ID 만 넘김
+                    let sIndx = res.message.endIndex(of: "_id:")
+                    let eIndx = res.message.index(of: "}")
+                    if let sIndx = sIndx, let eIndx = eIndx, sIndx < eIndx {
+                        var userID = String(describing: res.message[sIndx..<eIndx])
+                        userID = userID.replacingOccurrences(of: "\"", with: "")
+                        userID = userID.trimmingCharacters(in: .whitespacesAndNewlines)
+                        let user = User(id: userID, nickname: "테스트 닉네임", profileImagePath: "없음", personality: .FW)
+                        
+                        self?.login(user: user)
+                        self?.event.onNext(.createUser(user))
+                    }
+                    
+                default:
+                    return
+                }
             })
             .disposed(by: disposeBag)
     }
