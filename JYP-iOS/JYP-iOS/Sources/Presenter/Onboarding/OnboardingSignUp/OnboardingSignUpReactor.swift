@@ -46,11 +46,6 @@ extension OnboardingSignUpReactor {
         let authEventMutation = authService.event.withUnretained(self).flatMap { (this, event) -> Observable<Mutation> in
             switch event {
             case .apple, .kakao:
-                return .concat([
-                    .just(.setNextScreenType(.onboardingQuestionJourney)),
-                    .just(.setNextScreenType(nil))
-                ])
-                
                 return this.userService.fetchMe()
                     .map { _ in return .setNextScreenType(nil) }
                     .catch { error in
