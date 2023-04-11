@@ -131,7 +131,8 @@ class CreatePlannerDateViewController: NavigationBarViewController, View {
 
         reactor.state
             .map(\.isHiddenSubmitButton)
-            .bind(to: selfView.submitButton.rx.isHidden)
+            .map { !$0 }
+            .bind(to: selfView.submitButton.rx.isEnabled)
             .disposed(by: disposeBag)
 
         reactor.state
@@ -157,6 +158,21 @@ class CreatePlannerDateViewController: NavigationBarViewController, View {
                 )
 
                 self?.navigationController?.pushViewController(createTag, animated: true)
+            })
+            .disposed(by: disposeBag)
+        
+        Observable.combineLatest(reactor.state.map(\.startDate), reactor.state.map(\.endDate))
+            .subscribe(onNext: { [weak self] startDate, endDate in
+                let startDate = DateManager.stringToDate(date: startDate)
+                let endDate = DateManager.stringToDate(date: endDate)
+                
+                let distance = DateManager.calcDays(from: startDate.timeIntervalSince1970, to: endDate) ?? 0
+                guard distance > 0 else { return }
+                let isOverOneYear = distance > 365
+                
+                self?.selfView.notiLabel.isHidden = !isOverOneYear
+                self?.selfView.journeyDaysButton.isHidden = isOverOneYear
+                self?.selfView.submitButton.isEnabled = !isOverOneYear
             })
             .disposed(by: disposeBag)
     }

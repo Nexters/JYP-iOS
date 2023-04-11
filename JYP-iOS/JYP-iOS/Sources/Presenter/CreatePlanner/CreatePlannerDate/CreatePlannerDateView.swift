@@ -24,6 +24,8 @@ class CreatePlannerDateView: BaseView {
     var journeyDaysButton: UIButton = .init()
 
     var submitButton: JYPButton = .init(type: .next)
+    
+    let notiLabel: UILabel = .init()
 
     init() {
         super.init(frame: .zero)
@@ -67,14 +69,19 @@ class CreatePlannerDateView: BaseView {
         journeyDaysButton.setTitleColor(JYPIOSAsset.subBlue300.color, for: .normal)
         journeyDaysButton.cornerRound(radius: 20)
 
-        submitButton.isHidden = true
-        submitButton.isEnabled = true
+        submitButton.isHidden = false
+        submitButton.isEnabled = false
+        
+        notiLabel.text = "여행 기간은 1년 이내까지 가능해요"
+        notiLabel.textColor = JYPIOSAsset.mainPink.color
+        notiLabel.font = JYPIOSFontFamily.Pretendard.regular.font(size: 12)
+        notiLabel.isHidden = true
     }
 
     override func setupHierarchy() {
         super.setupHierarchy()
 
-        addSubviews([titleLabel, subTitleLabel, startDateLabel, endDateLabel, startDateTextField, dividerLabel, endDateTextField, journeyDaysButton, submitButton])
+        addSubviews([titleLabel, subTitleLabel, startDateLabel, endDateLabel, startDateTextField, dividerLabel, endDateTextField, journeyDaysButton, submitButton, notiLabel])
     }
 
     override func setupLayout() {
@@ -129,6 +136,11 @@ class CreatePlannerDateView: BaseView {
             make.leading.trailing.equalToSuperview().inset(24)
             make.bottom.equalToSuperview()
             make.height.equalTo(52)
+        }
+        
+        notiLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(submitButton.snp.top).offset(-20)
         }
     }
 }
