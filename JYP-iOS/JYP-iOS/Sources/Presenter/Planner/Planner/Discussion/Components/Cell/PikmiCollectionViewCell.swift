@@ -108,7 +108,7 @@ class PikmiCollectionViewCell: BaseCollectionViewCell, View {
         
         rankBadgeImageView.snp.makeConstraints {
             $0.top.equalToSuperview()
-            $0.trailing.equalToSuperview().inset(38)
+            $0.centerX.equalTo(likeButton)
         }
         
         likeButton.snp.makeConstraints {
