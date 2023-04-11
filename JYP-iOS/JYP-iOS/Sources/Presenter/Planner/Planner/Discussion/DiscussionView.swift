@@ -160,8 +160,6 @@ class DiscussionView: BaseView, View {
     // MARK: - Bind Method
     
     func bind(reactor: Reactor) {
-//        collectionView.rx.setDelegate(self).disposed(by: disposeBag)
-        
         Observable.zip(
             collectionView.rx.itemSelected,
             collectionView.rx.modelSelected(type(of: dataSource).Section.Item.self)
@@ -174,11 +172,6 @@ class DiscussionView: BaseView, View {
             .map { .fetch }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
-
-//        reactor.state
-//            .map(\.sections)
-//            .bind(to: collectionView.rx.items(dataSource: dataSource))
-//            .disposed(by: disposeBag)
         
         reactor.state
             .map(\.sections)
