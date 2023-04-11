@@ -101,6 +101,7 @@ class PikmiCollectionViewCell: BaseCollectionViewCell, View {
         }
         
         infoButton.snp.makeConstraints {
+            $0.top.equalTo(subLabel.snp.bottom).offset(14)
             $0.leading.bottom.equalToSuperview().inset(20)
             $0.width.equalTo(114)
             $0.height.equalTo(40)
