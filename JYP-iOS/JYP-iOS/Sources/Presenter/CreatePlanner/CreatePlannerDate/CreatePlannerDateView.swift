@@ -75,6 +75,7 @@ class CreatePlannerDateView: BaseView {
         notiLabel.text = "여행 기간은 1년 이내까지 가능해요"
         notiLabel.textColor = JYPIOSAsset.mainPink.color
         notiLabel.font = JYPIOSFontFamily.Pretendard.regular.font(size: 12)
+        notiLabel.isHidden = true
     }
 
     override func setupHierarchy() {
