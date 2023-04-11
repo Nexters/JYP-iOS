@@ -132,6 +132,7 @@ class DiscussionView: BaseView, View {
         refreshControl.transform = CGAffineTransformMakeScale(0.5, 0.5)
         
         collectionView.refreshControl = refreshControl
+        collectionView.dataSource = dataSource
         
         collectionView.register(TagCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: TagCollectionViewCell.self))
         collectionView.register(EmptyTagCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: EmptyTagCollectionViewCell.self))
@@ -159,8 +160,6 @@ class DiscussionView: BaseView, View {
     // MARK: - Bind Method
     
     func bind(reactor: Reactor) {
-        collectionView.rx.setDelegate(self).disposed(by: disposeBag)
-        
         Observable.zip(
             collectionView.rx.itemSelected,
             collectionView.rx.modelSelected(type(of: dataSource).Section.Item.self)
@@ -173,18 +172,87 @@ class DiscussionView: BaseView, View {
             .map { .fetch }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
-
-        reactor.state
-            .map(\.sections)
-            .bind(to: collectionView.rx.items(dataSource: dataSource))
-            .disposed(by: disposeBag)
         
         reactor.state
             .map(\.sections)
-            .subscribe(onNext: { [weak self] _ in
-                self?.collectionView.refreshControl?.endRefreshing()
+            .withUnretained(self)
+            .subscribe(onNext: { this, sections in
+                this.collectionView.refreshControl?.endRefreshing()
+                this.dataSource.setSections(sections)
+                this.collectionView.collectionViewLayout = this.makeLayout(sections: sections)
+                this.collectionView.reloadData()
             })
             .disposed(by: disposeBag)
+    }
+}
+
+extension DiscussionView {
+    func makeLayout(sections: [DiscussionSectionModel]) -> UICollectionViewCompositionalLayout {
+        let layout = UICollectionViewCompositionalLayout { [weak self] sectionIndex, _ in
+            switch sections[sectionIndex].model {
+            case let .tag(items):
+                return self?.makeTagSectionLayout(from: items)
+                
+            case let .pikmi(items):
+                return self?.makePikmiSectionLayout(from: items)
+            }
+        }
+        
+        return layout
+    }
+    
+    func makeTagSectionLayout(from items: [DiscussionItem]) -> NSCollectionLayoutSection {
+        var layoutItems: [NSCollectionLayoutItem] = []
+        
+        items.forEach({ item in
+            switch item {
+            case .tag:
+                layoutItems.append(.init(layoutSize: .init(widthDimension: .estimated(100), heightDimension: .estimated(30))))
+                
+            case .emptyTag:
+                layoutItems.append(.init(layoutSize: .init(widthDimension: .absolute(0), heightDimension: .absolute(0))))
+                
+            default:
+                break
+            }
+        })
+        
+        let layoutGroup = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .estimated(100), heightDimension: .estimated(30)), subitems: layoutItems)
+        layoutGroup.interItemSpacing = .fixed(8)
+        layoutGroup.contentInsets = .init(top: 0, leading: 24, bottom: 0, trailing: 24)
+        layoutGroup.edgeSpacing = .init(leading: .fixed(24), top: .none, trailing: .fixed(24), bottom: .none)
+        
+        let layoutSection = NSCollectionLayoutSection(group: layoutGroup)
+        layoutSection.contentInsets = .init(top: 0, leading: 0, bottom: 48, trailing: 0)
+        layoutSection.boundarySupplementaryItems = [.init(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(50)), elementKind: UICollectionView.elementKindSectionHeader, alignment: .top)]
+        
+        return layoutSection
+    }
+    
+    func makePikmiSectionLayout(from items: [DiscussionItem]) -> NSCollectionLayoutSection {
+        var layoutItems: [NSCollectionLayoutItem] = []
+        
+        items.forEach({ item in
+            switch item {
+            case .pikmi:
+                layoutItems.append(.init(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(120))))
+                
+            case .createPikmi:
+                layoutItems.append(.init(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(120))))
+                
+            default:
+                break
+            }
+        })
+        
+        let layoutGroup = NSCollectionLayoutGroup.vertical(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(100)), subitems: layoutItems)
+        layoutGroup.interItemSpacing = .fixed(20)
+        layoutGroup.contentInsets = .init(top: 0, leading: 24, bottom: 0, trailing: 24)
+        
+        let layoutSection: NSCollectionLayoutSection = .init(group: layoutGroup)
+        layoutSection.boundarySupplementaryItems = [.init(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(50)), elementKind: UICollectionView.elementKindSectionHeader, alignment: .top)]
+        
+        return layoutSection
     }
 }
 
