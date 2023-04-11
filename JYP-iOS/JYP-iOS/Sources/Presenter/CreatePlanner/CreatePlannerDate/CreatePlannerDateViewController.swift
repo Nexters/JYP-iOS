@@ -131,7 +131,8 @@ class CreatePlannerDateViewController: NavigationBarViewController, View {
 
         reactor.state
             .map(\.isHiddenSubmitButton)
-            .bind(to: selfView.submitButton.rx.isHidden)
+            .map { !$0 }
+            .bind(to: selfView.submitButton.rx.isEnabled)
             .disposed(by: disposeBag)
 
         reactor.state
