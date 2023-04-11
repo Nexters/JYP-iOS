@@ -224,9 +224,14 @@ extension DiscussionView {
             }
         })
         
-        let layoutGroup = NSCollectionLayoutGroup.vertical(layoutSize: .init(widthDimension: .estimated(100), heightDimension: .estimated(30)), subitems: layoutItems)
+        let layoutGroup = NSCollectionLayoutGroup.horizontal(layoutSize: .init(widthDimension: .estimated(100), heightDimension: .estimated(30)), subitems: layoutItems)
+        layoutGroup.interItemSpacing = .fixed(8)
+        layoutGroup.contentInsets = .init(top: 0, leading: 24, bottom: 0, trailing: 24)
+        layoutGroup.edgeSpacing = .init(leading: .fixed(24), top: .none, trailing: .fixed(24), bottom: .none)
         
         let layoutSection = NSCollectionLayoutSection(group: layoutGroup)
+        layoutSection.contentInsets = .init(top: 0, leading: 0, bottom: 48, trailing: 0)
+        layoutSection.boundarySupplementaryItems = [.init(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(50)), elementKind: UICollectionView.elementKindSectionHeader, alignment: .top)]
         
         return layoutSection
     }
@@ -237,10 +242,10 @@ extension DiscussionView {
         items.forEach({ item in
             switch item {
             case .pikmi:
-                layoutItems.append(.init(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(100))))
+                layoutItems.append(.init(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(120))))
                 
             case .createPikmi:
-                layoutItems.append(.init(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(100))))
+                layoutItems.append(.init(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(120))))
                 
             default:
                 break
@@ -248,8 +253,11 @@ extension DiscussionView {
         })
         
         let layoutGroup = NSCollectionLayoutGroup.vertical(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(100)), subitems: layoutItems)
+        layoutGroup.interItemSpacing = .fixed(20)
+        layoutGroup.contentInsets = .init(top: 0, leading: 24, bottom: 0, trailing: 24)
         
         let layoutSection: NSCollectionLayoutSection = .init(group: layoutGroup)
+        layoutSection.boundarySupplementaryItems = [.init(layoutSize: .init(widthDimension: .fractionalWidth(1), heightDimension: .estimated(50)), elementKind: UICollectionView.elementKindSectionHeader, alignment: .top)]
         
         return layoutSection
     }
