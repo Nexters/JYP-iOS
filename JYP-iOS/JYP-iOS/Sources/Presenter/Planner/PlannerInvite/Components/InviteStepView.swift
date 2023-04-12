@@ -111,7 +111,8 @@ class InviteStepView: BaseView {
         
         imageView.snp.makeConstraints {
             $0.top.equalTo(titleLabel.snp.bottom).offset(20)
-            $0.trailing.bottom.equalToSuperview()
+            $0.centerX.equalToSuperview()
+            $0.bottom.equalToSuperview()
             $0.width.equalTo(287)
         }
     }

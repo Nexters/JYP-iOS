@@ -63,7 +63,7 @@ class PlannerInviteViewController: NavigationBarViewController, View {
         stepLabel.font = JYPIOSFontFamily.Pretendard.bold.font(size: 22)
         stepLabel.textColor = JYPIOSAsset.textB80.color
         stepLabel.numberOfLines = 0
-        stepLabel.lineSpacing(lineHeight: 36)
+        stepLabel.lineSpacing(lineHeight: 31)
     }
     
     override func setupHierarchy() {
