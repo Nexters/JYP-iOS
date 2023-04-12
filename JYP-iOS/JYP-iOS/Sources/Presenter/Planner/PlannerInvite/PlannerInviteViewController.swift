@@ -49,9 +49,11 @@ class PlannerInviteViewController: NavigationBarViewController, View {
         titleLabel.font = JYPIOSFontFamily.Pretendard.semiBold.font(size: 24)
         titleLabel.textColor = JYPIOSAsset.textB80.color
         
-        subLabel.text = "일행은 최대 8명까지 초대할 수 있어요"
-        subLabel.font = JYPIOSFontFamily.Pretendard.medium.font(size: 16)
+        subLabel.text = "일행은 최대 8명까지 초대할 수 있어요.\n참여코드를 복사하여 일행에게 전달해주세요."
         subLabel.textColor = JYPIOSAsset.tagGrey200.color
+        subLabel.font = JYPIOSFontFamily.Pretendard.medium.font(size: 16)
+        subLabel.asFontColor(targetStringList: ["최대 8명", "참여코드를 복사하여 일행에게 전달"], font: JYPIOSFontFamily.Pretendard.semiBold.font(size: 16), color: JYPIOSAsset.textB80.color, height: 24)
+        subLabel.numberOfLines = 0
         
         linkInviteButton.isEnabled = true
         
@@ -61,7 +63,7 @@ class PlannerInviteViewController: NavigationBarViewController, View {
         stepLabel.font = JYPIOSFontFamily.Pretendard.bold.font(size: 22)
         stepLabel.textColor = JYPIOSAsset.textB80.color
         stepLabel.numberOfLines = 0
-        stepLabel.lineSpacing(lineHeight: 36)
+        stepLabel.lineSpacing(lineHeight: 31)
     }
     
     override func setupHierarchy() {
