@@ -10,6 +10,8 @@ import ReactorKit
 import UIKit
 
 class PlannerReactor: Reactor {
+    let disposeBag = DisposeBag()
+    
     enum ViewType {
         case journeyPlan
         case discussion
@@ -24,6 +26,7 @@ class PlannerReactor: Reactor {
     
     enum Action {
         case refresh
+        case fetch
         case showView(ViewType)
         case tapPlusButton
         case pushNextScreen(NextScreenType)
@@ -56,7 +59,7 @@ extension PlannerReactor {
     func bind(action: DiscussionReactor.Action) {
         switch action {
         case .fetch:
-            self.action.onNext(.refresh)
+            self.action.onNext(.fetch)
         case let .selectCell(_, item):
             switch item {
             case let .tag(reactor):
@@ -82,7 +85,7 @@ extension PlannerReactor {
         
         switch action {
         case .fetch:
-            self.action.onNext(.refresh)
+            self.action.onNext(.fetch)
         case let .tapEditButton(_, state):
             self.action.onNext(.pushNextScreen(.plannerRoute(index: state.index, journey: journey)))
         case let .tapPlusButton(_, state):
@@ -94,6 +97,19 @@ extension PlannerReactor {
     func mutate(action: Action) -> Observable<Mutation> {
         switch action {
         case .refresh:
+            return .create { [weak self] observer in
+                self?.journeyService.fetchJorney(id: self?.initialState.id ?? "").bind { journey in
+                    observer.onNext(.setJourney(journey))
+                    if Date().isDate(start: Date(timeIntervalSince1970: journey.startDate), end: Date(timeIntervalSince1970: journey.endDate)) {
+                        observer.onNext(.setViewType(.journeyPlan))
+                    }
+                }
+                .disposed(by: self?.disposeBag ?? DisposeBag())
+                
+                return Disposables.create()
+            }
+            
+        case .fetch:
             return journeyService.fetchJorney(id: initialState.id).map {
                 .setJourney($0)
             }
