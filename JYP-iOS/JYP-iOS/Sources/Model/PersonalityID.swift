@@ -15,7 +15,7 @@ enum PersonalityID: String, Codable {
     case FW
 
     init(from decoder: Decoder) throws {
-        self = try Self(rawValue: decoder.singleValueContainer().decode(RawValue.self)) ?? .FW
+        self = PersonalityID.toSelf(title: UserDefaultsAccess.get(key: .personality) ?? "")
     }
 
     var title: String {

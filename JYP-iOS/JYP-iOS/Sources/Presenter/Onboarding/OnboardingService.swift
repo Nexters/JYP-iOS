@@ -40,5 +40,9 @@ class OnboardingService: LocalService, OnboardingServiceType {
         case .plan:
             isPlanQuestion = value
         }
+        
+        let personalityID = self.getPersonalityID()
+        
+        UserDefaultsAccess.set(key: .personality, value: personalityID.title)
     }
 }

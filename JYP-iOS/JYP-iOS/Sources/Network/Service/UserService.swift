@@ -121,7 +121,6 @@ class UserService: GlobalService, UserServiceType {
             .asObservable()
         
         request
-            .filter({ $0.code == "20000" })
             .bind { [weak self] _ in
                 self?.withdraw()
                 self?.event.onNext(.deleteUser)
@@ -132,6 +131,7 @@ class UserService: GlobalService, UserServiceType {
     func login(user: User) {
         UserDefaultsAccess.set(key: .userID, value: user.id)
         UserDefaultsAccess.set(key: .nickname, value: user.nickname)
+        UserDefaultsAccess.set(key: .profileImagePath, value: user.profileImagePath)
         UserDefaultsAccess.set(key: .personality, value: user.personality.title)
         
         event.onNext(.login)
@@ -140,6 +140,9 @@ class UserService: GlobalService, UserServiceType {
     func logout() {
         UserDefaultsAccess.remove(key: .userID)
         UserDefaultsAccess.remove(key: .accessToken)
+        UserDefaultsAccess.remove(key: .personality)
+        UserDefaultsAccess.remove(key: .nickname)
+        UserDefaultsAccess.remove(key: .profileImagePath)
         
         event.onNext(.logout)
     }
@@ -147,6 +150,9 @@ class UserService: GlobalService, UserServiceType {
     func withdraw() {
         UserDefaultsAccess.remove(key: .userID)
         UserDefaultsAccess.remove(key: .accessToken)
+        UserDefaultsAccess.remove(key: .personality)
+        UserDefaultsAccess.remove(key: .nickname)
+        UserDefaultsAccess.remove(key: .profileImagePath)
         
         event.onNext(.withdraw)
     }
