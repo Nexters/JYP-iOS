@@ -131,9 +131,16 @@ class JourneyCardCollectionViewCell: BaseCollectionViewCell, View {
         )
         titleLabel.text = journey.name
         titleLabel.textColor = journey.themePath.textColor
-        startDateLabel.text = DateManager.doubleToDateString(format: "M월 d일", double: journey.startDate)
+        
+        if Date(timeIntervalSince1970: journey.endDate) < Date() {
+            startDateLabel.text = DateManager.doubleToDateString(format: "YY.MM.dd ", double: journey.startDate)
+            endDateLabel.text = "- \(DateManager.doubleToDateString(format: "YY.MM.dd", double: reactor.currentState.journey.endDate))"
+        } else {
+            startDateLabel.text = DateManager.doubleToDateString(format: "M월 d일", double: journey.startDate)
+            endDateLabel.text = "- \(DateManager.doubleToDateString(format: "M월 d일", double: reactor.currentState.journey.endDate))"
+        }
+        
         startDateLabel.textColor = journey.themePath.textColor
-        endDateLabel.text = "- \(DateManager.doubleToDateString(format: "M월 d일", double: reactor.currentState.journey.endDate))"
         endDateLabel.textColor = journey.themePath.textColor
 
         memberStackView.users = journey.users
