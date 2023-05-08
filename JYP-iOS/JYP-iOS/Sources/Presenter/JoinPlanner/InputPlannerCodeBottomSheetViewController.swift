@@ -157,8 +157,10 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
             .disposed(by: disposeBag)
 
         joinCodeButton.rx.tap
-            .subscribe(onNext: { [weak self] in
-                self?.textField.textField.text = self?.joinCodeButton.title(for: .normal)
+            .compactMap { [weak self] in self?.joinCodeButton.title(for: .normal) }
+            .subscribe(onNext: { [weak self] text in
+                self?.textField.textField.text = text
+                self?.reactor?.action.onNext(.didChangedTextField(text))
             })
             .disposed(by: disposeBag)
 
@@ -182,6 +184,11 @@ class InputPlannerCodeBottomSheetViewController: BottomSheetViewController, View
             .orEmpty
             .distinctUntilChanged()
             .map { .didChangedTextField($0) }
+            .bind(to: reactor.action)
+            .disposed(by: disposeBag)
+        
+        textField.trailingButton.rx.tap
+            .map { .didChangedTextField("") }
             .bind(to: reactor.action)
             .disposed(by: disposeBag)
 
