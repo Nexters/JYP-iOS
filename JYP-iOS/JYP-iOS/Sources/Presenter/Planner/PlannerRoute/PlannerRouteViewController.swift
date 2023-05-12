@@ -55,6 +55,9 @@ class PlannerRouteViewController: NavigationBarViewController, View {
     let emptyLabel: UILabel = .init()
     let routeCollectionView: UICollectionView = .init(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
     let pikmiRouteCollectionView: UICollectionView = .init(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+    let emptyPikmiRouteView: UIView = .init()
+    let emptyPikmiRouteImageView: UIImageView = .init()
+    let emptyPikmiRouteLabel: UILabel = .init()
     let doneButton: JYPButton = .init(type: .done)
     
     // MARK: - Initializer
@@ -94,14 +97,23 @@ class PlannerRouteViewController: NavigationBarViewController, View {
         pikmiRouteCollectionView.register(RouteCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: RouteCollectionViewCell.self))
         pikmiRouteCollectionView.register(PikmiRouteCollectionReusableView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: String(describing: PikmiRouteCollectionReusableView.self))
         
+        emptyPikmiRouteImageView.image = JYPIOSAsset.searchPlaceIllust.image
+        
+        emptyPikmiRouteLabel.text = "토론장에서 후보 장소를 추가하고\n루트를 계획해주세요!"
+        emptyPikmiRouteLabel.font = JYPIOSFontFamily.Pretendard.regular.font(size: 16)
+        emptyPikmiRouteLabel.textColor = JYPIOSAsset.textB75.color
+        emptyPikmiRouteLabel.textAlignment = .center
+        emptyPikmiRouteLabel.numberOfLines = 0
+        
         doneButton.isEnabled = true
     }
     
     override func setupHierarchy() {
         super.setupHierarchy()
         
-        contentView.addSubviews([routeCollectionView, pikmiRouteCollectionView, doneButton])
+        contentView.addSubviews([routeCollectionView, pikmiRouteCollectionView, emptyPikmiRouteView, doneButton])
         routeCollectionView.addSubviews([emptyLabel])
+        emptyPikmiRouteView.addSubviews([emptyPikmiRouteImageView, emptyPikmiRouteLabel])
     }
     
     override func setupLayout() {
@@ -118,6 +130,22 @@ class PlannerRouteViewController: NavigationBarViewController, View {
         
         pikmiRouteCollectionView.snp.makeConstraints {
             $0.top.equalTo(routeCollectionView.snp.bottom)
+            $0.leading.trailing.bottom.equalToSuperview()
+        }
+        
+        emptyPikmiRouteView.snp.makeConstraints {
+            $0.centerX.equalTo(pikmiRouteCollectionView)
+            $0.bottom.equalTo(doneButton.snp.top).offset(-160)
+        }
+        
+        emptyPikmiRouteImageView.snp.makeConstraints {
+            $0.top.equalToSuperview()
+            $0.centerX.equalToSuperview()
+            $0.height.equalTo(99)
+        }
+        
+        emptyPikmiRouteLabel.snp.makeConstraints {
+            $0.top.equalTo(emptyPikmiRouteImageView.snp.bottom).offset(8)
             $0.leading.trailing.bottom.equalToSuperview()
         }
         
@@ -197,6 +225,7 @@ class PlannerRouteViewController: NavigationBarViewController, View {
             .bind { this, sections in
                 let layout = this.makePikmiRouteLayout(sections: sections)
                 this.pikmiRouteCollectionView.collectionViewLayout = layout
+                this.emptyPikmiRouteView.isHidden = !sections.isEmpty
             }
             .disposed(by: disposeBag)
         
@@ -259,6 +288,7 @@ extension PlannerRouteViewController {
     
     func makePikmiRouteSectionLayout(from sectionItems: [PikmiRouteItem]) -> NSCollectionLayoutSection? {
         if sectionItems.isEmpty {
+            self.emptyPikmiRouteView.isHidden = false
             return nil
         }
         
